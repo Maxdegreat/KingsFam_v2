@@ -1,0 +1,29 @@
+//This file takes a controller as a required pram 
+//if controller is initialized we pass it to build video
+//     this is where the constrained box for the widget exist.
+//else we show a circular progress indicatior
+import 'package:flutter/material.dart';
+import 'package:kingsfam/widgets/widgets.dart';
+import 'package:video_player/video_player.dart';
+
+class VideoPlayerWidget extends StatelessWidget {
+  final VideoPlayerController controller;
+  const VideoPlayerWidget({Key? key, required this.controller})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => controller.value.isInitialized
+      ? ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: double.infinity,
+          maxHeight: 250), //size of video player in app
+        child: BuildVideo(controller: this.controller,)
+        )
+      //Container(height: 250, child: BuildVideo(controller: controller))
+      : Container(
+          height: 250,
+          child: Center(
+              child: CircularProgressIndicator(
+            color: Colors.red[400],
+          )));
+}

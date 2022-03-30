@@ -1,0 +1,29 @@
+
+
+tonight goal:
+    write a model or use old model for messages in kingsCord
+        Kings cord will need 
+            1 members - can get with a ref to user id...
+            2 admins - list of admins from members 
+        will need a model
+        make a repository
+        make a bloc 
+        plan build in firebase. = church => doc.id => collection(kingsCord) => doc.id => messages and data
+
+        knockout
+            model = done
+            repository = done
+            bloc = done
+            screen = to be continued ... BUT GOOD WORK TODAY PRAISE GOD!!!
+                in the process of making the comuinity initialize the kingsCord
+
+2) implement agora                   // start date: 
+
+3) implement unique names // start date: 11 / 2 / 2021
+
+4) gallery in app
+
+
+
+//users in app
+1) username: Gabby-Callwood email: gaby@gmail.com   password: 3AMByGabby
