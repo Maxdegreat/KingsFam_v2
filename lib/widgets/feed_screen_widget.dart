@@ -8,6 +8,7 @@ import 'package:kingsfam/cubits/cubits.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
+import 'package:kingsfam/screens/profile/profile_screen.dart';
 import 'package:kingsfam/widgets/fancy_list_tile.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
@@ -22,6 +23,8 @@ class _FeedScreenWidgetState extends State<FeedScreenWidget> with AutomaticKeepA
   @override
   bool get wantKeepAlive => true;
   @override
+
+
   Widget build(BuildContext context) {
     super.build(context);
     Size size = MediaQuery.of(context).size;
@@ -37,7 +40,7 @@ class _FeedScreenWidgetState extends State<FeedScreenWidget> with AutomaticKeepA
 }
 
 
-class _buildBody extends StatelessWidget {
+class _buildBody extends StatefulWidget {
   const _buildBody({
     Key? key,
     required this.size,
@@ -46,10 +49,22 @@ class _buildBody extends StatelessWidget {
   final Size size;
 
   @override
+  __buildBodyState createState() => __buildBodyState();
+}
+
+class __buildBodyState extends State<_buildBody> {
+    @override
+  void initState() {
+    
+    super.initState();
+    context.read<FeedBloc>().add(FeedFetchPosts());
+    context.read<LikedPostCubit>().clearAllLikedPosts();
+  }
+  @override
   Widget build(BuildContext context) {
     return BlocConsumer<FeedBloc, FeedState>(
       listener: (context, state) {
-        // TODO: implement listener
+
       },
       builder: (context, state) {
         switch (state.status) {
@@ -74,47 +89,7 @@ class _buildBody extends StatelessWidget {
                   final recentlyLiked =
                   likedPostsState.recentlyLikedPostIds.contains(post.id);
                    final ctx = context.read<LikedPostCubit>();
-                  return Column(
-                    children: [
-                      SizedBox(height: 7.0),
-                      FancyListTile(
-                        username: post.author.username, 
-                        imageUrl: post.author.profileImageUrl, 
-                        onTap: null, 
-                        isBtn: false, 
-                        BR: 5, 
-                        height: 16, 
-                        width: 18,
-                      ),
-                      SizedBox(height: 5.0),
-                      ConstrainedBox(
-                        constraints: BoxConstraints(maxHeight: size.height / 2),
-                        child: GestureDetector(
-                          onDoubleTap: () {
-                            if (isLiked){
-                              ctx.unLikePost(post: post);
-                              print("the likes are: ${post.likes}");
-                            } 
-                            else 
-                            ctx.likePost(post: post);
-                          },
-                          child: Container(
-                            child: // 1 if the post.imageUrl is not null
-                              post.imageUrl != null
-                              ? imageDisplay(post)
-                           
-                              // 2 if post.videoUrl is not null
-                              : post.videoUrl != null
-                              ? VidoeDisplay(videoUrl: post.videoUrl!)
-                              // 3 else quote is not null
-                              : SizedBox.shrink() // this will be for sounds later
-                            ),
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                       postBottom(isLiked, recentlyLiked, post, context)
-                    ],
-                  );
+                  return oldTackyColumnOfPost(post, isLiked, ctx, recentlyLiked, context);
                 },
               ),
             );
@@ -123,6 +98,58 @@ class _buildBody extends StatelessWidget {
     );
   }
 
+  Column oldTackyColumnOfPost(Post post, bool isLiked, LikedPostCubit ctx, bool recentlyLiked, BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(height: 7.0),
+        leading_pfp_info(post),
+        SizedBox(height: 5.0),
+        body_post_info(isLiked, ctx, post),
+        SizedBox(height: 5),
+         postBottom(isLiked, recentlyLiked, post, context)
+      ],
+    );
+  }
+
+  ConstrainedBox body_post_info(bool isLiked, LikedPostCubit ctx, Post post) {
+    return ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: widget.size.height / 1.4),
+        child: GestureDetector(
+          onDoubleTap: () {
+            if (isLiked){
+              ctx.unLikePost(post: post);
+            } 
+            else 
+            ctx.likePost(post: post);
+          },
+          child: Container(
+            child: // 1 if the post.imageUrl is not null
+              post.imageUrl != null
+              ? imageDisplay(post)
+              // 2 if post.videoUrl is not null
+              : post.videoUrl != null
+              ? VidoeDisplay(videoUrl: post.videoUrl!)
+              // 3 else quote is not null
+              : SizedBox.shrink() // this will be for sounds later
+            ),
+        ),
+      );
+  }
+
+  Widget leading_pfp_info(Post post) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: post.author.id)),
+      child: FancyListTile(
+          username: post.author.username, 
+          imageUrl: post.author.profileImageUrl, 
+          onTap: null, 
+          isBtn: false, 
+          BR: 5, 
+          height: 16, 
+          width: 18,
+        ),
+    );
+  }
 
   Container postBottom(bool isLiked, bool recentlyLiked, Post post, BuildContext context) {
     return Container(
@@ -159,11 +186,12 @@ class _buildBody extends StatelessWidget {
                       ))
                     ]));
   }
+
    Padding imageDisplay(Post post) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: 900),
+        constraints: BoxConstraints(minHeight: 900),
         child: Container(
             width: double.infinity,
             child: DecoratedBox(

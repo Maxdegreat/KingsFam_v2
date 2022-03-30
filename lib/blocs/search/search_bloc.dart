@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+//import 'package:rxdart/rxdart.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
@@ -35,6 +37,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     }
   }
 
+  // In mapLoadUserToState we also init the instances of commuinitys and the user explore in the search page
   Stream<SearchState> _mapLoadUserToState(InitializeUser event) async* {
     yield state.copyWith(status: SearchStatus.loading);
     try {
@@ -43,18 +46,32 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
       List<Church> churches = await _churchRepository.grabChurchWithLocation(
           location: user.location);
-
-      List<Church> churchesList2 =
-          await _churchRepository.grabChurchWithSpecial(special: "#tiktok");
+      
+      // CHURCHLLIST2 IS CURRENTLY NOT BEING USED
+      // List<Church> churchesList2 =
+          // await _churchRepository.grabChurchWithSpecial(special: "#tiktok");
 
       List<Church> churchesList3 =
           await _churchRepository.grabChurchWithSpecial(special: "#biblestudy");
 
+      // final userExploreController = BehaviorSubject<List<DocumentSnapshot>>();
+      String currId = _authBloc.state.user!.uid; // have to remove our selves ... will do in function
+      List<Userr> userExploreList = 
+         await _userrRepository.grabUserExploreListFirst10(user.id, 5, currId);
+      
+      
+
+
+      // await _userrRepository.grabUserExploreListNext10(ownerId);
+
+      
+
       yield state.copyWith(
           user: user,
           churches: churches,
-          churchesList2: churchesList2,
+          churchesList2: [], //churchesList2,
           churchesList3: churchesList3,
+          userExploreList: userExploreList,//userExploreList,
           status: SearchStatus.initial);
     } catch (e) {
       state.copyWith(

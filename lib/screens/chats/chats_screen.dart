@@ -9,7 +9,6 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/cubits.dart';
 import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/repositories/auth/auth_repository.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
@@ -81,7 +80,7 @@ class _ChatsScreenState extends State<ChatsScreen>
   @override
   void initState() {
     super.initState();
-
+    setupInteractedMessage();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
     //super.build(context);
   }
@@ -114,7 +113,6 @@ class _ChatsScreenState extends State<ChatsScreen>
       body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
         listener: (context, state) {},
         builder: (context, state) {
-
           //final bloc = context.read<ChatscreenBloc>();
           return SingleChildScrollView(
             child: Column(
@@ -163,8 +161,7 @@ class _ChatsScreenState extends State<ChatsScreen>
 
 class ScreensForPageView {
   // ignore: non_constant_identifier_names
-  StreamBuilder<QuerySnapshot<Map<String, dynamic>>> commuinity_view(
-      String userId, BuildContext context) {
+  StreamBuilder<QuerySnapshot<Map<String, dynamic>>> commuinity_view(String userId, BuildContext context) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection(Paths.church)

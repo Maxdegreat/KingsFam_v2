@@ -13,6 +13,7 @@ import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
 
 import 'package:kingsfam/widgets/widgets.dart';
+import 'package:rive/rive.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -139,13 +140,13 @@ class _SearchScreenState extends State<SearchScreen> {
               SizedBox(height: 5.0),
               Container(
                   height: 170,
-                  child: state.churchesList2.length > 0
+                  child: state.userExploreList.length > 0
                       ? ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          itemCount: state.churchesList2.length,
+                          itemCount: state.userExploreList.length,
                           itemBuilder: (context, index) {
-                            Church church = state.churchesList2[index];
-                            return search_Church_container(church: church);
+                            Userr userr = state.userExploreList[index];
+                            return user_explore_container(userr: userr);
                           },
                         )
                       : GestureDetector(
@@ -254,7 +255,76 @@ class _SearchScreenState extends State<SearchScreen> {
     Navigator.of(context).pushNamed(AddUsers.routeName,
         arguments: CreateNewGroupArgs(typeOf: 'Virtural Church'));
   }
-
+  Widget user_explore_container({required Userr userr}) {
+    return GestureDetector(
+      onTap: () =>  Navigator.of(context).pushNamed(ProfileScreen.routeName,arguments: ProfileScreenArgs(userId: userr.id)),
+      child: Container(
+        child: Stack(
+          //alignment: AlignmentDirectional.bottomCenter,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
+              child: Container(
+                height: 140,
+                width: MediaQuery.of(context).size.width * .70,
+                decoration: BoxDecoration(
+                  color: Colors.grey[900],
+                  borderRadius: BorderRadius.circular(15)
+                ),
+              ),
+            ),
+            Positioned(
+              top: 5,
+              left: 10,
+              child: Row(
+                children: [
+                  Container(
+                    height: 70,
+                    width: 80,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: CachedNetworkImageProvider(userr.profileImageUrl)
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  Text(userr.username, style: Theme.of(context).textTheme.bodyText1, overflow: TextOverflow.fade,)
+                ],
+              ),
+            ),
+            Positioned(
+              bottom: 70,
+              right: 50,
+              child: Container(
+                height: 35,
+                width: 90,
+                child: ElevatedButton(
+                  onPressed: () {
+                    String userrId = context.read<AuthBloc>().state.user!.uid;
+                    String followersId = userr.id;
+                    UserrRepository().followerUserr(userrId: userrId, followersId: followersId);
+                    setState(() {});
+                  }, 
+                  child: Text( "Follow", style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700),),
+                  style: ElevatedButton.styleFrom(primary: Colors.white54),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 30,
+              left: 10,
+              child: Container(
+                height: 70,
+                width: 70,
+                child: Icon(Icons.add, size: 50, color: Colors.red[400],),
+              )
+            )
+          ],
+        ),
+      ),
+    );
+  }
+  // ignore: non_constant_identifier_names
   Widget search_Church_container({required Church church}) {
     return Stack(
       alignment: AlignmentDirectional.bottomCenter,
