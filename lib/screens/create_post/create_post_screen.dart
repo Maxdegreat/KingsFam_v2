@@ -10,6 +10,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/helpers.dart';
 import 'package:kingsfam/models/church_model.dart';
+import 'package:kingsfam/models/post_model.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/create_post/cubit/create_post_cubit.dart';
 import 'package:kingsfam/widgets/widgets.dart';
@@ -130,7 +131,7 @@ class _CreatePostScreenState extends State<CreatePostScreen>
         actions: [
           isInital == true ?
             SizedBox.shrink() :
-             IconButton(onPressed: () => sendFileTo(context, context.read<CreatePostCubit>()), icon: Icon(Icons.arrow_forward_ios_sharp, color: Colors.white,))
+             IconButton(onPressed: () => PreviewPostHelper(prepost: context.read<CreatePostCubit>().prePost(), ctx: context), icon: Icon(Icons.arrow_forward_ios_sharp, color: Colors.white,))
         ],
       ),
       key: _scaffoldKey,
@@ -689,19 +690,133 @@ class _InitilizeVideoState extends State<InitilizeVideo> {
     
 // A NEW CLASS FOR SENDING THE DATA TO THE CLOUD
 
-// pass this a post model and from there we can do the work around with it this way we do not need too much raw minupliation of data like I had in v1 of kingsFam
-class PreviewPost extends StatefulWidget {
-  const PreviewPost({ Key? key }) : super(key: key);
+// A HELPER FOR THE PREVIEWPOST 
+void PreviewPostHelper({required PrePost prepost, required BuildContext ctx}) => previewPost(prepost: prepost, context: ctx);
 
-  @override
-  State<PreviewPost> createState() => _PreviewPostState();
+// pass this a post model and from there we can do the work around with it this way we do not need too much raw minupliation of data like I had in v1 of kingsFam
+Future<dynamic> previewPost({ required PrePost prepost, required BuildContext context}) {
+  var ctx = context.read<CreatePostCubit>();
+  return showModalBottomSheet(
+     enableDrag: ctx.state.status == CreatePostStatus.submitting ? false : true,
+     isDismissible: ctx.state.status == CreatePostStatus.submitting ? false : true,
+     isScrollControlled: true,
+     backgroundColor: Colors.transparent,
+    context: context, builder: (BuildContext context) {
+      return DraggableScrollableSheet(initialChildSize: 0.80, builder: (_, controller) =>
+         Container(
+          color: Colors.black,
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (ctx.state.status == CreatePostStatus.submitting) 
+                LinearProgressIndicator(color: Colors.red,),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Container(
+                    height: 125,
+                    width: 130,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(image: FileImage(ctx.state.imageFile!))
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Text("New Post Fam, Who dis?")
+                ],
+              ),
+              Divider(height: 1.5, color: Colors.white,),
+              TextFormField(
+                decoration: InputDecoration(hintText: 'add a caption?'),
+                onChanged: (value)  {ctx.captionOnChanged(value);  print(ctx.state.caption);},
+                validator: (value) => value!.length > 350 ? "Hey fam, please keep caption lower than 350 characters" : null,
+              ),
+              SizedBox(height: 5),
+              TextFormField(
+                decoration: InputDecoration(hintText: 'add some hashTags?'),
+                //onChanged: (value) => ctx.captionOnChanged(value),
+                //validator: (value) => value!.length > 350 ? "Hey fam, please keep caption lower than 350 characters" : null,
+              ),
+              SizedBox(height: 10),
+              Text("Posting to your feed: yeah"),
+              Text("Post to a commuinity: pick some?"),
+              SizedBox(height: 10),
+              commuinityList(context),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container( 
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {  
+                        if (ctx.state.status != CreatePostStatus.submitting) {
+                          _submitForm(context: context, isSubmitting: ctx.state.status != CreatePostStatus.submitting);
+                        } else
+                          print("did not allow submit of \"posttt\"");
+                      },
+                      child: Text("POSTTT!"),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.red[400],
+                      ),
+                    )),
+              )
+            ],
+          ),
+        ),
+      );
+    }
+  );
+  
 }
 
-class _PreviewPostState extends State<PreviewPost> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      
+  Expanded commuinityList(BuildContext context) {
+    return Expanded(
+      child: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection(Paths.church)
+            .where('memberIds',arrayContains: context.read<AuthBloc>().state.user!.uid)
+            .snapshots(),
+        builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
+             if (snapshot.data != null &&
+              snapshot.data!.docs.length > 0) {
+            return Container(
+              height: 100,
+              child: ListView.builder(
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    Church commuinity = Church.fromDoc(
+                        snapshot.data!.docs[index]);
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5.0),
+                          child: ListTile(
+                            onTap: () {},
+                            leading: ProfileImage(
+                              pfpUrl: commuinity.imageUrl,
+                              radius: 25,
+                            ),
+                            title: Text(commuinity.name,
+                                overflow: TextOverflow.ellipsis),
+                            //trailing: isTaped(commuinity.id!),
+                          ),
+                        ),
+                        Divider(height: 1, color: Colors.white,)
+                      ],
+                    );
+                  }),
+            );
+          } else {
+            return Text("Join Some Commuinitys Fam!");
+          }
+        },
+      ),
     );
   }
+
+_submitForm({required BuildContext context, required bool isSubmitting}) {
+  var ctx = context.read<CreatePostCubit>();
+  var state = ctx.state;
+  if (!isSubmitting && (state.imageFile != null || state.videoFile != null))
+    log('submittingggggggggggggg');
+    ctx.submit();
 }

@@ -68,7 +68,12 @@ void onRemovePostContent() => emit(state.copyWith(imageFile: null, videoFile: nu
 
   void onBackToCameraView() => emit(state.copyWith(status: CreatePostStatus.initial));
 
-  
+  // THIS IS FOR THE PREVIEW POST IN THE CREATEPOST SCREEN. YOU SHOULD FIND A LINK TO THE FUNC IN APP BAR
+  PrePost prePost() {
+    final author = Userr.empty.copyWith(id: _authBloc.state.user!.uid);
+    var prepost = PrePost(author: author, commuinitys: [], caption: null, imageFile: state.imageFile, videoFile: state.videoFile, soundTrack: null, quote: null, );
+    return prepost;
+  }
 
 
 

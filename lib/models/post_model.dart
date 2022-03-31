@@ -1,10 +1,56 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/user_model.dart';
 
 import 'church_model.dart';
 
+// BELOW PREPOST IS A POST CLASS THE PRE POST IS USED IN CREATING A POST (THE CREATE_POST SCREEN TO BE EXACT WHEN PREVIEWING)
+
+class PrePost extends Equatable {
+  final Userr author;
+  final List<Church>? commuinitys;
+  final String? quote;
+  final File? imageFile;
+  final File? videoFile;
+  final File? soundTrack;
+  final String? caption;
+  PrePost({
+    required this.author,
+    required this.commuinitys,
+    this.quote,
+    this.imageFile,
+    this.videoFile,
+    this.soundTrack,
+    this.caption,
+  });
+
+  @override
+  List<Object?> get props => [author, commuinitys, quote, imageFile, videoFile, soundTrack, caption];
+
+  PrePost copyWith({
+    Userr? author,
+    List<Church>? commuinitys,
+    String? quote,
+    File? imageFile,
+    File? videoFile,
+    File? soundTrack,
+    String? caption,
+  }) {
+    return PrePost(
+      author: author ?? this.author,
+      commuinitys: commuinitys ?? this.commuinitys,
+      quote: quote ?? this.quote,
+      imageFile: imageFile ?? this.imageFile,
+      videoFile: videoFile ?? this.videoFile,
+      soundTrack: soundTrack ?? this.soundTrack,
+      caption: caption ?? this.caption,
+    );
+  }
+}
 class Post extends Equatable {
   final String? id; //1 make the model
   final Userr author;
