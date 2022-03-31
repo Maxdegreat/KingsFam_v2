@@ -68,6 +68,7 @@ dependencies:
   flutter_sound_lite: ^8.3.9
   flutter_sound: 
   audio_session: ^0.1.6+1
+  camera: 
   
   
 

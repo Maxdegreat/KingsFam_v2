@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,6 +14,7 @@ import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/create_post/cubit/create_post_cubit.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:video_player/video_player.dart';
+import 'package:camera/camera.dart';
 
 enum setStateOfPostType { image, quote }
 setStateOfPostType stateOfContainer = setStateOfPostType.image;
@@ -47,11 +49,43 @@ class _CreatePostScreenState extends State<CreatePostScreen>
   //late VideoPlayerController _vidoeController;
   //late File videoFile;
 
+   // state to know if recording
+   bool isInital = true;
+  // camera controller which is null at first
+  CameraController? controller;
+  // list of cameras, ya dig
+  List<CameraDescription>? cameras;
+  // used for the show in snack bar messaginer... idk lol anddd idc
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  loadCameras() async {
+    // ignore: non_constant_identifier_names
+    var cameras_ = await availableCameras();
+    // ignore: non_constant_identifier_names
+    var controller_ = CameraController(cameras_[0], ResolutionPreset.medium);
+    controller_.initialize().then((_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
+    });
+      setState(() {cameras = cameras_; controller = controller_;});
+
+  }
+
+  closeCameras() async {
+    if (cameras != null)
+      cameras!.clear();
+    if (controller != null) 
+      controller!.dispose();
+  }
+
+
   final TextEditingController _quoteController = TextEditingController();
 
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
+    loadCameras();
     super.initState();
   }
 
@@ -59,14 +93,29 @@ class _CreatePostScreenState extends State<CreatePostScreen>
   void dispose() {
     _tabController.dispose();
     //_vidoeController.dispose();
+    closeCameras();
     super.dispose();
   }
 
-  //states
-  // image
-  File? imageState;
-  // video
-  File? videoState;
+    void didChangeAppLifecycleState(AppLifecycleState state) {
+
+    // App state changed before we got the chance to initialize.
+    if (controller == null || !controller!.value.isInitialized) {
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive) {
+      closeCameras();
+    } else if (state == AppLifecycleState.resumed) {
+     loadCameras();
+    }
+  }
+
+  void showInSnackBar(String message) {
+    // ignore: deprecated_member_use
+    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(message)));
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -74,101 +123,76 @@ class _CreatePostScreenState extends State<CreatePostScreen>
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Create Posts'),
-        ),
+        title: Text( "Create Post "),
+        leading: isInital == true ? 
+          IconButton(onPressed: () => Navigator.of(context).pop(), icon: Icon(Icons.arrow_back, color: Colors.white,)) 
+          : IconButton(onPressed: () {context.read<CreatePostCubit>().onRemovePostContent();  setState(() {isInital = true; });}, icon: Icon(Icons.close),),
+        actions: [
+          isInital == true ?
+            SizedBox.shrink() :
+             IconButton(onPressed: () => sendFileTo(context, context.read<CreatePostCubit>()), icon: Icon(Icons.arrow_forward_ios_sharp, color: Colors.white,))
+        ],
+      ),
+      key: _scaffoldKey,
         body: BlocConsumer<CreatePostCubit, CreatePostState>(
           listener: (context, state) {
             if (state.status == CreatePostStatus.success) {
                 _formKey.currentState!.reset();
                 context.read<CreatePostCubit>().reset();
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                duration: const Duration(seconds: 2),
-                backgroundColor: Colors.green,
-                content: Text('Post Created fam')));
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(duration: const Duration(seconds: 2),backgroundColor: Colors.green,content: Text('Post Created fam')));
                 Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
             } else if (state.status == CreatePostStatus.error) {
               showDialog(context: context, builder: (context) => ErrorDialog(content: state.failure.message));
             }
+
+             if (state.status != CreatePostStatus.initial) {
+                setState(() {isInital = false;});
+            } else {
+              setState(() {isInital = true;});
+            
+
+            // BROOOO this caused the error lol ---------------> TODO look at this 😂
+            // if (controller!.value.isInitialized) {
+            //   // re initalizie
+            //   print("NOT INITALIZED");
+            //   loadCameras();
+            // }
+
+          }
           },
           builder: (context, state) {
-            return SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+            Size size = MediaQuery.of(context).size;
+            return SafeArea(
+              child: Stack(
                 children: [
-                  Container(
-                    width: double.infinity,
-                    //height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        if (state.status == CreatePostStatus.submitting) 
-                          LinearProgressIndicator(color: Colors.red,),
-                        TabBar(
-                          controller: _tabController,
-                          labelColor: Colors.red[50],
-                          unselectedLabelColor: Colors.white,
-                          indicatorColor: Colors.red[50],
-                          tabs: [
-                            //tab 1
-                            Tab(text: "Posts"),
-                            //tab 2
-                            Tab(
-                              text: "Story",
-                            ),
-                          ],
-                          //tab bar on tap
-                          onTap: (i) {
-                            context
-                                .read<CreatePostCubit>()
-                                .gallViewChanged(i == 0);
-                          },
-                        ),
-                        GestureDetector(
-                          onTap: () async {
-                            await _bottomSheet(); // pisck file source
-                            setState(() {});
-                          },
-                          child: Container(
-                              color: Colors.white10,
-                              width: double.infinity,
-                              child: imageState != null
-                                  ? Image.file(
-                                      imageState!,
-                                      fit: BoxFit.fitWidth,
-                                    )
-                                  : videoState != null
-                                      ? Center(
-                                          child: InitilizeVideo(
-                                              videoFile: videoState!))
-                                      : Container(
-                                          height: 400,
-                                          child: Center(
-                                            child: Icon(Icons.image),
-                                          ))),
-                        ),
-                        SizedBox(height: 100),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: MaterialButton(
-                            onPressed: () {
-                              if (videoState != null || imageState != null) {
-                                sendFileTo(context);
-                              }
-                            },
-                            color: Colors.white,
-                            child: Icon(
-                              Icons.arrow_forward_sharp,
-                              color: Colors.black,
-                              size: 20,
-                            ),
-                            padding: EdgeInsets.all(20),
-                            shape: CircleBorder(),
+
+                   state.status == CreatePostStatus.initial  ? 
+                     
+                    camView(size: size, controller: controller!, context: context, state: state)
+
+                    : state.videoFile != null ? InitilizeVideo(videoFile: state.videoFile!) :
+
+                    state.imageFile != null ? previewPostImage(size, state) : SizedBox.shrink(),
+
+                      
+                   state.status  == CreatePostStatus.initial ? Positioned(
+                      bottom: 20,
+                      right: size.width / 2.5,
+                      child: GestureDetector(
+                        onTap: () async => state.isRecording ? onStopButtonPressed() : onTakePictureButtonPressed(context, state),
+                        onLongPress: () async => controller != null && controller!.value.isInitialized && !controller!.value.isRecordingVideo ? onVideoRecordButtonPressed() : null,
+                        child: Container(
+                          height: 80, 
+                          width: 80,
+                          decoration: BoxDecoration(
+                            color: state.isRecording ?  Colors.red[400] : Colors.white,
+                            borderRadius: state.isRecording ?   BorderRadius.circular(45) : BorderRadius.circular(50)
                           ),
-                        )
-                      ],
-                    ),
-                  )
+                        ),
+                      ),
+                    ) : SizedBox.shrink()
                 ],
-              ),
+              )
             );
           },
         ),
@@ -176,249 +200,453 @@ class _CreatePostScreenState extends State<CreatePostScreen>
     );
   }
 
-  sendFileTo(BuildContext context) {
-    return submitPostBottomSheet(context);
+   Widget camView({required CameraController controller, required Size size, required BuildContext context, required CreatePostState state}) {
+  return Stack(
+    children: 
+      [
+        Container(
+          height: size.height,
+          width: size.width ,
+          child: CameraPreview(controller),
+        ),
+        state.isRecording == true ?
+        Align(
+          alignment: Alignment.topCenter,
+          child: LinearProgressIndicator(color: Colors.red[400],),
+        ) 
+        : SizedBox.shrink()
+      ],
+    );
   }
 
-  Future<dynamic> submitPostBottomSheet(BuildContext context) {
-    return showModalBottomSheet(
-        context: context,
-        builder: (context) => BlocProvider(
-              create: (context) => CreatePostCubit(
-                authBloc: context.read<AuthBloc>(),
-                churchRepository: context.read<ChurchRepository>(),
-                postsRepository: context.read<PostsRepository>(),
-                storageRepository: context.read<StorageRepository>(),
-              ),
-              child: BlocConsumer<CreatePostCubit, CreatePostState>(
-                listener: (context, state) {
-                  if(state.status == CreatePostStatus.success) {
-                    context.read<CreatePostCubit>().reset();
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    duration: const Duration(seconds: 1),
-                    backgroundColor: Colors.green,
-                    content: Text('Post Created fam')));
-                    Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
-                  }
-                },
-                builder: (context, state) {
-                  //=================================================
-                  return Container(
-                    color: Colors.black,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        if (state.status == CreatePostStatus.submitting) 
-                          LinearProgressIndicator(color: Colors.red,),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5.0),
-                          child: Text("Where do you want to post to Fam?"),
-                        ),
-                        Text("Commuinitys"),
-                        Expanded(
-                          child: StreamBuilder(
-                            stream: FirebaseFirestore.instance
-                                .collection(Paths.church)
-                                .where('memberIds',
-                                    arrayContains: context
-                                        .read<AuthBloc>()
-                                        .state
-                                        .user!
-                                        .uid)
-                                .snapshots(),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<QuerySnapshot> snapshot) {
-                              if (snapshot.data != null &&
-                                  snapshot.data!.docs.length > 0) {
-                                return Container(
-                                  height: 100,
-                                  child: ListView.builder(
-                                      itemCount: snapshot.data!.docs.length,
-                                      itemBuilder: (context, index) {
-                                        Church commuinity = Church.fromDoc(
-                                            snapshot.data!.docs[index]);
-                                        return ListTile(
-                                          onTap: () => context
-                                              .read<CreatePostCubit>()
-                                              .onTapedCommuinitys(
-                                                  commuinity.id!),
-                                          leading: ProfileImage(
-                                            pfpUrl: commuinity.imageUrl,
-                                            radius: 25,
-                                          ),
-                                          title: Text(commuinity.name,
-                                              overflow: TextOverflow.ellipsis),
-                                          //trailing: isTaped(commuinity.id!),
-                                        );
-                                      }),
-                                );
-                              } else {
-                                return Text("Join Some Commuinitys Fam!");
-                              }
-                            },
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Container(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  final state = context.read<CreatePostCubit>().state;
+  // VIDEO RECORDING SEGMENT ----------------
+  void onVideoRecordButtonPressed() {
+    log("recordingggg");
+    startVideoRecording().then((_) {
+      
+      if (mounted) {setState(() {});}
 
-                                  if (state.commuinitys.isNotEmpty) {
-                                    // call the submit function passing strings to suvmit function
-                                    print("we are in the submit function fam");
-                                    _submitForm(context: context,  postVideo: null, postImage: imageState, isSubmitting: state.status == CreatePostStatus.submitting);
-                                  } else
-                                    print("did not allow submit of \"posttt\"");
-                                },
-                                child: Text("POSTTT!"),
-                                style: ElevatedButton.styleFrom(
-                                  primary: Colors.red[400],
-                                ),
-                              )),
-                        )
-                      ],
-                    ),
-                  );
+      // allow the state to know that the camera has started recording --> TODO
+      context.read<CreatePostCubit>().startRecording();
 
-                  //==================================================
-                },
-              ),
-            ));
+    });
   }
 
-  Future<dynamic> _bottomSheet() => showModalBottomSheet(
-      context: context,
-      builder: (context) => BlocProvider(
-            create: (context) => CreatePostCubit(
-                postsRepository: context.read<PostsRepository>(),
-                storageRepository: context.read<StorageRepository>(),
-                churchRepository: context.read<ChurchRepository>(),
-                authBloc: context.read<AuthBloc>()),
-            child: StatefulBuilder(
-              builder: (BuildContext context, setState) {
-                return Container(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            final pickedFile =
-                                await ImageHelper.pickImageFromGallery(
-                                    context: context,
-                                    cropStyle: CropStyle.rectangle,
-                                    title: 'Create Post');
-                            if (pickedFile != null) {
-                              context
-                                  .read<CreatePostCubit>()
-                                  .postImageOnChanged(pickedFile);
-                              context
-                                  .read<CreatePostCubit>()
-                                  .state
-                                  .copyWith(postVideo: null);
-                              videoState = null;
-                            }
-                            setState(() => imageState = pickedFile);
-                            this.setState(() {});
-                            Navigator.pop(context);
-                          },
-                          //child: context.read<CreatePostCubit>().state.postImage == null ? Icon(Icons.camera) : Icon(Icons.ac_unit),),
-                          child: Icon(Icons.camera),
-                          style: ElevatedButton.styleFrom(
-                              primary: Colors.red[400]),
-                        ),
-                      ),
-                      Container(
-                        child: ElevatedButton(
-                            onPressed: () async {
-                              final pickedFile =
-                                  await ImageHelper.pickVideoFromGallery();
-                              if (pickedFile != null) {
-                                context
-                                    .read<CreatePostCubit>()
-                                    .postVideoOnChanged(pickedFile);
-                                context
-                                    .read<CreatePostCubit>()
-                                    .state
-                                    .copyWith(postImage: null);
-                                imageState = null;
-                              }
-                              setState(() => videoState = pickedFile);
-                              this.setState(() {});
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.video_camera_back)),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ));
-  //SELECT POST IMAGE
-  // void _selectPostImage(BuildContext context) async {
-  // final pickedFile = await ImageHelper.pickImageFromGallery(
-  // context: context, cropStyle: CropStyle.rectangle, title: 'Create Post');
-  // if (pickedFile != null) {
-  // context.read<CreatePostCubit>().postImageOnChanged(pickedFile);
-  // }
-  // }
-  //SELECT VIDEO FILE FROM GALLERY
-  void _selectPostVideo(BuildContext context) async {
-    final pickedFile = await ImageHelper.pickVideoFromGallery();
-    if (pickedFile != null) {
-      context.read<CreatePostCubit>().postVideoOnChanged(pickedFile);
+  Future<void> startVideoRecording() async {
+    final CameraController? cameraController = controller;
+
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      showInSnackBar('Error: select a camera first.');
+      return;
+    }
+
+    if (cameraController.value.isRecordingVideo) {
+      // A recording is already started, do nothing.
+      return;
+    }
+
+    try {
+      await cameraController.startVideoRecording();
+    } on CameraException catch (e) {
+      log("error: ${e.toString()}");
+      return;
     }
   }
-//
-  //TAKE PIC WITH CAMERA
-  // void _capturePostImage(BuildContext context) async {
-  // final pickedFile = await ImageHelper.pickImageFromCam(
-  // context: context, cropStyle: CropStyle.rectangle, title: 'Create Post');
-  // if (pickedFile != null) {
-  // context.read<CreatePostCubit>().postImageOnChanged(pickedFile);
-  // }
-  // }
-//
-  //RECORD VIDEO WITH CAMERA
-  //  void _capturePostVid(BuildContext context) async {
-  //  final pickedFile = await ImageHelper.pickVidFromCam(context: context);
-  //  if (pickedFile != null) {
-  //  context.read<CreatePostCubit>().postVideoOnChanged(pickedFile);
-  //  InitilizeVideo(videoFile: pickedFile);
-  //  }
-  //  }
-//
 
-  //SUBMIT THE POST TO UPLOAD
-  void _submitForm(
-      {required BuildContext context,
-      required File? postVideo,
-      required File? postImage,
-      required bool isSubmitting}) {
-    //makes sure that there is something to submit. keep in mind the image post is will be evaluated in the cubit and if it has a value it will be posted!
-    //im not too sure why we chek the quote here. I will fix this soon.
-    //add && _formKey.currentState!.validate() if an error when submitting. I removed bc i dont now why its there
-    print("we are one now in the submit form function");
-    if ((postImage != null && !isSubmitting) || (postVideo != null && !isSubmitting)) {
-      final state = context.read<CreatePostCubit>().state;
-      final cubit = context.read<CreatePostCubit>();
+  void onStopButtonPressed() {
+    stopVideoRecording().then((XFile? file) {
+      if (mounted) {
+        setState(() {});
+      }
+      if (file != null) {
+        log('Video recorded to ${file.path}');
+        // Need to add the video to the cubit ---> TODO
+        context.read<CreatePostCubit>().onStopPostRecording(File(file.path));
+      } else {
+        log("VID NOT SAVEDDDD");
+      }
+    });
+  }
 
-      if (postImage != null) cubit.postImageOnChanged(postImage);
-      if (videoState != null) cubit.postVideoOnChanged(videoState!);
+   Future<XFile?> stopVideoRecording() async {
 
-      print("we passed a conditional test, and now we are heading to the create post cubit");
-      print("the status of the state photo is ${state.postImage == null}}");
-      print(state.status);
-      context.read<CreatePostCubit>().submit();
+    final CameraController? cameraController = controller;
+
+    if (cameraController == null || !cameraController.value.isRecordingVideo) {
+      return null;
+    }
+
+    try {
+      return cameraController.stopVideoRecording();
+    } on CameraException catch (e) {
+      log("error when stop recording is: ${e.toString()}");
+      return null;
     }
   }
-}
+
+  // PHOTO TAKING SEGMENT --------------------
+  Future<void> onTakePictureButtonPressed(BuildContext context, CreatePostState state) async {
+      takePicture().then((XFile? file) {
+        if (file != null) {
+          var passFile = File(file.path);
+          context.read<CreatePostCubit>().postImageOnChanged(passFile);
+        // setState(() {
+        //   imageState = File(file.path);
+        //   // videoController?.dispose();
+        //   // videoController = null;
+        // });
+      }
+    }); 
+  }
+
+  Future<XFile?> takePicture() async {
+    if (controller == null || !controller!.value.isInitialized) {
+      showInSnackBar('Error: select a camera first.');
+      return null;
+    } 
+    if (controller!.value.isTakingPicture) {
+      // A capture is already pending, do nothing.
+      return null;
+    }
+    try {
+      final XFile file = await controller!.takePicture();
+      return file;
+    } on CameraException catch (e) {
+      log("The error in taking thre pic is: ${e.toString()}");
+      return null;
+    }
+  }
+  
+
+//   Future<Column> oldBody(CreatePostState state, BuildContext context) async {
+//     return Column(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 Container(
+//                   width: double.infinity,
+//                   //height: MediaQuery.of(context).size.height,
+//                   child: Column(
+//                     children: [
+//                       if (state.status == CreatePostStatus.submitting) 
+//                         LinearProgressIndicator(color: Colors.red,),
+//                       TabBar(
+//                         controller: _tabController,
+//                         labelColor: Colors.red[50],
+//                         unselectedLabelColor: Colors.white,
+//                         indicatorColor: Colors.red[50],
+//                         tabs: [
+//                           //tab 1
+//                           Tab(text: "Posts"),
+//                           //tab 2
+//                           Tab(
+//                             text: "Story",
+//                           ),
+//                         ],
+//                         //tab bar on tap
+//                         onTap: (i) {
+//                           context
+//                               .read<CreatePostCubit>()
+//                               .gallViewChanged(i == 0);
+//                         },
+//                       ),
+//                       GestureDetector(
+//                         onTap: () async {
+//                           await _bottomSheet(); // pisck file source
+//                           setState(() {});
+//                         },
+//                         child: Container(
+//                             color: Colors.white10,
+//                             width: double.infinity,
+//                             child: imageState != null
+//                                 ? Image.file(
+//                                     imageState!,
+//                                     fit: BoxFit.fitWidth,
+//                                   )
+//                                 : videoState != null
+//                                     ? Center(
+//                                         child: InitilizeVideo(
+//                                             videoFile: videoState!))
+//                                     : Container(
+//                                         height: 400,
+//                                         child: Center(
+//                                           child: Icon(Icons.image),
+//                                         ))),
+//                       ),
+//                       SizedBox(height: 100),
+//                       Align(
+//                         alignment: Alignment.bottomRight,
+//                         child: MaterialButton(
+//                           onPressed: () {
+//                             if (videoState != null || imageState != null) {
+//                               sendFileTo(context);
+//                             }
+//                           },
+//                           color: Colors.white,
+//                           child: Icon(
+//                             Icons.arrow_forward_sharp,
+//                             color: Colors.black,
+//                             size: 20,
+//                           ),
+//                           padding: EdgeInsets.all(20),
+//                           shape: CircleBorder(),
+//                         ),
+//                       )
+//                     ],
+//                   ),
+//                 )
+//               ],
+//             );
+//   }
+
+
+//   sendFileTo(BuildContext context) {
+//     return submitPostBottomSheet(context);
+//   }
+
+//   Future<dynamic> submitPostBottomSheet(BuildContext context) {
+//     return showModalBottomSheet(
+//         context: context,
+//         builder: (context) => BlocProvider(
+//               create: (context) => CreatePostCubit(
+//                 authBloc: context.read<AuthBloc>(),
+//                 churchRepository: context.read<ChurchRepository>(),
+//                 postsRepository: context.read<PostsRepository>(),
+//                 storageRepository: context.read<StorageRepository>(),
+//               ),
+//               child: BlocConsumer<CreatePostCubit, CreatePostState>(
+//                 listener: (context, state) {
+//                   if(state.status == CreatePostStatus.success) {
+//                     context.read<CreatePostCubit>().reset();
+//                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+//                     duration: const Duration(seconds: 1),
+//                     backgroundColor: Colors.green,
+//                     content: Text('Post Created fam')));
+//                     Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
+//                   }
+//                 },
+//                 builder: (context, state) {
+//                   //=================================================
+//                   return Container(
+//                     color: Colors.black,
+//                     child: Column(
+//                       mainAxisSize: MainAxisSize.max,
+//                       crossAxisAlignment: CrossAxisAlignment.center,
+//                       children: [
+//                         if (state.status == CreatePostStatus.submitting) 
+//                           LinearProgressIndicator(color: Colors.red,),
+//                         Padding(
+//                           padding: const EdgeInsets.symmetric(vertical: 5.0),
+//                           child: Text("Where do you want to post to Fam?"),
+//                         ),
+//                         Text("Commuinitys"),
+//                         Expanded(
+//                           child: StreamBuilder(
+//                             stream: FirebaseFirestore.instance
+//                                 .collection(Paths.church)
+//                                 .where('memberIds',
+//                                     arrayContains: context
+//                                         .read<AuthBloc>()
+//                                         .state
+//                                         .user!
+//                                         .uid)
+//                                 .snapshots(),
+//                             builder: (BuildContext context,
+//                                 AsyncSnapshot<QuerySnapshot> snapshot) {
+//                               if (snapshot.data != null &&
+//                                   snapshot.data!.docs.length > 0) {
+//                                 return Container(
+//                                   height: 100,
+//                                   child: ListView.builder(
+//                                       itemCount: snapshot.data!.docs.length,
+//                                       itemBuilder: (context, index) {
+//                                         Church commuinity = Church.fromDoc(
+//                                             snapshot.data!.docs[index]);
+//                                         return ListTile(
+//                                           onTap: () => context
+//                                               .read<CreatePostCubit>()
+//                                               .onTapedCommuinitys(
+//                                                   commuinity.id!),
+//                                           leading: ProfileImage(
+//                                             pfpUrl: commuinity.imageUrl,
+//                                             radius: 25,
+//                                           ),
+//                                           title: Text(commuinity.name,
+//                                               overflow: TextOverflow.ellipsis),
+//                                           //trailing: isTaped(commuinity.id!),
+//                                         );
+//                                       }),
+//                                 );
+//                               } else {
+//                                 return Text("Join Some Commuinitys Fam!");
+//                               }
+//                             },
+//                           ),
+//                         ),
+//                         Align(
+//                           alignment: Alignment.bottomCenter,
+//                           child: Container(
+//                               width: double.infinity,
+//                               child: ElevatedButton(
+//                                 onPressed: () {
+//                                   final state = context.read<CreatePostCubit>().state;
+
+//                                   if (state.commuinitys.isNotEmpty) {
+//                                     // call the submit function passing strings to suvmit function
+//                                     print("we are in the submit function fam");
+//                                     _submitForm(context: context,  postVideo: null, postImage: imageState, isSubmitting: state.status == CreatePostStatus.submitting);
+//                                   } else
+//                                     print("did not allow submit of \"posttt\"");
+//                                 },
+//                                 child: Text("POSTTT!"),
+//                                 style: ElevatedButton.styleFrom(
+//                                   primary: Colors.red[400],
+//                                 ),
+//                               )),
+//                         )
+//                       ],
+//                     ),
+//                   );
+
+//                   //==================================================
+//                 },
+//               ),
+//             ));
+//   }
+
+//   Future<dynamic> _bottomSheet() => showModalBottomSheet(
+//       context: context,
+//       builder: (context) => BlocProvider(
+//             create: (context) => CreatePostCubit(
+//                 postsRepository: context.read<PostsRepository>(),
+//                 storageRepository: context.read<StorageRepository>(),
+//                 churchRepository: context.read<ChurchRepository>(),
+//                 authBloc: context.read<AuthBloc>()),
+//             child: StatefulBuilder(
+//               builder: (BuildContext context, setState) {
+//                 return Container(
+//                   child: Column(
+//                     mainAxisSize: MainAxisSize.min,
+//                     children: [
+//                       Container(
+//                         width: double.infinity,
+//                         child: ElevatedButton(
+//                           onPressed: () async {
+//                             final pickedFile =
+//                                 await ImageHelper.pickImageFromGallery(
+//                                     context: context,
+//                                     cropStyle: CropStyle.rectangle,
+//                                     title: 'Create Post');
+//                             if (pickedFile != null) {
+//                               context
+//                                   .read<CreatePostCubit>()
+//                                   .postImageOnChanged(pickedFile);
+//                               context
+//                                   .read<CreatePostCubit>()
+//                                   .state
+//                                   .copyWith(postVideo: null);
+//                               videoState = null;
+//                             }
+//                             setState(() => imageState = pickedFile);
+//                             this.setState(() {});
+//                             Navigator.pop(context);
+//                           },
+//                           //child: context.read<CreatePostCubit>().state.postImage == null ? Icon(Icons.camera) : Icon(Icons.ac_unit),),
+//                           child: Icon(Icons.camera),
+//                           style: ElevatedButton.styleFrom(
+//                               primary: Colors.red[400]),
+//                         ),
+//                       ),
+//                       Container(
+//                         child: ElevatedButton(
+//                             onPressed: () async {
+//                               final pickedFile =
+//                                   await ImageHelper.pickVideoFromGallery();
+//                               if (pickedFile != null) {
+//                                 context
+//                                     .read<CreatePostCubit>()
+//                                     .postVideoOnChanged(pickedFile);
+//                                 context
+//                                     .read<CreatePostCubit>()
+//                                     .state
+//                                     .copyWith(postImage: null);
+//                                 imageState = null;
+//                               }
+//                               setState(() => videoState = pickedFile);
+//                               this.setState(() {});
+//                               Navigator.pop(context);
+//                             },
+//                             child: Icon(Icons.video_camera_back)),
+//                       ),
+//                     ],
+//                   ),
+//                 );
+//               },
+//             ),
+//           ));
+//   //SELECT POST IMAGE
+//   // void _selectPostImage(BuildContext context) async {
+//   // final pickedFile = await ImageHelper.pickImageFromGallery(
+//   // context: context, cropStyle: CropStyle.rectangle, title: 'Create Post');
+//   // if (pickedFile != null) {
+//   // context.read<CreatePostCubit>().postImageOnChanged(pickedFile);
+//   // }
+//   // }
+//   //SELECT VIDEO FILE FROM GALLERY
+//   void _selectPostVideo(BuildContext context) async {
+//     final pickedFile = await ImageHelper.pickVideoFromGallery();
+//     if (pickedFile != null) {
+//       context.read<CreatePostCubit>().postVideoOnChanged(pickedFile);
+//     }
+//   }
+// //
+//   //TAKE PIC WITH CAMERA
+//   // void _capturePostImage(BuildContext context) async {
+//   // final pickedFile = await ImageHelper.pickImageFromCam(
+//   // context: context, cropStyle: CropStyle.rectangle, title: 'Create Post');
+//   // if (pickedFile != null) {
+//   // context.read<CreatePostCubit>().postImageOnChanged(pickedFile);
+//   // }
+//   // }
+// //
+//   //RECORD VIDEO WITH CAMERA
+//   //  void _capturePostVid(BuildContext context) async {
+//   //  final pickedFile = await ImageHelper.pickVidFromCam(context: context);
+//   //  if (pickedFile != null) {
+//   //  context.read<CreatePostCubit>().postVideoOnChanged(pickedFile);
+//   //  InitilizeVideo(videoFile: pickedFile);
+//   //  }
+//   //  }
+// //
+
+//   //SUBMIT THE POST TO UPLOAD
+//   void _submitForm(
+//       {required BuildContext context,
+//       required File? postVideo,
+//       required File? postImage,
+//       required bool isSubmitting}) {
+//     //makes sure that there is something to submit. keep in mind the image post is will be evaluated in the cubit and if it has a value it will be posted!
+//     //im not too sure why we chek the quote here. I will fix this soon.
+//     //add && _formKey.currentState!.validate() if an error when submitting. I removed bc i dont now why its there
+//     print("we are one now in the submit form function");
+//     if ((postImage != null && !isSubmitting) || (postVideo != null && !isSubmitting)) {
+//       final state = context.read<CreatePostCubit>().state;
+//       final cubit = context.read<CreatePostCubit>();
+
+//       if (postImage != null) cubit.postImageOnChanged(postImage);
+//       if (videoState != null) cubit.postVideoOnChanged(videoState!);
+
+//       print("we passed a conditional test, and now we are heading to the create post cubit");
+//       print("the status of the state photo is ${state.postImage == null}}");
+//       print(state.status);
+//       context.read<CreatePostCubit>().submit();
+//     }
+//   }
+// }
+    }
+
+// PREVIEW FOR THE POST -------> TODO should later become a class that allows for filters
+Container previewPostImage(Size size, CreatePostState state) => Container(height: size.height, width: size.width, decoration: BoxDecoration( image: DecorationImage(image: FileImage(state.imageFile!)) ));
+
 
 //NEW CLASS FOR VIDEO CONFIG
 class InitilizeVideo extends StatefulWidget {
@@ -457,4 +685,23 @@ class _InitilizeVideoState extends State<InitilizeVideo> {
           : CircularProgressIndicator(
               color: Colors.red[400],
             );
+}
+    
+// A NEW CLASS FOR SENDING THE DATA TO THE CLOUD
+
+// pass this a post model and from there we can do the work around with it this way we do not need too much raw minupliation of data like I had in v1 of kingsFam
+class PreviewPost extends StatefulWidget {
+  const PreviewPost({ Key? key }) : super(key: key);
+
+  @override
+  State<PreviewPost> createState() => _PreviewPostState();
+}
+
+class _PreviewPostState extends State<PreviewPost> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      
+    );
+  }
 }

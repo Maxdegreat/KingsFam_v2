@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 
@@ -28,108 +29,111 @@ class CreatePostCubit extends Cubit<CreatePostState> {
         super(CreatePostState.initial());
 
   //3 on changed
-  void onQuoteChanged(String quote) {
-    emit(state.copyWith(quote: quote, status: CreatePostStatus.initial));
-  }
 
-  void onTapedCommuinitys(String ids) {
-    List<String> bucket = [];
-     if (bucket.contains(ids))
-       bucket.remove(ids);
-     else
-       bucket.add(ids);
-    print("On taped fired ... yezirrr ");
-    print(state.commuinitys.length);
-    emit(state.copyWith(commuinitys: bucket ));
-  }
+  // void onTapedCommuinitys(String ids) {
+  //   List<String> bucket = [];
+  //    if (bucket.contains(ids))
+  //      bucket.remove(ids);
+  //    else
+  //      bucket.add(ids);
+  //   print("On taped fired ... yezirrr ");
+  //   print(state.commuinitys.length);
+  //   emit(state.copyWith(commuinitys: bucket ));
+  // }
 
-  void postImageOnChanged(File file) => 
-    emit(state.copyWith(postImage: file, status: CreatePostStatus.submitting));
-    
+void onRemovePostContent() => emit(state.copyWith(imageFile: null, videoFile: null, caption: null, isRecording: false, status: CreatePostStatus.initial));
+// ------------> FOR POST IMAGE
+  void postImageOnChanged(File? file) => 
+    emit(state.copyWith(imageFile: file, status: CreatePostStatus.preview));
+  
+  void onRemovePostImmage() => emit(state.copyWith(imageFile: null, status: CreatePostStatus.initial));
+
+  void onUplaodImageFile(File? file) => emit(state.copyWith(imageFile: file ));
+  
+// -------------------> FOR POST RECORDING
+  void onStopPostRecording(File? file) => emit(state.copyWith(videoFile: file, isRecording: false, status: CreatePostStatus.preview));
+
+  void onUploadVideoFile(File? file) => emit(state.copyWith(videoFile: file)); // -------- for the upload bottom sheet. it has a di
+
+  void startRecording() => emit(state.copyWith(isRecording: true, status: CreatePostStatus.initial));
   
 
-  void postVideoOnChanged(File file) {
-    emit(state.copyWith(postVideo: file, status: CreatePostStatus.initial));
+  void onRemoveVideoFile() => emit(state.copyWith(videoFile: null, status: CreatePostStatus.initial));
+
+// ------------------> FOR CAPTION
+  void captionOnChanged(String? caption) {
+    emit(state.copyWith(caption: caption));
+    print("ION REALLY CARE YEAH ${state.caption}");
   }
 
-  void captionOnChanged(String caption) {
-    emit(state.copyWith(caption: caption, status: CreatePostStatus.initial));
-  }
+  void onBackToCameraView() => emit(state.copyWith(status: CreatePostStatus.initial));
 
-  void gallViewChanged(bool currentView) {
-    emit(state.copyWith(isImageView: currentView, status: CreatePostStatus.initial));
-  }
+  
 
-//4 submit
-  void submit() async {
-    //print("bet, now we are in the actual submit cubit method");
+
+
+// --------------------------------- 4 submit
+  Future<void> submit() async {
+    print("called submit++++++++++++++++++++++++++");
     emit(state.copyWith(status: CreatePostStatus.submitting));
-    //print("we passed a conditional test, and now we are heading to the create post cubit");
 
-    if (state.commuinitys.length >= 1) {
       try {
-        print("passed the inti test 1");
+
       final author = Userr.empty.copyWith(id: _authBloc.state.user!.uid);
-      final commuinity = await _churchRepository.grabChurchWithIdStr(commuinity: state.commuinitys[0]);
-      print("grabed the commuinity, 2");
-      //starting of if conditionals 
-      //only run this variant of code if uploaded with an image
-      print("${state.postImage == null}");
-      if (state.postImage != null) {
-        final postImageUrl = await _storageRepository.uploadPostImage(image: state.postImage!);
-        print("The post is made x");
+      // ignore: avoid_init_to_null
+      String? caption = null;
+      if (state.caption != null) {
+        print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+        caption = state.caption;
+      } 
+
+      if (state.imageFile != null) {
+
+        final postImageUrl = await _storageRepository.uploadPostImage(image: state.imageFile!);
+        print("in the submit caption is: ${state.caption}");
         final post = Post(
             author: author,
             quote: null,
             imageUrl: postImageUrl,
-            commuinity: commuinity ,
+            commuinity: null ,
             videoUrl: null,
             soundTrackUrl: null,
-            caption: state.caption,
+            caption: caption,
             likes: 0,
-            date: Timestamp.now());
-        // awaiting the creation of the post!
-        print("We are in the img sec of submit - awaiting postrepo.create post");
-        await _postsRepository.createPost(post: post);
-        emit(state.copyWith(status: CreatePostStatus.success));
-      } else if (state.quote != null) {
-        final post = Post(
-            author: author,
-            quote: state.quote,
-            imageUrl: null,
-            videoUrl: null,
-            soundTrackUrl: null,
-            caption: state.caption,
-            likes: 0,
-            date: Timestamp.now());
+            date: Timestamp.now()
+        );
 
+        print("Built the post");
         await _postsRepository.createPost(post: post);
+        print("sent the post");
         emit(state.copyWith(status: CreatePostStatus.success));
-      } else if (state.postVideo != null) {
+        print("done");
+
+        
+      }  else if (state.videoFile != null) {
         final postVideoUrl =
-            await _storageRepository.uploadPostVideo(video: state.postVideo!);
+            await _storageRepository.uploadPostVideo(video: state.videoFile!);
         final post = Post(
             author: author,
             quote: null,
             imageUrl: null,
             videoUrl: postVideoUrl,
-            commuinity: commuinity,
+            commuinity: null,
             soundTrackUrl: null,
-            caption: state.caption,
+            caption: caption,
             likes: 0,
-            date: Timestamp.now());
-        await _postsRepository.createPost(post: post);
+            date: Timestamp.now()
+        );
+        //await _postsRepository.createPost(post: post);
         emit(state.copyWith(status: CreatePostStatus.success));
       }
-      //----------------ending of if conditionals
+     
     } catch (e) {
       emit(state.copyWith(
           failure: Failure(message: 'sorry we are unable to compleat ur post'),
           status: CreatePostStatus.error));
     }
-    } else {
-      emit(state.copyWith(failure: Failure(message: "You have to add a commuinity first fam"), status: CreatePostStatus.error ));
-    }
+
   }
 
   void reset() {
