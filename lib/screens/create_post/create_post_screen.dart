@@ -291,11 +291,9 @@ class _CreatePostScreenState extends State<CreatePostScreen>
         if (file != null) {
           var passFile = File(file.path);
           context.read<CreatePostCubit>().postImageOnChanged(passFile);
-        // setState(() {
-        //   imageState = File(file.path);
-        //   // videoController?.dispose();
-        //   // videoController = null;
-        // });
+         setState(() {
+            
+         });
       }
     }); 
   }
@@ -717,9 +715,8 @@ Future<dynamic> previewPost({ required PrePost prepost, required BuildContext co
                   Container(
                     height: 125,
                     width: 130,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(image: FileImage(ctx.state.imageFile!))
-                    ),
+                    child: prepost.videoFile != null ? InitilizeVideo(videoFile: prepost.videoFile!) : null,
+                    decoration: BoxDecoration(image: prepost.imageFile != null ? DecorationImage(image: FileImage(ctx.state.imageFile!)) : null,),
                   ),
                   SizedBox(height: 5),
                   Text("New Post Fam, Who dis?")

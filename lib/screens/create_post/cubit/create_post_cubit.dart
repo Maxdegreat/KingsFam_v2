@@ -41,10 +41,14 @@ class CreatePostCubit extends Cubit<CreatePostState> {
   //   emit(state.copyWith(commuinitys: bucket ));
   // }
 
-void onRemovePostContent() => emit(state.copyWith(imageFile: null, videoFile: null, caption: null, isRecording: false, status: CreatePostStatus.initial));
+void onRemovePostContent() { 
+  emit(state.copyWith(imageFile: null, videoFile: null, caption: null, isRecording: false, status: CreatePostStatus.initial));
+  state.videoFile = null; state.caption = null; state.imageFile = null;
+}
+
 // ------------> FOR POST IMAGE
   void postImageOnChanged(File? file) => 
-    emit(state.copyWith(imageFile: file, status: CreatePostStatus.preview));
+    emit(state.copyWith(imageFile: file, videoFile: null, status: CreatePostStatus.preview));
   
   void onRemovePostImmage() => emit(state.copyWith(imageFile: null, status: CreatePostStatus.initial));
 

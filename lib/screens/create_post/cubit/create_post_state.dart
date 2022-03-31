@@ -4,14 +4,14 @@ enum CreatePostStatus { initial, preview, submitting, success, error }
 
 class CreatePostState extends Equatable {
   //1
-  final File? imageFile; //  bc we are changing the post image
-  final File? videoFile;
-  final String? caption; //because we are changing the caption
+  File? imageFile; //  bc we are changing the post image
+  File? videoFile;
+  String? caption; //because we are changing the caption
   final bool isRecording;
   final CreatePostStatus status; //for different times in the sinario
   final Failure failure; //for failures
   //2
-  const CreatePostState({
+  CreatePostState({
     this.imageFile,
     this.videoFile,
     this.caption,
@@ -33,6 +33,7 @@ class CreatePostState extends Equatable {
   //3
   @override
   List<Object?> get props => [videoFile, imageFile, caption, status, failure, isRecording];
+
   //4
   CreatePostState copyWith({
     File? imageFile,
@@ -43,10 +44,10 @@ class CreatePostState extends Equatable {
     Failure? failure,
   }) {
     return CreatePostState(
-      imageFile: imageFile ?? this.imageFile,
-      videoFile: videoFile ?? this.videoFile,
-      caption: caption ?? this.caption,
-      isRecording: isRecording ?? this.isRecording,
+      imageFile: imageFile ?? this.imageFile, // ---------> so i will del the value of this.imagFile and this.videofile
+      videoFile: videoFile ?? this.videoFile, // ---------> I do this because I need to rewrite and the copy with does not allow this
+      caption: caption ?? this.caption,       //            The rewrite is done in the cubit function, I will change the value of state.file to null
+      isRecording: isRecording ?? this.isRecording, //      will be seen when I do the onClear... atm called onRemovePostContent
       status: status ?? this.status,
       failure: failure ?? this.failure,
     );
