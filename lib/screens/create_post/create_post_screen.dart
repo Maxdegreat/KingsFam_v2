@@ -45,12 +45,9 @@ class _CreatePostScreenState extends State<CreatePostScreen>
     with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  late TabController _tabController;
-
-  //late VideoPlayerController _vidoeController;
-  //late File videoFile;
-
-   // state to know if recording
+  // THIS IS USED FOR THE REASONING OF PASSING THE BUILDCONTEXT BACK TO THE PREPOST SCREEN.
+  BuildContext? contextPrePost;
+  // state to know if recording
    bool isInital = true;
   // camera controller which is null at first
   CameraController? controller;
@@ -81,7 +78,7 @@ class _CreatePostScreenState extends State<CreatePostScreen>
   }
 
 
-  final TextEditingController _quoteController = TextEditingController();
+  //final TextEditingController _quoteController = TextEditingController();
 
   @override
   void initState() {
@@ -92,7 +89,6 @@ class _CreatePostScreenState extends State<CreatePostScreen>
 
   @override
   void dispose() {
-    _tabController.dispose();
     //_vidoeController.dispose();
     closeCameras();
     super.dispose();
@@ -123,16 +119,28 @@ class _CreatePostScreenState extends State<CreatePostScreen>
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        //  ----------- START OF THE APP BAR
         appBar: AppBar(
         title: Text( "Create Post "),
+        // -------- IS APART OF THE IS INITAL, THIS USES THE BUILD CONTEXT
         leading: isInital == true ? 
           IconButton(onPressed: () => Navigator.of(context).pop(), icon: Icon(Icons.arrow_back, color: Colors.white,)) 
           : IconButton(onPressed: () {context.read<CreatePostCubit>().onRemovePostContent();  setState(() {isInital = true; });}, icon: Icon(Icons.close),),
         actions: [
+
           isInital == true ?
             SizedBox.shrink() :
-             IconButton(onPressed: () => PreviewPostHelper(prepost: context.read<CreatePostCubit>().prePost(), ctx: context), icon: Icon(Icons.arrow_forward_ios_sharp, color: Colors.white,))
-        ],
+            // -------------> IF IS INITIAL IS FALSE THEN HERE IN THE ACTIONS OF THE APP BAR WE SWITCH PASS THE PREPSOT AND CONTEXT
+            // -------------> I NEED TO CREATE A GETTER FOR THE CONTEXT BECAUSE THIS NEEDS TO BE USED WHEN WE PASS THE CONTEXT
+
+            // ------------> TODO MAKE A GETTER FOR THE PREVIEW POST!!!
+             IconButton(onPressed: () { 
+               var prePost = context.read<CreatePostCubit>().prePost();
+               PreviewPostHelper(prepost: prePost, ctx: context); 
+             },
+               icon: Icon(Icons.arrow_forward_ios_sharp, color: Colors.white)
+             )
+            ],
       ),
       key: _scaffoldKey,
         body: BlocConsumer<CreatePostCubit, CreatePostState>(
@@ -177,9 +185,12 @@ class _CreatePostScreenState extends State<CreatePostScreen>
 
                       
                    state.status  == CreatePostStatus.initial ? Positioned(
+        
                       bottom: 20,
                       right: size.width / 2.5,
                       child: GestureDetector(
+                        // TODO -----------------------------> UPDATE THE BUILDCONTEXTPREPOST THAT YOU MADE AT TOP OF FILE.
+                        // THIS IS FOR THE REASONING... ACTUALLY JUST READ IT AGAIN.
                         onTap: () async => state.isRecording ? onStopButtonPressed() : onTakePictureButtonPressed(context, state),
                         onLongPress: () async => controller != null && controller!.value.isInitialized && !controller!.value.isRecordingVideo ? onVideoRecordButtonPressed() : null,
                         child: Container(
@@ -292,7 +303,7 @@ class _CreatePostScreenState extends State<CreatePostScreen>
           var passFile = File(file.path);
           context.read<CreatePostCubit>().postImageOnChanged(passFile);
          setState(() {
-            
+
          });
       }
     }); 
