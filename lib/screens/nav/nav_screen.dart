@@ -35,18 +35,15 @@ class NavScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false,
+      onWillPop: () async => false, // sets the ability to pop this stack to false
       child: BlocBuilder<BottomnavbarCubit, BottomnavbarState>(
-        builder: (context, state) {
+        builder: (context, state) { 
           return Scaffold(
-            body: Stack(
-              children: items
-                  .map((item, _) => MapEntry(
+            body: Stack( // the body is a stack the stack of the bottom sheet
+              children: items // this is a map, bottomnavitem to icon data
+                  .map((item, _) => MapEntry( // this mapping every 
                         item,
-                        _buildOffStageNavigator(
-                          item,
-                          item == state.selectedItem,
-                        ),
+                        _buildOffStageNavigator(item, item == state.selectedItem,),
                       ))
                   .values
                   .toList(),

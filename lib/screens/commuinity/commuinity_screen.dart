@@ -156,7 +156,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                                       style: ElevatedButton.styleFrom(primary: Colors.grey[900])
                                     ) :
                                     ElevatedButton(
-                                  onPressed: () => _onJoinCommuinity(),
+                                  onPressed: () { setState(() {_onJoinCommuinity();}); },
                                   child: Text("Join", style: TextStyle(letterSpacing: 10)),
                                   style: ElevatedButton.styleFrom(primary: Colors.red[400])
                                 ) 
@@ -607,10 +607,18 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
       );
     });
   }
-  _onJoinCommuinity() =>
+  _onJoinCommuinity() {
     context.read<BuildchurchCubit>().onJoinCommuinity(commuinity: widget.commuinity);
-  _onLeaveCommuinity() =>
+    setState(() {
+      
+    });
+  }
+  _onLeaveCommuinity() {
     context.read<BuildchurchCubit>().onLeaveCommuinity(commuinity: widget.commuinity);
+    setState(() {
+      
+    });
+  }
   showLeaveCommuinity() => 
     showModalBottomSheet(context: context, builder: (context) =>
       Container(
@@ -625,7 +633,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                 style: ElevatedButton.styleFrom(primary: Colors.red),
                 onPressed: () {
                 _onLeaveCommuinity();
-                Navigator.pop(context);
+                Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
               }, 
               child: Text("... I sad bye")),
             ),

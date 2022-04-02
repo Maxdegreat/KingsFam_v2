@@ -90,7 +90,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/KFCrown.riv
+    - assets/crown/KFCrown.riv
     - assets/phone_idle/phone_idle.riv
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

@@ -50,7 +50,8 @@ class HexColor {
     'Purple Blue' : '#1425F4',
     'Real Purple' : '#9814F4',
     'HoTT Pink' : '#F414BE',
-    'Blood Red' : '#E81010'
+    'Blood Red' : '#E81010',
+    'crown Gold' : '#FFC050'
 
   };
 
@@ -91,3 +92,5 @@ class HexColor {
 // Hot Pink -> #F414BE
 
 // Blood Red -> #E81010
+
+// Crown Gold -> FFC050

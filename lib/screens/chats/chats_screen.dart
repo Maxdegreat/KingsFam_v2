@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/cubits.dart';
+import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
@@ -17,6 +18,7 @@ import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/feed_screen_widget.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:kingsfam/extensions/extensions.dart';
+import 'package:rive/rive.dart';
 
 class ChatsScreen extends StatefulWidget {
   const ChatsScreen({
@@ -168,53 +170,82 @@ class ScreensForPageView {
           .where('memberIds', arrayContains: userId)
           .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot2) {
-        return !snapshot2.hasData
-            ? Center(child: Text("loading"))
-            : Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
-                child: Container(
-                  height: MediaQuery.of(context).size.height / 1.25,
-                  width: double.infinity,
-                  child: Column(
-                    children: [
-                      Container(
-                        height: MediaQuery.of(context).size.height / 1.25,
-                        child: ListView.builder(
-                          itemCount: snapshot2.data!.docs.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            Church commuinity =
-                                Church.fromDoc(snapshot2.data!.docs[index]);
-                            return GestureDetector(
-                              onLongPress: () => _leaveCommuinity(
-                                  commuinity: commuinity, context: context),
-                              onTap: () => Navigator.of(context)
-                                  .pushNamed(CommuinityScreen.routeName,
-                                      arguments: CommuinityScreenArgs(
-                                        commuinity: commuinity,
-                                      )),
-                              child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10.0),
-                                  child: FancyListTile(
-                                      username: commuinity.name,
-                                      imageUrl: commuinity.imageUrl,
-                                      onTap: () => Navigator.of(context)
-                                          .pushNamed(CommuinityScreen.routeName,
-                                              arguments: CommuinityScreenArgs(
-                                                  commuinity: commuinity)),
-                                      isBtn: false,
-                                      BR: 12.0,
-                                      height: 12.0,
-                                      width: 12.0)),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
+        // look at navscreen.dart for the bottom sheet thing
+        if (!snapshot2.hasData)
+          return commuinitysList_chatsScreen(context);
+        else if (snapshot2.data!.docs.length <= 0)
+          return commuinitysList_chatsScreen(context);
+        else 
+          return commuintysListChatsScreen2(context, snapshot2);
+        
       },
+    );
+  }
+
+  Padding commuintysListChatsScreen2(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot2) {
+    return Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
+              child: Container(
+                height: MediaQuery.of(context).size.height / 1.25,
+                width: double.infinity,
+                child: Column(
+                  children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height / 1.25,
+                      child: ListView.builder(
+                        itemCount: snapshot2.data!.docs.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          Church commuinity =
+                              Church.fromDoc(snapshot2.data!.docs[index]);
+                          return GestureDetector(
+                            onLongPress: () => _leaveCommuinity(
+                                commuinity: commuinity, context: context),
+                            onTap: () => Navigator.of(context)
+                                .pushNamed(CommuinityScreen.routeName,
+                                    arguments: CommuinityScreenArgs(
+                                      commuinity: commuinity,
+                                    )),
+                            child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10.0),
+                                child: FancyListTile(
+                                    username: commuinity.name,
+                                    imageUrl: commuinity.imageUrl,
+                                    onTap: () => Navigator.of(context)
+                                        .pushNamed(CommuinityScreen.routeName,
+                                            arguments: CommuinityScreenArgs(
+                                                commuinity: commuinity)),
+                                    isBtn: false,
+                                    BR: 12.0,
+                                    height: 12.0,
+                                    width: 12.0)),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+  }
+
+  Widget commuinitysList_chatsScreen(BuildContext context) {
+    // instance of hexcolor class
+    HexColor hexcolor = HexColor();
+    return Column(
+      children: [
+        Container(height: 400, width: 400, child:  RiveAnimation.asset('assets/crown/KFCrown.riv')) ,
+        Center(
+            child: Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(primary:  Color(hexcolor.hexcolorCode('#FFC050'))),
+                onPressed: () => helpDialog(context),
+                child: Text("Hey Fam, Need Help?"),
+              ),
+            )
+          ),
+
+      ],
     );
   }
 
@@ -327,4 +358,10 @@ class ScreensForPageView {
   }
 
   Widget _feed(context) => FeedScreenWidget();
+}
+
+class Constants{
+  Constants._();
+  static const double padding =20;
+  static const double avatarRadius =45;
 }

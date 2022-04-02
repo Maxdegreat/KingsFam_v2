@@ -189,7 +189,7 @@ class _CreatePostScreenState extends State<CreatePostScreen>
                       bottom: 20,
                       right: size.width / 2.5,
                       child: GestureDetector(
-                        // TODO -----------------------------> UPDATE THE BUILDCONTEXTPREPOST THAT YOU MADE AT TOP OF FILE.
+                        // TODO -----------------------------> UPDATE THE BUILDCONTEXTPREPOST THAT YOU MADE AT TOP OF FILE. DONE
                         // THIS IS FOR THE REASONING... ACTUALLY JUST READ IT AGAIN.
                         onTap: () async => state.isRecording ? onStopButtonPressed() : onTakePictureButtonPressed(context, state),
                         onLongPress: () async => controller != null && controller!.value.isInitialized && !controller!.value.isRecordingVideo ? onVideoRecordButtonPressed() : null,
@@ -855,7 +855,15 @@ Future<dynamic> previewPost({ required PrePost prepost, required BuildContext co
 _submitForm({required BuildContext context, required bool isSubmitting, required PrePost prepost}) {
   var ctx = context.read<CreatePostCubit>();
   var state = ctx.state;
-  if (!isSubmitting && (state.imageFile != null || state.videoFile != null))
-    log('submittingggggggggggggg');
+  log("callled the submit function");
+  log("The prepost image: ${prepost.imageFile}");
+  log("The prepost video: ${prepost.videoFile} ");
+  log("isSubmitting: ${!isSubmitting}");
+  bool condition1 = !isSubmitting && prepost.imageFile != null;
+  bool condition2 = !isSubmitting && prepost.videoFile != null;
+  if (condition1 || condition2) {
     ctx.submit(prePost: prepost);
+    Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
+  }
+
 }

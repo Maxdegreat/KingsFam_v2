@@ -16,6 +16,7 @@ class PrePost extends Equatable {
   final String? quote;
   final File? imageFile;
   final File? videoFile;
+  final File?  thumbnailFile;
   final File? soundTrack;
   final String? caption;
   PrePost({
@@ -24,12 +25,13 @@ class PrePost extends Equatable {
     this.quote,
     this.imageFile,
     this.videoFile,
+    this.thumbnailFile,
     this.soundTrack,
     this.caption,
   });
 
   @override
-  List<Object?> get props => [author, commuinitys, quote, imageFile, videoFile, soundTrack, caption];
+  List<Object?> get props => [author, commuinitys, quote, imageFile, videoFile, thumbnailFile, soundTrack, caption];
 
   PrePost copyWith({
     Userr? author,
@@ -37,6 +39,7 @@ class PrePost extends Equatable {
     String? quote,
     File? imageFile,
     File? videoFile,
+    File? thumbnailFile,
     File? soundTrack,
     String? caption,
   }) {
@@ -46,11 +49,13 @@ class PrePost extends Equatable {
       quote: quote ?? this.quote,
       imageFile: imageFile ?? this.imageFile,
       videoFile: videoFile ?? this.videoFile,
+      thumbnailFile: thumbnailFile ?? this.thumbnailFile,
       soundTrack: soundTrack ?? this.soundTrack,
       caption: caption ?? this.caption,
     );
   }
 }
+
 class Post extends Equatable {
   final String? id; //1 make the model
   final Userr author;
@@ -58,6 +63,7 @@ class Post extends Equatable {
   final String? quote; // String qoute that will be uploaded to fb
   final String? imageUrl; //img url uploaded to fb
   final String? videoUrl; // video url that will be uploaded to fb
+  final String? thumbnailUrl;
   final String? soundTrackUrl; //bg sounds like tik tok
   final String? caption;
   final int likes;
@@ -69,6 +75,7 @@ class Post extends Equatable {
     required this.quote,
     required this.imageUrl,
     required this.videoUrl,
+    required this.thumbnailUrl,
     required this.soundTrackUrl,
     required this.caption,
     required this.likes,
@@ -77,7 +84,7 @@ class Post extends Equatable {
 
   @override
   List<Object?> get props =>
-      [id, author, commuinity,  quote, imageUrl, videoUrl, soundTrackUrl, caption, likes, date]; //3 do props
+      [id, author, commuinity,  quote, imageUrl, videoUrl, thumbnailUrl, soundTrackUrl, caption, likes, date]; //3 do props
 
   Post copyWith({
     String? id, //4 do the copy with
@@ -86,6 +93,7 @@ class Post extends Equatable {
     String? quote,
     String? imageUrl,
     String? videoUrl,
+    String? thumbnailUrl,
     String? soundTrackUrl,
     String? caption,
     int? likes,
@@ -99,6 +107,7 @@ class Post extends Equatable {
       imageUrl: imageUrl ?? this.imageUrl,
       videoUrl: videoUrl ?? this.videoUrl,
       soundTrackUrl: soundTrackUrl ?? this.soundTrackUrl,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
       caption: caption ?? this.caption,
       likes: likes ?? this.likes,
       date: date ?? this.date,
@@ -114,6 +123,7 @@ class Post extends Equatable {
       'quote' : quote,
       'imageUrl': imageUrl,
       'videoUrl' : videoUrl,
+      'thumbnailUrl' : thumbnailUrl,
       'soundTrackUrl' : soundTrackUrl,
       'caption': caption,
       'likes': likes,
@@ -126,6 +136,7 @@ class Post extends Equatable {
       'quote' : quote,
       'imageUrl': imageUrl,
       'videoUrl' : videoUrl,
+      'thumbnailUrl': thumbnailUrl,
       'soundTrackUrl' : soundTrackUrl,
       'caption': caption,
       'likes': likes,
@@ -155,6 +166,8 @@ class Post extends Equatable {
             imageUrl: data['imageUrl'] ?? null,
             
             videoUrl: data['videoUrl'] ?? null,
+
+            thumbnailUrl: data['thumbnailUrl'] ?? null,
             
             soundTrackUrl: data['soundTrackUrl'] ?? null,
             
@@ -179,6 +192,8 @@ class Post extends Equatable {
             imageUrl: data['imageUrl'] ?? null,
             
             videoUrl: data['videoUrl'] ?? null,
+
+             thumbnailUrl: data['thumbnailUrl'] ?? null,
             
             soundTrackUrl: data['soundTrackUrl'] ?? null,
             
