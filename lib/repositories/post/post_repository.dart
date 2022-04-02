@@ -12,7 +12,10 @@ class PostsRepository extends BasePostsRepository {
 
   @override
   Future<void> createPost({required Post post}) async {
-    await _firebaseFirestore.collection(Paths.posts).add(post.toDoc());
+    if (post.commuinity != null)
+      await _firebaseFirestore.collection(Paths.posts).add(post.toDocWithCommuinitys());
+    else 
+      await _firebaseFirestore.collection(Paths.posts).add(post.toDocNoCommuinitys());
   }
 
   @override

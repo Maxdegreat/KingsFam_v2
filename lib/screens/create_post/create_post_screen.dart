@@ -82,7 +82,7 @@ class _CreatePostScreenState extends State<CreatePostScreen>
 
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this);
+    
     loadCameras();
     super.initState();
   }
@@ -133,10 +133,10 @@ class _CreatePostScreenState extends State<CreatePostScreen>
             // -------------> IF IS INITIAL IS FALSE THEN HERE IN THE ACTIONS OF THE APP BAR WE SWITCH PASS THE PREPSOT AND CONTEXT
             // -------------> I NEED TO CREATE A GETTER FOR THE CONTEXT BECAUSE THIS NEEDS TO BE USED WHEN WE PASS THE CONTEXT
 
-            // ------------> TODO MAKE A GETTER FOR THE PREVIEW POST!!!
+            // ------------> TODO ADD THE MADE GETTER FOR THE PREPOST CONTEXT ... DONE
              IconButton(onPressed: () { 
                var prePost = context.read<CreatePostCubit>().prePost();
-               PreviewPostHelper(prepost: prePost, ctx: context); 
+               PreviewPostHelper(prepost: prePost, ctx: contextPrePost!); 
              },
                icon: Icon(Icons.arrow_forward_ios_sharp, color: Colors.white)
              )
@@ -274,6 +274,9 @@ class _CreatePostScreenState extends State<CreatePostScreen>
         log('Video recorded to ${file.path}');
         // Need to add the video to the cubit ---> TODO
         context.read<CreatePostCubit>().onStopPostRecording(File(file.path));
+        setState(() {
+          contextPrePost = context;
+        });
       } else {
         log("VID NOT SAVEDDDD");
       }
@@ -303,6 +306,7 @@ class _CreatePostScreenState extends State<CreatePostScreen>
           var passFile = File(file.path);
           context.read<CreatePostCubit>().postImageOnChanged(passFile);
          setState(() {
+          contextPrePost = context;
 
          });
       }
@@ -700,25 +704,48 @@ class _InitilizeVideoState extends State<InitilizeVideo> {
 // A NEW CLASS FOR SENDING THE DATA TO THE CLOUD
 
 // A HELPER FOR THE PREVIEWPOST 
-void PreviewPostHelper({required PrePost prepost, required BuildContext ctx}) => previewPost(prepost: prepost, context: ctx);
+void PreviewPostHelper({required PrePost prepost, required BuildContext ctx}) => previewPost(prepost: prepost, contextInhearated: ctx);
 
 // pass this a post model and from there we can do the work around with it this way we do not need too much raw minupliation of data like I had in v1 of kingsFam
-Future<dynamic> previewPost({ required PrePost prepost, required BuildContext context}) {
-  var ctx = context.read<CreatePostCubit>();
+Future<dynamic> previewPost({ required PrePost prepost, required BuildContext contextInhearated}) {
+  CreatePostState? stateGetter; // -------------------- make sure to init this and change it in the listener
   return showModalBottomSheet(
-     enableDrag: ctx.state.status == CreatePostStatus.submitting ? false : true,
-     isDismissible: ctx.state.status == CreatePostStatus.submitting ? false : true,
+     enableDrag: (stateGetter != null && stateGetter.status == CreatePostStatus.submitting) ? false : true,
+     isDismissible: (stateGetter != null && stateGetter.status == CreatePostStatus.submitting) ? false : true,
      isScrollControlled: true,
      backgroundColor: Colors.transparent,
-    context: context, builder: (BuildContext context) {
-      return DraggableScrollableSheet(initialChildSize: 0.80, builder: (_, controller) =>
+    context: contextInhearated, builder: (context) => BlocProvider(
+      create: (context) => CreatePostCubit(
+        postsRepository: context.read<PostsRepository>(), 
+        storageRepository: context.read<StorageRepository>(), 
+        churchRepository: context.read<ChurchRepository>(), 
+        authBloc: context.read<AuthBloc>(),
+      ),
+      // -----------------------------------------------------------------------> BLOC CONSUMER
+      child: BlocConsumer<CreatePostCubit, CreatePostState>(
+        listener: (context, state) {
+          if (state.status == CreatePostStatus.submitting){
+            stateGetter = state;
+          } else {
+            stateGetter = null;
+          }
+
+
+        },
+        builder: (context, state) {
+          //context = contextInhearated;
+          // log(state.imageFile.toString());
+          // log(context.read<CreatePostCubit>().state.imageFile.toString());
+          // log(contextInhearated.read<CreatePostCubit>().state.imageFile.toString());
+          var ctxshort = context.read<CreatePostCubit>();
+          return DraggableScrollableSheet(initialChildSize: 0.80, builder: (_, controller) =>
          Container(
           color: Colors.black,
           child: Column(
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              if (ctx.state.status == CreatePostStatus.submitting) 
+              if (state.status == CreatePostStatus.submitting) 
                 LinearProgressIndicator(color: Colors.red,),
               SizedBox(height: 10),
               Row(
@@ -727,7 +754,7 @@ Future<dynamic> previewPost({ required PrePost prepost, required BuildContext co
                     height: 125,
                     width: 130,
                     child: prepost.videoFile != null ? InitilizeVideo(videoFile: prepost.videoFile!) : null,
-                    decoration: BoxDecoration(image: prepost.imageFile != null ? DecorationImage(image: FileImage(ctx.state.imageFile!)) : null,),
+                    decoration: BoxDecoration(image: prepost.imageFile != null ? DecorationImage(image: FileImage(prepost.imageFile!)) : null,),
                   ),
                   SizedBox(height: 5),
                   Text("New Post Fam, Who dis?")
@@ -736,7 +763,7 @@ Future<dynamic> previewPost({ required PrePost prepost, required BuildContext co
               Divider(height: 1.5, color: Colors.white,),
               TextFormField(
                 decoration: InputDecoration(hintText: 'add a caption?'),
-                onChanged: (value)  {ctx.captionOnChanged(value);  print(ctx.state.caption);},
+                onChanged: (value)  => ctxshort.captionOnChanged(value),
                 validator: (value) => value!.length > 350 ? "Hey fam, please keep caption lower than 350 characters" : null,
               ),
               SizedBox(height: 5),
@@ -756,8 +783,9 @@ Future<dynamic> previewPost({ required PrePost prepost, required BuildContext co
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {  
-                        if (ctx.state.status != CreatePostStatus.submitting) {
-                          _submitForm(context: context, isSubmitting: ctx.state.status != CreatePostStatus.submitting);
+                        if (ctxshort.state.status != CreatePostStatus.submitting) {
+                          bool subbmittingBool = ctxshort.state.status != CreatePostStatus.submitting;
+                          _submitForm(context: context, isSubmitting: subbmittingBool, prepost: prepost);
                         } else
                           print("did not allow submit of \"posttt\"");
                       },
@@ -771,7 +799,10 @@ Future<dynamic> previewPost({ required PrePost prepost, required BuildContext co
           ),
         ),
       );
-    }
+
+        }
+      )
+    )
   );
   
 }
@@ -821,10 +852,10 @@ Future<dynamic> previewPost({ required PrePost prepost, required BuildContext co
     );
   }
 
-_submitForm({required BuildContext context, required bool isSubmitting}) {
+_submitForm({required BuildContext context, required bool isSubmitting, required PrePost prepost}) {
   var ctx = context.read<CreatePostCubit>();
   var state = ctx.state;
   if (!isSubmitting && (state.imageFile != null || state.videoFile != null))
     log('submittingggggggggggggg');
-    ctx.submit();
+    ctx.submit(prePost: prepost);
 }

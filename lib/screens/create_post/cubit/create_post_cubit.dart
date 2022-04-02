@@ -81,25 +81,27 @@ void onRemovePostContent() {
 
 
 
+
 // --------------------------------- 4 submit
-  Future<void> submit() async {
+  Future<void> submit({required PrePost prePost}) async {
     print("called submit++++++++++++++++++++++++++");
     emit(state.copyWith(status: CreatePostStatus.submitting));
 
       try {
 
-      final author = Userr.empty.copyWith(id: _authBloc.state.user!.uid);
-      // ignore: avoid_init_to_null
-      String? caption = null;
-      if (state.caption != null) {
-        print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+      final author = prePost.author; //Userr.empty.copyWith(id: _authBloc.state.user!.uid);
+      print("passed the author");
+
+
+      String? caption;
+      if (state.caption != null)
         caption = state.caption;
-      } 
+      
 
-      if (state.imageFile != null) {
+      if (prePost.imageFile != null) {
+        print("The image is not null");
+        final postImageUrl = await _storageRepository.uploadPostImage(image: prePost.imageFile!);
 
-        final postImageUrl = await _storageRepository.uploadPostImage(image: state.imageFile!);
-        print("in the submit caption is: ${state.caption}");
         final post = Post(
             author: author,
             quote: null,
@@ -112,16 +114,18 @@ void onRemovePostContent() {
             date: Timestamp.now()
         );
 
-        print("Built the post");
+        print("made the post");
+
         await _postsRepository.createPost(post: post);
-        print("sent the post");
+        print(" created the post");
         emit(state.copyWith(status: CreatePostStatus.success));
-        print("done");
+        print("----------->posted<----------------");
+
 
         
-      }  else if (state.videoFile != null) {
+      }  else if (prePost.videoFile != null) {
         final postVideoUrl =
-            await _storageRepository.uploadPostVideo(video: state.videoFile!);
+            await _storageRepository.uploadPostVideo(video: prePost.videoFile!);
         final post = Post(
             author: author,
             quote: null,

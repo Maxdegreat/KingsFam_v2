@@ -105,7 +105,7 @@ class Post extends Equatable {
     );
   }
 
-  Map<String, dynamic> toDoc() {
+  Map<String, dynamic> toDocWithCommuinitys() {
     return {
       'author': //5 write to doc
           FirebaseFirestore.instance.collection(Paths.users).doc(author.id),
@@ -120,6 +120,17 @@ class Post extends Equatable {
       'date': Timestamp.now()
     };
   }
+
+  Map<String, dynamic> toDocNoCommuinitys() =>{
+    'author': FirebaseFirestore.instance.collection(Paths.users).doc(author.id),
+      'quote' : quote,
+      'imageUrl': imageUrl,
+      'videoUrl' : videoUrl,
+      'soundTrackUrl' : soundTrackUrl,
+      'caption': caption,
+      'likes': likes,
+      'date': Timestamp.now()
+  };
 
   static Future<Post?> fromDoc(DocumentSnapshot doc) async {
     //6 from doc
