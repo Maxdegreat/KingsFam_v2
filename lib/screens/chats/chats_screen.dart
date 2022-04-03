@@ -96,10 +96,12 @@ class _ChatsScreenState extends State<ChatsScreen>
   late TabController _tabController;
   @override
   Widget build(BuildContext context) {
+    HexColor hexcolor = HexColor();
+    bool showKfCrown = false;
     final userId = context.read<AuthBloc>().state.user!.uid;
     return Scaffold(
       appBar: AppBar(
-        title: Text('K I N G S F A M'),
+        title: Row(children: [Text('K I N G S F A M', style: TextStyle(color: Color(hexcolor.hexcolorCode('#FFC050'))),), SizedBox(width:  5), KFCrownV2()  ],),
         actions: [
           IconButton(
               onPressed: () =>
@@ -118,8 +120,8 @@ class _ChatsScreenState extends State<ChatsScreen>
           //final bloc = context.read<ChatscreenBloc>();
           return SingleChildScrollView(
             child: Column(
-              children: [
-                //ring_view(_ringStream,  context),
+              
+              children: [       //ring_view(_ringStream,  context),
                 TabBar(
                   controller: _tabController,
                   tabs: [
@@ -159,6 +161,17 @@ class _ChatsScreenState extends State<ChatsScreen>
   //  }
   //  },
   //  );
+}
+
+class KFCrownV2 extends StatelessWidget {
+  const KFCrownV2({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(height: 22, width: 22, color: Colors.black, child: RiveAnimation.asset('assets/crown/KFCrownV2.riv'),);
+  }
 }
 
 class ScreensForPageView {

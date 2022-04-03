@@ -47,6 +47,7 @@ class onboardingContent {
 List<Widget> _contents(int currIdx) {
   HexColor hexcolor = HexColor();
   return   [
+    // ---------------------------------------------------------------- THIS IS DOT  1 --- WHAT IS KF
     Column(
       children: [
         Text(
@@ -79,13 +80,12 @@ List<Widget> _contents(int currIdx) {
       ],
     ),
 
-    // --------------------------------> child 2
+    // --------------------------------> child 2 ------------------------------- ---------- THIS IS DOT 2 ---- MAIN FUNCTIONALITY OF KF HOW TO
     Column(
       children: [
         Text(
-          " Hey Fam, Find A Commuinity You Want To Join! "
-          " Talk About Whatever But Keep Jesus At the Center! \n"
-          " Yeherdd! ",
+          " Tap The Bottom Left Search To Join A Commuinity! \n"
+          " Or In The Top Right Click On The Plus Icon To Make A New Commuinity! \n ",
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
@@ -111,13 +111,13 @@ List<Widget> _contents(int currIdx) {
         )
       ],
     ),
-    // ----------------------------------------------> child 3
+    // ----------------------------------------------> child 3 ------------------------------------------- THIS IS DOT 3 JUMP IN (STILL IN BATA MODE THO)
     Column(
       children: [
         Text(
-          " Hey Fam, Find A Commuinity You Want To Join! "
-          " Talk About Whatever But Keep Jesus At the Center! \n"
-          " Yeherdd! ",
+          " Great! KF Has more Fetures And More To Come "
+          "Right Now We Are Still In Bata Mode "
+          " To Help Or Be Hired Email Maximusagub@gmail.com ",
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),

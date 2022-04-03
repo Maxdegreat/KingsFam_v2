@@ -133,7 +133,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         )),
               SizedBox(height: 20.0),
               Text(
-                "From Christian TikTok",
+                "Find The Fam",
                 style: TextStyle(fontSize: 20),
               ),
               // to find most popular write a script that finds greater than sum of of all commuinities then

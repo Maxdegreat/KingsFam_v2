@@ -16,7 +16,7 @@ class VideoPlayerWidget extends StatelessWidget {
       ? ConstrainedBox(
         constraints: BoxConstraints(
           maxWidth: double.infinity,
-          maxHeight: 250), //size of video player in app
+          minHeight: 900), //size of video player in app
         child: BuildVideo(controller: this.controller,)
         )
       //Container(height: 250, child: BuildVideo(controller: controller))
