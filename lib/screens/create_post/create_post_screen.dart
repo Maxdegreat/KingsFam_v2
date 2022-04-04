@@ -188,19 +188,34 @@ class _CreatePostScreenState extends State<CreatePostScreen>
         
                       bottom: 20,
                       right: size.width / 2.5,
-                      child: GestureDetector(
-                        // TODO -----------------------------> UPDATE THE BUILDCONTEXTPREPOST THAT YOU MADE AT TOP OF FILE. DONE
-                        // THIS IS FOR THE REASONING... ACTUALLY JUST READ IT AGAIN.
-                        onTap: () async => state.isRecording ? onStopButtonPressed() : onTakePictureButtonPressed(context, state),
-                        onLongPress: () async => controller != null && controller!.value.isInitialized && !controller!.value.isRecordingVideo ? onVideoRecordButtonPressed() : null,
-                        child: Container(
-                          height: 80, 
-                          width: 80,
-                          decoration: BoxDecoration(
-                            color: state.isRecording ?  Colors.red[400] : Colors.white,
-                            borderRadius: state.isRecording ?   BorderRadius.circular(45) : BorderRadius.circular(50)
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                                controller!.pausePreview();
+                                final pickedFile = await ImageHelper.pickImageFromGallery(context: context,cropStyle: CropStyle.rectangle,title: 'Create Post');
+                                context.read<CreatePostCubit>().postImageOnChanged(pickedFile);
+                                setState(() {contextPrePost = context;});
+                            },
+                            child: Container(
+                              height: 25, width: 25, decoration: (BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.circular(25))),),
                           ),
-                        ),
+                          SizedBox(width: 15),
+                          GestureDetector(
+                            // TODO -----------------------------> UPDATE THE BUILDCONTEXTPREPOST THAT YOU MADE AT TOP OF FILE. DONE
+                            // THIS IS FOR THE REASONING... ACTUALLY JUST READ IT AGAIN.
+                            onTap: () async => state.isRecording ? onStopButtonPressed() : onTakePictureButtonPressed(context, state),
+                            onLongPress: () async => controller != null && controller!.value.isInitialized && !controller!.value.isRecordingVideo ? onVideoRecordButtonPressed() : null,
+                            child: Container(
+                              height: 80, 
+                              width: 80,
+                              decoration: BoxDecoration(
+                                color: state.isRecording ?  Colors.red[400] : Colors.white,
+                                borderRadius: state.isRecording ?   BorderRadius.circular(45) : BorderRadius.circular(50)
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ) : SizedBox.shrink()
                 ],

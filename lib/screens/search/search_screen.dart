@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/blocs/search/search_bloc.dart';
+import 'package:kingsfam/extensions/hexcolor.dart';
 
 import 'package:kingsfam/models/models.dart';
 
@@ -35,7 +36,7 @@ class SearchScreen extends StatefulWidget {
             ));
   }
 }
-
+HexColor hexcolor = HexColor();
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _textEditingController = TextEditingController();
   @override
@@ -101,7 +102,7 @@ class _SearchScreenState extends State<SearchScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 10),
-              Text("Commuinities Around You", style: TextStyle(fontSize: 20)),
+              Text("Commuinities Around You", style: TextStyle(fontSize: 20, color: Color(hexcolor.hexcolorCode('#FFC050')))),
               SizedBox(height: 5.0),
               Container(
                   height: 170,
@@ -134,7 +135,7 @@ class _SearchScreenState extends State<SearchScreen> {
               SizedBox(height: 20.0),
               Text(
                 "Find The Fam",
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 20, color: Color(hexcolor.hexcolorCode('#FFC050'))),
               ),
               // to find most popular write a script that finds greater than sum of of all commuinities then
               SizedBox(height: 5.0),
@@ -166,8 +167,8 @@ class _SearchScreenState extends State<SearchScreen> {
               SizedBox(height: 20.0),
 
               Text(
-                "University Bible Studies",
-                style: TextStyle(fontSize: 20),
+                "Commuinitys All Over",
+                style: TextStyle(fontSize: 20, color: Color(hexcolor.hexcolorCode('#FFC050')) ),
               ),
               // to find most popular write a script that finds greater than sum of of all commuinities then
               SizedBox(height: 5.0),
