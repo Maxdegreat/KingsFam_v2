@@ -41,8 +41,7 @@ class CreatePostScreen extends StatefulWidget {
   _CreatePostScreenState createState() => _CreatePostScreenState();
 }
 
-class _CreatePostScreenState extends State<CreatePostScreen>
-    with SingleTickerProviderStateMixin {
+class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // THIS IS USED FOR THE REASONING OF PASSING THE BUILDCONTEXT BACK TO THE PREPOST SCREEN.
@@ -53,6 +52,9 @@ class _CreatePostScreenState extends State<CreatePostScreen>
   CameraController? controller;
   // list of cameras, ya dig
   List<CameraDescription>? cameras;
+  // flash animation controllers
+  late AnimationController _flashModeControlRowAnimationController;
+  late Animation<double> _flashModeControlRowAnimation;
   // used for the show in snack bar messaginer... idk lol anddd idc
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   loadCameras() async {
@@ -68,6 +70,15 @@ class _CreatePostScreenState extends State<CreatePostScreen>
     });
       setState(() {cameras = cameras_; controller = controller_;});
 
+    _flashModeControlRowAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _flashModeControlRowAnimation = CurvedAnimation(
+      parent: _flashModeControlRowAnimationController,
+      curve: Curves.easeInCubic,
+    );
+
   }
 
   closeCameras() async {
@@ -75,6 +86,7 @@ class _CreatePostScreenState extends State<CreatePostScreen>
       cameras!.clear();
     if (controller != null) 
       controller!.dispose();
+    _flashModeControlRowAnimationController.dispose();
   }
 
 
@@ -82,7 +94,7 @@ class _CreatePostScreenState extends State<CreatePostScreen>
 
   @override
   void initState() {
-    
+  
     loadCameras();
     super.initState();
   }
@@ -175,6 +187,7 @@ class _CreatePostScreenState extends State<CreatePostScreen>
               child: Stack(
                 children: [
 
+
                    state.status == CreatePostStatus.initial  ? 
                      
                     camView(size: size, controller: controller!, context: context, state: state)
@@ -190,16 +203,7 @@ class _CreatePostScreenState extends State<CreatePostScreen>
                       right: size.width / 2.5,
                       child: Row(
                         children: [
-                          GestureDetector(
-                            onTap: () async {
-                                controller!.pausePreview();
-                                final pickedFile = await ImageHelper.pickImageFromGallery(context: context,cropStyle: CropStyle.rectangle,title: 'Create Post');
-                                context.read<CreatePostCubit>().postImageOnChanged(pickedFile);
-                                setState(() {contextPrePost = context;});
-                            },
-                            child: Container(
-                              height: 25, width: 25, decoration: (BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.circular(25))),),
-                          ),
+                          galleryBtns(context, state),
                           SizedBox(width: 15),
                           GestureDetector(
                             // TODO -----------------------------> UPDATE THE BUILDCONTEXTPREPOST THAT YOU MADE AT TOP OF FILE. DONE
@@ -217,7 +221,12 @@ class _CreatePostScreenState extends State<CreatePostScreen>
                           ),
                         ],
                       ),
-                    ) : SizedBox.shrink()
+                    ) : SizedBox.shrink(),
+
+                    state.status  == CreatePostStatus.initial ? Positioned(top: 20, right: 20,  child: GestureDetector( 
+                      onTap:() { controller!.value.flashMode == FlashMode.off ? onSetFlashModeButtonPressed( FlashMode.torch) : onSetFlashModeButtonPressed( FlashMode.off) ;  }, // -----------------------
+                      child: Container(height: 25, width: 25, child: Icon(Icons.flash_on),))) : SizedBox.shrink(),
+
                 ],
               )
             );
@@ -226,6 +235,44 @@ class _CreatePostScreenState extends State<CreatePostScreen>
       ),
     );
   }
+
+  Widget galleryBtns(BuildContext context, CreatePostState state)  {
+    return state.isRecording != true ?Column(
+       children: [
+        GestureDetector(
+          onTap: () async {
+            final pickedFile = await ImageHelper.pickImageFromGallery(context: context,cropStyle: CropStyle.rectangle,title: 'Create Post');
+            if (pickedFile != null)
+             context.read<CreatePostCubit>().postImageOnChanged(pickedFile);
+            setState(() {contextPrePost = context;});
+       },
+       child: Container(
+         height: 25, width: 75,
+         child: Icon(Icons.image),
+         decoration: (BoxDecoration(color: Colors.black45, borderRadius: BorderRadius.circular(5))),),
+     ),
+      // ------------------------------------------------> video from gall below image above <<<<<<<<<<<<<<<<<<< READ THAT B4 ATTEMPT TO READ CODE
+       SizedBox(height: 10,),
+       GestureDetector(
+       onTap: () async {
+           final pickedFile = await ImageHelper.pickVideoFromGallery();
+           if (pickedFile != null)
+             context.read<CreatePostCubit>().onStopPostRecording(pickedFile);
+           setState(() {contextPrePost = context;});
+       },
+       child: Container(
+         height: 25, width: 75,
+         child: Icon(Icons.camera),
+         decoration: (BoxDecoration(color: Colors.black45, borderRadius: BorderRadius.circular(5))),),
+     ),
+       ],
+     )
+
+     : SizedBox.shrink();
+  }
+
+   
+
 
    Widget camView({required CameraController controller, required Size size, required BuildContext context, required CreatePostState state}) {
   return Stack(
@@ -244,6 +291,30 @@ class _CreatePostScreenState extends State<CreatePostScreen>
         : SizedBox.shrink()
       ],
     );
+  }
+
+  // FLASH MODE SETTINGS -------------------
+  void onSetFlashModeButtonPressed(FlashMode mode) {
+
+    setFlashMode(mode).then((_) {
+      if (mounted) {
+        setState(() {});
+      }
+      // showInSnackBar('Flash mode set to ${mode.toString().split('.').last}');
+    });
+  }
+
+   Future<void> setFlashMode(FlashMode mode) async {
+    if (controller == null) {
+      return;
+    }
+
+    try {
+      await controller!.setFlashMode(mode);
+    } on CameraException catch (e) {
+      log("an error in create post screen flash segment: $e");
+      rethrow;
+    }
   }
 
   // VIDEO RECORDING SEGMENT ----------------
@@ -827,30 +898,24 @@ Future<dynamic> previewPost({ required PrePost prepost, required BuildContext co
       child: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection(Paths.church)
-            .where('memberIds',arrayContains: context.read<AuthBloc>().state.user!.uid)
+            .where('memberIds', arrayContains: context.read<AuthBloc>().state.user!.uid)
             .snapshots(),
         builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
-             if (snapshot.data != null &&
-              snapshot.data!.docs.length > 0) {
+             if (snapshot.data != null && snapshot.data!.docs.length > 0) {
             return Container(
               height: 100,
               child: ListView.builder(
                   itemCount: snapshot.data!.docs.length,
                   itemBuilder: (context, index) {
-                    Church commuinity = Church.fromDoc(
-                        snapshot.data!.docs[index]);
+                    Church commuinity = Church.fromDoc(snapshot.data!.docs[index]);
                     return Column(
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 5.0),
                           child: ListTile(
                             onTap: () {},
-                            leading: ProfileImage(
-                              pfpUrl: commuinity.imageUrl,
-                              radius: 25,
-                            ),
-                            title: Text(commuinity.name,
-                                overflow: TextOverflow.ellipsis),
+                            leading: ProfileImage(pfpUrl: commuinity.imageUrl, radius: 25,),
+                            title: Text(commuinity.name,overflow: TextOverflow.ellipsis),
                             //trailing: isTaped(commuinity.id!),
                           ),
                         ),
@@ -874,8 +939,10 @@ _submitForm({required BuildContext context, required bool isSubmitting, required
   log("The prepost image: ${prepost.imageFile}");
   log("The prepost video: ${prepost.videoFile} ");
   log("isSubmitting: ${!isSubmitting}");
-  bool condition1 = !isSubmitting && prepost.imageFile != null;
-  bool condition2 = !isSubmitting && prepost.videoFile != null;
+  bool condition1 = isSubmitting && prepost.imageFile != null;
+  bool condition2 = isSubmitting && prepost.videoFile != null;
+  log("condition 1 is: $condition1");
+  log("condition 2 is: $condition2");
   if (condition1 || condition2) {
     ctx.submit(prePost: prepost);
     Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
