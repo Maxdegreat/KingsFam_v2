@@ -12,7 +12,7 @@ import 'church_model.dart';
 
 class PrePost extends Equatable {
   final Userr author;
-  final List<Church>? commuinitys;
+  final Church? commuinity;
   final String? quote;
   final File? imageFile;
   final File? videoFile;
@@ -21,7 +21,7 @@ class PrePost extends Equatable {
   final String? caption;
   PrePost({
     required this.author,
-    required this.commuinitys,
+    required this.commuinity,
     this.quote,
     this.imageFile,
     this.videoFile,
@@ -31,11 +31,11 @@ class PrePost extends Equatable {
   });
 
   @override
-  List<Object?> get props => [author, commuinitys, quote, imageFile, videoFile, thumbnailFile, soundTrack, caption];
+  List<Object?> get props => [author, commuinity, quote, imageFile, videoFile, thumbnailFile, soundTrack, caption];
 
   PrePost copyWith({
     Userr? author,
-    List<Church>? commuinitys,
+    Church? commuinity,
     String? quote,
     File? imageFile,
     File? videoFile,
@@ -45,7 +45,7 @@ class PrePost extends Equatable {
   }) {
     return PrePost(
       author: author ?? this.author,
-      commuinitys: commuinitys ?? this.commuinitys,
+      commuinity: commuinity ?? null,
       quote: quote ?? this.quote,
       imageFile: imageFile ?? this.imageFile,
       videoFile: videoFile ?? this.videoFile,

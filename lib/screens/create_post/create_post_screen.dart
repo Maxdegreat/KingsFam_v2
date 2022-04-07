@@ -790,10 +790,10 @@ class _InitilizeVideoState extends State<InitilizeVideo> {
 // A NEW CLASS FOR SENDING THE DATA TO THE CLOUD
 
 // A HELPER FOR THE PREVIEWPOST 
-void PreviewPostHelper({required PrePost prepost, required BuildContext ctx}) => previewPost(prepost: prepost, contextInhearated: ctx);
+void PreviewPostHelper({required PrePost prepost, required BuildContext ctx}) => previewPost(prePost: prepost, contextInhearated: ctx);
 
 // pass this a post model and from there we can do the work around with it this way we do not need too much raw minupliation of data like I had in v1 of kingsFam
-Future<dynamic> previewPost({ required PrePost prepost, required BuildContext contextInhearated}) {
+Future<dynamic> previewPost({ required PrePost prePost, required BuildContext contextInhearated}) {
   CreatePostState? stateGetter; // -------------------- make sure to init this and change it in the listener
   return showModalBottomSheet(
      enableDrag: (stateGetter != null && stateGetter.status == CreatePostStatus.submitting) ? false : true,
@@ -819,12 +819,14 @@ Future<dynamic> previewPost({ required PrePost prepost, required BuildContext co
 
         },
         builder: (context, state) {
-          //context = contextInhearated;
-          // log(state.imageFile.toString());
-          // log(context.read<CreatePostCubit>().state.imageFile.toString());
-          // log(contextInhearated.read<CreatePostCubit>().state.imageFile.toString());
           var ctxshort = context.read<CreatePostCubit>();
-          return DraggableScrollableSheet(initialChildSize: 0.80, builder: (_, controller) =>
+          // TODO can you make this work later. its saying that state.prepost! is not null even tho I call ctxshort.onPrePostMade(prePost); first thing.
+          // ctxshort.onPrePostMade(prePost);
+          // log("state.prepost = ${state.prePost} \n and prepost = $prePost");
+
+            return StatefulBuilder(  
+              builder: (BuildContext context, setState) {
+                          return DraggableScrollableSheet(initialChildSize: 0.80, builder: (_, controller) =>
          Container(
           color: Colors.black,
           child: Column(
@@ -836,11 +838,13 @@ Future<dynamic> previewPost({ required PrePost prepost, required BuildContext co
               SizedBox(height: 10),
               Row(
                 children: [
-                  Container(
-                    height: 125,
-                    width: 130,
-                    child: prepost.videoFile != null ? InitilizeVideo(videoFile: prepost.videoFile!) : null,
-                    decoration: BoxDecoration(image: prepost.imageFile != null ? DecorationImage(image: FileImage(prepost.imageFile!)) : null,),
+                  Center(
+                    child: Container(
+                      height: 125,
+                      width: 130,
+                      child: prePost.videoFile != null ? InitilizeVideo(videoFile: prePost.videoFile!) : null,
+                      decoration: BoxDecoration(image: prePost != null ? DecorationImage(image: FileImage(prePost.imageFile!)) : null,),
+                    ),
                   ),
                   SizedBox(height: 5),
                   Text("New Post Fam, Who dis?")
@@ -862,60 +866,42 @@ Future<dynamic> previewPost({ required PrePost prepost, required BuildContext co
               Text("Posting to your feed: yeah"),
               Text("Post to a commuinity: pick some?"),
               SizedBox(height: 10),
-              commuinityList(context),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container( 
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {  
-                        if (ctxshort.state.status != CreatePostStatus.submitting) {
-                          bool subbmittingBool = ctxshort.state.status != CreatePostStatus.submitting;
-                          _submitForm(context: context, isSubmitting: subbmittingBool, prepost: prepost);
-                        } else
-                          print("did not allow submit of \"posttt\"");
-                      },
-                      child: Text("POSTTT!"),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.red[400],
-                      ),
-                    )),
-              )
-            ],
-          ),
-        ),
-      );
-
-        }
-      )
-    )
-  );
-  
-}
-
-  Expanded commuinityList(BuildContext context) {
-    return Expanded(
-      child: StreamBuilder(
-        stream: FirebaseFirestore.instance
+              //commuinityList(context), //------------------------------------------------------ down
+              Expanded(
+           child: StreamBuilder(
+            stream: FirebaseFirestore.instance
             .collection(Paths.church)
             .where('memberIds', arrayContains: context.read<AuthBloc>().state.user!.uid)
             .snapshots(),
-        builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
+             builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
              if (snapshot.data != null && snapshot.data!.docs.length > 0) {
+                String tapedCommuinity = "";
+                Color commuinityNameColor = Colors.white;
             return Container(
               height: 100,
               child: ListView.builder(
                   itemCount: snapshot.data!.docs.length,
                   itemBuilder: (context, index) {
+                   
                     Church commuinity = Church.fromDoc(snapshot.data!.docs[index]);
                     return Column(
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 5.0),
                           child: ListTile(
-                            onTap: () {},
+                            onTap: () {
+                                
+                               if (commuinity.id! != state.selectedCommuinityId) {
+                                 prePost = prePost.copyWith(commuinity: commuinity);
+                                ctxshort.onPickCommuinity(commuinity.id);
+                               }
+                               else  {
+                                ctxshort.onPickCommuinity("Jesus Is King ... hopefully this does not bug");
+                                prePost = prePost.copyWith(commuinity: null);
+                               }
+                              },
                             leading: ProfileImage(pfpUrl: commuinity.imageUrl, radius: 25,),
-                            title: Text(commuinity.name,overflow: TextOverflow.ellipsis),
+                            title: Text(commuinity.name,overflow: TextOverflow.ellipsis, style: TextStyle( color: commuinity.id! == state.selectedCommuinityId ? Colors.green : Colors.white)),
                             //trailing: isTaped(commuinity.id!),
                           ),
                         ),
@@ -929,23 +915,55 @@ Future<dynamic> previewPost({ required PrePost prepost, required BuildContext co
           }
         },
       ),
-    );
-  }
+    ),
+    // ------------------------------------------------------------------------------- commuinty list tile ^^^^
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container( 
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {  
+                        if (ctxshort.state.status != CreatePostStatus.submitting) {
+                          bool subbmittingBool = ctxshort.state.status != CreatePostStatus.submitting;
+                          _submitForm(context: context, isSubmitting: subbmittingBool, prepost: prePost);
+                        } else
+                          print("did not allow submit of \"posttt\"");
+                      },
+                      child: Text("POSTTT!"),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.red[400],
+                      ),
+                    )),
+              )
+            ],
+          ),
+        ),
+      );
+              },
+            );
+
+        }
+      )
+    )
+  );
+  
+}
+
+  // Expanded commuinityList(BuildContext context) {
+  //   return 
+  // }
 
 _submitForm({required BuildContext context, required bool isSubmitting, required PrePost prepost}) {
   var ctx = context.read<CreatePostCubit>();
   var state = ctx.state;
-  log("callled the submit function");
-  log("The prepost image: ${prepost.imageFile}");
-  log("The prepost video: ${prepost.videoFile} ");
-  log("isSubmitting: ${!isSubmitting}");
-  bool condition1 = isSubmitting && prepost.imageFile != null;
-  bool condition2 = isSubmitting && prepost.videoFile != null;
-  log("condition 1 is: $condition1");
-  log("condition 2 is: $condition2");
-  if (condition1 || condition2) {
-    ctx.submit(prePost: prepost);
-    Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
+   
+   bool condition1 = isSubmitting && prepost.imageFile != null;
+   bool condition2 = isSubmitting && prepost.videoFile != null;
+  
+   if (condition1 || condition2) {
+     ctx.submit(prePost: prepost);
+     Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
   }
+  
 
 }

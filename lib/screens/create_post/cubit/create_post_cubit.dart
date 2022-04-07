@@ -70,13 +70,29 @@ void onRemovePostContent() {
     print("ION REALLY CARE YEAH ${state.caption}");
   }
 
-  void onBackToCameraView() => emit(state.copyWith(status: CreatePostStatus.initial));
 
+  void onBackToCameraView() => emit(state.copyWith(status: CreatePostStatus.initial));
+    
+    // for select commuinity
+    void onPickCommuinity(String? id) => emit(state.copyWith(selectedCommuinityId: id));
+    
   // THIS IS FOR THE PREVIEW POST IN THE CREATEPOST SCREEN. YOU SHOULD FIND A LINK TO THE FUNC IN APP BAR
+  
+  void onPrePostMade(PrePost prePostt) {
+    emit(state.copyWith(prePost: prePostt, status:CreatePostStatus.initial ));
+    print("done prepost: $prePostt state prepost ${state.prePost}");
+  }
+
+  void onPrePostGetCommuinity(Church commuinity) {
+    final author = Userr.empty.copyWith(id: _authBloc.state.user!.uid);
+    var prepost = PrePost(author: author, commuinity: commuinity, caption: null, imageFile: state.imageFile, videoFile: state.videoFile, thumbnailFile: null, soundTrack: null, quote: null);
+    emit(state.copyWith(prePost: prepost));
+  }
+
   PrePost prePost() {
     final author = Userr.empty.copyWith(id: _authBloc.state.user!.uid);
     final thumbnailFile =  null; // TODO the thumbnail
-    var prepost = PrePost(author: author, commuinitys: [], caption: null, imageFile: state.imageFile, videoFile: state.videoFile, thumbnailFile: thumbnailFile, soundTrack: null, quote: null, );
+    var prepost = PrePost(author: author, commuinity: null, caption: null, imageFile: state.imageFile, videoFile: state.videoFile, thumbnailFile: thumbnailFile, soundTrack: null, quote: null, );
     return prepost;
   }
 
@@ -109,7 +125,7 @@ void onRemovePostContent() {
             imageUrl: postImageUrl,
             videoUrl: null,
             thumbnailUrl: null,
-            commuinity: null ,
+            commuinity: prePost.commuinity ,
             soundTrackUrl: null,
             caption: caption,
             likes: 0,
@@ -119,7 +135,7 @@ void onRemovePostContent() {
         print("made the post");
 
         await _postsRepository.createPost(post: post);
-        print(" created the post");
+        print(" created the post ");
         emit(state.copyWith(status: CreatePostStatus.success));
         print("----------->posted<----------------");
 
@@ -139,7 +155,7 @@ void onRemovePostContent() {
             imageUrl: null,
             videoUrl: postVideoUrl,
             thumbnailUrl: null,
-            commuinity: null,
+            commuinity: prePost.commuinity,
             soundTrackUrl: null,
             caption: caption,
             likes: 0,
