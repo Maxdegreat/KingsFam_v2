@@ -6,6 +6,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:kingsfam/repositories/sounds/sounds_recorder_repository.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/profile/widgets/commuinity_container.dart';
 import 'package:kingsfam/screens/screens.dart';
@@ -111,113 +112,142 @@ class _ProfileScreenState extends State<ProfileScreen>
                 .read<ProfileBloc>()
                 .add(ProfileLoadUserr(userId: state.userr.id));
           },
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                        Stack(
-                          children: [
-                            Container(
-                              height: MediaQuery.of(context).size.height / 5,
-                              width: double.infinity,
-                              color: Colors.transparent,
-                            ),
-                            BannerImage(
-                              isOpasaty: false,
-                              bannerImageUrl: state.userr.bannerImageUrl,
-                            ),
-                            Positioned(
-                              top: 50,
-                              left: 20,
-                              child: ProfileImage(
-                                radius: 45,
-                                pfpUrl: state.userr.profileImageUrl,
+          child: 
+              // this is the commuinty list
+              Column(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                          Stack(
+                            children: [
+                              Container(
+                                height: MediaQuery.of(context).size.height / 5,
+                                width: double.infinity,
+                                color: Colors.transparent,
                               ),
-                            ),
-                            Positioned(
-                              top: 105, right: 65,
-                              child: ProfileButton(isCurrentUserr: state.isCurrentUserr, isFollowing: state.isFollowing),
-                            )
-                          ],
-                          clipBehavior: Clip.none,
-                        ),
+                              BannerImage(
+                                isOpasaty: false,
+                                bannerImageUrl: state.userr.bannerImageUrl,
+                              ),
+                              Positioned(
+                                top: 50,
+                                left: 20,
+                                child: ProfileImage(
+                                  radius: 45,
+                                  pfpUrl: state.userr.profileImageUrl,
+                                ),
+                              ),
+                              Positioned(
+                                top: 105, right: 65,
+                                child: ProfileButton(isCurrentUserr: state.isCurrentUserr, isFollowing: state.isFollowing),
+                              )
+                            ],
+                            clipBehavior: Clip.none,
+                          ),
 
           
               
-                    ProfileStats( username: state.userr.username, posts: state.post.length, followers: state.userr.followers, following: state.userr.following),
+                      ProfileStats( username: state.userr.username, posts: state.post.length, followers: state.userr.followers, following: state.userr.following),
 
 
-                    // add a linked list of commuinitys that I am in
-                    CommuinityContainer(userId: state.userr.id,),
-                      
+                      // add a linked list of commuinitys that I am in
+                      CommuinityContainer(userId: state.userr.id,),
+                        
 
-                    Divider(height: 15, color: Colors.white, thickness: 8,),
-                    // BigBoyBio(
-                      // username: state.userr.username,
-                      // bio: state.userr.bio,
-                    // )
-                  ],
-                ),
-              ),
-              SliverToBoxAdapter(
-                  child: SizedBox(
-                height: 25.0,
-              )),
-              SliverGrid(
-                
-                  delegate: SliverChildBuilderDelegate(
-                    
-                    (context, index) {
-                      final post = state.post[index];
-                      final likedPostState = context.watch<LikedPostCubit>().state;
-                      final isLiked = likedPostState.likedPostsIds.contains(post!.id);
-                      final recentlyLiked = likedPostState.recentlyLikedPostIds.contains(post.id);
-                      final ctx = context.read<LikedPostCubit>();
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.of(context)
-                              .pushNamed(ProfilePostView.routeName,
-                                  arguments: ProfilePostViewArgs(
-                                      posts: state.post,
-                                      indexAt: index,
-                                      isLiked: isLiked,
-                                      onLike: () {
-                                        if (isLiked)
-                                          ctx.unLikePost(post: post);
-                                        else
-                                          ctx.likePost(post: post);
-                                      },
-                                      recentlyLiked: recentlyLiked));
-                        },
-                        child: Container(
-                            height: 100,
-                            width: 100,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5.0),
-                                image: post.imageUrl != null
-                                    ? DecorationImage(
-                                        image: CachedNetworkImageProvider(
-                                            post.imageUrl!),
-                                        fit: BoxFit.cover)
-                                    : null),
-                            child: post.quote != null
-                                ? Center(child: Text(post.quote!))
-                                : post.videoUrl != null
-                                    ? Text("Video url")
-                                    : null),
-                      );
-                    },
-                    childCount: state.post.length,
+                      Divider(height: 15, color: Colors.white, thickness: 3,),
+                      // BigBoyBio(
+                        // username: state.userr.username,
+                        // bio: state.userr.bio,
+                      // )
+                    ],
                   ),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 3.0,
-                      crossAxisSpacing: 2.0))
-            ],
-          ),
+               
+              // this is a sizxed box
+              SizedBox(
+              height: 5.0,
+              ),
+              // SliverGrid(
+              
+              //     delegate: SliverChildBuilderDelegate(
+                  
+              //       (context, index) {
+              //         final post = state.post[index];
+              //         final likedPostState = context.watch<LikedPostCubit>().state;
+              //         final isLiked = likedPostState.likedPostsIds.contains(post!.id);
+              //         final recentlyLiked = likedPostState.recentlyLikedPostIds.contains(post.id);
+              //         final ctx = context.read<LikedPostCubit>();
+              //         return GestureDetector(
+              //           onTap: () {
+              //             Navigator.of(context)
+              //                 .pushNamed(ProfilePostView.routeName,
+              //                     arguments: ProfilePostViewArgs(
+              //                         posts: state.post,
+              //                         indexAt: index,
+              //                         isLiked: isLiked,
+              //                         onLike: () {
+              //                           if (isLiked)
+              //                             ctx.unLikePost(post: post);
+              //                           else
+              //                             ctx.likePost(post: post);
+              //                         },
+              //                         recentlyLiked: recentlyLiked));
+              //           },
+              //           child: Container(
+              //               height: 100,
+              //               width: 100,
+              //               decoration: BoxDecoration(
+              //                   borderRadius: BorderRadius.circular(5.0),
+              //                   image: post.imageUrl != null
+              //                       ? DecorationImage(
+              //                           image: CachedNetworkImageProvider(
+              //                               post.imageUrl!),
+              //                           fit: BoxFit.cover)
+              //                       : null),
+              //               child: post.quote != null
+              //                   ? Center(child: Text(post.quote!))
+              //                   : post.videoUrl != null
+              //                       ? Text("Video url")
+              //                       : null),
+              //         );
+              //       },
+              //       childCount: state.post.length,
+              //     ),
+              //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              //         crossAxisCount: 3,
+              //         mainAxisSpacing: 3.0,
+              //         crossAxisSpacing: 2.0))
+                         
+              Container(
+                height: MediaQuery.of(context).size.height / 3.7 ,
+                decoration: BoxDecoration(
+                  color: Colors.white
+                ),
+                // -0=-=-=--=-=-=-0-
+                child: Stack(
+                  children: [
+                    // breaks bc below
+                    Positioned(
+                      child: Container(
+                        height: 50, width: 90,
+                        // pending on post type which is why this is difficult. demo for now
+                        decoration: BoxDecoration(
+                          image: state.post[0]!.imageUrl != null
+                        ? DecorationImage(
+                            image: CachedNetworkImageProvider(
+                                state.post[0]!.imageUrl!),
+                            fit: BoxFit.cover)
+                        : null),
+                        ),
+                      ),
+                  ],
+                )
+              )
+                ],
+              ),
+          
+          
         );
     }
   }

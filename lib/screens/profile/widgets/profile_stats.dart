@@ -31,23 +31,23 @@ class ProfileStats extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(username, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Colors.white)),
-                      Text("15 Commuinitys", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Colors.white))
+                      Text(username, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                      SizedBox(height: 5),
+                      Text("15 Commuinitys", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white))
                     ],
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("$followers Followers", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Colors.white)),
-                      Text("$following Following", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Colors.white))
+                      Text("$followers Followers", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                      SizedBox(height: 5),
+                      Text("$following Following", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white))
                     ],
                   )
                 ],
               ),
             ),
-            const SizedBox(height: 10.0),
-          
           ],
         ));
   }

@@ -19,7 +19,7 @@ class ProfileButton extends StatelessWidget {
     final TextStyle styleFalse = TextStyle(
         color: Colors.black, fontSize: 15, fontWeight: FontWeight.w400);
     return isCurrentUserr
-        ? EditPf(style, context)
+        ? editPf(style, context)
         : Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           //mainAxisSize: MainAxisSize.min,
@@ -42,7 +42,7 @@ class ProfileButton extends StatelessWidget {
         );
   }
 
-  Container EditPf(TextStyle style, BuildContext context) {
+  Container editPf(TextStyle style, BuildContext context) {
     return Container(
           height: 29.0,
           width: 180,

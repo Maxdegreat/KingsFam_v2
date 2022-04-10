@@ -67,9 +67,16 @@ Padding CommuinityListTile(BuildContext context, AsyncSnapshot<QuerySnapshot> sn
   // make data for the listtile (when moreBtn == true)
 
   return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10,),
-    child: Container(
-      child: !moreBtn ? Container() : greaterThan2 ? twoCommuinitys : oneCommuinitys,
+    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0,),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        TextButton(onPressed:() {}, style: TextButton.styleFrom(primary: Colors.white), child: Text("See More", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),),),
+        Container(
+          child: !moreBtn ? Container() : greaterThan2 ? twoCommuinitys : oneCommuinitys,
+        ),
+      ],
     ),
   );
 }
