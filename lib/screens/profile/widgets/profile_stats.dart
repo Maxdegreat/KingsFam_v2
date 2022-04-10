@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:kingsfam/screens/profile/widgets/widgets.dart';
 
 class ProfileStats extends StatelessWidget {
-  final bool isCurrentUserr;
-  final bool isFollowing;
   final int posts;
   final int followers;
   final int following;
+  final String username;
   const ProfileStats({
     Key? key,
-    required this.isCurrentUserr,
-    required this.isFollowing,
+    required this.username,
     required this.posts,
     required this.followers,
     required this.following,
@@ -20,33 +18,38 @@ class ProfileStats extends StatelessWidget {
   Widget build(BuildContext context) {
     return Flexible( //FlexFit.loose fits for the flexible children (using Flexible rather than Expanded)
     fit: FlexFit.loose,
-        child: Padding(
-      padding: const EdgeInsets.only(right: 90),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _stats(count: posts, label: 'posts'),
-              _stats(count: following, label: 'following'),
-              _stats(count: followers, label: 'followers')
-            ],
-          ),
-          const SizedBox(height: 10.0),
-          Padding(
-            padding: EdgeInsets.only(left: 10.0),
-            child: ProfileButton(
-              isCurrentUserr: isCurrentUserr,
-              isFollowing: isFollowing
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(username, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Colors.white)),
+                      Text("15 Commuinitys", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Colors.white))
+                    ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("$followers Followers", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Colors.white)),
+                      Text("$following Following", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Colors.white))
+                    ],
+                  )
+                ],
+              ),
             ),
-
-          )
-
-        ],
-      ),
-    ));
+            const SizedBox(height: 10.0),
+          
+          ],
+        ));
   }
 }
 

@@ -7,6 +7,7 @@ import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
+import 'package:kingsfam/screens/profile/widgets/commuinity_container.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
@@ -117,35 +118,47 @@ class _ProfileScreenState extends State<ProfileScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Stack(
-                      children: [
-                        BannerImage(
-                          isOpasaty: false,
-                          bannerImageUrl: state.userr.bannerImageUrl,
+                        Stack(
+                          children: [
+                            Container(
+                              height: MediaQuery.of(context).size.height / 5,
+                              width: double.infinity,
+                              color: Colors.transparent,
+                            ),
+                            BannerImage(
+                              isOpasaty: false,
+                              bannerImageUrl: state.userr.bannerImageUrl,
+                            ),
+                            Positioned(
+                              top: 50,
+                              left: 20,
+                              child: ProfileImage(
+                                radius: 45,
+                                pfpUrl: state.userr.profileImageUrl,
+                              ),
+                            ),
+                            Positioned(
+                              top: 105, right: 65,
+                              child: ProfileButton(isCurrentUserr: state.isCurrentUserr, isFollowing: state.isFollowing),
+                            )
+                          ],
+                          clipBehavior: Clip.none,
                         ),
-                        Positioned(
-                          top: 30,
-                          left: 10,
-                          child: ProfileImage(
-                            radius: 40,
-                            pfpUrl: state.userr.profileImageUrl,
-                          ),
-                        ),
-                      ],
-                      clipBehavior: Clip.none,
-                    ),
-                    const SizedBox(height: 25.0),
-                    ProfileStats(
-                        isCurrentUserr: state.isCurrentUserr,
-                        isFollowing: state.isFollowing,
-                        posts: state.post.length,
-                        followers: state.userr.followers,
-                        following: state.userr.following),
-                    SizedBox(height: 10.0),
-                    BigBoyBio(
-                      username: state.userr.username,
-                      bio: state.userr.bio,
-                    )
+
+          
+              
+                    ProfileStats( username: state.userr.username, posts: state.post.length, followers: state.userr.followers, following: state.userr.following),
+
+
+                    // add a linked list of commuinitys that I am in
+                    CommuinityContainer(userId: state.userr.id,),
+                      
+
+                    Divider(height: 15, color: Colors.white, thickness: 8,),
+                    // BigBoyBio(
+                      // username: state.userr.username,
+                      // bio: state.userr.bio,
+                    // )
                   ],
                 ),
               ),
@@ -208,4 +221,9 @@ class _ProfileScreenState extends State<ProfileScreen>
         );
     }
   }
+
+
+  
 }
+
+
