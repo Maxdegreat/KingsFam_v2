@@ -23,5 +23,6 @@ export 'commuinity/screens/commuinity_calls/build_call/build_call_screen.dart';
 export 'commuinity/screens/commuinity_calls/build_call/ring_screen.dart';
 export 'package:kingsfam/screens/commuinity/screens/feed/feed.dart';
 export 'package:kingsfam/screens/commuinity/screens/sounds/sounds.dart';
+export 'feed_new/feed_new.dart';
 
 

@@ -1,8 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
+import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 import 'package:kingsfam/widgets/fancy_list_tile.dart';
+import 'package:kingsfam/widgets/widgets.dart';
 
 // a list view of commuinitys that i am a part of yeahhhh
 
@@ -10,8 +13,9 @@ import 'package:kingsfam/widgets/fancy_list_tile.dart';
 // 2) streambuilder????
 
 class CommuinityContainer extends StatefulWidget {
-  const CommuinityContainer({ required String this.userId, });
+  const CommuinityContainer({ required String this.userId, required String this.username });
   final String userId;
+  final String username;
   @override
   State<CommuinityContainer> createState() => _CommuinityContainerState();
 }
@@ -29,14 +33,14 @@ class _CommuinityContainerState extends State<CommuinityContainer> {
           return Text("The snap is bad, no data");
         } else { // is good
           // return the listtile 
-          return CommuinityListTile(context, snapshot);
+          return CommuinityListTile(context, snapshot, widget.username);
         }
       },
     );
   }
 }
 
-Padding CommuinityListTile(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+Padding CommuinityListTile(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot, String username) {
   bool moreBtn = true;
   // make data for first two commuinitys
   Church commuinity1 = Church.fromDoc(snapshot.data!.docs[0]);
@@ -72,7 +76,28 @@ Padding CommuinityListTile(BuildContext context, AsyncSnapshot<QuerySnapshot> sn
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        TextButton(onPressed:() {}, style: TextButton.styleFrom(primary: Colors.white), child: Text("See More", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),),),
+        TextButton(onPressed:()  {
+          // show an alert dialog that list all commuinitys
+          showModalBottomSheet(context: context, builder: (context) {
+
+            return Container(
+              height: 200,
+              color: Colors.black,
+              child: ListView.builder(
+                 itemCount: snapshot.data!.docs.length,
+                 itemBuilder: (BuildContext context, int index) {
+                   Church commuinity = Church.fromDoc(snapshot.data!.docs[index]);
+                   return Padding(
+                     padding: const EdgeInsets.symmetric(vertical: 10),
+                     child: ListTile(leading: commuinity_pf_img(commuinity.imageUrl, 90, 105), title: Text(commuinity.name), onTap: () => Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: commuinity)),),
+                   );
+                 },
+               ),
+            );
+          });
+
+
+        }, style: TextButton.styleFrom(primary: Colors.white), child: Text("See More", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),),),
         Container(
           child: !moreBtn ? Container() : greaterThan2 ? twoCommuinitys : oneCommuinitys,
         ),

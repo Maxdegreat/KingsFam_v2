@@ -114,7 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 .add(ProfileLoadUserr(userId: state.userr.id));
           },
           child: 
-              // this is the commuinty list
+              // this is the commuinty list            -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
               Column(
                 children: [
                   Column(
@@ -154,7 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
 
                       // add a linked list of commuinitys that I am in
-                      CommuinityContainer(userId: state.userr.id,),
+                      CommuinityContainer(userId: state.userr.id, username: state.userr.username,),
                         
 
                       Divider(height: 15, color: Colors.white, thickness: 3,),
@@ -219,7 +219,9 @@ class _ProfileScreenState extends State<ProfileScreen>
               //         crossAxisCount: 3,
               //         mainAxisSpacing: 3.0,
               //         crossAxisSpacing: 2.0))
-                         
+              
+              
+              //    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-           
               Container(
                 height: MediaQuery.of(context).size.height / 3.7 ,
                 decoration: BoxDecoration(
@@ -241,19 +243,25 @@ class _ProfileScreenState extends State<ProfileScreen>
                     Stack(
                       children: [
 
-                        Positioned(
-                          top: 45, right: 40,
-                          child: Container(
-                            height: post_img_vid_size * 1.1, width: post_img_vid_size * 1.5, 
-                            decoration: BoxDecoration(image: DecorationImage(image: CachedNetworkImageProvider(state.post.first!.imageUrl!), fit: BoxFit.cover), borderRadius: BorderRadius.circular(12)),
-                          ),
+                        //GestureDetector(
+                         // onTap: () => Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(posts: state.post)),
+                           Positioned(
+                            top: 45, right: 40,
+                            child: Container(
+                              height: post_img_vid_size * 1.1, width: post_img_vid_size * 1.5, 
+                              decoration: BoxDecoration(image: DecorationImage(image: CachedNetworkImageProvider(state.post[1]!.imageUrl!), fit: BoxFit.cover), borderRadius: BorderRadius.circular(12)),
+                            ),
+                          //),
                         ),
 
                         Positioned(
                           top: 10, left: 10,
-                          child: Container(
-                            height: post_img_vid_size * 1.1, width: post_img_vid_size * 1.6, 
-                            decoration: BoxDecoration(image: DecorationImage(image: CachedNetworkImageProvider(state.post.first!.imageUrl!), fit: BoxFit.cover), borderRadius: BorderRadius.circular(12)),
+                          child: GestureDetector(
+                            onTap: () => Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(posts: state.post)),
+                            child: Container(
+                              height: post_img_vid_size * 1.1, width: post_img_vid_size * 1.6, 
+                              decoration: BoxDecoration(image: DecorationImage(image: CachedNetworkImageProvider(state.post.first!.imageUrl!), fit: BoxFit.cover), borderRadius: BorderRadius.circular(12)),
+                            ),
                           ),
                         ),
                       ],

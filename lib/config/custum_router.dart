@@ -113,6 +113,9 @@ class CustomRoute {
 
       case RingScreen.routeName:
         return RingScreen.route(args: settings.arguments as RingScreenArgs);
+      
+      case FeedNewScreen.routeName:
+        return FeedNewScreen.route(args: settings.arguments as FeedNewScreenArgs);
 
       default:
         return _errorRoute();
