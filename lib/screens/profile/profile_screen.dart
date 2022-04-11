@@ -102,6 +102,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   //---------------------------------------------------------body widget extracted
   Widget _bodyBabbyyyy(ProfileState state) {
+    var post_img_vid_size = MediaQuery.of(context).size.height / 5;
     switch (state.status) {
       case ProfileStatus.initial:
         return CircularProgressIndicator(color: Colors.red[400]);
@@ -222,27 +223,46 @@ class _ProfileScreenState extends State<ProfileScreen>
               Container(
                 height: MediaQuery.of(context).size.height / 3.7 ,
                 decoration: BoxDecoration(
-                  color: Colors.white
+                  color: Colors.transparent
                 ),
                 // -0=-=-=--=-=-=-0-
-                child: Stack(
-                  children: [
+                child: 
                     // breaks bc below
-                    Positioned(
-                      child: Container(
-                        height: 50, width: 90,
-                        // pending on post type which is why this is difficult. demo for now
-                        decoration: BoxDecoration(
-                          image: state.post[0]!.imageUrl != null
-                        ? DecorationImage(
-                            image: CachedNetworkImageProvider(
-                                state.post[0]!.imageUrl!),
-                            fit: BoxFit.cover)
-                        : null),
+                    //TextButton(onPressed: () {print("${state.post.length}");}, child: Text("Test the psots"))
+                    state.post.length == 1 ? 
+                    // show the one post
+                    Container(
+                      height: 100, width: 100, 
+                      decoration: BoxDecoration(image: DecorationImage(image: CachedNetworkImageProvider(state.post.first!.imageUrl!), fit: BoxFit.cover), borderRadius: BorderRadius.circular(12)),
+                    ) :
+
+                    state.post.length >= 2 ?
+
+                    Stack(
+                      children: [
+
+                        Positioned(
+                          top: 45, right: 40,
+                          child: Container(
+                            height: post_img_vid_size * 1.1, width: post_img_vid_size * 1.5, 
+                            decoration: BoxDecoration(image: DecorationImage(image: CachedNetworkImageProvider(state.post.first!.imageUrl!), fit: BoxFit.cover), borderRadius: BorderRadius.circular(12)),
+                          ),
                         ),
-                      ),
-                  ],
-                )
+
+                        Positioned(
+                          top: 10, left: 10,
+                          child: Container(
+                            height: post_img_vid_size * 1.1, width: post_img_vid_size * 1.6, 
+                            decoration: BoxDecoration(image: DecorationImage(image: CachedNetworkImageProvider(state.post.first!.imageUrl!), fit: BoxFit.cover), borderRadius: BorderRadius.circular(12)),
+                          ),
+                        ),
+                      ],
+                    )  :
+
+                    SizedBox.shrink()
+
+                   
+               
               )
                 ],
               ),
