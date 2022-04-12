@@ -11,6 +11,7 @@ import 'package:kingsfam/repositories/sounds/sounds_recorder_repository.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/profile/widgets/commuinity_container.dart';
 import 'package:kingsfam/screens/screens.dart';
+import 'package:kingsfam/widgets/feed_screen_widget.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 import 'widgets/widgets.dart';
@@ -175,29 +176,16 @@ class _ProfileScreenState extends State<ProfileScreen>
                 Post? post = state.post[index];
                 return Column(
                   children: [
-                    Stack(
-                      children: 
-                        [
-                          Container(
-                          height: 240, width: 300, 
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: <Color> [
-                                Colors.transparent,
-                                Colors.black12,
-                                Colors.black45,
-                                Colors.black87,
-                              ]
-                            ),
-                            color: Colors.green,
-                            image: DecorationImage(image: CachedNetworkImageProvider(post!.imageUrl!), fit: BoxFit.cover),
-                            borderRadius: BorderRadius.circular(18)
-                          ),
-                        ),
-                       
-                      ],
+                    GestureDetector(
+                      onTap: () => print("Hiii"),//FeedScreenWidget(),
+                      child: Container(
+                      height: 240, width: 300, 
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        image: DecorationImage(image: CachedNetworkImageProvider(post!.imageUrl!), fit: BoxFit.cover),
+                        borderRadius: BorderRadius.circular(18)
+                      ),
+                                            ),
                     ),
                     SizedBox(height: 10),
                     ListTile(leading: commuinity_pf_img(post.author.profileImageUrl, 40, 40), title: Text(post.author.username, style: Theme.of(context).textTheme.bodyText1,),)
