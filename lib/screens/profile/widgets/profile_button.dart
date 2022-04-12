@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/screens/edit_profile/edit_profile_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
@@ -6,10 +7,12 @@ import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 class ProfileButton extends StatelessWidget {
   final bool isCurrentUserr;
   final bool isFollowing;
+  final String colorPref;
   const ProfileButton({
     Key? key,
     required this.isCurrentUserr,
     required this.isFollowing,
+    required this.colorPref,
   }) : super(key: key);
 
   @override
@@ -29,30 +32,31 @@ class ProfileButton extends StatelessWidget {
                 style: style,
                 onP: () {
                   isFollowing
-                      ? context
-                          .read<ProfileBloc>()
-                          .add(ProfileUnfollowUserr())
-                      : context
-                          .read<ProfileBloc>()
-                          .add(ProfileFollowUserr());
-                }),
-            SizedBox(width: 10.0),
-            _btnRow(label: 'Message', style: style, onP: () {}),
+                      ? context.read<ProfileBloc>().add(ProfileUnfollowUserr())
+                      : context.read<ProfileBloc>().add(ProfileFollowUserr());
+                    }
+                   ),
+            SizedBox(width: 7.0),
+            _btnRow(label: 'Message', style: style, onP: () {}, icon_: Icon(Icons.message),),
           ],
         );
   }
 
-  Container editPf(TextStyle style, BuildContext context) {
+  Widget editPf(TextStyle style, BuildContext context) {
+    //HexColor hexcolor = HexColor();
     return Container(
-          height: 29.0,
-          width: 180,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), color: Colors.red[400]),
-          child: TextButton(
-            child: Text('Edit Profile', style: style),
-            onPressed: () { Navigator.of(context).pushNamed(EditProfileScreen.routeName, arguments: EditProfileScreenArgs(context: context)); }
-            //Navigator.of(context).pushNamed(EditProfileScreen.routeName, arguments: EditProfileScreenArgs(context: context));
-          ),
-        );
+      width: MediaQuery.of(context).size.width / 3,
+      child: ElevatedButton(
+        onPressed: () => Navigator.of(context).pushNamed(EditProfileScreen.routeName, arguments: EditProfileScreenArgs(context: context)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Edit Profile', style: style), SizedBox(width:5), Icon(Icons.settings, size: 15,)
+          ],
+        ),
+        style: ElevatedButton.styleFrom(elevation: 3.5, shadowColor: Colors.white, primary: Colors.red[600]),
+      ),
+    );
   }
 }
 
@@ -60,28 +64,29 @@ class _btnRow extends StatelessWidget {
   final String label;
   final TextStyle style;
   final VoidCallback onP;
+  final Icon? icon_;
   const _btnRow({
     Key? key,
     required this.label,
     required this.style,
     required this.onP,
+    this.icon_,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 2.0),
-      child: Container(
-          width: 80,
-          height: 29.0,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12.0), color: Colors.red[400]),
-          child: TextButton(
-            style: TextButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0))),
-            child: Text(label, style: style),
-            onPressed: onP,
-          )),
+    return Container(
+    width: MediaQuery.of(context).size.width / 3.3,
+    child: ElevatedButton(
+      onPressed: onP,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(label, style: style), SizedBox(width:5), icon_ != null ? icon_! : SizedBox.shrink()
+        ],
+      ),
+      style: ElevatedButton.styleFrom(elevation: 3.5, shadowColor: Colors.white, primary: Colors.red[600]),
+    ),
     );
   }
 }

@@ -16,8 +16,8 @@ class ProfileStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Flexible( //FlexFit.loose fits for the flexible children (using Flexible rather than Expanded)
-    fit: FlexFit.loose,
+    return Container( //FlexFit.loose fits for the flexible children (using Flexible rather than Expanded)
+    
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
@@ -25,26 +25,12 @@ class ProfileStats extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(username, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
-                      SizedBox(height: 5),
-                      Text("15 Commuinitys", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white))
-                    ],
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+              
                       Text("$followers Followers", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
-                      SizedBox(height: 5),
+                      SizedBox(width: 10),
                       Text("$following Following", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white))
-                    ],
-                  )
                 ],
               ),
             ),

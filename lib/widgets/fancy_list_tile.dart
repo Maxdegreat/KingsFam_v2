@@ -40,14 +40,14 @@ class FancyListTile extends StatelessWidget {
           ),
           Text('$username.',
               overflow: TextOverflow.fade,
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600)),
+              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.white)),
           SizedBox(width: 0),
           isBtn ? Icon(Icons.check_circle) : SizedBox.shrink()
         ],
       ),
       decoration: BoxDecoration(
         color: Colors.black,
-        borderRadius: BorderRadius.circular(BR),
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(BR), bottomLeft: Radius.circular(BR)),
       ),
     );
   }

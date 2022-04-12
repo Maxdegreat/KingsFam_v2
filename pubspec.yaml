@@ -69,7 +69,6 @@ dependencies:
   flutter_sound: 
   audio_session: ^0.1.6+1
   camera: 
-  flutter_staggered_grid_view: 
   
   
 

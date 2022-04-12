@@ -76,28 +76,34 @@ Padding CommuinityListTile(BuildContext context, AsyncSnapshot<QuerySnapshot> sn
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        TextButton(onPressed:()  {
-          // show an alert dialog that list all commuinitys
-          showModalBottomSheet(context: context, builder: (context) {
+        Row(
+          children: [
+            TextButton(onPressed:()  {
+              // show an alert dialog that list all commuinitys
+              showModalBottomSheet(context: context, builder: (context) {
 
-            return Container(
-              height: 200,
-              color: Colors.black,
-              child: ListView.builder(
-                 itemCount: snapshot.data!.docs.length,
-                 itemBuilder: (BuildContext context, int index) {
-                   Church commuinity = Church.fromDoc(snapshot.data!.docs[index]);
-                   return Padding(
-                     padding: const EdgeInsets.symmetric(vertical: 10),
-                     child: ListTile(leading: commuinity_pf_img(commuinity.imageUrl, 90, 105), title: Text(commuinity.name), onTap: () => Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: commuinity)),),
-                   );
-                 },
-               ),
-            );
-          });
+                return Container(
+                  height: 200,
+                  color: Colors.black,
+                  child: ListView.builder(
+                     itemCount: snapshot.data!.docs.length,
+                     itemBuilder: (BuildContext context, int index) {
+                       Church commuinity = Church.fromDoc(snapshot.data!.docs[index]);
+                       return Padding(
+                         padding: const EdgeInsets.symmetric(vertical: 10),
+                         child: ListTile(leading: commuinity_pf_img(commuinity.imageUrl, 90, 105), title: Text(commuinity.name), onTap: () => Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: commuinity)),),
+                       );
+                     },
+                   ),
+                );
+              });
 
 
-        }, style: TextButton.styleFrom(primary: Colors.white), child: Text("See More", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),),),
+            }, style: TextButton.styleFrom(primary: Colors.white), child: Text("See More", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),),),
+            SizedBox(width: 10),
+            Text("${snapshot.data!.docs.length} Commuintys",  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),)
+          ],
+        ),
         Container(
           child: !moreBtn ? Container() : greaterThan2 ? twoCommuinitys : oneCommuinitys,
         ),

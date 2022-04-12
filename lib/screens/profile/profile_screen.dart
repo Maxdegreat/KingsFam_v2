@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
+import 'package:kingsfam/models/models.dart';
 
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/repositories/sounds/sounds_recorder_repository.dart';
@@ -75,25 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       builder: (context, state) {
         //----------------------------------------scaffold starts here
         return Scaffold(
-            //--------------------------------------app bar
-            appBar: AppBar(
-              title: Text(state.userr.username),
-              actions: [
-                if (state.isCurrentUserr)
-                  TextButton(
-                    child: Text('logout',
-                        style: Theme.of(context).textTheme.bodyText1),
-                    onLongPress: () async =>
-                        context.read<AuthBloc>().add(AuthLogoutRequested()),
-                    onPressed: () => showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                              content:
-                                  Text('hold logout for 3 seconds to log out'),
-                            )),
-                  )
-              ],
-            ),
+          
             //---------------------------------------------------body path
             body: _bodyBabbyyyy(state));
       },
@@ -108,25 +91,34 @@ class _ProfileScreenState extends State<ProfileScreen>
         return CircularProgressIndicator(color: Colors.red[400]);
       default:
         return RefreshIndicator(
-          onRefresh: () async {
-            context
-                .read<ProfileBloc>()
-                .add(ProfileLoadUserr(userId: state.userr.id));
-          },
-          child: 
-              // this is the commuinty list            -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-              Column(
-                children: [
+          onRefresh: () async => context.read<ProfileBloc>().add(ProfileLoadUserr(userId: state.userr.id)),
+          child: CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                floating: true,
+                pinned: true,
+                title: Text(state.userr.username),
+                  actions: [
+                    if (state.isCurrentUserr)
+                      IconButton(
+                        icon: Icon(Icons.settings),
+                        //onLongPress: () async => context.read<AuthBloc>().add(AuthLogoutRequested()),
+                        onPressed: () => Navigator.of(context).pushNamed(EditProfileScreen.routeName, arguments: EditProfileScreenArgs(context: context))
+                        ),
+                  ],
+                 // expandedHeight: 200,
+                  
+              ), 
+
+              SliverToBoxAdapter(
+                child: 
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
                     children: [
                           Stack(
                             children: [
                               Container(
                                 height: MediaQuery.of(context).size.height / 5,
                                 width: double.infinity,
-                                color: Colors.transparent,
                               ),
                               BannerImage(
                                 isOpasaty: false,
@@ -141,8 +133,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 ),
                               ),
                               Positioned(
-                                top: 105, right: 65,
-                                child: ProfileButton(isCurrentUserr: state.isCurrentUserr, isFollowing: state.isFollowing),
+                                top: 105, right: state.isCurrentUserr ? 40 : 5,
+                                child: ProfileButton(isCurrentUserr: state.isCurrentUserr, isFollowing: state.isFollowing, colorPref: state.userr.colorPref,),
                               )
                             ],
                             clipBehavior: Clip.none,
@@ -150,138 +142,173 @@ class _ProfileScreenState extends State<ProfileScreen>
 
           
               
-                      ProfileStats( username: state.userr.username, posts: state.post.length, followers: state.userr.followers, following: state.userr.following),
+                       ProfileStats( username: state.userr.username, posts: state.post.length, followers: state.userr.followers, following: state.userr.following),
 
 
                       // add a linked list of commuinitys that I am in
                       CommuinityContainer(userId: state.userr.id, username: state.userr.username,),
-                        
-
-                      Divider(height: 15, color: Colors.white, thickness: 3,),
-                      // BigBoyBio(
-                        // username: state.userr.username,
-                        // bio: state.userr.bio,
-                      // )
-                    ],
-                  ),
-               
-              // this is a sizxed box
-              SizedBox(
-              height: 5.0,
-              ),
-              // SliverGrid(
-              
-              //     delegate: SliverChildBuilderDelegate(
-                  
-              //       (context, index) {
-              //         final post = state.post[index];
-              //         final likedPostState = context.watch<LikedPostCubit>().state;
-              //         final isLiked = likedPostState.likedPostsIds.contains(post!.id);
-              //         final recentlyLiked = likedPostState.recentlyLikedPostIds.contains(post.id);
-              //         final ctx = context.read<LikedPostCubit>();
-              //         return GestureDetector(
-              //           onTap: () {
-              //             Navigator.of(context)
-              //                 .pushNamed(ProfilePostView.routeName,
-              //                     arguments: ProfilePostViewArgs(
-              //                         posts: state.post,
-              //                         indexAt: index,
-              //                         isLiked: isLiked,
-              //                         onLike: () {
-              //                           if (isLiked)
-              //                             ctx.unLikePost(post: post);
-              //                           else
-              //                             ctx.likePost(post: post);
-              //                         },
-              //                         recentlyLiked: recentlyLiked));
-              //           },
-              //           child: Container(
-              //               height: 100,
-              //               width: 100,
-              //               decoration: BoxDecoration(
-              //                   borderRadius: BorderRadius.circular(5.0),
-              //                   image: post.imageUrl != null
-              //                       ? DecorationImage(
-              //                           image: CachedNetworkImageProvider(
-              //                               post.imageUrl!),
-              //                           fit: BoxFit.cover)
-              //                       : null),
-              //               child: post.quote != null
-              //                   ? Center(child: Text(post.quote!))
-              //                   : post.videoUrl != null
-              //                       ? Text("Video url")
-              //                       : null),
-              //         );
-              //       },
-              //       childCount: state.post.length,
-              //     ),
-              //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              //         crossAxisCount: 3,
-              //         mainAxisSpacing: 3.0,
-              //         crossAxisSpacing: 2.0))
-              
-              
-              //    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-           
-              Container(
-                height: MediaQuery.of(context).size.height / 3.7 ,
-                decoration: BoxDecoration(
-                  color: Colors.transparent
+                  ]
                 ),
-                // -0=-=-=--=-=-=-0-
-                child: 
-                    // breaks bc below
-                    //TextButton(onPressed: () {print("${state.post.length}");}, child: Text("Test the psots"))
-                    state.post.length == 1 ? 
-                    // show the one post
-                    Container(
-                      height: 100, width: 100, 
-                      decoration: BoxDecoration(image: DecorationImage(image: CachedNetworkImageProvider(state.post.first!.imageUrl!), fit: BoxFit.cover), borderRadius: BorderRadius.circular(12)),
-                    ) :
-
-                    state.post.length >= 2 ?
-
-                    Stack(
-                      children: [
-
-                        //GestureDetector(
-                         // onTap: () => Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(posts: state.post)),
-                           Positioned(
-                            top: 45, right: 40,
-                            child: Container(
-                              height: post_img_vid_size * 1.1, width: post_img_vid_size * 1.5, 
-                              decoration: BoxDecoration(image: DecorationImage(image: CachedNetworkImageProvider(state.post[1]!.imageUrl!), fit: BoxFit.cover), borderRadius: BorderRadius.circular(12)),
-                            ),
-                          //),
-                        ),
-
-                        Positioned(
-                          top: 10, left: 10,
-                          child: GestureDetector(
-                            onTap: () => Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(posts: state.post)),
-                            child: Container(
-                              height: post_img_vid_size * 1.1, width: post_img_vid_size * 1.6, 
-                              decoration: BoxDecoration(image: DecorationImage(image: CachedNetworkImageProvider(state.post.first!.imageUrl!), fit: BoxFit.cover), borderRadius: BorderRadius.circular(12)),
-                            ),
-                          ),
-                        ),
-                      ],
-                    )  :
-
-                    SizedBox.shrink()
-
-                   
-               
-              )
-                ],
               ),
+                imageGrids(state: state)
+
+            ],
+          )
+            
           
           
         );
     }
   }
-
-
+  imageGrids({required ProfileState state}) => SliverToBoxAdapter(
+    child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10.0,
+                mainAxisSpacing: 10.0,
+                mainAxisExtent: 320.0,
+              ),
+              primary: false,
+              shrinkWrap: true,
+              itemCount: state.post.length,
+              itemBuilder: (BuildContext context, int index) {
+                Post? post = state.post[index];
+                return Column(
+                  children: [
+                    Stack(
+                      children: 
+                        [
+                          Container(
+                          height: 240, width: 300, 
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: <Color> [
+                                Colors.transparent,
+                                Colors.black12,
+                                Colors.black45,
+                                Colors.black87,
+                              ]
+                            ),
+                            color: Colors.green,
+                            image: DecorationImage(image: CachedNetworkImageProvider(post!.imageUrl!), fit: BoxFit.cover),
+                            borderRadius: BorderRadius.circular(18)
+                          ),
+                        ),
+                       
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    ListTile(leading: commuinity_pf_img(post.author.profileImageUrl, 40, 40), title: Text(post.author.username, style: Theme.of(context).textTheme.bodyText1,),)
+                  ],
+                );
+              },
   
+            ),
+  );
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                // this is the commuinty list            -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+        //       Column(
+        //         children: [
+
+                        
+
+        //               Divider(height: 15, color: Colors.white, thickness: 3,),
+        //               // BigBoyBio(
+        //                 // username: state.userr.username,
+        //                 // bio: state.userr.bio,
+        //               // )
+        //             ],
+        //           ),
+               
+        //       // this is a sizxed box
+        //       SizedBox(
+        //       height: 5.0,
+        //       ),
+        //       // SliverGrid(
+              
+        //       //     delegate: SliverChildBuilderDelegate(
+                  
+        //       //       (context, index) {
+        //       //         final post = state.post[index];
+        //       //         final likedPostState = context.watch<LikedPostCubit>().state;
+        //       //         final isLiked = likedPostState.likedPostsIds.contains(post!.id);
+        //       //         final recentlyLiked = likedPostState.recentlyLikedPostIds.contains(post.id);
+        //       //         final ctx = context.read<LikedPostCubit>();
+        //       //         return GestureDetector(
+        //       //           onTap: () {
+        //       //             Navigator.of(context)
+        //       //                 .pushNamed(ProfilePostView.routeName,
+        //       //                     arguments: ProfilePostViewArgs(
+        //       //                         posts: state.post,
+        //       //                         indexAt: index,
+        //       //                         isLiked: isLiked,
+        //       //                         onLike: () {
+        //       //                           if (isLiked)
+        //       //                             ctx.unLikePost(post: post);
+        //       //                           else
+        //       //                             ctx.likePost(post: post);
+        //       //                         },
+        //       //                         recentlyLiked: recentlyLiked));
+        //       //           },
+        //       //           child: Container(
+        //       //               height: 100,
+        //       //               width: 100,
+        //       //               decoration: BoxDecoration(
+        //       //                   borderRadius: BorderRadius.circular(5.0),
+        //       //                   image: post.imageUrl != null
+        //       //                       ? DecorationImage(
+        //       //                           image: CachedNetworkImageProvider(
+        //       //                               post.imageUrl!),
+        //       //                           fit: BoxFit.cover)
+        //       //                       : null),
+        //       //               child: post.quote != null
+        //       //                   ? Center(child: Text(post.quote!))
+        //       //                   : post.videoUrl != null
+        //       //                       ? Text("Video url")
+        //       //                       : null),
+        //       //         );
+        //       //       },
+        //       //       childCount: state.post.length,
+        //       //     ),
+        //       //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        //       //         crossAxisCount: 3,
+        //       //         mainAxisSpacing: 3.0,
+        //       //         crossAxisSpacing: 2.0))
+              
+              
+        //       //    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-           
+        //       Container(
+        //         height: MediaQuery.of(context).size.height / 3.7 ,
+        //         decoration: BoxDecoration(
+        //           color: Colors.transparent
+        //         ),
+        //         // -0=-=-=--=-=-=-0-
+        //         child: 
+        // )
+                   
+        //         ],
+        //       ),
