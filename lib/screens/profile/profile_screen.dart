@@ -114,6 +114,8 @@ class _ProfileScreenState extends State<ProfileScreen>
               SliverToBoxAdapter(
                 child: 
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                           Stack(
                             children: [
@@ -141,7 +143,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                             clipBehavior: Clip.none,
                           ),
 
-          
+                       Padding(
+                         padding: const EdgeInsets.symmetric(vertical: 10),
+                         child: BigBoyBio(username: state.userr.username, bio: state.userr.bio),
+                       ),
               
                        ProfileStats( username: state.userr.username, posts: state.post.length, followers: state.userr.followers, following: state.userr.following),
 
@@ -177,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 return Column(
                   children: [
                     GestureDetector(
-                      onTap: () => print("Hiii"),//FeedScreenWidget(),
+                      onTap: () => Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(startIndex: index, posts: state.post)),
                       child: Container(
                       height: 240, width: 300, 
                       decoration: BoxDecoration(

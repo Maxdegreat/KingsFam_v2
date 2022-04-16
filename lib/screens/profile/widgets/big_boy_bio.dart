@@ -12,16 +12,17 @@ class BigBoyBio extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: bio != null
-              ? Text(
+        bio != null
+            ? Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Text(
                   bio!,
-                  style: TextStyle(color: Colors.white),
-                )
-              : SizedBox.shrink(),
-        )
+                  style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w500),
+                ),
+            )
+            : SizedBox.shrink()
       ],
     );
   }
