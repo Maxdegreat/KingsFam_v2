@@ -41,6 +41,8 @@ class ImageHelper {
         iosUiSettings: const IOSUiSettings(),
         compressQuality: 100,
       );
+      var decodedImage = await decodeImageFromList(cropedFile!.readAsBytesSync());
+      print("||||||||||||||||||||||\height: ${decodedImage.height}|||||||||||||||||||||||||||");
       return cropedFile;
     }
     return null;

@@ -170,36 +170,11 @@ class _PostSingleViewState extends State<PostSingleView> {
   Widget contentContainer({required Post post, required Size size}) {
     if (post.imageUrl != null) {
 
-      // Image image = new Image.network(post.imageUrl!);
-      // Completer<ImageInfo> completer = Completer();
-
-      // image.image
-      //   .resolve(new ImageConfiguration())
-      //   .addListener(ImageStreamListener((ImageInfo info, bool _) {
-      //     setState(() {
-            
-      //     completer.complete(info);
-      //     });
-      // }));
-    //   double _imageHeight = 0, _imageWidth = 0;
-      Image image = new Image.network(post.imageUrl!);
-    //   image.image
-    //   .resolve(ImageConfiguration())
-    // .addListener((ImageStreamListener((ImageInfo info, bool _) {
-    //   setState(() {
-    //     _imageHeight = info.image.height.toDouble();
-    //     _imageWidth = info.image.width.toDouble();
-    //     print("image height: $_imageHeight");
-    //     print("image width: $_imageWidth");
-    //   });
-    // })));
-
-      double h = 0, w =0;
-      //List<double> imgData = getImageData(image, h, w);
+     
 
       return ConstrainedBox(
       constraints: BoxConstraints(
-        minHeight: size.height / 1.28
+        minHeight: post.height.toDouble()
       ),
       child: Container(
 
@@ -212,7 +187,7 @@ class _PostSingleViewState extends State<PostSingleView> {
     } else if (post.videoUrl != null) {
       return ConstrainedBox(
         constraints: BoxConstraints(
-          maxHeight: size.height / 1.2,
+          maxHeight: post.height.toDouble()
         ),
         child: VidoeDisplay(videoUrl: post.videoUrl!)
       );

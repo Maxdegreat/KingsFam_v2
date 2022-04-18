@@ -974,10 +974,10 @@ Future <List<int> > imageInfo(File? image, File? video) async {
       file = video;
     else 
       return [120, 120];
+    
     //File image = new File('image.png'); // Or any other way to get a File instance.
     var decodedImage = await decodeImageFromList(file.readAsBytesSync());
     log("height: ${decodedImage.height}");
-    print("height: ${decodedImage.height}");
     return [decodedImage.height, decodedImage.width];
 }
 

@@ -100,7 +100,7 @@ void onRemovePostContent() {
 
 
 // --------------------------------- 4 submit
-  Future<void> submit({required PrePost prePost, required List<int> imgInfo}) async {
+  Future<void> submit({required PrePost prePost}) async {
     print("called submit++++++++++++++++++++++++++");
     emit(state.copyWith(status: CreatePostStatus.submitting));
 
@@ -129,8 +129,7 @@ void onRemovePostContent() {
             soundTrackUrl: null,
             caption: caption,
             likes: 0,
-            date: Timestamp.now(),
-            height: imgInfo[0]
+            date: Timestamp.now()
         );
 
         print("made the post");
@@ -160,9 +159,7 @@ void onRemovePostContent() {
             soundTrackUrl: null,
             caption: caption,
             likes: 0,
-            date: Timestamp.now(),
-            height: imgInfo[0]
-
+            date: Timestamp.now()
         );
         print("made the post");
         await _postsRepository.createPost(post: post);

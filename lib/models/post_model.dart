@@ -19,6 +19,7 @@ class PrePost extends Equatable {
   final File?  thumbnailFile;
   final File? soundTrack;
   final String? caption;
+  final int? height;
   PrePost({
     required this.author,
     required this.commuinity,
@@ -28,13 +29,15 @@ class PrePost extends Equatable {
     this.thumbnailFile,
     this.soundTrack,
     this.caption,
+    this.height,
   });
 
   @override
-  List<Object?> get props => [author, commuinity, quote, imageFile, videoFile, thumbnailFile, soundTrack, caption];
+  List<Object?> get props => [height, author, commuinity, quote, imageFile, videoFile, thumbnailFile, soundTrack, caption];
 
   PrePost copyWith({
     Userr? author,
+    int? height,
     Church? commuinity,
     String? quote,
     File? imageFile,
@@ -52,6 +55,7 @@ class PrePost extends Equatable {
       thumbnailFile: thumbnailFile ?? this.thumbnailFile,
       soundTrack: soundTrack ?? this.soundTrack,
       caption: caption ?? this.caption,
+      height: height ?? this.height,
     );
   }
 }
@@ -68,6 +72,7 @@ class Post extends Equatable {
   final String? caption;
   final int likes;
   final Timestamp date;
+  final int height;
   Post({
     this.id,
     required this.author, //2 make the constructor
@@ -80,11 +85,12 @@ class Post extends Equatable {
     required this.caption,
     required this.likes,
     required this.date,
+    required this.height,
   });
 
   @override
   List<Object?> get props =>
-      [id, author, commuinity,  quote, imageUrl, videoUrl, thumbnailUrl, soundTrackUrl, caption, likes, date]; //3 do props
+      [id, height, author, commuinity,  quote, imageUrl, videoUrl, thumbnailUrl, soundTrackUrl, caption, likes, date]; //3 do props
 
   Post copyWith({
     String? id, //4 do the copy with
@@ -98,6 +104,7 @@ class Post extends Equatable {
     String? caption,
     int? likes,
     Timestamp? date,
+    int? height,
   }) {
     return Post(
       id: id ?? this.id,
@@ -111,6 +118,7 @@ class Post extends Equatable {
       caption: caption ?? this.caption,
       likes: likes ?? this.likes,
       date: date ?? this.date,
+      height: height ?? this.height,
     );
   }
 
@@ -127,7 +135,8 @@ class Post extends Equatable {
       'soundTrackUrl' : soundTrackUrl,
       'caption': caption,
       'likes': likes,
-      'date': Timestamp.now()
+      'date': Timestamp.now(),
+      'height': height,
     };
   }
 
@@ -140,7 +149,8 @@ class Post extends Equatable {
       'soundTrackUrl' : soundTrackUrl,
       'caption': caption,
       'likes': likes,
-      'date': Timestamp.now()
+      'date': Timestamp.now(),
+      'height': height,
   };
 
   static Future<Post?> fromDoc(DocumentSnapshot doc) async {
@@ -175,7 +185,9 @@ class Post extends Equatable {
             likes: (data['likes'] ?? 0).toInt(),
             caption: data['caption'] ?? null,
             
-            date: (data['date'] ?? null )
+            date: (data['date'] ?? null ),
+
+            height: data['height'] ?? null,
           );
       }
     } else if (authorRef != null) {
@@ -202,7 +214,9 @@ class Post extends Equatable {
 
             caption: data['caption'] ?? null,
             
-            date: (data['date'] ?? null )
+            date: (data['date'] ?? null ),
+
+            height: (data['height']) ?? null,
           );
     }
     return null;
