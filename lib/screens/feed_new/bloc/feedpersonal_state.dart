@@ -1,5 +1,5 @@
 part of 'feedpersonal_bloc.dart';
-enum FeedPersonalStatus {inital, loading, paginating, error}
+enum FeedPersonalStatus {inital, loading, paginating, success, error}
 class FeedpersonalState extends Equatable {
   final List<Post?> posts;
   final int? startingIdx;

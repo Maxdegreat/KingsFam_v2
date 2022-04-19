@@ -25,11 +25,36 @@ class FeedpersonalBloc extends Bloc<FeedpersonalEvent, FeedpersonalState> {
   Stream<FeedpersonalState> mapEventToState(FeedpersonalEvent event) async* {
     if (event is FeedLoadPostsInit) {
       yield* _mapFeedLoadPostsInitToState(event.posts, event.currIdx);
-    } 
+    } else if (event is FeedPersonalPaginatePosts) {
+      yield* _mapFeedPaginatePostToState();
+    }
   }
 
   Stream<FeedpersonalState> _mapFeedLoadPostsInitToState(List<Post?> posts, int currIdx) async* {
     yield state.copyWith(posts: posts, startingIdx: currIdx);
   }
 
+
+
+  Stream<FeedpersonalState> _mapFeedPaginatePostToState() async* {
+    yield state.copyWith(status: FeedPersonalStatus.paginating);
+    try {
+      // get last post id to start paginating from here
+      String? lastPostId = state.posts.isNotEmpty ? state.posts.last!.id : null;
+      // get the new batch
+      final posts = await _postsRepository.getUserFeed(userId: _authBloc.state.user!.uid, lastPostId: lastPostId);
+      // add the new batch to the state.posts lists
+      final updatedPosts = List<Post?>.from(state.posts)..addAll(posts);
+
+      // get the posts that we have liked
+      final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: posts);
+      // updates the liked posts from liked post cuit instance???
+      _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
+      
+      yield state.copyWith(posts: updatedPosts, status: FeedPersonalStatus.success);
+    } catch (e) {
+      yield state.copyWith(failure: Failure(message: "dang, max messed up you're pagination code...", code: e.toString()), status: FeedPersonalStatus.error);
+    }
+  }
 }
+

@@ -54,7 +54,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
          yield state.copyWith(posts: updatedPosts ,status: FeedStatus.success);
         _likedPostCubit.updateLikedPosts(postIds: likedPostIds);     
     } catch (e) {
-      yield state.copyWith(failure: Failure(message: "dang, max messed up you pagination code...", code: e.toString()), status: FeedStatus.error);
+      yield state.copyWith(failure: Failure(message: "dang, max messed up you're pagination code...", code: e.toString()), status: FeedStatus.error);
     }
   }
   

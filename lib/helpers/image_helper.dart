@@ -28,6 +28,7 @@ class ImageHelper {
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       final cropedFile = await ImageCropper.cropImage(
+        maxHeight: 500,
         sourcePath: pickedFile.path,
         cropStyle: cropStyle,
         //aspectRatio: ,
@@ -38,7 +39,7 @@ class ImageHelper {
           initAspectRatio: CropAspectRatioPreset.square,
           lockAspectRatio: false,
         ),
-        iosUiSettings: const IOSUiSettings(),
+        iosUiSettings: const IOSUiSettings(),   
         compressQuality: 100,
       );
       var decodedImage = await decodeImageFromList(cropedFile!.readAsBytesSync());

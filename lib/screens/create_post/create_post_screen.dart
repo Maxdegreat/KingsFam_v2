@@ -243,7 +243,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
           onTap: () async {
             final pickedFile = await ImageHelper.pickImageFromGallery(context: context,cropStyle: CropStyle.rectangle,title: 'Create Post');
             if (pickedFile != null)
-             context.read<CreatePostCubit>().postImageOnChanged(pickedFile);
+              context.read<CreatePostCubit>().postImageOnChanged(pickedFile);
             setState(() {contextPrePost = context;});
        },
        child: Container(
@@ -258,7 +258,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
            final pickedFile = await ImageHelper.pickVideoFromGallery();
            if (pickedFile != null)
              context.read<CreatePostCubit>().onStopPostRecording(pickedFile);
-           setState(() {contextPrePost = context;});
+           setState(() {contextPrePost = context;}) ;
        },
        child: Container(
          height: 25, width: 75,

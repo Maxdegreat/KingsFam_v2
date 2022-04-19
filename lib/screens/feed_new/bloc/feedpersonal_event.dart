@@ -14,3 +14,6 @@ class FeedLoadPostsInit extends FeedpersonalEvent{
   List<Object?> get props => [currIdx, posts];
   const FeedLoadPostsInit({required this.posts, required this.currIdx});
 }
+
+
+class FeedPersonalPaginatePosts extends FeedpersonalEvent{}

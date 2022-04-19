@@ -44,20 +44,34 @@ class ProfileScreen extends StatefulWidget {
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen>
-    with SingleTickerProviderStateMixin {
+class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
+  // controllers
   late TabController _tabController;
+  ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    scrollController.addListener(listenToScrolling);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  void listenToScrolling() {
+    //TODO you need to add this later make it a p1 requirment
+    // if (scrollController.position.atEdge) {
+
+    //   if (scrollController.position.pixels != 0.0 && scrollController.position.maxScrollExtent == scrollController.position.pixels) {
+    //     const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
+    //     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    //     context.read<ProfileBloc>()..add(ProfilePaginatePosts());
+    //   }
+    // }
   }
 
   @override
@@ -94,6 +108,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         return RefreshIndicator(
           onRefresh: () async => context.read<ProfileBloc>().add(ProfileLoadUserr(userId: state.userr.id)),
           child: CustomScrollView(
+             controller: scrollController ,
             slivers: [
               SliverAppBar(
                 floating: true,
@@ -108,7 +123,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                         ),
                   ],
                  // expandedHeight: 200,
-                  
               ), 
 
               SliverToBoxAdapter(
@@ -168,6 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
   imageGrids({required ProfileState state}) => SliverToBoxAdapter(
     child: GridView.builder(
+             
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 10.0,
@@ -190,7 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         image: DecorationImage(image: CachedNetworkImageProvider(post!.imageUrl!), fit: BoxFit.cover),
                         borderRadius: BorderRadius.circular(18)
                       ),
-                                            ),
+                  ),
                     ),
                     SizedBox(height: 10),
                     ListTile(leading: commuinity_pf_img(post.author.profileImageUrl, 40, 40), title: Text(post.author.username, style: Theme.of(context).textTheme.bodyText1,),)

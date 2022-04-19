@@ -41,8 +41,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) async* {
     if (event is ProfileLoadUserr) {
       yield* _mapProfileLoadUserToState(event);
-    } else if (event is ProfileToggelGridView) {
-      yield* _mapProfileToggelGridViewToState(event);
+    } else if (event is ProfilePaginatePosts) {
+      yield* _mapProfilePaginatePosts();
     } else if (event is ProfileUpdatePost) {
       yield* _mapProfileUpdatePostsToState(event);
     } else if (event is ProfileFollowUserr) {
@@ -50,6 +50,32 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     } else if (event is ProfileUnfollowUserr) {
       yield* _mapProfileUnfollowUserrToState();
     }
+  }
+
+  Stream<ProfileState> _mapProfilePaginatePosts() async* {
+    print("the len of pots list is: ${state.post.length}");
+    print("post have been updated");
+    yield state.copyWith(status: ProfileStatus.paginating);
+    try {
+       // get last post id to start paginating from here
+      String? lastPostId = state.post.isNotEmpty ? state.post.last!.id : null;
+      // get the new batch
+      print("len of last post is: $lastPostId");
+      final posts = await _postsRepository.getUserFeed(userId: _authBloc.state.user!.uid, lastPostId: lastPostId);
+      // add the new batch to the state.posts lists
+      print("len of get user feed is: ${posts.length}");
+      final updatedPosts = List<Post?>.from(state.post)..addAll(posts);
+
+      // get the posts that we have liked
+      final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: posts);
+      // updates the liked posts from liked post cuit instance???
+      _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
+      
+      yield state.copyWith(post: updatedPosts, status: ProfileStatus.loaded);
+    } catch (e) {
+       state.copyWith(status: ProfileStatus.error, failure: Failure(message: 'hmmm, check ur connection fam '));
+    }
+    print("the len of pots list is: ${state.post.length}");
   }
 
   Stream<ProfileState> _mapProfileLoadUserToState(
@@ -61,13 +87,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       
       final isCurrentUser = _authBloc.state.user!.uid == event.userId;
 
-      final isFollowing = await _userrRepository
-        .isFollowing(userrId: _authBloc.state.user!.uid, otherUserId: event.userId);
+      final isFollowing = await _userrRepository.isFollowing(userrId: _authBloc.state.user!.uid, otherUserId: event.userId);
 
+      // whenever a new post is posted it will update the home page post view
       _postStreamSubscription?.cancel();
       _postStreamSubscription = _postsRepository
-          .getUserPosts(userId: event.userId)
-          .listen((posts) async {
+          // HEY I LIMITED THIS TO 8 POSTS ============================================================== jk add this later
+        .getUserPosts(userId: event.userId).listen((posts) async {
         final allPost = await Future.wait(posts);
         add(ProfileUpdatePost(post: allPost));
       });
@@ -79,35 +105,26 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           status: ProfileStatus.loaded);
     } /*on PlatformException*/ catch (e) {
       yield state.copyWith(
-          status: ProfileStatus.error,
-          failure: Failure(
-              code: 'the error code is $e',
-              message: e.toString()//'hmm, unable to load this profile. Check your connection.'
+          status: ProfileStatus.error, failure: Failure( code: 'the error code is $e', message: e.toString()//'hmm, unable to load this profile. Check your connection.'
             ));
-      print("The error is: $e ");
-      print(state.failure.code);
+          print("The error is: $e ");
+          print(state.failure.code);
     }
   }
 
-  Stream<ProfileState> _mapProfileToggelGridViewToState(
-      ProfileToggelGridView event) async* {
-    yield state.copyWith(isGridView: event.isGridView);
-  }
 
-  Stream<ProfileState> _mapProfileUpdatePostsToState(
-      ProfileUpdatePost event) async* {
+
+  Stream<ProfileState> _mapProfileUpdatePostsToState( ProfileUpdatePost event) async* {
     yield state.copyWith(post: event.post);
-
-    final likedPostIds = await _postsRepository.getLikedPostIds(
-        userId: _authBloc.state.user!.uid, posts: event.post);
+    final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: event.post);
     _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
   }
+
 
   Stream<ProfileState> _mapProfileFollowUserToState() async* {
     try {
       _userrRepository.followerUserr(userrId: _authBloc.state.user!.uid, followersId: state.userr.id);
-      final updatedUserr =
-          state.userr.copyWith(followers: state.userr.followers + 1);
+      final updatedUserr = state.userr.copyWith(followers: state.userr.followers + 1);
       yield state.copyWith(userr: updatedUserr, isFollowing: true);
     } catch (error) {
       state.copyWith(

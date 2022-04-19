@@ -36,7 +36,7 @@ class PostsRepository extends BasePostsRepository {
     return _firebaseFirestore
         .collection(Paths.posts)
         .where('author', isEqualTo: authorRef)
-        .orderBy('date', descending: true) //most recent post at the top
+        .orderBy('date', descending: true) // .LIMIT(8)//most recent post at the top
         .snapshots() //.snap() returns a stream of querry snaps
         //convert or map each query snap into a post
         .map((snap) => snap.docs.map((doc) => Post.fromDoc(doc)).toList());
@@ -65,7 +65,7 @@ class PostsRepository extends BasePostsRepository {
           .doc(userId)
           .collection(Paths.userFeed)
           .orderBy('date', descending: true)
-          .limit(15)
+          .limit(8)
           .get();
     } else {
       // now we are in the else. here we want to grt the docid of the last post which we pass into the 
@@ -76,8 +76,8 @@ class PostsRepository extends BasePostsRepository {
           .collection(Paths.userFeed)
           .doc(lastPostId)
           .get();
-
-      if (!lastPostDoc.exists) return [];
+      print("does the last post doc exist? ${lastPostDoc.exists}");
+      if (!lastPostDoc.exists) return []; // meaning we are at the end of users posts
 
       // recall the querry but use start after 
       postSnap = await _firebaseFirestore
@@ -86,15 +86,16 @@ class PostsRepository extends BasePostsRepository {
           .collection(Paths.userFeed)
           .orderBy('date', descending: true)
           .startAfterDocument(lastPostDoc)
-          .limit(15)
+          .limit(8)
           .get();
     }
 
     // wait for all documents and return the post.
-    final posts =
-        Future.wait(postSnap.docs.map((doc) => Post.fromDoc(doc)).toList());
+    final posts = Future.wait(postSnap.docs.map((doc) => Post.fromDoc(doc)).toList());
     return posts;
   }
+
+
   //CREATE LIKES FOR POSTS
   @override
   void createLike({required Post post, required String userId}) {

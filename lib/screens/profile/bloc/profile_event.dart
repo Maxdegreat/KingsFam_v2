@@ -17,16 +17,7 @@ class ProfileLoadUserr extends ProfileEvent {
   List<Object?> get props => [userId];
 }
 
-class ProfileToggelGridView extends ProfileEvent {
-  final bool isGridView;
-
-  ProfileToggelGridView({
-    required this.isGridView,
-  });
-
-  @override
-  List<Object> get props => [isGridView]; //               ?
-}
+class ProfilePaginatePosts extends ProfileEvent {}
 
 class ProfileUpdatePost extends ProfileEvent {
   final List<Post?> post;
