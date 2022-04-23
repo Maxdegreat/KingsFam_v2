@@ -78,8 +78,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     print("the len of pots list is: ${state.post.length}");
   }
 
-  Stream<ProfileState> _mapProfileLoadUserToState(
-      ProfileLoadUserr event) async* {
+  Stream<ProfileState> _mapProfileLoadUserToState(ProfileLoadUserr event) async* {
     yield state.copyWith(status: ProfileStatus.loading);
     try {
       

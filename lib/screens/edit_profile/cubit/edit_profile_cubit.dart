@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/extraTools.dart';
@@ -27,7 +28,7 @@ class EditProfileCubit extends Cubit<EditProfileState> {
         _profileBloc = profileBloc,
         super(EditProfileState.initial()) {
     final userr = _profileBloc.state.userr;
-    emit(state.copyWith(username: userr.username, bio: userr.bio));
+    emit(state.copyWith(username: userr.username, bio: userr.bio, colorPref: userr.colorPref));
   }
 
   void bannerImageChanged(File image) {

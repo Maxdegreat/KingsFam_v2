@@ -69,6 +69,7 @@ dependencies:
   flutter_sound: 
   audio_session: ^0.1.6+1
   camera: 
+  scrollable_positioned_list: ^0.2.3
   
   
 

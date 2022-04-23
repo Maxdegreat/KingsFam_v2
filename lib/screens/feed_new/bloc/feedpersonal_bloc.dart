@@ -27,11 +27,17 @@ class FeedpersonalBloc extends Bloc<FeedpersonalEvent, FeedpersonalState> {
       yield* _mapFeedLoadPostsInitToState(event.posts, event.currIdx);
     } else if (event is FeedPersonalPaginatePosts) {
       yield* _mapFeedPaginatePostToState();
+    } else if (event is FeedJumpTo) {
+      yield* _mapUpdateJumpToState();
     }
   }
 
   Stream<FeedpersonalState> _mapFeedLoadPostsInitToState(List<Post?> posts, int currIdx) async* {
     yield state.copyWith(posts: posts, startingIdx: currIdx);
+  }
+
+  Stream<FeedpersonalState> _mapUpdateJumpToState() async* {
+    yield state.copyWith(jumpTo: 1 == 1,);
   }
 
 

@@ -1,23 +1,17 @@
 // todo:
 // I need a list of post. the post will contain data on user and commuinity because it has references
 //
-import 'dart:async';
-import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
+import 'package:kingsfam/screens/edit_profile/cubit/edit_profile_cubit.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:kingsfam/cubits/cubits.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
-import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 import 'package:kingsfam/screens/feed_new/bloc/feedpersonal_bloc.dart';
-import 'package:kingsfam/widgets/commuinity_pf_image.dart';
-import 'package:kingsfam/widgets/profile_image.dart';
-import 'package:kingsfam/widgets/video_display.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 class FeedNewScreenArgs {
@@ -51,22 +45,47 @@ class FeedNewScreen extends StatefulWidget {
   State<FeedNewScreen> createState() => FeedNewState();
 }
 
+
 class FeedNewState extends State<FeedNewScreen> {
+
+  ItemScrollController itemController = ItemScrollController();
+  
+  Future scrollToItem() async {
+    itemController.jumpTo(index: widget.startIndex);
+  }
+  Future scrollToHelper() async {
+    Future.delayed(const Duration(milliseconds: 15)).then((_) => scrollToItem());
+  }
+  bool loaded = false;
+
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return BlocConsumer<FeedpersonalBloc, FeedpersonalState>(
       listener: (context, state) {
-        // TODO: implement listener
+        // if (state.jumpTo == true) {
+        //   print("Yoooo");
+          
+        // }
       },
       builder: (context, state) {
+
         return Scaffold(
             appBar: AppBar(
               title: Text("Fam's Posts"),
+              actions: [TextButton(onPressed: () => print(state.jumpTo), child: Text("Scroll"))],
             ),
-            body: ListView.builder(
+            body: ScrollablePositionedList.builder(
+              itemScrollController: itemController,
               itemCount: state.posts.length,
               itemBuilder: (BuildContext context, int index) {
+                // if (state.jumpTo != true)
+                //    context.read<FeedpersonalBloc>()..add(FeedJumpTo());
+                if (loaded != true) {
+                  loaded = true;
+                  scrollToHelper();
+                }
                 final Post? post = state.posts[index];
                 if (post != null)
                   return PostSingleView(post: post,);

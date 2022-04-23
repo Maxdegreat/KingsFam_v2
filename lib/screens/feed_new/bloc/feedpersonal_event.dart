@@ -15,5 +15,7 @@ class FeedLoadPostsInit extends FeedpersonalEvent{
   const FeedLoadPostsInit({required this.posts, required this.currIdx});
 }
 
+// only goal of class below is to set the state of jupto to true
+class FeedJumpTo extends FeedpersonalEvent {}
 
 class FeedPersonalPaginatePosts extends FeedpersonalEvent{}
