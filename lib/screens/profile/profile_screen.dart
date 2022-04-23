@@ -140,6 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                               BannerImage(
                                 isOpasaty: false,
                                 bannerImageUrl: state.userr.bannerImageUrl,
+                                passedColor: hexcolor.hexcolorCode(state.userr.colorPref),
                               ),
                               Positioned(
                                 top: 50,

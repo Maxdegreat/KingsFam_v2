@@ -52,13 +52,14 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
         return Scaffold(
             appBar: AppBar(title: Text("${widget.commuinity.name}\'s Content", overflow: TextOverflow.fade, style: Theme.of(context).textTheme.bodyText1,),),
             body: ListView.builder(
-                  itemCount: 1,//state.posts!.length,
+                  itemCount: state.posts!.length,
                   itemBuilder: (BuildContext context, int index) {
-                    //final Post? post = state.posts![index];
-                    //if (post != null)
-                    //  return PostSingleView(post: post,);
-                    //return Text("post is null");
-                    return Text("Jesus is King... also ${state.posts!.length}");
+                    final Post? post = state.posts![index];
+                    if (post != null)
+                      return PostSingleView(post: post,);
+                    return Text("Error, Post is null");
+
+
                   },
                 )
             );

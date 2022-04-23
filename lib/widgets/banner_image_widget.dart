@@ -7,26 +7,33 @@ class BannerImage extends StatelessWidget {
   final String? bannerImageUrl;
   final File? bannerImage; //comes form phone gallery
   final bool isOpasaty;
+  final int? passedColor;
 
-  const BannerImage({this.bannerImageUrl, this.bannerImage, required this.isOpasaty});
+  const BannerImage({this.bannerImageUrl, this.bannerImage, required this.isOpasaty, this.passedColor});
 
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      Container(
-        width: double.infinity,
-        height: MediaQuery.of(context).size.height / 8,
-        decoration: BoxDecoration(
-          color: Colors.grey[900],
-          image: bannerImage != null
-              ? DecorationImage(
-                  image: FileImage(bannerImage!), fit: BoxFit.fitWidth)
-              : bannerImageUrl!.isNotEmpty
+      Column(
+        children: [
+          Container(
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height / 8,
+            decoration: BoxDecoration(
+              color: Colors.grey[900],
+              image: bannerImage != null
                   ? DecorationImage(
-                      image: CachedNetworkImageProvider(bannerImageUrl!),
-                      fit: BoxFit.fitWidth)
-                  : null,
-        ),
+                      image: FileImage(bannerImage!), fit: BoxFit.fitWidth)
+                  : bannerImageUrl!.isNotEmpty
+                      ? DecorationImage(
+                          image: CachedNetworkImageProvider(bannerImageUrl!),
+                          fit: BoxFit.fitWidth)
+                      : null,
+            ),
+          ),
+          passedColor != null ? Container(height: 1, width: double.infinity, color: Color(passedColor!),) : SizedBox.shrink(),
+          
+        ],
       ),
       Container(
         color: isOpasaty ? Colors.black45 : Colors.transparent,

@@ -97,16 +97,20 @@ class PostsRepository extends BasePostsRepository {
 
   // GET THE COMMUINITY FEED
   Future<List<Post?>> getCommuinityFeed({required String commuinityId, String? lastPostId}) async {
-    print("in the post repo looking for the commuinity feed");
+
+    // Build a reference catagori. this is used so i can query for a reference.
+    var commuinityRef = _firebaseFirestore.collection(Paths.church).doc(commuinityId);
     QuerySnapshot postSnap;
 
     if (lastPostId == null) {
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       postSnap = await _firebaseFirestore
       .collection(Paths.posts)
-      .where('commuinity', isEqualTo: commuinityId)
+      .where('commuinity', isEqualTo: commuinityRef)
       .orderBy('date', descending: true)
       .limit(8)
       .get();
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     } else {
       // now we just grab the actuall doc. we use this in the start after. (if the doc exist)
       final lastPostDoc = await _firebaseFirestore.collection(Paths.posts).doc(lastPostId).get();
@@ -123,8 +127,6 @@ class PostsRepository extends BasePostsRepository {
     }
 
     final posts = Future.wait(postSnap.docs.map((doc) => Post.fromDoc(doc)).toList());
-    var x = await posts;
-    print("At the end of the posts repo, the post repo consisit of a len of ${x.length} ");
     return posts;
 
    }

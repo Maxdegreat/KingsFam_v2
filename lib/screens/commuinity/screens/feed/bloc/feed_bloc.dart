@@ -34,14 +34,14 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   Stream<FeedState> _mapFeedCommuinityFetchPostToState(String commuinityId) async* {
     yield state.copyWith(posts: [], status: FeedStatus.loading);
     try {
-      print("The event is for commuinity posts");
+
       final posts = await _postsRepository.getCommuinityFeed(commuinityId: commuinityId);
        _likedPostCubit.clearAllLikedPosts();
 
       final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: posts);
       _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
       yield state.copyWith(posts: posts ,status: FeedStatus.success);
-      print("success for the event being commuinity posts");
+
     } catch (e) {
     }
   }

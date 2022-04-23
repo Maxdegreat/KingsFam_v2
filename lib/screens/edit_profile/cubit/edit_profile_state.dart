@@ -30,7 +30,7 @@ class EditProfileState extends Equatable {
       username: '',
       location: '',
       bio: '',
-      colorPref: '',
+      colorPref: '', // Would Like This To Be What Ever The User Had B4
       status: EditProfileStatus.initial,
       failure: Failure(),
     );

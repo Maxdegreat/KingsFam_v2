@@ -62,7 +62,8 @@ class HexColor {
      '#1425F4' : 'Purple Blue' , 
      '#9814F4' : 'Real Purple' , 
      '#F414BE' : 'HoTT Pink'   , 
-     '#E81010' : 'Blood Red'    
+     '#E81010' : 'Blood Red'   ,
+     'crown Gold' : '#FFC050'  ,
   };
   // pass an int 0 - (len-1)  and returned its corrsponding color name
   // this works in union with the hexColorMap
@@ -74,6 +75,7 @@ class HexColor {
      4 : 'Real Purple',
      5 : 'HoTT Pink',
      6 : 'Blood Red',
+     7 : 'crown Gold',
   };
 }
 
