@@ -98,7 +98,7 @@ class CustomRoute {
             args: settings.arguments as StoryCommuinityArgs);
 
       case CommuinityFeedScreen.routeName:
-        return CommuinityFeedScreen.route();
+        return CommuinityFeedScreen.route(args: settings.arguments as CommuinityFeedScreenArgs);
 
       case CallsHome.routeName:
         return CallsHome.route(args: settings.arguments as CallsHomeArgs);

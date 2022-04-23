@@ -95,6 +95,41 @@ class PostsRepository extends BasePostsRepository {
     return posts;
   }
 
+  // GET THE COMMUINITY FEED
+  Future<List<Post?>> getCommuinityFeed({required String commuinityId, String? lastPostId}) async {
+    print("in the post repo looking for the commuinity feed");
+    QuerySnapshot postSnap;
+
+    if (lastPostId == null) {
+      postSnap = await _firebaseFirestore
+      .collection(Paths.posts)
+      .where('commuinity', isEqualTo: commuinityId)
+      .orderBy('date', descending: true)
+      .limit(8)
+      .get();
+    } else {
+      // now we just grab the actuall doc. we use this in the start after. (if the doc exist)
+      final lastPostDoc = await _firebaseFirestore.collection(Paths.posts).doc(lastPostId).get();
+      // where we able to get the actuall doc?
+      if (!lastPostDoc.exists) return [];
+
+    //recall the querry but use start after 
+    postSnap = await _firebaseFirestore
+      .collection(Paths.posts)
+          .orderBy('date', descending: true)
+          .startAfterDocument(lastPostDoc)
+          .limit(8)
+          .get();
+    }
+
+    final posts = Future.wait(postSnap.docs.map((doc) => Post.fromDoc(doc)).toList());
+    var x = await posts;
+    print("At the end of the posts repo, the post repo consisit of a len of ${x.length} ");
+    return posts;
+
+   }
+ 
+
 
   //CREATE LIKES FOR POSTS
   @override

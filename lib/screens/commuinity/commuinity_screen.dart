@@ -19,7 +19,7 @@ import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/build_church/cubit/buildchurch_cubit.dart';
 import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/calls_home.dart';
-import 'package:kingsfam/screens/commuinity/screens/feed/feed.dart';
+import 'package:kingsfam/screens/commuinity/screens/feed/commuinity_feed.dart';
 import 'package:kingsfam/screens/commuinity/screens/sounds/sounds.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscorc.dart';
 import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
@@ -173,9 +173,17 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                           ],
                         ),
                         SizedBox(height: 30),
+                        Container(height: 50, child: kings_cord_strbldr(userId)),
+                        SizedBox(height: 30),
                         Container(
-                            height: 50, child: kings_cord_strbldr(userId)),
-                        //SizedBox(height: 30),
+                          height: 50.0,
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(primary: Colors.grey[900]),
+                            child: Text("CONTENT", style: TextStyle(letterSpacing: 10)),
+                            onPressed: () => Navigator.of(context).pushNamed(CommuinityFeedScreen.routeName, arguments: CommuinityFeedScreenArgs(commuinity: widget.commuinity))
+                          )
+                        ),
                         //                                 THIS IS A P2, MAYBE AFTER INIT RELEACE AND SOME CORE UPDATES WE CAN ADD THIS IN A INOVATIVE  WAY!!!
                         // Container(
                         //   height: 50.0,
