@@ -7,11 +7,10 @@ import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/models/models.dart';
 
 import 'package:kingsfam/repositories/repositories.dart';
-import 'package:kingsfam/repositories/sounds/sounds_recorder_repository.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/profile/widgets/commuinity_container.dart';
 import 'package:kingsfam/screens/screens.dart';
-import 'package:kingsfam/widgets/feed_screen_widget.dart';
+
 import 'package:kingsfam/widgets/widgets.dart';
 
 import 'widgets/widgets.dart';
@@ -151,7 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                                 ),
                               ),
                               Positioned(
-                                top: 105, right: state.isCurrentUserr ? 40 : 5,
+                                top: 105, right: state.isCurrentUserr ? 40 : 10,
                                 child: ProfileButton(isCurrentUserr: state.isCurrentUserr, isFollowing: state.isFollowing, colorPref: state.userr.colorPref,),
                               )
                             ],
@@ -219,105 +218,3 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                // this is the commuinty list            -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        //       Column(
-        //         children: [
-
-                        
-
-        //               Divider(height: 15, color: Colors.white, thickness: 3,),
-        //               // BigBoyBio(
-        //                 // username: state.userr.username,
-        //                 // bio: state.userr.bio,
-        //               // )
-        //             ],
-        //           ),
-               
-        //       // this is a sizxed box
-        //       SizedBox(
-        //       height: 5.0,
-        //       ),
-        //       // SliverGrid(
-              
-        //       //     delegate: SliverChildBuilderDelegate(
-                  
-        //       //       (context, index) {
-        //       //         final post = state.post[index];
-        //       //         final likedPostState = context.watch<LikedPostCubit>().state;
-        //       //         final isLiked = likedPostState.likedPostsIds.contains(post!.id);
-        //       //         final recentlyLiked = likedPostState.recentlyLikedPostIds.contains(post.id);
-        //       //         final ctx = context.read<LikedPostCubit>();
-        //       //         return GestureDetector(
-        //       //           onTap: () {
-        //       //             Navigator.of(context)
-        //       //                 .pushNamed(ProfilePostView.routeName,
-        //       //                     arguments: ProfilePostViewArgs(
-        //       //                         posts: state.post,
-        //       //                         indexAt: index,
-        //       //                         isLiked: isLiked,
-        //       //                         onLike: () {
-        //       //                           if (isLiked)
-        //       //                             ctx.unLikePost(post: post);
-        //       //                           else
-        //       //                             ctx.likePost(post: post);
-        //       //                         },
-        //       //                         recentlyLiked: recentlyLiked));
-        //       //           },
-        //       //           child: Container(
-        //       //               height: 100,
-        //       //               width: 100,
-        //       //               decoration: BoxDecoration(
-        //       //                   borderRadius: BorderRadius.circular(5.0),
-        //       //                   image: post.imageUrl != null
-        //       //                       ? DecorationImage(
-        //       //                           image: CachedNetworkImageProvider(
-        //       //                               post.imageUrl!),
-        //       //                           fit: BoxFit.cover)
-        //       //                       : null),
-        //       //               child: post.quote != null
-        //       //                   ? Center(child: Text(post.quote!))
-        //       //                   : post.videoUrl != null
-        //       //                       ? Text("Video url")
-        //       //                       : null),
-        //       //         );
-        //       //       },
-        //       //       childCount: state.post.length,
-        //       //     ),
-        //       //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        //       //         crossAxisCount: 3,
-        //       //         mainAxisSpacing: 3.0,
-        //       //         crossAxisSpacing: 2.0))
-              
-              
-        //       //    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-           
-        //       Container(
-        //         height: MediaQuery.of(context).size.height / 3.7 ,
-        //         decoration: BoxDecoration(
-        //           color: Colors.transparent
-        //         ),
-        //         // -0=-=-=--=-=-=-0-
-        //         child: 
-        // )
-                   
-        //         ],
-        //       ),

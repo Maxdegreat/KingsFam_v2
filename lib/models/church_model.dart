@@ -69,9 +69,10 @@ class Church extends Equatable {
 
   //5 make the to doc
   Map<String, dynamic> toDoc() {
+    
     return {
       'name': name,
-      'location': location,
+      'location': location ?? "Remote",
       'searchPram': searchPram,
       'hashTags': hashTags,
       'about': about,

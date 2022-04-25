@@ -28,9 +28,9 @@ class _CommuinityContainerState extends State<CommuinityContainer> {
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
 
         if (!snapshot.hasData) { // has no daat
-            return Text("The snap has no data");
+            return SizedBox.shrink();
         } else if (snapshot.data!.docs.length <= 0) {// has data but no docs , bad
-          return Text("The snap is bad, no data");
+          return SizedBox.shrink();
         } else { // is good
           // return the listtile 
           return CommuinityListTile(context, snapshot, widget.username);
@@ -38,6 +38,17 @@ class _CommuinityContainerState extends State<CommuinityContainer> {
       },
     );
   }
+}
+
+
+Widget CommuinityHolder(BuildContext context) {
+  return Container(
+    height: MediaQuery.of(context).size.height / 12, width: double.infinity,
+    decoration: BoxDecoration(
+      color: Colors.grey[600],
+      borderRadius: BorderRadius.circular(12),
+    ),
+  );
 }
 
 Padding CommuinityListTile(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot, String username) {

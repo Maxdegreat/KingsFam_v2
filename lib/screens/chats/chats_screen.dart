@@ -100,6 +100,13 @@ class _ChatsScreenState extends State<ChatsScreen>
     bool showKfCrown = false;
     final userId = context.read<AuthBloc>().state.user!.uid;
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      // floatingActionButton: FloatingActionButton(
+      //   // isExtended: true,
+      //     child: Icon(Icons.menu_rounded),
+      //     backgroundColor: Color(hexcolor.hexcolorCode('#FFC050')),
+      //     onPressed: () => Navigator.of(context).pushNamed(CreateComuinity.routeName)
+      //   ),
       appBar: AppBar(
         title: Row(children: [Text('K I N G S F A M', style: TextStyle(color: Color(hexcolor.hexcolorCode('#FFC050'))),), SizedBox(width:  5), KFCrownV2()  ],),
         actions: [
@@ -142,9 +149,13 @@ class _ChatsScreenState extends State<ChatsScreen>
                   ),
                 ),
               ],
+              
             ),
+            
+        
           );
         },
+        
       ),
     );
   }
@@ -222,6 +233,7 @@ class ScreensForPageView {
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 10.0),
                                 child: FancyListTile(
+                                    location: commuinity.location,
                                     username: commuinity.name,
                                     imageUrl: commuinity.imageUrl,
                                     onTap: () => Navigator.of(context)
@@ -239,6 +251,7 @@ class ScreensForPageView {
                   ],
                 ),
               ),
+              
             );
   }
 

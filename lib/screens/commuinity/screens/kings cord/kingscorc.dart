@@ -164,6 +164,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   ),
                   onPressed: state.isTyping
                       ? () {
+                        
                           //ctx.onTextMessage(_messageController.text);
                           ctx.onSendTxtMsg(
                               churchId: widget.commuinity.id!,
@@ -182,6 +183,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   Future<void> isUserUpToDate(BuildContext context, String userId, Map<String, dynamic> fieldMap ) async {
     // if flag is true then we need to update this user in the commuinity else we do nothing
     bool flag = await context.read<UserrRepository>().updateUserInField(userId, fieldMap);
+    print("The User Flag is flag: $flag ================");
+
     if (flag) {
       // now update the user
       context.read<KingscordCubit>().updateUserMap(userId: userId, commuinity: widget.commuinity, kingsCord: widget.kingsCord);
@@ -192,7 +195,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     @override
     void initState() {
       super.initState();
-        isUserUpToDate(context, context.read<AuthBloc>().state.user!.uid, widget.kingsCord.memberInfo[context.read<AuthBloc>().state.user!.uid]);
+        isUserUpToDate(context, context.read<AuthBloc>().state.user!.uid, widget.kingsCord.memberInfo);
     }
 
   @override

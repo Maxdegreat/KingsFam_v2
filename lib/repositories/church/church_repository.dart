@@ -85,6 +85,11 @@ class ChurchRepository extends BaseChurchRepository {
     return churchSnap.docs.map((doc) => Church.fromDoc(doc)).toList();
   }
 
+  Future<List<Church>> grabChurchAllOver({required String location}) async  {
+    final churchSnap = await FirebaseFirestore.instance.collection(Paths.church).where('location', isNotEqualTo: location).get();
+    return churchSnap.docs.map((doc) => Church.fromDoc(doc)).toList();
+  }
+
   Future <void> updateCommuinity({required Church commuinity}) async => FirebaseFirestore.instance.collection(Paths.church).doc(commuinity.id).update(commuinity.toDoc());
 
   Future<void> leaveCommuinity({required Church commuinity, required String currId}) async {

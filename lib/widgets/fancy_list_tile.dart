@@ -9,6 +9,7 @@ class FancyListTile extends StatelessWidget {
   final double BR;
   final double height;
   final double width;
+  final String? location;
   const FancyListTile(
       {Key? key,
       required this.username,
@@ -17,7 +18,9 @@ class FancyListTile extends StatelessWidget {
       required this.isBtn,
       required this.BR,
       required this.height,
-      required this.width})
+      required this.width,
+      this.location
+      })
       : super(key: key);
 
   @override
@@ -38,9 +41,16 @@ class FancyListTile extends StatelessWidget {
           SizedBox(
             width: 35.0,
           ),
-          Text('$username.',
-              overflow: TextOverflow.fade,
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.white)),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('$username.',
+                  overflow: TextOverflow.fade,
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.white)),
+              location != null ? Text('$location.', overflow: TextOverflow.fade,
+                  style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w600, color: Colors.grey[700])) : SizedBox.shrink(),
+            ],
+          ),
           SizedBox(width: 0),
           isBtn ? Icon(Icons.check_circle) : SizedBox.shrink()
         ],

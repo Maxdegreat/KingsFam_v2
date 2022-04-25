@@ -8,8 +8,9 @@ class BannerImage extends StatelessWidget {
   final File? bannerImage; //comes form phone gallery
   final bool isOpasaty;
   final int? passedColor;
+  final double? passedheight;
 
-  const BannerImage({this.bannerImageUrl, this.bannerImage, required this.isOpasaty, this.passedColor});
+  const BannerImage({this.bannerImageUrl, this.passedheight,  this.bannerImage, required this.isOpasaty, this.passedColor});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class BannerImage extends StatelessWidget {
         children: [
           Container(
             width: double.infinity,
-            height: MediaQuery.of(context).size.height / 8,
+            height: passedheight != null ? passedheight :  MediaQuery.of(context).size.height / 8,
             decoration: BoxDecoration(
               color: Colors.grey[900],
               image: bannerImage != null

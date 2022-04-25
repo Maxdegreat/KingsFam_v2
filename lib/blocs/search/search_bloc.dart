@@ -52,7 +52,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
           // await _churchRepository.grabChurchWithSpecial(special: "#tiktok");
 
       List<Church> churchesList3 =
-          await _churchRepository.grabChurchWithSpecial(special: "#biblestudy");
+          await _churchRepository.grabChurchAllOver(location: user.location);
 
       // final userExploreController = BehaviorSubject<List<DocumentSnapshot>>();
       String currId = _authBloc.state.user!.uid; // have to remove our selves ... will do in function

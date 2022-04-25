@@ -175,7 +175,8 @@ class UserrRepository extends BaseUserrRepository {
     bool flag = false; // This means it needs to be updated if flag ever becomes true
    
    // if user is alredy in the chat (fieldMap...memberInfo)
-   print(fieldMap.containsKey(userId));
+   print("user in chat? ${fieldMap.containsKey(userId)}");
+   print(fieldMap.keys);
    
     if (fieldMap.containsKey(userId)) {
       // make a new map with updated values 
