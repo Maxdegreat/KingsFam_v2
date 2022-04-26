@@ -7,6 +7,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 part 'create_post_state.dart';
 
@@ -92,6 +93,8 @@ void onRemovePostContent() {
   PrePost prePost() {
     final author = Userr.empty.copyWith(id: _authBloc.state.user!.uid);
     final thumbnailFile =  null; // TODO the thumbnail
+    print("==============================================================================================================");
+    print(state.videoFile);
     var prepost = PrePost(author: author, commuinity: null, caption: null, imageFile: state.imageFile, videoFile: state.videoFile, thumbnailFile: thumbnailFile, soundTrack: null, quote: null, );
     return prepost;
   }
@@ -105,6 +108,14 @@ void onRemovePostContent() {
     emit(state.copyWith(status: CreatePostStatus.submitting));
 
       try {
+
+      // make the thumbnail
+      final fileName = await VideoThumbnail.thumbnailFile(
+        video: prePost.videoFile ,
+        imageFormat: ImageFormat.JPEG,
+        maxHeight: 64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
+        quality: 100,
+      );
 
       final author = prePost.author; //Userr.empty.copyWith(id: _authBloc.state.user!.uid);
       print("passed the author");
@@ -144,7 +155,13 @@ void onRemovePostContent() {
         
       }  else if (prePost.videoFile != null) {
 
-        // TODO MAKE A VIDEO  THUMBNAIL
+        // make the thumbnail
+        final fileName = await VideoThumbnail.thumbnailFile(
+          video: prePost.videoFile,
+          imageFormat: ImageFormat.JPEG,
+          maxHeight: 64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
+          quality: 100,
+        );
 
         final postVideoUrl = await _storageRepository.uploadPostVideo(video: prePost.videoFile!);
 
@@ -161,7 +178,7 @@ void onRemovePostContent() {
             caption: caption,
             likes: 0,
             date: Timestamp.now(),
-            height: imgInfo[0]
+            height: null
 
         );
         print("made the post");

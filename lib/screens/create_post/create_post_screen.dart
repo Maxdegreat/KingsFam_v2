@@ -237,7 +237,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
   }
 
   Widget galleryBtns(BuildContext context, CreatePostState state)  {
-    return state.isRecording != true ?Column(
+    return state.isRecording != true ? Column(
        children: [
         GestureDetector(
           onTap: () async {
@@ -258,7 +258,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
            final pickedFile = await ImageHelper.pickVideoFromGallery();
            if (pickedFile != null)
              context.read<CreatePostCubit>().onStopPostRecording(pickedFile);
-           setState(() {contextPrePost = context;}) ;
+             
+           setState(() {contextPrePost = context;});
        },
        child: Container(
          height: 25, width: 75,
@@ -843,7 +844,7 @@ Future<dynamic> previewPost({ required PrePost prePost, required BuildContext co
                       height: 125,
                       width: 130,
                       child: prePost.videoFile != null ? InitilizeVideo(videoFile: prePost.videoFile!) : null,
-                      decoration: BoxDecoration(image: prePost != null ? DecorationImage(image: FileImage(prePost.imageFile!)) : null,),
+                      decoration: BoxDecoration(image: prePost.imageFile != null ? DecorationImage(image: FileImage(prePost.imageFile!)) : null,),
                     ),
                   ),
                   SizedBox(height: 5),
@@ -925,6 +926,7 @@ Future<dynamic> previewPost({ required PrePost prePost, required BuildContext co
                       onPressed: () {  
                         if (ctxshort.state.status != CreatePostStatus.submitting) {
                           bool subbmittingBool = ctxshort.state.status != CreatePostStatus.submitting;
+                          log("abt to submit");
                           _submitForm(context: context, isSubmitting: subbmittingBool, prepost: prePost);
                         } else
                           print("did not allow submit of \"posttt\"");
@@ -956,12 +958,16 @@ _submitForm({required BuildContext context, required bool isSubmitting, required
    
    bool condition1 = isSubmitting && prepost.imageFile != null;
    bool condition2 = isSubmitting && prepost.videoFile != null;
-  
-   if (condition1 || condition2) {
+    log("condition1: $condition1");
+    log("condition2: $condition2");
+   if (condition1) {
      List <int> imgInfo = await imageInfo(prepost.imageFile, prepost.videoFile);
      ctx.submit(prePost: prepost, imgInfo: imgInfo);
      Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
-  }
+    } else if (condition2) {
+      ctx.submit(prePost: prepost, imgInfo: []);
+     Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
+    }
   
 
 }

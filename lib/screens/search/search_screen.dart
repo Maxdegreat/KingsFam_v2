@@ -62,28 +62,14 @@ class _SearchScreenState extends State<SearchScreen> {
                   }
                 },
                 builder: (context, state) {
-                  return Scaffold(
-                    body: _builBody(state: state, context: context),
-                  );
-                },
-              )),
-        ));
-  }
-
-  Widget _builBody({required SearchState state, required BuildContext context}) {
-    switch (state.status) {
-      //-------------------------here I want to add a row of churches to the initial state
-      case SearchStatus.initial:
-      return CustomScrollView(
-          slivers: [ 
-
-             SliverAppBar(
-          
-                 title: TextField(
+                  return Scaffold(appBar:
+                   AppBar(
+                     title: TextField(
                    controller: _textEditingController,
                    decoration: InputDecoration(
                        fillColor: Colors.black87,
                        filled: true,
+                       
                        border: InputBorder.none,
                        hintText: 'search',
                        suffixIcon: IconButton(
@@ -100,7 +86,22 @@ class _SearchScreenState extends State<SearchScreen> {
                    },
                  ),
       
-             ),
+                   ),
+                    body: _builBody(state: state, context: context),
+                  );
+                },
+              )),
+        ));
+  }
+
+  Widget _builBody({required SearchState state, required BuildContext context}) {
+    switch (state.status) {
+      //-------------------------here I want to add a row of churches to the initial state
+      case SearchStatus.initial:
+      return CustomScrollView(
+          slivers: [ 
+
+            //  
             
             SliverToBoxAdapter(
               child: Column(

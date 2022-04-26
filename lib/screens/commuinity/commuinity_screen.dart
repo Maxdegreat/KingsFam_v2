@@ -24,6 +24,7 @@ import 'package:kingsfam/screens/commuinity/screens/sounds/sounds.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscorc.dart';
 import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
+import 'package:kingsfam/widgets/county_tile_widget.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 class CommuinityScreenArgs {
@@ -93,13 +94,13 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
       builder: (context, state) {
         context.read<BuildchurchCubit>().isCommuinityMember(widget.commuinity);
         return Scaffold(
+          drawer: drawerWidget(),
             body: SafeArea(
           child: CustomScrollView(
             slivers: <Widget>[
               SliverAppBar(
                 expandedHeight: MediaQuery.of(context).size.height / 3,
                 flexibleSpace: FlexibleSpaceBar(
-                  
                   title: Text(widget.commuinity.name),
                   background: Stack(
                     children: [
@@ -129,8 +130,11 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                       )  
                     ],
                   ),
-                ), actions: [_settingsBtn(), _inviteButton()],
+                ), 
+                
+                actions: [IconButton(onPressed: () => Navigator.of(context).pop(), icon: Icon(Icons.arrow_back)), _settingsBtn(), _inviteButton(), ],
               ),
+              
               SliverToBoxAdapter(
                 child: Container(
                   height: MediaQuery.of(context).size.height,
@@ -334,6 +338,19 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
       }); 
     }, icon: Icon(Icons.settings));
   }
+
+
+  Widget drawerWidget() =>  Drawer(
+    child: ListView.builder(
+      itemCount: 5,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SubCommuinityTile(title: 'Houston'),
+        );
+      },
+    ),
+  );
 
   Widget _inviteButton() {
     return IconButton(

@@ -72,7 +72,7 @@ class Post extends Equatable {
   final String? caption;
   final int likes;
   final Timestamp date;
-  final int height;
+  final int? height;
   Post({
     this.id,
     required this.author, //2 make the constructor
