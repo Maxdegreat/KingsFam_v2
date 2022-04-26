@@ -41,31 +41,23 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   Stream<SearchState> _mapLoadUserToState(InitializeUser event) async* {
     yield state.copyWith(status: SearchStatus.loading);
     try {
-      Userr user =
-          await _userrRepository.getUserrWithId(userrId: event.currentUserrId);
-
-      List<Church> churches = await _churchRepository.grabChurchWithLocation(
-          location: user.location);
+      print("Now in the map load user to state");
+      Userr user = await _userrRepository.getUserrWithId(userrId: event.currentUserrId);
+      print("we now have the user");
+      List<Church> churches = await _churchRepository.grabChurchWithLocation(location: user.location);
       
       // CHURCHLLIST2 IS CURRENTLY NOT BEING USED
       // List<Church> churchesList2 =
           // await _churchRepository.grabChurchWithSpecial(special: "#tiktok");
-
-      List<Church> churchesList3 =
-          await _churchRepository.grabChurchAllOver(location: user.location);
+      List<Church> churchesList3 = await _churchRepository.grabChurchAllOver(location: user.location);
+      print("just grabed some churches");
 
       // final userExploreController = BehaviorSubject<List<DocumentSnapshot>>();
-      String currId = _authBloc.state.user!.uid; // have to remove our selves ... will do in function
-      List<Userr> userExploreList = 
-         await _userrRepository.grabUserExploreListFirst10(user.id, 5, currId);
+      List<Userr> userExploreList = await _userrRepository.grabUserExploreListFirst10(user, 5, event.currentUserrId);
+      print("just grabed the users");
       
-      
-
-
       // await _userrRepository.grabUserExploreListNext10(ownerId);
-
-      
-
+      print("now setting state to init ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
       yield state.copyWith(
           user: user,
           churches: churches,

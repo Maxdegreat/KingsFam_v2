@@ -202,7 +202,9 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                       height: 240, width: 300, 
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        image: DecorationImage(image: CachedNetworkImageProvider(post!.imageUrl!), fit: BoxFit.cover),
+                        image: post!.imageUrl != null ? 
+                          DecorationImage(image: CachedNetworkImageProvider(post.imageUrl!), fit: BoxFit.cover) :
+                          DecorationImage(image: CachedNetworkImageProvider(post.thumbnailUrl!), fit: BoxFit.cover),
                         borderRadius: BorderRadius.circular(18)
                       ),
                   ),

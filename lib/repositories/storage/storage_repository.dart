@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'package:kingsfam/repositories/storage/base_storage_repository.dart';
 import 'package:uuid/uuid.dart';
@@ -103,6 +104,12 @@ class StorageRepository extends BaseStorageRepository {
     final imageId = Uuid().v4();
     final downloadUrl =
         await _uploadImage(image: video, ref: 'videos/posts/post_$imageId.jpg');
+    return downloadUrl;
+  }
+
+  Future<String> uploadThumbnailVideo({required File thumbnail}) async {
+    final imageId = Uuid().v4();
+    final downloadUrl = await _uploadImage(image: thumbnail, ref: 'images/thumbnails/thumbnail_img_$imageId.jpg');
     return downloadUrl;
   }
 

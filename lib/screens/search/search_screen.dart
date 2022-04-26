@@ -71,7 +71,7 @@ class _SearchScreenState extends State<SearchScreen> {
                        filled: true,
                        
                        border: InputBorder.none,
-                       hintText: 'search',
+                       hintText: 'Search For The Fam',
                        suffixIcon: IconButton(
                            onPressed: () {
                              context.read<SearchBloc>().clearSearch();

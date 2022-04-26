@@ -19,6 +19,7 @@ MERGED from [:flutter_sound] C:\Users\Maximus\Desktop\kingsfam (6)\build\flutter
 MERGED from [:flutter_sound_lite] C:\Users\Maximus\Desktop\kingsfam (6)\build\flutter_sound_lite\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-7:12
 MERGED from [:path_provider] C:\Users\Maximus\Desktop\kingsfam (6)\build\path_provider\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-7:12
 MERGED from [:image_cropper] C:\Users\Maximus\Desktop\kingsfam (6)\build\image_cropper\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-7:12
+MERGED from [:video_thumbnail] C:\Users\Maximus\Desktop\kingsfam (6)\build\video_thumbnail\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-7:12
 MERGED from [:video_player] C:\Users\Maximus\Desktop\kingsfam (6)\build\video_player\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-7:12
 MERGED from [:agora_rtc_engine] C:\Users\Maximus\Desktop\kingsfam (6)\build\agora_rtc_engine\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-23:12
 MERGED from [:audio_session] C:\Users\Maximus\Desktop\kingsfam (6)\build\audio_session\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-7:12
@@ -410,6 +411,8 @@ MERGED from [:path_provider] C:\Users\Maximus\Desktop\kingsfam (6)\build\path_pr
 MERGED from [:path_provider] C:\Users\Maximus\Desktop\kingsfam (6)\build\path_provider\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-44
 MERGED from [:image_cropper] C:\Users\Maximus\Desktop\kingsfam (6)\build\image_cropper\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-44
 MERGED from [:image_cropper] C:\Users\Maximus\Desktop\kingsfam (6)\build\image_cropper\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:video_thumbnail] C:\Users\Maximus\Desktop\kingsfam (6)\build\video_thumbnail\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:video_thumbnail] C:\Users\Maximus\Desktop\kingsfam (6)\build\video_thumbnail\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-44
 MERGED from [:video_player] C:\Users\Maximus\Desktop\kingsfam (6)\build\video_player\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-44
 MERGED from [:video_player] C:\Users\Maximus\Desktop\kingsfam (6)\build\video_player\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-44
 MERGED from [:agora_rtc_engine] C:\Users\Maximus\Desktop\kingsfam (6)\build\agora_rtc_engine\intermediates\library_manifest\debug\AndroidManifest.xml:6:5-8:41

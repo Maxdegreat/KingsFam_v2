@@ -7,6 +7,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 part 'create_post_state.dart';
@@ -109,14 +110,6 @@ void onRemovePostContent() {
 
       try {
 
-      // make the thumbnail
-      final fileName = await VideoThumbnail.thumbnailFile(
-        video: prePost.videoFile ,
-        imageFormat: ImageFormat.JPEG,
-        maxHeight: 64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
-        quality: 100,
-      );
-
       final author = prePost.author; //Userr.empty.copyWith(id: _authBloc.state.user!.uid);
       print("passed the author");
 
@@ -156,23 +149,24 @@ void onRemovePostContent() {
       }  else if (prePost.videoFile != null) {
 
         // make the thumbnail
-        final fileName = await VideoThumbnail.thumbnailFile(
-          video: prePost.videoFile,
-          imageFormat: ImageFormat.JPEG,
-          maxHeight: 64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
+        final thumbnail = await VideoThumbnail.thumbnailFile(
+          video: prePost.videoFile!.path,
+          thumbnailPath: (await getTemporaryDirectory()).path,
+          imageFormat: ImageFormat.PNG,
+          //maxHeight: 64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
           quality: 100,
         );
 
+        final  thumbnailUrl = await _storageRepository.uploadThumbnailVideo(thumbnail: File(thumbnail!));
+        print("The thumbnail:  $thumbnail");
         final postVideoUrl = await _storageRepository.uploadPostVideo(video: prePost.videoFile!);
-
-        final  thumbnailUrl = null; // TODO -> thumbnail, need a functin for this to be made
 
         final post = Post(
             author: author,
             quote: null,
             imageUrl: null,
             videoUrl: postVideoUrl,
-            thumbnailUrl: null,
+            thumbnailUrl: thumbnailUrl,
             commuinity: prePost.commuinity,
             soundTrackUrl: null,
             caption: caption,

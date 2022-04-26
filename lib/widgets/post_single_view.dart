@@ -1,17 +1,20 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:kingsfam/models/models.dart';
+import 'package:kingsfam/repositories/post/post_repository.dart';
 
 import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 
 import 'package:kingsfam/widgets/commuinity_pf_image.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
 import 'package:kingsfam/widgets/video_display.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 class PostSingleView extends StatefulWidget {
@@ -115,12 +118,47 @@ class _PostSingleViewState extends State<PostSingleView> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          ProfileImage(radius: 25, pfpUrl: imgurl),
-          SizedBox(width: 10.0),
-          Text(name, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),)
+          Row(
+            children: [
+              ProfileImage(radius: 25, pfpUrl: imgurl),
+              SizedBox(width: 15.0),
+              Text(name, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),),
+            ],
+          ),
+          IconButton(onPressed: () => _postSettings(), icon: Icon(Icons.more_vert))
+
         ],
       ),
+    );
+  }
+
+  _postSettings() {
+    return showModalBottomSheet(
+      context: context, builder: (context) {
+        return Container(
+          height: 120,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(padding: EdgeInsets.only(right: 8, bottom: 8),
+                child: TextButton(
+                  child: Text("Ummm, U Wana Delete This?", style: TextStyle(color: Colors.red, fontSize: 17)),
+                onPressed: () {context.read<PostsRepository>().deletePost(post: widget.post); print("del posts***********************************************************"); },
+                ),
+              ),
+              Padding(padding: EdgeInsets.only(right: 8),
+                child: TextButton(
+                  child: Text("Nevermind", style: TextStyle(color: Colors.white, fontSize: 17)),
+                  onPressed: () {},
+                ),
+              )
+            ],
+          )
+        );
+      }
     );
   }
 

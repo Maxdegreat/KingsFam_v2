@@ -215,11 +215,10 @@ class UserrRepository extends BaseUserrRepository {
   // This is a method to add find new users. so it will be very basic because well for now this is a start up. what we want to do is make a 
   // query for the first (change to last maybe later) users in the user collection. b4 we grab the first (changing) 5 users check is this user
   // alredy being followed by our curr userr?? if so do not add them to the query list. on refresh grab the next 5 users
-  Future<List<Userr>> grabUserExploreListFirst10(String ownerId, int limit, String currId) async {
+  Future<List<Userr>> grabUserExploreListFirst10(Userr owner, int limit, String currId) async {
     List<Userr> bucket = [];
     List<String> returningIds = [];
     List<int> idxToRemove = [];
-    int inc = 0; // inc is used because we may need to remove a user from returningIds in this case per remove we need to then add new users. keping data fetch at 5 users
     var fire = FirebaseFirestore.instance;
     int EdgeCaseLimit = 0;
     // go into the user collection and grab the first 5 id's
@@ -227,42 +226,40 @@ class UserrRepository extends BaseUserrRepository {
     // remove our self from the list
     // this will be done at the end of bloc
 
-    var qSnaps = await fire
-      .collection(Paths.users)
-      .limit(limit)
-      .get();
+    // get snapshot of first x users where x = limit 
+    var qSnaps = await fire.collection(Paths.users).limit(limit).get();
 
-      qSnaps.docs.forEach((doc) {
-        returningIds.add(doc.id);
-      });
+    // populate returning ids list
+    qSnaps.docs.forEach((doc) => returningIds.add(doc.id));
 
     // in the case there are less than 5 users we need to handel that so we will update the limit via this edge case
-      if (limit > returningIds.length) {
+      // if (limit > returningIds.length) {
 
-        limit = returningIds.length;
-      }
+      //   limit = returningIds.length;
+      // }
  
     // check the followers collection to of the 5 id's if contains the ownerId inc the add counter per contain and remove the id
-
-    for (int i = 0; i < (limit - 1); i++) {
+    var userHasFollowers = owner.followers > 0 ? true : false;
+    if (userHasFollowers) {
+      for (int i = 0; i < (limit - 1); i++) {
         var containingIdDoc = await fire
         .collection(Paths.followers)
         .doc(returningIds[i])
         .collection(Paths.userFollowers)
-        .doc(ownerId)
+        .doc(owner.id)
         .get();
-
         if (containingIdDoc.exists) {
             // remove the user from the returningIds
             idxToRemove.add(i);
-            inc += 1; 
         }
-    }
+      }
 
-    for (int idx in idxToRemove) {
+     for (int idx in idxToRemove) {
       returningIds.remove(returningIds[idx]);
 
+     }
     }
+
 
 
     // go back and grab inc amount of new id's, repet till we have 5
