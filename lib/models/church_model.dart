@@ -14,6 +14,7 @@ class Church extends Equatable {
   final List<String> memberIds;
   final Map<String, dynamic> memberInfo;
   final List<String> events;
+  final int? size;
   // 2 gen the constructor
   Church({
     required this.searchPram,
@@ -25,7 +26,9 @@ class Church extends Equatable {
     this.hashTags,
     required this.memberInfo,
     required this.events,
-    required this.about});
+    required this.about,
+    this.size,
+  });
   // 3 make the props
   @override
   List<Object?> get props => [
@@ -38,7 +41,8 @@ class Church extends Equatable {
         about,
         memberIds,
         memberInfo,
-        events
+        events,
+        size,
       ];
   //generate the copy with
   Church copyWith({
@@ -52,6 +56,7 @@ class Church extends Equatable {
     List<String>? memberIds,
     Map<String, dynamic>? memberInfo,
     List<String>? events,
+    int? size,
   }) {
     return Church(
       id: id ?? this.id,
@@ -64,6 +69,7 @@ class Church extends Equatable {
       memberIds: memberIds ?? this.memberIds,
       memberInfo: memberInfo ?? this.memberInfo,
       events: events ?? this.events,
+      size: size ?? this.size,
     );
   }
 
@@ -72,14 +78,15 @@ class Church extends Equatable {
     
     return {
       'name': name,
-      'location': location ?? "Remote",
+      'location': location,
       'searchPram': searchPram,
       'hashTags': hashTags,
       'about': about,
       'imageUrl': imageUrl,
       'memberIds': memberIds,
       'memberInfo': memberInfo,
-      'events': events
+      'events': events,
+      'size' : size,
     };
   }
 
@@ -88,6 +95,7 @@ class Church extends Equatable {
     final data = doc.data() as Map<String, dynamic>;
     return Church(
         id: doc.id,
+        size: data['size'] ?? 0,
         searchPram: List<String>.from(data['searchPram'] ?? []),
         hashTags: List<String>.from(data['hashTags'] ?? []),
         name: data['name'] ?? 'name',
@@ -109,5 +117,7 @@ class Church extends Equatable {
       memberInfo: {},
       events: [],
       about: '...',
-      hashTags: []);
+      hashTags: [],
+      size: 0,
+    );
 }

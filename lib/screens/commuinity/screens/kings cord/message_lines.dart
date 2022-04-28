@@ -40,8 +40,7 @@ class MessageLines extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-    // final bool isMe =
+      // final bool isMe =
     //     context.read<AuthBloc>().state.user!.uid == message.senderId;
 
     // this is for the hex color
@@ -56,13 +55,12 @@ class MessageLines extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                //FancyListTile(username: '${kingsCord.memberInfo[message.senderId]['username']}', imageUrl: '${kingsCord.memberInfo[message.senderId]['profileImageUrl']}', onTap: null, isBtn: false, BR: 18, height: 18, width: 18)
+                //FancyListTile(username: '${kingsCord.memberInfo[message.senderId]['username']}', imageUrl: '${kingsCord.memberInfo[message.senderId]['profileImageUrl']}', onTap: null, isBtn: false, BR: 18, height: 18, width: 18),
                 kingsCordAvtar(context),
                 SizedBox(
                   width: 5.0,
                 ),
-                Text(
-                  '${kingsCord.memberInfo[message.senderId]['username']}', 
+                Text('${kingsCord.memberInfo[message.senderId]['username']}', 
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
@@ -108,4 +106,5 @@ class MessageLines extends StatelessWidget {
   }
   Widget? kingsCordProfileImg() => CircleAvatar(backgroundColor: Colors.grey[400], backgroundImage:  CachedNetworkImageProvider('${kingsCord.memberInfo[message.senderId]['pfpImageUrl']}') );
   Widget? kingsCordProfileIcon() => Container(child: Icon(Icons.account_circle));
+  
 }

@@ -140,7 +140,8 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
           memberIds: state.memberIds,
           memberInfo: state.memberInfo,
           events: [],
-          about: state.about
+          about: state.about,
+          size: state.memberIds.length,
         );
         // build the church mem 
         final ChurchMembers churchMemberIds = ChurchMembers(ids: state.memberIds);

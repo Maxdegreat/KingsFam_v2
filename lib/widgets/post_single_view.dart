@@ -80,35 +80,40 @@ class _PostSingleViewState extends State<PostSingleView> {
   Widget interactions(int likes) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0, top: 5),
-      child: Row(
+      child: Column(
         children: [
-          SizedBox(width: 10),
-          Icon(Icons.thumb_up),
-          SizedBox(width: 5),
-          Container(
-              //margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: .5),
-            decoration: BoxDecoration(  
-              border: Border.all(color: Colors.white),
-              borderRadius: BorderRadius.circular(7)
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5.0),
-              child: Text(likes.toString()),
-            ),),
-            SizedBox(width: 15,),
-            Icon(Icons.message),
-            SizedBox(width: 5),
-            Container(
-              //margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: .5),
-            decoration: BoxDecoration(  
-              border: Border.all(color: Colors.white),
-              borderRadius: BorderRadius.circular(7)
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5.0),
-              child: Text(likes.toString()),
-            ),),
+          Row(
+            children: [
+              SizedBox(width: 10),
+              Icon(Icons.thumb_up),
+              SizedBox(width: 5),
+              Container(
+                  //margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: .5),
+                decoration: BoxDecoration(  
+                  border: Border.all(color: Colors.white),
+                  borderRadius: BorderRadius.circular(7)
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  child: Text(likes.toString()),
+                ),),
+                SizedBox(width: 15,),
+                Icon(Icons.message),
+                SizedBox(width: 5),
+                Container(
+                  //margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: .5),
+                decoration: BoxDecoration(  
+                  border: Border.all(color: Colors.white),
+                  borderRadius: BorderRadius.circular(7)
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  child: Text(likes.toString()),
+                ),),
 
+            ],
+          ),
+          Divider(color: Colors.white, thickness: 1,)
         ],
       ),
     );
@@ -182,9 +187,6 @@ class _PostSingleViewState extends State<PostSingleView> {
 
   Widget contentContainer({required Post post, required Size size}) {
     if (post.imageUrl != null) {
-
-     
-
       return ConstrainedBox(
       constraints: BoxConstraints(
         minHeight: size.height / 1.7
@@ -199,7 +201,7 @@ class _PostSingleViewState extends State<PostSingleView> {
     } else if (post.videoUrl != null) {
       return ConstrainedBox(
         constraints: BoxConstraints(
-          maxHeight: size.height / 1.7
+          maxHeight: size.height / 1.15
         ),
         child: VidoeDisplay(videoUrl: post.videoUrl!)
       );

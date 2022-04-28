@@ -93,16 +93,24 @@ class ChurchRepository extends BaseChurchRepository {
   Future <void> updateCommuinity({required Church commuinity}) async => FirebaseFirestore.instance.collection(Paths.church).doc(commuinity.id).update(commuinity.toDoc());
 
   Future<void> leaveCommuinity({required Church commuinity, required String currId}) async {
-      final doc = fb.doc(commuinity.id);
+      final doc = fb.doc(commuinity.id); //FirebaseFirestore.instance.collection(Paths.church).doc(...)
       final joinMembersDoc = doc.collection(Paths.churchMemIds).doc(commuinity.id);
 
-      doc.update({'memberIds': FieldValue.arrayRemove([currId])});
-      joinMembersDoc.update({'memberIds' : FieldValue.arrayRemove([currId])});
+      
+
+      doc.update({'memberIds': FieldValue.arrayRemove([currId])}); // updates main commuinity memids
+      doc.update({'memberIds': FieldValue.arrayUnion(['del_$currId'])});
+      
+      joinMembersDoc.update({'memberIds' : FieldValue.arrayRemove([currId])}); // updates main -> churchmemids memids
+      joinMembersDoc.update({'memberIds' : FieldValue.arrayUnion(['del_$currId'])});
+
+      // to update the size
+      doc.update({'size' : commuinity.size! - 1});
 
       
-      commuinity.memberInfo.remove(currId);
+      //commuinity.memberInfo.remove(currId);
       
-      doc.update({'memberInfo': commuinity.memberInfo});
+      //doc.update({'memberInfo': commuinity.memberInfo});
       
     }
     
@@ -130,7 +138,9 @@ class ChurchRepository extends BaseChurchRepository {
     
     //update the docs
     doc.update({'memberIds': FieldValue.arrayUnion([user.id])});
+    doc.update({'memberIds': FieldValue.arrayRemove(['del_${user.id}'])});
     joinMembersDoc.update({'memberIds' : FieldValue.arrayUnion([user.id])});
+    joinMembersDoc.update({'memberInfo' : FieldValue.arrayRemove(['del_${user.id}'])});
     //create a user map for the new memeber info
     Map<String, dynamic> userMap = {
       'isAdmin' : false,
@@ -140,8 +150,14 @@ class ChurchRepository extends BaseChurchRepository {
       'token': user.token,
     };
     print("updating commuinity data");
-    commuinity.memberInfo[user.id] = userMap; // this is an updated commuinity member map
-    doc.update({'memberInfo': commuinity.memberInfo}); // this is the application of the updated map
+    // bc when a user leaves i keep his memberinfo to prevent an error so when joining again
+    // no use in writing it twice. it will update based on another function found in the commuinity 
+    // screen or kingscord screen on join. the update in case anything is diff.
+    if (!commuinity.memberInfo.containsKey(user.id)) {
+      commuinity.memberInfo[user.id] = userMap; // this is an updated commuinity member map
+      doc.update({'memberInfo': commuinity.memberInfo}); // this is the application of the updated map
+    }
+    
     print("updating commuinity kingscord");
    
     

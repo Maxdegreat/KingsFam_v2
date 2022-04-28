@@ -26,8 +26,7 @@ class KingsCordScreen extends StatefulWidget {
   final Church commuinity;
   final KingsCord kingsCord;
   const KingsCordScreen(
-      {Key? key, required this.commuinity, required this.kingsCord})
-      : super(key: key);
+      {Key? key, required this.commuinity, required this.kingsCord}) : super(key: key);
 
   // will need a static const string route name
   static const String routeName = '/kingsCord';
@@ -58,8 +57,7 @@ class KingsCordScreen extends StatefulWidget {
 class _KingsCordScreenState extends State<KingsCordScreen> {
   final TextEditingController _messageController = TextEditingController();
   double textHeight = 35;
-  _buildMessageStream(
-      {required Church commuinity, required KingsCord kingsCord}) {
+  _buildMessageStream({required Church commuinity, required KingsCord kingsCord}) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection(Paths.church)
@@ -68,7 +66,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           .doc(kingsCord.id)
           .collection(Paths.messages)
           .orderBy('date', descending: true)
-          .limit(50)
+          .limit(30)
           .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return Expanded(
@@ -82,7 +80,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     );
   }
 
-//==========================================================================
+//==========================================================================S 
   List<MessageLines> _buildMessageLines(AsyncSnapshot<QuerySnapshot> message) {
     List<MessageLines> messageLines = [];
 
