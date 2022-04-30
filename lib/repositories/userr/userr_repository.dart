@@ -211,71 +211,53 @@ class UserrRepository extends BaseUserrRepository {
       return flag; // flag... NOT FALSE
   }
 
-
-  // This is a method to add find new users. so it will be very basic because well for now this is a start up. what we want to do is make a 
-  // query for the first (change to last maybe later) users in the user collection. b4 we grab the first (changing) 5 users check is this user
-  // alredy being followed by our curr userr?? if so do not add them to the query list. on refresh grab the next 5 users
-  Future<List<Userr>> grabUserExploreListFirst10(Userr owner, int limit, String currId) async {
+  Future<List<Userr>> getSearchUsers({ required String currId, required  int limit, required String? lastId}) async{
     List<Userr> bucket = [];
-    List<String> returningIds = [];
-    List<int> idxToRemove = [];
-    var fire = FirebaseFirestore.instance;
-    int EdgeCaseLimit = 0;
-    // go into the user collection and grab the first 5 id's
+    
+    var usersCollections = FirebaseFirestore.instance.collection(Paths.users);
+    var fire2 = FirebaseFirestore.instance.collection(Paths.followers);
 
-    // remove our self from the list
-    // this will be done at the end of bloc
-
-    // get snapshot of first x users where x = limit 
-    var qSnaps = await fire.collection(Paths.users).limit(limit).get();
-
-    // populate returning ids list
-    qSnaps.docs.forEach((doc) => returningIds.add(doc.id));
-
-    // in the case there are less than 5 users we need to handel that so we will update the limit via this edge case
-      // if (limit > returningIds.length) {
-
-      //   limit = returningIds.length;
-      // }
- 
-    // check the followers collection to of the 5 id's if contains the ownerId inc the add counter per contain and remove the id
-    var userHasFollowers = owner.followers > 0 ? true : false;
-    if (userHasFollowers) {
-      for (int i = 0; i < (limit - 1); i++) {
-        var containingIdDoc = await fire
-        .collection(Paths.followers)
-        .doc(returningIds[i])
-        .collection(Paths.userFollowers)
-        .doc(owner.id)
-        .get();
-        if (containingIdDoc.exists) {
-            // remove the user from the returningIds
-            idxToRemove.add(i);
+    QuerySnapshot usersSnap;
+    if (lastId == null) {
+      print("last post id is null");
+      usersSnap = await usersCollections.limit(limit).get();
+      print(usersSnap.docs.length);
+      usersSnap.docs.forEach((document) async {
+        print("777777777777777777777777777777${document.id}77777777777777777777777777777777777777777") ;
+        var isFollowing = await fire2.doc(document.id).collection(Paths.userFollowers).doc(currId).get();
+        if (!isFollowing.exists) {
+          Userr addUserToBucket = await UserrRepository().getUserrWithId(userrId: document.id);
+          bucket.add(addUserToBucket);
         }
-      }
-
-     for (int idx in idxToRemove) {
-      returningIds.remove(returningIds[idx]);
-
-     }
+       });
+       return bucket;
+    } else {
+      // TODO paginate
+      return bucket;
     }
-
-
-
-    // go back and grab inc amount of new id's, repet till we have 5
-
-    // turn to actual users then return the list
-
-    for (String userId in returningIds) {
-      if (userId == currId) continue;
-      Userr addUserToBucket = await UserrRepository().getUserrWithId(userrId: userId);
-      bucket.add(addUserToBucket);
-    }
-    // remove our self from the list
-    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-    return bucket;
   }
+/*
+  if (lastId == null) {
+      print("last post id is null");
+      usersSnap = await usersCollections.limit(limit).get();
+      print(usersSnap.docs.length);
+      usersSnap.docs.forEach((document) async {
+        print("777777777777777777777777777777${document.id}77777777777777777777777777777777777777777") ;
+        var isFollowing = await fire2.doc(document.id).collection(Paths.userFollowers).doc(currId).get();
+        users.add(document.id);
+        if (isFollowing.exists) {
+          users.remove(document.id);
+        }
+       });
+      
+      for (String id in users) {
+        Userr addUserToBucket = await UserrRepository().getUserrWithId(userrId: id);
+        bucket.add(addUserToBucket);
+      }
+      print("len of bucket: ${bucket.length}");
+       return bucket;
+    }
+    */
 
 
 

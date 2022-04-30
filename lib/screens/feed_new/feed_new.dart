@@ -89,6 +89,7 @@ class FeedNewState extends State<FeedNewScreen> {
                 final Post? post = state.posts[index];
                 if (post != null)
                   return PostSingleView(post: post,);
+                print(post);
                 return Text("post is null");
               },
             ));

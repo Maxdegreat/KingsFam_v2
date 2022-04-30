@@ -210,7 +210,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                   ),
                     ),
                     SizedBox(height: 10),
-                    ListTile(leading: commuinity_pf_img(post.author.profileImageUrl, 40, 40), title: Text(post.author.username, style: Theme.of(context).textTheme.bodyText1,),)
+                    ListTile(leading: commuinity_pf_img(post.author.profileImageUrl, 35, 35), title: Text(post.author.username, style: Theme.of(context).textTheme.bodyText1,),)
                   ],
                 );
               },

@@ -50,10 +50,13 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       // List<Church> churchesList2 =
           // await _churchRepository.grabChurchWithSpecial(special: "#tiktok");
       List<Church> churchesList3 = await _churchRepository.grabChurchAllOver(location: user.location);
-      print("just grabed some churches");
+      print("just grabed some churches ---------------> user explore");
 
       // final userExploreController = BehaviorSubject<List<DocumentSnapshot>>();
-      List<Userr> userExploreList = await _userrRepository.grabUserExploreListFirst10(user, 5, event.currentUserrId);
+      List<Userr> userExploreList = await _userrRepository.getSearchUsers(currId: event.currentUserrId, limit: 8, lastId: null);
+      print("YOUUUUUUUUUUUUUUUUUUUUUUUUUUUU GOT UR USERS");
+      
+      
       print("just grabed the users");
       
       // await _userrRepository.grabUserExploreListNext10(ownerId);
