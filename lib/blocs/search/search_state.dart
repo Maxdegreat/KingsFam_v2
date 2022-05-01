@@ -1,6 +1,6 @@
 part of 'search_bloc.dart';
 
-enum SearchStatus { initial, loading, success, error }
+enum SearchStatus { initial, pag, loading, success, error }
 
 class SearchState extends Equatable {
   final Userr user; // curr uuser

@@ -7,6 +7,11 @@ abstract class SearchEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class GrabUsersPaginate extends SearchEvent {
+  final String currId;
+  const GrabUsersPaginate({required this.currId});
+}
+
 class UserrSelected extends SearchEvent {
   final bool isSelected;
   UserrSelected({

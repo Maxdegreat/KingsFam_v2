@@ -43,7 +43,7 @@ class ProfileScreen extends StatefulWidget {
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
+class _ProfileScreenState extends State<ProfileScreen>  {
   // controllers
   late TabController _tabController;
   ScrollController scrollController = ScrollController();
@@ -51,7 +51,6 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
     scrollController.addListener(listenToScrolling);
   }
 
@@ -63,14 +62,13 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
 
   void listenToScrolling() {
     //TODO you need to add this later make it a p1 requirment
-    // if (scrollController.position.atEdge) {
-
-    //   if (scrollController.position.pixels != 0.0 && scrollController.position.maxScrollExtent == scrollController.position.pixels) {
-    //     const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
-    //     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    //     context.read<ProfileBloc>()..add(ProfilePaginatePosts());
-    //   }
-    // }
+     if (scrollController.position.atEdge) {
+       if (scrollController.position.pixels != 0.0 && scrollController.position.maxScrollExtent == scrollController.position.pixels) {
+         const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
+         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+         context.read<ProfileBloc>()..add(ProfilePaginatePosts());
+       }
+     }
   }
 
   @override

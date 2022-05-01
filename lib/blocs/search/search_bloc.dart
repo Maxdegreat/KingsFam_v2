@@ -6,6 +6,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
 
 part 'search_event.dart';
 part 'search_state.dart';
@@ -34,10 +35,32 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       yield* _mapAddMemberToState(event);
     } else if (event is RemoveMember) {
       yield* _mapRemoveMemberToState(event);
+    } else if (event is GrabUsersPaginate) {
+      yield* _mapGrabUsersPaginate(event);
     }
   }
 
   // In mapLoadUserToState we also init the instances of commuinitys and the user explore in the search page
+  Stream<SearchState> _mapGrabUsersPaginate(GrabUsersPaginate event) async* {
+    print("paginiationgh");
+    yield state.copyWith(status: SearchStatus.pag);
+    try {
+      List<Userr>? newUserExploreList = [];
+      List<Userr>? updatedUsers = [];
+      final String? lastPostId = state.userExploreList.isNotEmpty ? state.userExploreList.last.id : null; 
+      if (lastPostId != null) {
+        newUserExploreList = await _userrRepository.getSearchUsers(currId: event.currId, limit: 8, lastId: lastPostId);
+        print("The length of the newuserExploreList is ... ${newUserExploreList.length} ");
+        updatedUsers = List<Userr>.from(state.userExploreList)..addAll(newUserExploreList);
+        print("Updated Users list length is ... ${updatedUsers.length}");
+
+      }
+      
+      yield state.copyWith(userExploreList: updatedUsers, status: SearchStatus.initial,);
+
+    } catch (e) {
+    }
+  }
   Stream<SearchState> _mapLoadUserToState(InitializeUser event) async* {
     yield state.copyWith(status: SearchStatus.loading);
     try {
@@ -67,7 +90,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
           churchesList2: [], //churchesList2,
           churchesList3: churchesList3,
           userExploreList: userExploreList,//userExploreList,
-          status: SearchStatus.initial);
+          status: SearchStatus.initial
+      );
     } catch (e) {
       state.copyWith(
           failure: Failure(message: "Check your internet connection"),

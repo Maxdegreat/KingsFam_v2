@@ -220,19 +220,37 @@ class UserrRepository extends BaseUserrRepository {
     QuerySnapshot usersSnap;
     if (lastId == null) {
       print("last post id is null");
-      usersSnap = await usersCollections.limit(limit).get();
+      usersSnap = await usersCollections.limit(8).get();
       print(usersSnap.docs.length);
-      usersSnap.docs.forEach((document) async {
+      for (var document in usersSnap.docs) {
+        if (document.id == currId) continue;
         print("777777777777777777777777777777${document.id}77777777777777777777777777777777777777777") ;
         var isFollowing = await fire2.doc(document.id).collection(Paths.userFollowers).doc(currId).get();
-        if (!isFollowing.exists) {
-          Userr addUserToBucket = await UserrRepository().getUserrWithId(userrId: document.id);
+        if (!isFollowing.exists ) {
+          Userr addUserToBucket = Userr.fromDoc(document);
           bucket.add(addUserToBucket);
         }
-       });
-       return bucket;
+      }
+      return bucket;
+
     } else {
-      // TODO paginate
+      var lastIdDoc = await usersCollections.doc(lastId).get();
+      if (!lastIdDoc.exists){ print("last IdDoc N/A "); return [];}
+      usersSnap = await usersCollections.startAfterDocument(lastIdDoc).limit(limit).get();
+      for (var document in usersSnap.docs) {
+        if (document.id == currId) continue;
+        print("(((((((((((((((((((((((((((((((((((((((((((((((((((${document.id}))))))))))))))))))))))))))))))))))))))))))") ; 
+        var isFollowing = await fire2.doc(document.id).collection(Paths.userFollowers).doc(currId).get();
+        if (!isFollowing.exists) {
+          Userr addUserToBucket = Userr.fromDoc(document);
+          bucket.add(addUserToBucket);
+        }
+      }
+
+      // Future.delayed(const Duration(seconds: 3));
+      print("The length of this new bucket is ${bucket.length}");
+      var cleanBucket = bucket.toSet();
+      bucket = cleanBucket.toList();
       return bucket;
     }
   }

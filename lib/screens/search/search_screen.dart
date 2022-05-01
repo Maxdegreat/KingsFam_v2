@@ -39,6 +39,25 @@ class SearchScreen extends StatefulWidget {
 HexColor hexcolor = HexColor();
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _textEditingController = TextEditingController();
+  ScrollController scrollController = ScrollController();
+
+  @override
+  void initState() {
+    scrollController.addListener(listenToScrolling);
+    super.initState();
+  }
+
+  
+  void listenToScrolling() {
+     if (scrollController.position.atEdge) 
+       if (scrollController.position.pixels != 0.0 && scrollController.position.maxScrollExtent == scrollController.position.pixels) {
+         //const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
+         //ScaffoldMessenger.of(context).showSnackBar(snackBar);
+         context.read<SearchBloc>()..add(GrabUsersPaginate(currId: context.read<AuthBloc>().state.user!.uid));
+       }
+     }
+  
+
   @override
   Widget build(BuildContext context) {
     //--------------------------------------------------ADD TO SEARCH CUBIT THAT WAY GET CHURCH FROM STATE
@@ -96,11 +115,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _builBody({required SearchState state, required BuildContext context}) {
     switch (state.status) {
-      //-------------------------here I want to add a row of churches to the initial state
+      case SearchStatus.pag:
       case SearchStatus.initial:
       return CustomScrollView(
+        controller: scrollController ,
           slivers: [ 
-
+            
             //  
             
             SliverToBoxAdapter(
