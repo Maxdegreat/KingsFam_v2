@@ -36,8 +36,7 @@ class FeedNewScreen extends StatefulWidget {
     );
   }
 
-  const FeedNewScreen(
-      {Key? key, required this.startIndex});
+  const FeedNewScreen({Key? key, required this.startIndex});
 
   final int startIndex;
 
@@ -49,14 +48,20 @@ class FeedNewScreen extends StatefulWidget {
 class FeedNewState extends State<FeedNewScreen> {
 
   ItemScrollController itemController = ItemScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    scrollToHelper();
+  }
   
   Future scrollToItem() async {
     itemController.jumpTo(index: widget.startIndex);
   }
   Future scrollToHelper() async {
-    Future.delayed(const Duration(milliseconds: 15)).then((_) => scrollToItem());
+    Future.delayed(const Duration(milliseconds: 85)).then((_) => scrollToItem());
   }
-  bool loaded = false;
+  //bool loaded = false;
 
 
   @override
@@ -64,27 +69,26 @@ class FeedNewState extends State<FeedNewScreen> {
     Size size = MediaQuery.of(context).size;
     return BlocConsumer<FeedpersonalBloc, FeedpersonalState>(
       listener: (context, state) {
-        // if (state.jumpTo == true) {
-        //   print("Yoooo");
-          
-        // }
+
       },
       builder: (context, state) {
 
         return Scaffold(
             appBar: AppBar(
               title: Text("Fam's Posts"),
-              actions: [TextButton(onPressed: () => print(state.jumpTo), child: Text("Scroll"))],
+              //actions: [TextButton(onPressed: () => print(state.jumpTo), child: Text("Scroll"))],
             ),
             body: ScrollablePositionedList.builder(
               itemScrollController: itemController,
               itemCount: state.posts.length,
               itemBuilder: (BuildContext context, int index) {
-                // if (state.jumpTo != true)
-                //    context.read<FeedpersonalBloc>()..add(FeedJumpTo());
-                if (loaded != true) {
-                  loaded = true;
-                  scrollToHelper();
+               
+                // if (loaded != true) {
+                //   loaded = true;
+                //   scrollToHelper();
+                // }
+                if (index == state.posts.length) {
+                  // TODO call paginate post 
                 }
                 final Post? post = state.posts[index];
                 if (post != null)

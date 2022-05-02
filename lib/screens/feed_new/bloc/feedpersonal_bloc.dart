@@ -48,7 +48,7 @@ class FeedpersonalBloc extends Bloc<FeedpersonalEvent, FeedpersonalState> {
       // get last post id to start paginating from here
       String? lastPostId = state.posts.isNotEmpty ? state.posts.last!.id : null;
       // get the new batch
-      final posts = await _postsRepository.getUserFeed(userId: _authBloc.state.user!.uid, lastPostId: lastPostId);
+      final posts = await _postsRepository.getUserFeed(userId: _authBloc.state.user!.uid, lastPostId: lastPostId, limit: 8);
       // add the new batch to the state.posts lists
       final updatedPosts = List<Post?>.from(state.posts)..addAll(posts);
 

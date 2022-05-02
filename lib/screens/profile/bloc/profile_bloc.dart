@@ -41,41 +41,50 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) async* {
     if (event is ProfileLoadUserr) {
       yield* _mapProfileLoadUserToState(event);
-    } else if (event is ProfilePaginatePosts) {
-      yield* _mapProfilePaginatePosts();
-    } else if (event is ProfileUpdatePost) {
+    }
+    // else if (event is ProfilePaginatePosts) {
+    //  yield* _mapProfilePaginatePosts();
+    //}
+    else if (event is ProfilePaginatePosts) {
+      yield* _mapProfilePaginatePost(event);
+    }
+     else if (event is ProfileUpdatePost) {
       yield* _mapProfileUpdatePostsToState(event);
     } else if (event is ProfileFollowUserr) {
       yield* _mapProfileFollowUserToState();
     } else if (event is ProfileUnfollowUserr) {
       yield* _mapProfileUnfollowUserrToState();
+    } else if (event is ProfileUpdateShowPost) {
+      yield* _mapProfileShowPostsTosState();
     }
   }
 
-  Stream<ProfileState> _mapProfilePaginatePosts() async* {
-    print("the len of pots list is: ${state.post.length}");
-    print("post have been updated");
+  Stream<ProfileState> _mapProfileShowPostsTosState () async* {
+    yield state.copyWith(showPost: true);
+  }
+
+  //TODO FOR OPTIMIZE YOU CAN MAKE A SET. IF LASTPOSTID HAS BEEN SEEN THEN DO NOT EVEN ENTER FUNCTIONS THAT WILL DO READS.
+  Stream<ProfileState> _mapProfilePaginatePost (ProfilePaginatePosts event) async* {
     yield state.copyWith(status: ProfileStatus.paginating);
     try {
-       // get last post id to start paginating from here
-      String? lastPostId = state.post.isNotEmpty ? state.post.last!.id : null;
-      // get the new batch
-      print("len of last post is: $lastPostId");
-      final posts = await _postsRepository.getUserFeed(userId: _authBloc.state.user!.uid, lastPostId: lastPostId);
-      // add the new batch to the state.posts lists
-      print("len of get user feed is: ${posts.length}");
-      final updatedPosts = List<Post?>.from(state.post)..addAll(posts);
+      Stream<List<Future<Post?>>> posts;
+      final lastPostId = state.post.isNotEmpty ? state.post.last!.id : null;
+      var lastPostDoc = await _postsRepository.getUserPostHelper(userId: event.userId, lastPostId: lastPostId);
+      if (lastPostDoc!=null && lastPostDoc.exists) {
+      _postStreamSubscription?.cancel();
+      _postStreamSubscription = _postsRepository
+        .getUserPosts(userId: event.userId, limit: 8, lastPostDoc: lastPostDoc).listen((posts) async { 
+          final allPost = await Future.wait(posts);
+        add(ProfileUpdatePost(post: allPost));
 
-      // get the posts that we have liked
-      final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: posts);
-      // updates the liked posts from liked post cuit instance???
-      _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
+         });
+        print("got new posts");
+      }
       
-      yield state.copyWith(post: updatedPosts, status: ProfileStatus.loaded);
+      yield state.copyWith(status: ProfileStatus.loaded);
     } catch (e) {
-       state.copyWith(status: ProfileStatus.error, failure: Failure(message: 'hmmm, check ur connection fam '));
+      print("There was an error. location ProfileBloc paginatePosts. code: ${e.toString()}");
     }
-    print("the len of pots list is: ${state.post.length}");
   }
 
   Stream<ProfileState> _mapProfileLoadUserToState(ProfileLoadUserr event) async* {
@@ -91,8 +100,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       // whenever a new post is posted it will update the home page post view
       _postStreamSubscription?.cancel();
       _postStreamSubscription = _postsRepository
-          // HEY I LIMITED THIS TO 8 POSTS ============================================================== jk add this later
-        .getUserPosts(userId: event.userId).listen((posts) async {
+         
+        .getUserPosts(userId: event.userId, limit: 8, lastPostDoc: null ).listen((posts) async {
         final allPost = await Future.wait(posts);
         add(ProfileUpdatePost(post: allPost));
       });
@@ -114,9 +123,14 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
 
   Stream<ProfileState> _mapProfileUpdatePostsToState( ProfileUpdatePost event) async* {
-    yield state.copyWith(post: event.post);
+    yield state.copyWith(status: ProfileStatus.loadingSingleView);
+    print("IN the update posts repo");
     final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: event.post);
+    List<Post?> posts;
+    posts = List<Post?>.from(state.post)..addAll(event.post);
+    yield state.copyWith(post: posts, status: ProfileStatus.loaded);
     _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
+    print("____________________________________________________________________________________________________");
   }
 
 

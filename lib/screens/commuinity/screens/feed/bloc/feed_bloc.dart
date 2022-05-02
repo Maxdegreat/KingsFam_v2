@@ -49,7 +49,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   Stream<FeedState> _mapFeedFetchPostToState() async* {
     yield state.copyWith(posts: [], status: FeedStatus.loading);
     try {
-      final posts = await _postsRepository.getUserFeed(userId: _authBloc.state.user!.uid);
+      final posts = await _postsRepository.getUserFeed(userId: _authBloc.state.user!.uid, limit: 8);
       _likedPostCubit.clearAllLikedPosts();
 
       final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: posts);
@@ -65,7 +65,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     yield state.copyWith(status: FeedStatus.paginating);
     try {
         final lastPostId = state.posts!.isNotEmpty ? state.posts!.last!.id : null;
-        final posts = await _postsRepository.getUserFeed(userId: _authBloc.state.user!.uid, lastPostId: lastPostId);
+        final posts = await _postsRepository.getUserFeed(userId: _authBloc.state.user!.uid, lastPostId: lastPostId, limit: 8);
 
         final updatedPosts = List<Post?>.from(state.posts!)..addAll(posts);
 

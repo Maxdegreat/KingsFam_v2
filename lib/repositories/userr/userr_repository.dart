@@ -224,7 +224,7 @@ class UserrRepository extends BaseUserrRepository {
       print(usersSnap.docs.length);
       for (var document in usersSnap.docs) {
         if (document.id == currId) continue;
-        print("777777777777777777777777777777${document.id}77777777777777777777777777777777777777777") ;
+        //print("777777777777777777777777777777${document.id}77777777777777777777777777777777777777777") ;
         var isFollowing = await fire2.doc(document.id).collection(Paths.userFollowers).doc(currId).get();
         if (!isFollowing.exists ) {
           Userr addUserToBucket = Userr.fromDoc(document);
@@ -239,7 +239,7 @@ class UserrRepository extends BaseUserrRepository {
       usersSnap = await usersCollections.startAfterDocument(lastIdDoc).limit(limit).get();
       for (var document in usersSnap.docs) {
         if (document.id == currId) continue;
-        print("(((((((((((((((((((((((((((((((((((((((((((((((((((${document.id}))))))))))))))))))))))))))))))))))))))))))") ; 
+        // print("(((((((((((((((((((((((((((((((((((((((((((((((((((${document.id}))))))))))))))))))))))))))))))))))))))))))") ; 
         var isFollowing = await fire2.doc(document.id).collection(Paths.userFollowers).doc(currId).get();
         if (!isFollowing.exists) {
           Userr addUserToBucket = Userr.fromDoc(document);

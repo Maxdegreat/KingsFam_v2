@@ -1,6 +1,6 @@
 part of 'profile_bloc.dart';
 
-enum ProfileStatus { initial, loading, loaded, paginating, error }
+enum ProfileStatus { initial, loadingSingleView, loading,  loaded, paginating, error }
 
 class ProfileState extends Equatable {
   // step 1  class data
@@ -8,14 +8,14 @@ class ProfileState extends Equatable {
   final List<Post?> post;
   //final List<Chat> chat;
   final bool isCurrentUserr;
-  final bool isGridView;
+  final bool showPost;
   final bool isFollowing;
   final ProfileStatus status;
   final Failure failure;
   // step 2 make the constructor
   ProfileState({
     required this.post,
-    required this.isGridView,
+    required this.showPost,
     required this.userr,
     required this.isCurrentUserr,
     required this.isFollowing,
@@ -27,7 +27,7 @@ class ProfileState extends Equatable {
   factory ProfileState.initial() {
     return ProfileState(
         post: [],
-        isGridView: true,
+        showPost: false,
         userr: Userr.empty,
         isCurrentUserr: false,
         isFollowing: false,
@@ -37,12 +37,12 @@ class ProfileState extends Equatable {
   // step 3 make the props
   @override
   List<Object?> get props =>
-      [post, userr, isCurrentUserr, isFollowing, status, failure, isGridView];
+      [post, userr, isCurrentUserr, isFollowing, status, failure, showPost];
 
   // step 4 make the copy with
   ProfileState copyWith({
     List<Post?>? post,
-    bool? isGridView,
+    bool? showPost,
     Userr? userr,
     bool? isCurrentUserr,
     bool? isFollowing,
@@ -51,7 +51,7 @@ class ProfileState extends Equatable {
   }) {
     return ProfileState(
       post: post ?? this.post,
-      isGridView: isGridView ?? this.isGridView,
+      showPost: showPost ?? this.showPost,
       userr: userr ?? this.userr,
       isCurrentUserr: isCurrentUserr ?? this.isCurrentUserr,
       isFollowing: isFollowing ?? this.isFollowing,

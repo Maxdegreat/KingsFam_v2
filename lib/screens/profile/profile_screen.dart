@@ -45,7 +45,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen>  {
   // controllers
-  late TabController _tabController;
+
   ScrollController scrollController = ScrollController();
 
   @override
@@ -56,7 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen>  {
 
   @override
   void dispose() {
-    _tabController.dispose();
+    scrollController.dispose();
     super.dispose();
   }
 
@@ -64,9 +64,9 @@ class _ProfileScreenState extends State<ProfileScreen>  {
     //TODO you need to add this later make it a p1 requirment
      if (scrollController.position.atEdge) {
        if (scrollController.position.pixels != 0.0 && scrollController.position.maxScrollExtent == scrollController.position.pixels) {
-         const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
-         ScaffoldMessenger.of(context).showSnackBar(snackBar);
-         context.read<ProfileBloc>()..add(ProfilePaginatePosts());
+        //  const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
+        //  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+         context.read<ProfileBloc>()..add(ProfilePaginatePosts(userId: context.read<AuthBloc>().state.user!.uid));
        }
      }
   }
@@ -163,7 +163,7 @@ class _ProfileScreenState extends State<ProfileScreen>  {
                        ProfileStats( username: state.userr.username, posts: state.post.length, followers: state.userr.followers, following: state.userr.following),
 
 
-                      // add a linked list of commuinitys that I am in
+                      // add a linked list of commuinitys that I am in ... lol im done with this alredy but linked list dont make me laugh
                       CommuinityContainer(userId: state.userr.id, username: state.userr.username,),
                   ]
                 ),
@@ -178,6 +178,10 @@ class _ProfileScreenState extends State<ProfileScreen>  {
         );
     }
   }
+
+  // John 3:16 for God so loved the world that he gave his one and only son that whoever believes in him should not parish but have
+  // eternal life. Amen.
+
   imageGrids({required ProfileState state}) => SliverToBoxAdapter(
     child: GridView.builder(
              
@@ -195,7 +199,8 @@ class _ProfileScreenState extends State<ProfileScreen>  {
                 return Column(
                   children: [
                     GestureDetector(
-                      onTap: () => Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(startIndex: index, posts: state.post)),
+                      onTap: () => Navigator.of(context).pushNamed(ProfilePostView.routeName, arguments: ProfilePostViewArgs(posts: state.post, startIndex: index)),
+                      //Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(startIndex: index, posts: state.post)),
                       child: Container(
                       height: 240, width: 300, 
                       decoration: BoxDecoration(
@@ -208,7 +213,14 @@ class _ProfileScreenState extends State<ProfileScreen>  {
                   ),
                     ),
                     SizedBox(height: 10),
-                    ListTile(leading: commuinity_pf_img(post.author.profileImageUrl, 35, 35), title: Text(post.author.username, style: Theme.of(context).textTheme.bodyText1,),)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        commuinity_pf_img(post.author.profileImageUrl, 35, 35),
+                        SizedBox(width: 5),
+                        Flexible(child: Text(post.author.username, style: Theme.of(context).textTheme.bodyText1, overflow: TextOverflow.fade,))
+                      ],
+                    )
                   ],
                 );
               },

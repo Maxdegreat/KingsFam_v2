@@ -17,7 +17,12 @@ class ProfileLoadUserr extends ProfileEvent {
   List<Object?> get props => [userId];
 }
 
-class ProfilePaginatePosts extends ProfileEvent {}
+class ProfilePaginatePosts extends ProfileEvent {
+  final String userId;
+  const ProfilePaginatePosts({required this.userId});
+}
+
+
 
 class ProfileUpdatePost extends ProfileEvent {
   final List<Post?> post;
@@ -32,3 +37,5 @@ class ProfileUpdatePost extends ProfileEvent {
 class ProfileFollowUserr extends ProfileEvent {}
 
 class ProfileUnfollowUserr extends ProfileEvent {}
+
+class ProfileUpdateShowPost extends ProfileEvent {}

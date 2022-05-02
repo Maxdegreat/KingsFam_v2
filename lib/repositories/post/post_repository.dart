@@ -32,19 +32,33 @@ class PostsRepository extends BasePostsRepository {
         .add(comment.toDoc());
   }
 
+  Future<DocumentSnapshot<Map<String, dynamic>>?> getUserPostHelper({required String userId, required String? lastPostId}) async {
+    return await _firebaseFirestore.collection(Paths.posts).doc(lastPostId).get();
+  }
+  
   @override
-  Stream<List<Future<Post?>>> getUserPosts({required String userId}) {
-    // to get users posts from firestore we will need to create a
-    // query where looking at post collection and querry all doc's
-    // that have an author equal to our author ref
+  Stream<List<Future<Post?>>> getUserPosts({required String userId, required int limit, required DocumentSnapshot<Map<String, dynamic>>? lastPostDoc}) {
+    
     final authorRef = _firebaseFirestore.collection(Paths.users).doc(userId);
-    return _firebaseFirestore
+    if (lastPostDoc == null) {
+      return _firebaseFirestore
         .collection(Paths.posts)
-        .where('author', isEqualTo: authorRef)
-        .orderBy('date', descending: true) // .LIMIT(8)//most recent post at the top
+        .where('author', isEqualTo: authorRef).limit(limit)
+        .orderBy('date', descending: true) 
         .snapshots() //.snap() returns a stream of querry snaps
         //convert or map each query snap into a post
         .map((snap) => snap.docs.map((doc) => Post.fromDoc(doc)).toList());
+    } else {
+      print("We are in the else and ********************************");
+      
+      var updatedStream =  _firebaseFirestore.collection(Paths.posts)
+        .where('author', isEqualTo: authorRef).limit(limit)
+        .orderBy('date', descending: true).startAfterDocument(lastPostDoc).snapshots()
+        .map((snap) => snap.docs.map((doc) => Post.fromDoc(doc)).toList());
+
+      return updatedStream;
+    }
+    
   }
 
   @override
@@ -59,7 +73,7 @@ class PostsRepository extends BasePostsRepository {
   }
   // GET THE USER FEED
   @override
-  Future<List<Post?>> getUserFeed({required String userId, String? lastPostId}) async {
+  Future<List<Post?>> getUserFeed({required String userId, String? lastPostId, required int limit}) async {
 
     QuerySnapshot postSnap;
     //if last post id is null asign postSnap to Fire base firestore 
@@ -70,7 +84,7 @@ class PostsRepository extends BasePostsRepository {
           .doc(userId)
           .collection(Paths.userFeed)
           .orderBy('date', descending: true)
-          .limit(8)
+          .limit(limit)
           .get();
     } else {
       // now we are in the else. here we want to grt the docid of the last post which we pass into the 
@@ -91,7 +105,7 @@ class PostsRepository extends BasePostsRepository {
           .collection(Paths.userFeed)
           .orderBy('date', descending: true)
           .startAfterDocument(lastPostDoc)
-          .limit(8)
+          .limit(limit)
           .get();
     }
 
