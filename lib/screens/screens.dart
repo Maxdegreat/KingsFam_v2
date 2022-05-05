@@ -15,7 +15,7 @@ export 'create_chat/create_chat_screen.dart';
 export 'chat_room/chat_room.dart';
 export 'chat_room_settings/chat_room_settings.dart';
 export 'build_church/build_church.dart';
-export 'create_comuinity/create_comuinity.dart';
+export 'create_comuinity/create_channel.dart';
 export 'commuinity/commuinity_screen.dart';
 export 'profile/profile_post_view.dart';
 export 'commuinity/screens/commuinity_calls/calls_home.dart';

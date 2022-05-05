@@ -142,8 +142,21 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                 }
                 
                 final Post? post = state.post[index];
-                if (post != null)
-                  return PostSingleView(post: post,);
+                if (post != null) {
+                    final ctx = context.read<ProfileBloc>();
+                    final likedPost = context.read<ProfileBloc>().state.likedPostIds;
+
+                  return GestureDetector(
+                    onDoubleTap: () {
+                     if (likedPost.contains(post.id)) {
+                       // todo unlike
+                     } else {
+                       context.read<ProfileBloc>()..add(ProfileLikePost(lkedPost: post));
+                     }
+                    },
+                    child: PostSingleView(post: post, recentlyLiked: likedPost.contains(post.id))
+                  );
+                    }
                 print(post);
                 return Text("post is null");
               },

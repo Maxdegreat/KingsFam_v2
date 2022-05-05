@@ -5,11 +5,13 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter/material.dart';
+import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
 
 import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
+import 'package:kingsfam/screens/profile/profile_screen.dart';
 
 import 'package:kingsfam/widgets/commuinity_pf_image.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
@@ -18,8 +20,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 class PostSingleView extends StatefulWidget {
-  const PostSingleView({required this.post});
+  const PostSingleView({required this.post, required this.recentlyLiked});
   final Post post;
+  final bool recentlyLiked;
 
   @override
   _PostSingleViewState createState() => _PostSingleViewState();
@@ -78,6 +81,7 @@ class _PostSingleViewState extends State<PostSingleView> {
   }
 
   Widget interactions(int likes) {
+    bool liked = widget.recentlyLiked;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0, top: 5),
       child: Column(
@@ -85,7 +89,7 @@ class _PostSingleViewState extends State<PostSingleView> {
           Row(
             children: [
               SizedBox(width: 10),
-              Icon(Icons.thumb_up),
+              liked ? Icon(Icons.thumb_up, color: Colors.green,) : Icon(Icons.thumb_up),
               SizedBox(width: 5),
               Container(
                   //margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: .5),
@@ -113,7 +117,6 @@ class _PostSingleViewState extends State<PostSingleView> {
 
             ],
           ),
-          Divider(color: Colors.white, thickness: 1,)
         ],
       ),
     );
@@ -122,19 +125,21 @@ class _PostSingleViewState extends State<PostSingleView> {
   Widget userPicAndName({required String name, required String imgurl}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              ProfileImage(radius: 25, pfpUrl: imgurl),
-              SizedBox(width: 15.0),
-              Text(name, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),),
-            ],
-          ),
-          IconButton(onPressed: () => _postSettings(), icon: Icon(Icons.more_vert))
-
-        ],
+      child: GestureDetector(
+        onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: widget.post.author.id)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                ProfileImage(radius: 25, pfpUrl: imgurl),
+                SizedBox(width: 15.0),
+                Text(name, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),),
+              ],
+            ),
+            widget.post.author.id == context.read<AuthBloc>().state.user!.uid ? IconButton(onPressed: () => _postSettings(), icon: Icon(Icons.more_vert)) : SizedBox.shrink()
+          ],
+        ),
       ),
     );
   }

@@ -91,8 +91,21 @@ class FeedNewState extends State<FeedNewScreen> {
                   // TODO call paginate post 
                 }
                 final Post? post = state.posts[index];
-                if (post != null)
-                  return PostSingleView(post: post,);
+                if (post != null) {
+                    final ctx = context.read<FeedBloc>();
+                    final likedPost = context.read<FeedBloc>().state.likedPostIds;
+
+                  return GestureDetector(
+                    onDoubleTap: () {
+                     if (likedPost.contains(post.id)) {
+                       // todo unlike
+                     } else {
+                       context.read<FeedBloc>()..add(FeedLikePost(lkedPost: post));
+                     }
+                    },
+                    child: PostSingleView(post: post, recentlyLiked: likedPost.contains(post.id))
+                  );
+                }
                 print(post);
                 return Text("post is null");
               },

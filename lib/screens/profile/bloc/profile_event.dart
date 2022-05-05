@@ -34,6 +34,11 @@ class ProfileUpdatePost extends ProfileEvent {
   List<Object?> get props => [post];
 }
 
+class ProfileLikePost extends ProfileEvent{
+  final Post lkedPost;
+  const ProfileLikePost({required this.lkedPost});
+}
+
 class ProfileFollowUserr extends ProfileEvent {}
 
 class ProfileUnfollowUserr extends ProfileEvent {}

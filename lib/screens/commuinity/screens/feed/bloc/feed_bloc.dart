@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
@@ -27,6 +29,8 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       yield* _mapFeedCommuinityFetchPostToState(event.commuinityId);
     } else if (event is FeedPaginatePosts) {
       yield* _mapFeedPaginatePosts();
+    } else if (event is FeedLikePost) {
+      yield* _mapLikeddPostToState(event.lkedPost);
     }
   }
 
@@ -36,13 +40,25 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     try {
 
       final posts = await _postsRepository.getCommuinityFeed(commuinityId: commuinityId);
-       _likedPostCubit.clearAllLikedPosts();
+      _likedPostCubit.clearAllLikedPosts();
+      //Set<String?> postIds = posts.map((e) => e != null ? e.id : "").toSet();
+      //_likedPostCubit.updateLikedPosts(postIds: postIds);
 
       final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: posts);
       _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
-      yield state.copyWith(posts: posts ,status: FeedStatus.success);
+      yield state.copyWith(posts: posts, status: FeedStatus.success, likedPostIds: likedPostIds);
 
     } catch (e) {
+    }
+  }
+
+  Stream<FeedState> _mapLikeddPostToState(Post likedPost) async* {
+    try {
+      _likedPostCubit.likePost(post: likedPost);
+      Set<String?> likedPostset = Set<String?>.from(state.likedPostIds)..add(likedPost.id);
+      yield state.copyWith(likedPostIds: likedPostset);
+    } catch (e) {
+      log("Error in Feed_bloc -> _mapLikedPostToState -> e.code :${e.toString()}");
     }
   }
 

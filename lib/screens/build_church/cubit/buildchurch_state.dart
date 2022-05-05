@@ -14,11 +14,13 @@ class BuildchurchState extends Equatable {
   final List<String> memberIds;
   final List<String> adminIds; // this will work by adding the certin ids into this list. when making user map if the key (an id) is found in the adminIds then pass isAdmin True in the map. i think this is better because it writes less.
   final Map<String, dynamic> memberInfo;
+  final bool isSubmiting;
   final bool isMember;
   final BuildChurchStatus status;
   final Failure failure;
   // 2 constructor
   BuildchurchState({
+    required this.isSubmiting,
     required this.imageFile,
     required this.caseSearchList,
     this.initHashTag,
@@ -37,6 +39,7 @@ class BuildchurchState extends Equatable {
   @override
   List<Object?> get props => [
         imageFile,
+        isSubmiting,
         name,
         caseSearchList,
         initHashTag,
@@ -54,6 +57,7 @@ class BuildchurchState extends Equatable {
   //4 copy with
   BuildchurchState copyWith(
       {List<String>? caseSearchList,
+      bool? isSubmiting,
       String? initHashTag,
       List<String>? hashTags,
       File? imageFile,
@@ -68,6 +72,7 @@ class BuildchurchState extends Equatable {
       BuildChurchStatus? status,
       Failure? failure}) {
     return BuildchurchState(
+        isSubmiting: isSubmiting ?? this.isSubmiting,
         caseSearchList: caseSearchList ?? this.caseSearchList,
         initHashTag: initHashTag ?? this.initHashTag,
         hashTags: hashTags ?? this.hashTags,
@@ -86,6 +91,7 @@ class BuildchurchState extends Equatable {
   // 5 the initial
   factory BuildchurchState.initial() {
     return BuildchurchState(
+        isSubmiting: false,
         caseSearchList: [],
         initHashTag: null,
         hashTags: null,

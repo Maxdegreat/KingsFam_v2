@@ -2,22 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
-import 'package:kingsfam/cubits/cubits.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
-import 'package:kingsfam/repositories/post/post_repository.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
-import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/feed_screen_widget.dart';
 import 'package:kingsfam/widgets/widgets.dart';
-import 'package:kingsfam/extensions/extensions.dart';
 import 'package:rive/rive.dart';
 
 class ChatsScreen extends StatefulWidget {
@@ -113,12 +107,14 @@ class _ChatsScreenState extends State<ChatsScreen>
           IconButton(
               onPressed: () =>
                   Navigator.of(context).pushNamed(CreatePostScreen.routeName),
-              icon: Icon(Icons.add_rounded)),
-          IconButton(
-              icon: Icon(Icons.menu_rounded),
-              onPressed: () => Navigator.of(context).pushNamed(
-                    CreateComuinity.routeName,
-                  ))
+              icon: Icon(Icons.camera)),
+          GestureDetector(
+            onTap: () => Navigator.of(context).pushNamed(CreateComuinity.routeName),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: Container(height: 25, width: 25, child: RiveAnimation.asset('assets/icons/add_icon.riv'),),
+            )
+          ),
         ],
       ),
       body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
@@ -382,7 +378,7 @@ class ScreensForPageView {
               ],
             ));
   }
-
+ 
   Widget _feed(context) => FeedScreenWidget();
 }
 

@@ -56,6 +56,18 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       yield* _mapProfileUnfollowUserrToState();
     } else if (event is ProfileUpdateShowPost) {
       yield* _mapProfileShowPostsTosState();
+    } else if (event is ProfileLikePost) {
+      yield* _mapLikePostToState(event);
+    }
+  }
+
+  Stream<ProfileState> _mapLikePostToState(ProfileLikePost event) async* {
+    try {
+      _likedPostCubit.likePost(post: event.lkedPost);
+      Set<String?> likeSet = Set<String?>.from(state.likedPostIds)..add(event.lkedPost.id);
+      yield state.copyWith(likedPostIds: likeSet);
+    } catch (e) {
+      print("error in profilebloc _mapLikePostToState, ecode: ${e.toString()})");
     }
   }
 
@@ -90,7 +102,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   Stream<ProfileState> _mapProfileLoadUserToState(ProfileLoadUserr event) async* {
     yield state.copyWith(status: ProfileStatus.loading);
     try {
-      
       final userr = await _userrRepository.getUserrWithId(userrId: event.userId);
       
       final isCurrentUser = _authBloc.state.user!.uid == event.userId;
@@ -128,8 +139,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: event.post);
     List<Post?> posts;
     posts = List<Post?>.from(state.post)..addAll(event.post);
-    yield state.copyWith(post: posts, status: ProfileStatus.loaded);
-    _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
+    //_likedPostCubit.updateLikedPosts(postIds: likedPostIds);
+    yield state.copyWith(post: posts, status: ProfileStatus.loaded, likedPostIds: likedPostIds);
     print("____________________________________________________________________________________________________");
   }
 

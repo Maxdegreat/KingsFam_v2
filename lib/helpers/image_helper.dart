@@ -2,6 +2,7 @@
 
 // second task select video from gallerey
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -42,8 +43,8 @@ class ImageHelper {
         iosUiSettings: const IOSUiSettings(),   
         compressQuality: 100,
       );
-      var decodedImage = await decodeImageFromList(cropedFile!.readAsBytesSync());
-      print("||||||||||||||||||||||\height: ${decodedImage.height}|||||||||||||||||||||||||||");
+      // Image decodedImage = (await decodeImageFromList(cropedFile.readAsBytesSync())) as Image;
+      // print("||||||||||||||||||||||\height: ${decodedImage.height}|||||||||||||||||||||||||||");
       return cropedFile;
     }
     return null;

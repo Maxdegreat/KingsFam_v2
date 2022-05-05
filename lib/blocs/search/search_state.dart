@@ -5,7 +5,8 @@ enum SearchStatus { initial, pag, loading, success, error }
 class SearchState extends Equatable {
   final Userr user; // curr uuser
   final List<Userr> users; // list of users
-  final List<Userr> selectedUsers; // list of selected users
+  final List<Userr> followingUsers;
+  final Set<Userr> selectedUsers; // list of selected users
 
   //final List<Userr> usersInCommuinity;
 
@@ -23,7 +24,8 @@ class SearchState extends Equatable {
         user: Userr.empty,
         users: [],
         //usersInCommuinity: [],
-        selectedUsers: [],
+        followingUsers: [],
+        selectedUsers: {},
         churches: [],
         chruchesList3: [],
         churchesList2: [],
@@ -37,6 +39,7 @@ class SearchState extends Equatable {
     required this.user,
     required this.users,
     //required this.usersInCommuinity,
+    required this.followingUsers,
     required this.selectedUsers,
     required this.churches,
     required this.churchesList2,
@@ -52,6 +55,7 @@ class SearchState extends Equatable {
         users,
         user,
         //usersInCommuinity,
+        followingUsers,
         selectedUsers,
         churches,
         churchesList2,
@@ -66,7 +70,8 @@ class SearchState extends Equatable {
     Userr? user,
     List<Userr>? users,
     //List<Userr>? usersInCommuinity,
-    List<Userr>? selectedUsers,
+    List<Userr>? followingUsers,
+    Set<Userr>? selectedUsers,
     bool? isSelected,
     List<Church>? churches,
     List<Church>? churchesList2,
@@ -79,6 +84,7 @@ class SearchState extends Equatable {
       user: user ?? this.user,
       users: users ?? this.users,
       //usersInCommuinity: usersInCommuinity ?? this.usersInCommuinity,
+      followingUsers: followingUsers ?? this.followingUsers,
       selectedUsers: selectedUsers ?? this.selectedUsers,
       churches: churches ?? this.churches,
       churchesList2: churchesList2 ?? this.churchesList2,

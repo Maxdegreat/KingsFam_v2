@@ -1,5 +1,7 @@
 //import 'dart:ffi';
 
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/enums/enums.dart';
@@ -146,10 +148,57 @@ class UserrRepository extends BaseUserrRepository {
   Future<List<Userr>> searchUsersadvanced({required String query}) async {
     final usersnap = await _firebaseFirestore
         .collection(Paths.users)
-        .where('usernameSearchCase', arrayContains: query)
+        .where('usernameSearchCase', arrayContains: query).limit(20)
         .get();
     return usersnap.docs.map((e) => Userr.fromDoc(e)).toList();
   }
+  
+  Future<List<Userr>> searchUsersAdvancedFollowing({required String query, required String currUserId}) async {
+    List<Userr> bucket = [];
+    List<Userr> users = [];
+    users = await searchUsersadvanced(query: query);
+    for (Userr user in users) {
+      var userSnap = await _firebaseFirestore.collection(Paths.following).doc(currUserId).collection(Paths.userrFollowing).doc(user.id).get();
+      if (userSnap.exists) {
+        bucket.add(user);
+      }
+    }
+
+    return bucket;
+
+    // final userSnap = await _firebaseFirestore.collection(Paths.following).doc(currUserId).collection(Paths.userrFollowing).limit(20).get();
+    // for (var v in  userSnap.docs) {
+    //     if (v.exists) {
+    //       Userr user = await getUserrWithId(userrId: v.id);
+    //       bucket.add(user);
+    //     }
+    // }
+
+    // return bucket;
+    //return userSnap.docs.length > 0 ? userSnap.docs.map((id) => Userr.fromDoc(id)).toList() : [];
+  }
+    Future<List<Userr>> followingList({required String currUserId, required String? lastStringId}) async {
+      List<Userr> bucket = [];
+      if (lastStringId == null) {
+        final userSnap = await _firebaseFirestore.collection(Paths.following).doc(currUserId).collection(Paths.userrFollowing).limit(15).get();
+        for (var v in  userSnap.docs) {
+         if (v.exists) {
+           Userr user = await getUserrWithId(userrId: v.id);
+           bucket.add(user);
+         }
+        }
+      } else {
+        var startAfterUserDoc = await _firebaseFirestore.collection(Paths.users).doc(lastStringId).get();
+        final userSnap = await _firebaseFirestore.collection(Paths.following).doc(currUserId).collection(Paths.userrFollowing).startAfterDocument(startAfterUserDoc).limit(15).get();
+        for (var v in  userSnap.docs) {
+         if (v.exists) {
+           Userr user = await getUserrWithId(userrId: v.id);
+           bucket.add(user);
+         }
+        }
+      }
+      return bucket;   
+    }
   
   @override
   Future<void> snedFriendRequest({required String senderId, required String currUserId}) async {

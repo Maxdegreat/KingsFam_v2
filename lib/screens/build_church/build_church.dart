@@ -17,6 +17,8 @@ import 'package:kingsfam/widgets/widgets.dart';
 
 import 'cubit/buildchurch_cubit.dart';
 
+
+
 class BuildChurchArgs {
   final List<Userr> selectedMembers;
 
@@ -51,6 +53,7 @@ class _BuildChurchState extends State<BuildChurch> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
+    bool emitProgressIndicator = false;
     // == done i think just remove self from add users screen thats confusing...
 
     //widget.selectedMembers.insert(0, ) do this in cubit, inset urself at 0 and do via
@@ -60,7 +63,10 @@ class _BuildChurchState extends State<BuildChurch> {
 
     return BlocConsumer<BuildchurchCubit, BuildchurchState>(
       listener: (context, state) {
-        if (state.status == BuildChurchStatus.error) {
+        if (state.status == BuildChurchStatus.loading) {
+          emitProgressIndicator = true;
+        }
+        else if (state.status == BuildChurchStatus.error) {
           ErrorDialog(
             content: 'hmm, something went worong. check your connection',
           );
@@ -112,7 +118,7 @@ class _BuildChurchState extends State<BuildChurch> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            if (state.status == BuildChurchStatus.loading)
+                            if (state.status == BuildChurchStatus.loading || emitProgressIndicator)
                               LinearProgressIndicator(
                                 color: Colors.red[400],
                               ),
@@ -134,7 +140,7 @@ class _BuildChurchState extends State<BuildChurch> {
                               style: const TextStyle(color: Colors.white),
                               underline: Container(
                                 height: 1,
-                                color: Colors.white,                       alignment: Alignment.centerRight,
+                                color: Colors.white,                                                 alignment: Alignment.centerRight,
                               ),
                               onChanged: (String? newValue) {
                                 setState(() {
@@ -205,16 +211,21 @@ class _BuildChurchState extends State<BuildChurch> {
                               clipBehavior: Clip.none,
                             ),
                             SizedBox(height: 10.0),
+                            state.status != BuildChurchStatus.loading ?
                             ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.red[400]),
-                                onPressed: () => submitChurch(
-                                    context: context,
-                                    isSubmitting: state.status ==
-                                        BuildChurchStatus.loading,
-                                    isImage: state.imageFile == null),
+                                onPressed: () {
+                                  submitChurch(context: context,submitStatus: state.isSubmiting, isImage: state.imageFile == null);
+                                  context.read<BuildchurchCubit>().onSubmiting();
+                                  setState(() {});
+                                },
                                 child: Text(
                                   'CREATE',
+                                  style: TextStyle(letterSpacing: 1.5),
+                                )) : 
+                            ElevatedButton(onPressed: () {}, child: Text(
+                                  'CREATING...',
                                   style: TextStyle(letterSpacing: 1.5),
                                 ))
                           ],
@@ -238,10 +249,13 @@ class _BuildChurchState extends State<BuildChurch> {
       context.read<BuildchurchCubit>().onImageChanged(pickedFile);
   }
 
-  void submitChurch({required BuildContext context,required bool isSubmitting,required bool isImage}) {
+  void submitChurch({required BuildContext context,required bool submitStatus, required bool isImage}) {
     if (!isImage) { // if image not null
-      if (!isSubmitting && _formKey.currentState!.validate())
+      if ( submitStatus == false && _formKey.currentState!.validate()) {
         context.read<BuildchurchCubit>().submit();
+      } else {
+        return;
+      }
     } else {
       showDialog(
           context: context,

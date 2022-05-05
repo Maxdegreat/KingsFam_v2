@@ -62,8 +62,8 @@ class CustomRoute {
       case SearchScreen.routeName:
         return SearchScreen.route();
 
-      case PostView.routeName:
-        return PostView.route(settings.arguments as PostViewAgrs);
+      // case PostView.routeName:
+      //   return PostView.route(settings.arguments as PostViewAgrs);
 
       case ProfilePostView.routeName:
         return ProfilePostView.route(settings.arguments as ProfilePostViewArgs);

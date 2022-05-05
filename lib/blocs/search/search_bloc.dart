@@ -105,13 +105,11 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
   Stream<SearchState> _mapAddMemberToState(AddMember event) async* {
     state.selectedUsers.add(event.member);
-    state.users.remove(event.member);
     state.copyWith(status: SearchStatus.initial);
   }
 
   Stream<SearchState> _mapRemoveMemberToState(RemoveMember event) async* {
     state.selectedUsers.remove(event.member);
-    state.users.insert(0, event.member);
     state.copyWith(status: SearchStatus.initial);
   }
 
@@ -159,6 +157,25 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     }
   }
 
+    void searchUserAdvancedAddToCommuinity(String query) async {
+    if (query.isEmpty) {
+      emit(state.copyWith(status: SearchStatus.initial));
+    } else {
+      try {
+        final users = await _userrRepository.searchUsersAdvancedFollowing(query: query, currUserId: _authBloc.state.user!.uid);
+        emit(state.copyWith(users: users, status: SearchStatus.success));
+      } catch (e) {
+        print("Error: ${e. toString()}");
+        state.copyWith( failure: Failure(message: 'Some Thing went wrong'), status: SearchStatus.error);
+      }
+    }
+  }
+
+  void followingUsersList({required String? lastStingId}) async {
+    var followingList =  await _userrRepository.followingList(currUserId: _authBloc.state.user!.uid, lastStringId: lastStingId);
+    emit(state.copyWith(followingUsers: followingList));
+  }
+
   void searchChurch(String query) async {
     if (query.isEmpty) {
       emit(state.copyWith(status: SearchStatus.initial));
@@ -174,6 +191,10 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
             status: SearchStatus.error);
       }
     }
+  }
+
+  void clearSearchBlocAll() {
+    emit(state.copyWith(users: [], selectedUsers: {}));
   }
 
   void clearSearch() {

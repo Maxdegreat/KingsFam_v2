@@ -10,27 +10,28 @@ part of 'liked_post_cubit.dart';
 
 
 class LikedPostState extends Equatable {
-  final Set<String> likedPostsIds;
-  final Set<String> recentlyLikedPostIds;
-  const LikedPostState(
-      {required this.likedPostsIds, required this.recentlyLikedPostIds});
+  final Set<String?> likedPostsIds;
+  final bool isLiked;
+  // final Set<String> recentlyLikedPostIds;
+  const LikedPostState({required this.likedPostsIds, required this.isLiked});
 
   @override
-  List<Object> get props => [likedPostsIds, recentlyLikedPostIds];
+  List<Object> get props => [likedPostsIds, isLiked];
 
   LikedPostState copyWith({
-    Set<String>? likedPostsIds,
-    Set<String>? recentlyLikedPostIds,
+    Set<String?>? likedPostsIds,
+    bool? isLiked,
   }) {
     return LikedPostState(
       likedPostsIds: likedPostsIds ?? this.likedPostsIds,
-      recentlyLikedPostIds: recentlyLikedPostIds ?? this.recentlyLikedPostIds,
+      isLiked: isLiked ?? this.isLiked,
     );
   }
 
   factory LikedPostState.initial() {
     return LikedPostState(
-      likedPostsIds: {}, recentlyLikedPostIds: {});
+      isLiked: false,
+      likedPostsIds: {});
   }
 }
 

@@ -12,6 +12,9 @@ import 'package:kingsfam/screens/create_chat/cubit/createchat_cubit.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
+
+bool _NOSUBMIT = false;
+
 class CreateChatArgs {
   final List<Userr> selectedMembers;
 
@@ -172,7 +175,8 @@ class CreateChatScreen extends StatelessWidget {
       File? avatar) async {
     final state = context.read<CreatechatCubit>();
 
-    if (_formKey.currentState!.validate() && !loading && avatar != null) {
+    if (_NOSUBMIT == false && _formKey.currentState!.validate() && !loading && avatar != null) {
+      _NOSUBMIT = true;
       _formKey.currentState!.save();
 
       //updates the states member list

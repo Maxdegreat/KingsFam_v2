@@ -6,6 +6,7 @@ class ProfileState extends Equatable {
   // step 1  class data
   final Userr userr;
   final List<Post?> post;
+  final Set<String?> likedPostIds;
   //final List<Chat> chat;
   final bool isCurrentUserr;
   final bool showPost;
@@ -16,6 +17,7 @@ class ProfileState extends Equatable {
   ProfileState({
     required this.post,
     required this.showPost,
+    required this.likedPostIds,
     required this.userr,
     required this.isCurrentUserr,
     required this.isFollowing,
@@ -32,6 +34,7 @@ class ProfileState extends Equatable {
         isCurrentUserr: false,
         isFollowing: false,
         status: ProfileStatus.initial,
+        likedPostIds: {},
         failure: Failure());
   }
   // step 3 make the props
@@ -47,6 +50,7 @@ class ProfileState extends Equatable {
     bool? isCurrentUserr,
     bool? isFollowing,
     ProfileStatus? status,
+    Set<String?>? likedPostIds,
     Failure? failure,
   }) {
     return ProfileState(
@@ -56,6 +60,7 @@ class ProfileState extends Equatable {
       isCurrentUserr: isCurrentUserr ?? this.isCurrentUserr,
       isFollowing: isFollowing ?? this.isFollowing,
       status: status ?? this.status,
+      likedPostIds: likedPostIds ?? this.likedPostIds,
       failure: failure ?? this.failure,
     );
   }

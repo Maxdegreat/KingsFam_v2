@@ -73,6 +73,10 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
     emit(state.copyWith(memberIds: userrIds, status: BuildChurchStatus.initial));
   }
 
+  void onSubmiting() {
+    emit(state.copyWith(isSubmiting: false));
+  }
+
   //void functoion to invite users A.K.A populate list
   // future bool to see if a user is in commuinity or not
      void isCommuinityMember (Church commuinity) async {
@@ -90,12 +94,12 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       final imageUrl = await _storageRepository.uploadChurchImage(url: '', image: state.imageFile!);
       //handels casing for search prams
       List<String> caseList = AdvancedQuerry().advancedSearch(query: state.name);
-      emit(state.copyWith(caseSearchList: caseList));
+      emit(state.copyWith(caseSearchList: caseList, status: BuildChurchStatus.loading));
 
       //handel the making of hash tags
       if (state.initHashTag != null) {
         List<String> hashTags = AdvancedQuerry().advancedHashTags(hashTags: state.initHashTag!);
-        emit(state.copyWith(hashTags: hashTags));
+        emit(state.copyWith(hashTags: hashTags, status: BuildChurchStatus.loading));
       }
 
       //============================================================
@@ -160,7 +164,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       print("The church is made my boi");
       emit(state.copyWith(status: BuildChurchStatus.success));
     } catch (err) {
-      emit(state.copyWith(status: BuildChurchStatus.loading ,failure: Failure(message: 'check your internet connection fam')));
+      emit(state.copyWith(status: BuildChurchStatus.error ,failure: Failure(message: 'check your internet connection fam')));
     }
     
   }

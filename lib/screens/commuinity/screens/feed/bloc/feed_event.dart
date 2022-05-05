@@ -8,8 +8,15 @@ abstract class FeedEvent extends Equatable {
 }
 
 class FeedFetchPosts extends FeedEvent {}
+
 class FeedCommuinityFetchPosts extends FeedEvent {
   final String commuinityId;
   FeedCommuinityFetchPosts({required this.commuinityId});
 }
+
 class FeedPaginatePosts extends FeedEvent{}
+
+class FeedLikePost extends FeedEvent{
+  final Post lkedPost;
+  const FeedLikePost({required this.lkedPost});
+}

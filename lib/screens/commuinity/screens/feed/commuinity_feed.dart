@@ -55,8 +55,21 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
                   itemCount: state.posts!.length,
                   itemBuilder: (BuildContext context, int index) {
                     final Post? post = state.posts![index];
-                    if (post != null)
-                      return PostSingleView(post: post,);
+                    if (post != null) {
+                    final ctx = context.read<FeedBloc>();
+                    final likedPost = context.read<FeedBloc>().state.likedPostIds;
+
+                  return GestureDetector(
+                    onDoubleTap: () {
+                     if (likedPost.contains(post.id)) {
+                       // todo unlike
+                     } else {
+                       context.read<FeedBloc>()..add(FeedLikePost(lkedPost: post));
+                     }
+                    },
+                    child: PostSingleView(post: post, recentlyLiked: likedPost.contains(post.id))
+                  );
+                    }
                     return Text("Error, Post is null");
 
 

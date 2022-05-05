@@ -12,6 +12,7 @@ import 'package:kingsfam/config/type_of.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/widgets/widgets.dart';
+import 'package:provider/provider.dart';
 
 import '../screens.dart';
 
@@ -37,14 +38,21 @@ class AddUsers extends StatefulWidget {
   _AddUsersState createState() => _AddUsersState();
 }
 
-@override
-void initState() {}
+
+
+
 
 class _AddUsersState extends State<AddUsers> {
   final TextEditingController _textEditingController = TextEditingController();
+    @override
+    void dispose() {
+      context.read<SearchBloc>().clearSearchBlocAll();
+      super.dispose();
+    }
 
   @override
   Widget build(BuildContext context) {
+    context.read<SearchBloc>().followingUsersList(lastStingId: null);
     //context.read<SearchBloc>().clearSearch();
     return BlocConsumer<SearchBloc, SearchState>(
       listener: (context, state) {
@@ -60,7 +68,7 @@ class _AddUsersState extends State<AddUsers> {
         return Scaffold(
           appBar: AppBar(
             title: widget.typeOf == 'Virtural Church'
-                ? Text('New Virtural Church')
+                ? Text('Add Fam To The Commuinity?', overflow: TextOverflow.fade,)
                 : widget.typeOf == typeOf.inviteTheFam
                     ? Text("Invite Members")
                     : Text("New Group"),
@@ -77,21 +85,19 @@ class _AddUsersState extends State<AddUsers> {
                     TextField(
                       controller: _textEditingController,
                       decoration: InputDecoration(
-                          fillColor: Colors.black87,
+                          fillColor: Colors.grey[600],
+                          border: OutlineInputBorder(),
                           filled: true,
-                          hintText: 'search for the fam',
+                          hintText: 'search for the fam that ur following',
                           suffixIcon: IconButton(
-                              onPressed: () {
-                                context.read<SearchBloc>().clearSearch();
-                                _textEditingController.clear();
-                              },
-                              icon: Icon(Icons.clear))),
+                            onPressed: () { context.read<SearchBloc>().clearSearch(); _textEditingController.clear();},
+                            icon: Icon(Icons.clear)
+                            )
+                          ),
                       textInputAction: TextInputAction.search,
                       textAlignVertical: TextAlignVertical.center,
                       onChanged: (value) {
-                        context
-                            .read<SearchBloc>()
-                            .searchUserAdvanced(value.trim());
+                        context.read<SearchBloc>().searchUserAdvancedAddToCommuinity(value.trim());
                       },
                     ),
                     SizedBox(height: 10.0),
@@ -100,95 +106,58 @@ class _AddUsersState extends State<AddUsers> {
                         height: MediaQuery.of(context).size.height / 1.38,
                         width: double.infinity,
                         child: state.status == SearchStatus.initial
-                            ? Center(
-                                child: Text(
-                                'Isiaha 43:2',
-                                style: TextStyle(
-                                    fontSize: 30, fontWeight: FontWeight.w400),
-                              ))
+                            ? ListView.builder(
+                              itemCount: state.followingUsers.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                Userr user = state.followingUsers[index];
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 13),
+                                  child: ListTile(
+                                    onTap: () {
+                                      if (!state.selectedUsers.contains(user)) {
+                                        context.read<SearchBloc>()..add(AddMember(member: user)); 
+                                        setState(() {});
+                                      } else {
+                                        context.read<SearchBloc>()..add(RemoveMember(member: user));
+                                        setState(() {});
+                                      }
+                                    },
+                                    leading: ProfileImage(pfpUrl: user.profileImageUrl, radius: 37,),
+                                    title: Text(user.username, overflow: TextOverflow.fade, style: TextStyle(color: state.selectedUsers.contains(user) ? Colors.green : Colors.white, fontSize: 25, fontWeight: FontWeight.w500 ),),
+                                  ),
+                                );
+                              })
                             : state.status == SearchStatus.loading
                                 ? Center(
                                     child: CircularProgressIndicator(),
                                   )
                                 // once listview is a sucess
                                 : state.status == SearchStatus.success
-                                    // itemCount: selected + non-selected.
-                                    // itemBuilder:
-                                    // itm count = 3;
-                                    // inx = 3;
-                                    // display -> sel + non sel with re-render for every change
-                                    // sel users = 1
-                                    // non sel = 2
-                                    //
+                       
                                     ? ListView.builder(
-                                        itemCount: state.users.length +
-                                            state.selectedUsers.length,
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          if (index <
-                                              state.selectedUsers.length) {
-                                            final selectedUser =
-                                                state.selectedUsers[index];
-                                            return Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 15.0),
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  FocusScope.of(context)
-                                                      .unfocus();
-                                                  context
-                                                      .read<SearchBloc>()
-                                                      .add(RemoveMember(
-                                                          member:
-                                                              selectedUser));
-                                                  setState(() {});
-                                                },
-                                                child: FancyListTile(
-                                                    username:
-                                                        selectedUser.username,
-                                                    imageUrl: selectedUser
-                                                        .profileImageUrl,
-                                                    onTap: () {
-                                                      state.copyWith(
-                                                          isSelected: false);
-                                                    },
-                                                    isBtn: true,
-                                                    BR: 12.0,
-                                                    height: 12.0,
-                                                    width: 12.0),
-                                              ),
-                                            );
-                                          }
-                                          int userIndex = index -
-                                              state.selectedUsers.length;
-                                          Userr _user = state.users[userIndex];
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 15.0),
-                                            child: GestureDetector(
+                                        itemCount: state.users.length,
+                                        itemBuilder: (BuildContext context, int index) {
+                                          Userr user = state.users[index];
+                                          return Padding(padding: EdgeInsets.symmetric(vertical: 13 ),
+                                            child: ListTile(
                                               onTap: () {
-                                                FocusScope.of(context)
-                                                    .unfocus();
-                                                state.copyWith(
-                                                    isSelected: true);
-                                                context.read<SearchBloc>().add(
-                                                    AddMember(member: _user));
-                                                //print(state.selectedUsers);
-                                                setState(() {});
+                                                if (!state.selectedUsers.contains(user)) {
+                                                  context.read<SearchBloc>()..add(AddMember(member: user)); 
+                                                  setState(() {});
+                                                } else {
+                                                  context.read<SearchBloc>()..add(RemoveMember(member: user));
+                                                  setState(() {});
+                                                }
                                               },
-                                              child: FancyListTile(
-                                                  username: _user.username,
-                                                  imageUrl:
-                                                      _user.profileImageUrl,
-                                                  onTap: () {},
-                                                  isBtn: false,
-                                                  BR: 12.0,
-                                                  height: 12.0,
-                                                  width: 12.0),
-                                            ),
+                                              leading: ProfileImage(pfpUrl: user.profileImageUrl, radius: 37,),
+                                              title: Text(user.username, overflow: TextOverflow.fade, style: TextStyle(
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.w500,
+                                                color: state.selectedUsers.contains(user) ? Colors.green : Colors.white,
+                                               ),),
+                                            ) ,
                                           );
-                                        },
+                                        }
                                       )
                                     : Center(child: Text('fam not found')),
                       ),
@@ -204,7 +173,7 @@ class _AddUsersState extends State<AddUsers> {
                                             BuildChurch.routeName,
                                             arguments: BuildChurchArgs(
                                                 selectedMembers:
-                                                    state.selectedUsers));
+                                                    state.selectedUsers.toList()));
 
                                         break;
                                       case typeOf.inviteTheFam:
@@ -217,7 +186,7 @@ class _AddUsersState extends State<AddUsers> {
                                             CreateChatScreen.routeName,
                                             arguments: CreateChatArgs(
                                                 selectedMembers:
-                                                    state.selectedUsers));
+                                                    state.selectedUsers.toList()));
                                     }
 
                                     // print(state.selectedUsers.map((member) => member.username));
@@ -242,3 +211,52 @@ class _AddUsersState extends State<AddUsers> {
     );
   }
 }
+
+
+
+
+/*
+if (index < state.selectedUsers.length) {
+                                            final selectedUser = state.selectedUsers[index];
+                                            return Padding( padding: const EdgeInsets.symmetric(vertical: 15.0),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  FocusScope.of(context).unfocus();
+                                                  context.read<SearchBloc>().add(RemoveMember(member: selectedUser));
+                                                  setState(() {});
+                                                },
+                                                child: FancyListTile(username:selectedUser.username, imageUrl: selectedUser.profileImageUrl,
+                                                    onTap: () {state.copyWith(isSelected: false);},
+                                                    isBtn: true,
+                                                    BR: 12.0,
+                                                    height: 12.0,
+                                                    width: 12.0),
+                                              ),
+                                            );
+                                          }
+                                          int userIndex = index -
+                                              state.selectedUsers.length;
+                                          Userr _user = state.users[userIndex];
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(vertical: 15.0),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                FocusScope.of(context).unfocus();
+                                                state.copyWith(isSelected: true);
+                                                context.read<SearchBloc>().add(
+                                                AddMember(member: _user));
+                                                setState(() {});
+                                              },
+                                              child: FancyListTile(
+                                                  username: _user.username,
+                                                  imageUrl:
+                                                      _user.profileImageUrl,
+                                                  onTap: () {},
+                                                  isBtn: false,
+                                                  BR: 12.0,
+                                                  height: 12.0,
+                                                  width: 12.0),
+                                            ),
+                                          );
+                                        },
+                                        */
