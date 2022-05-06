@@ -60,6 +60,7 @@ class CallshomeCubit extends Cubit<CallshomeState> {
         memberInfo: {},
         channelId: Uuid().v4(),
         hasDilled: false,
+        tag: commuinity.id!,
       );
 
       _callRepository.createCall(doc: commuinity.id!, call: createCall);
@@ -178,6 +179,7 @@ class CallshomeCubit extends Cubit<CallshomeState> {
         allMembersIds: call.allMembersIds,
         channelId: call.channelId,
         hasDilled: hasDilled,
+        tag: commuinity.id!
       );
       //basically what this joinCall repo func does is it places the joiner in the designeated section for them to join 
       //it also adds them into the activeincall collection, this is then used to know if the user is in a call at the given
@@ -203,7 +205,8 @@ class CallshomeCubit extends Cubit<CallshomeState> {
         channelId: call.channelId,
         memberInfo: state.memberInfo,
         callerPicUrl: call.callerPicUrl,
-        hasDilled: hasDilled
+        hasDilled: hasDilled,
+        tag: commuinity.id!,
       );
       _callRepository.joinCall(user: reciever, joinedCall: joinedCall, call: call, commuinity: commuinity);
     }

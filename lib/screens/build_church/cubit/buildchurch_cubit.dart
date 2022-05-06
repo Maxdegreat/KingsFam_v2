@@ -27,18 +27,42 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
   final StorageRepository _storageRepository;
   final AuthBloc _authBloc;
   final UserrRepository _userrRepository;
+  final CallRepository _callRepository;
   BuildchurchCubit({
     required ChurchRepository churchRepository,
     required StorageRepository storageRepository,
     required AuthBloc authBloc,
+    required CallRepository callRepository,
     required UserrRepository userrRepository,
   })  : _churchRepository = churchRepository,
         _storageRepository = storageRepository,
         _authBloc = authBloc,
         _userrRepository = userrRepository,
+        _callRepository = callRepository,
         super(BuildchurchState.initial());
   
   final _fb = FirebaseFirestore.instance;
+
+  void getKingsCords({required String commuinityId}) async {
+    var lst = await _churchRepository.getCommuinityCords(churchId: commuinityId);
+    emit(state.copyWith(kingsCords: lst));
+  }
+
+  void getCalls({required String commuinityId}) async {
+    var lst = await _callRepository.getCommuinityCalls(CommuinityId: commuinityId);
+    emit(state.copyWith(calls: lst));
+  }
+
+  Future<void> makeKingsCord({required Church commuinity, required String cordName}) async {
+    if (state.kingsCords.length < 7) {
+      KingsCord? kc = await  _churchRepository.newKingsCord2(ch: commuinity, cordName: cordName);
+      var lst = state.kingsCords;
+      lst.add(kc);
+      emit(state.copyWith(kingsCords: lst ));
+    }
+  }
+
+    
   //void function to update image url
   void onImageChanged(File image) {
     emit(state.copyWith(imageFile: image, status: BuildChurchStatus.initial));
@@ -186,7 +210,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
 */  
 
   // ignore: non_constant_identifier_names
-  Future<void> make_main_room(Church commuinity, String? cordName) async {
+  Future<void> make_main_room(Church commuinity, String cordName) async {
     //=============================================================
     //geters
     print("we are in the make main room");
@@ -196,7 +220,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
     final kingsCord = KingsCord(
         tag: commuinity.id!,
         cordName: cordName,
-        memberInfo: commuinity.memberInfo,
+        // memberInfo: commuinity.memberInfo,
         recentMessage: "whats good Gods People!",
         recentSender: recentSenderGetter.username,
         memberIds: commuinity.memberIds);

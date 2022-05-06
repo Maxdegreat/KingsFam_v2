@@ -5,6 +5,8 @@ enum BuildChurchStatus { initial, loading, success, error }
 class BuildchurchState extends Equatable {
   //1 class data
   final File? imageFile;
+  final List<KingsCord?> kingsCords;
+  final List<CallModel?> calls;
   final List<String>? caseSearchList;
   final String? initHashTag;
   final List<String>? hashTags;
@@ -18,11 +20,15 @@ class BuildchurchState extends Equatable {
   final bool isMember;
   final BuildChurchStatus status;
   final Failure failure;
+  final int? chatChannelsLen;
+  final int? callChannelsLen;
+  final Userr? recentSenderAsUser;
   // 2 constructor
   BuildchurchState({
     required this.isSubmiting,
     required this.imageFile,
     required this.caseSearchList,
+    required this.kingsCords,
     this.initHashTag,
     this.hashTags,
     required this.name,
@@ -34,6 +40,10 @@ class BuildchurchState extends Equatable {
     required this.isMember,
     required this.status,
     required this.failure,
+    this.callChannelsLen,
+    this.chatChannelsLen,
+    this.recentSenderAsUser,
+    required this.calls,
   });
   // 3 the props
   @override
@@ -41,6 +51,7 @@ class BuildchurchState extends Equatable {
         imageFile,
         isSubmiting,
         name,
+        kingsCords,
         caseSearchList,
         initHashTag,
         hashTags,
@@ -51,7 +62,11 @@ class BuildchurchState extends Equatable {
         memberInfo,
         isMember,
         status,
-        failure
+        failure,
+        callChannelsLen,
+        chatChannelsLen,
+        recentSenderAsUser,
+        calls,
       ];
 
   //4 copy with
@@ -70,8 +85,16 @@ class BuildchurchState extends Equatable {
       bool? isAdmin,
       bool? isMember,
       BuildChurchStatus? status,
-      Failure? failure}) {
+      int? callChannelsLen,
+      int? chatChannlsLe,
+      Failure? failure,
+      List<KingsCord?>? kingsCords,
+      List<CallModel?>? calls,
+      Userr? recentSenderAsUser,   
+    }) {
     return BuildchurchState(
+        calls: calls ?? this.calls,
+        kingsCords: kingsCords ?? this.kingsCords,
         isSubmiting: isSubmiting ?? this.isSubmiting,
         caseSearchList: caseSearchList ?? this.caseSearchList,
         initHashTag: initHashTag ?? this.initHashTag,
@@ -85,12 +108,18 @@ class BuildchurchState extends Equatable {
         memberInfo: memberInfo ?? this.memberInfo,
         isMember: isMember ?? this.isMember,
         status: status ?? this.status,
-        failure: failure ?? this.failure);
+        failure: failure ?? this.failure,
+        callChannelsLen: callChannelsLen ?? this.callChannelsLen,
+        chatChannelsLen: chatChannelsLen ?? this.chatChannelsLen,
+        recentSenderAsUser: recentSenderAsUser ?? this.recentSenderAsUser,
+      );
   }
 
   // 5 the initial
   factory BuildchurchState.initial() {
     return BuildchurchState(
+        calls: [],
+        kingsCords: [],
         isSubmiting: false,
         caseSearchList: [],
         initHashTag: null,
@@ -104,6 +133,11 @@ class BuildchurchState extends Equatable {
         memberInfo: {},
         isMember: false,
         status: BuildChurchStatus.initial,
-        failure: Failure());
+        failure: Failure(),
+        callChannelsLen: 0,
+        chatChannelsLen: 1,
+        recentSenderAsUser: Userr.empty,
+
+    );
   }
 }

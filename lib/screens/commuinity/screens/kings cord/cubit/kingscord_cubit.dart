@@ -56,12 +56,10 @@ class KingscordCubit extends Cubit<KingscordState> {
     emit(state.copyWith(txtImgUrl: imageFile, status: KingsCordStatus.initial));
   }
 
-  void onSendTxtImg(
-      {required String churchId, required String kingsCordId,}) async {
+  void onSendTxtImg({required String churchId, required String kingsCordId}) async {
     //set to load bc we wait for image to be sent.
     emit(state.copyWith(status: KingsCordStatus.loading));
-    final chatImageUrl = await
-      _storageRepository.uploadKingsCordImage(imageFile: state.txtImgUrl!);
+    final chatImageUrl = await _storageRepository.uploadKingsCordImage(imageFile: state.txtImgUrl!);
     //make the message
     final message = Message(
       senderId: _authBloc.state.user!.uid,

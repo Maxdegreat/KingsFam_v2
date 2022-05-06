@@ -15,9 +15,11 @@ class CallModel extends Equatable {
   final List<String> allMembersIds;
   final String channelId;
   bool hasDilled;
+  final String tag;
 
   CallModel({
     this.id,
+    required this.tag,
     this.callerId,
     required this.name,
     this.callerUsername,
@@ -32,6 +34,7 @@ class CallModel extends Equatable {
   List<Object?> get props => [
         id,
         callerId,
+        tag, 
         name,
         callerUsername,
         allMembersIds,
@@ -45,6 +48,7 @@ class CallModel extends Equatable {
     callerId: '',
     callerUsername: '',
     allMembersIds: [],
+    tag: "",
     name: 'This call may not exist',
     callerPicUrl: '',
     memberInfo: {},
@@ -56,6 +60,7 @@ class CallModel extends Equatable {
     String? id,
     String? callerId,
     String? name,
+    String? tag,
     String? callerUsername,
     List<String>? allMembersIds,
     String? callerPicUrl,
@@ -65,6 +70,7 @@ class CallModel extends Equatable {
   }) {
     return CallModel(
       id: id ?? this.id,
+      tag: tag ?? this.tag,
       callerId: callerId ?? this.callerId,
       name: name ?? this.name,
       allMembersIds: allMembersIds ?? this.allMembersIds,
@@ -86,6 +92,7 @@ class CallModel extends Equatable {
       'allMembersIds': allMembersIds,
       'channelId': channelId,
       'hasDilled': hasDilled,
+      'tag': tag
     };
   }
 
@@ -99,6 +106,7 @@ class CallModel extends Equatable {
       'allMembersIds': allMembersIds,
       'channelId': channelId,
       'hasDilled': hasDilled,
+      'tag': tag,
     };
   }
 
@@ -122,6 +130,7 @@ class CallModel extends Equatable {
       memberInfo: Map<String, dynamic>.from(data['memberInfo'] ?? {}),
       channelId: data['channelId'] ?? null,
       hasDilled: data['hasDilled'] ?? false,
+      tag: data['tag'] ?? ""
     );
   }
 

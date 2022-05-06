@@ -2,6 +2,7 @@
 // on the main room we need to pass a list of member ids which this, the church / commuinity contains. so will extract it and make the main room
 
 //esentally this has the main room, events, storyes ,calls
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -26,6 +27,7 @@ import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
 import 'package:kingsfam/widgets/county_tile_widget.dart';
 import 'package:kingsfam/widgets/widgets.dart';
+import 'package:rive/rive.dart';
 
 class CommuinityScreenArgs {
   final Church commuinity;
@@ -45,6 +47,7 @@ class CommuinityScreen extends StatefulWidget {
         settings: const RouteSettings(name: routeName),
         builder: (context) => BlocProvider<BuildchurchCubit>(
               create: (context) => BuildchurchCubit(
+                callRepository: context.read<CallRepository>(),
                 authBloc: context.read<AuthBloc>(),
                 churchRepository: context.read<ChurchRepository>(),
                 storageRepository: context.read<StorageRepository>(),
@@ -65,19 +68,23 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
 
 
   late TabController _tabController;
-  TextEditingController _txtController = TextEditingController();
+  late TextEditingController _txtController;
+
 
   @override
   void initState() {
     super.initState();
+    _txtController = TextEditingController();
     _tabController = TabController(vsync: this, length: 2);
   }
 
  @override
  void dispose() {
    _tabController.dispose();
+   _txtController.dispose();
    super.dispose();
  }
+
 
 
   @override
@@ -92,6 +99,12 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
         }
       },
       builder: (context, state) {
+    context.read<BuildchurchCubit>().getCalls(commuinityId: widget.commuinity.id!);
+    context.read<BuildchurchCubit>().getKingsCords(commuinityId: widget.commuinity.id!);
+    log("The kingscords len: ${state.kingsCords.length}");
+    log("The Calls len: ${state.calls.length}");
+    // make a list commuinity_nav using the state's list calls nd commuinities.
+   
         context.read<BuildchurchCubit>().isCommuinityMember(widget.commuinity);
         return Scaffold(
           drawer: drawerWidget(),
@@ -116,16 +129,16 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                         padding: EdgeInsets.symmetric(horizontal: 5.0),
                         alignment: Alignment.bottomCenter,
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: <Color> [
-                              Colors.transparent,
-                              Colors.black12,
-                              Colors.black45,
-                              Colors.black87,
-                            ]
-                          )
+                          // gradient: LinearGradient(
+                          //    begin: Alignment.topCenter,
+                          //   end: Alignment.bottomCenter,
+                          //   colors: <Color> [
+                          //     Colors.transparent,
+                          //     Colors.black12,
+                          //     Colors.black45,
+                          //     Colors.black87,
+                          //   ]
+                          // )
                         )
                       )  
                     ],
@@ -135,171 +148,137 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                 actions: [IconButton(onPressed: () => Navigator.of(context).pop(), icon: Icon(Icons.arrow_back)), _settingsBtn(), _inviteButton(), ],
               ),
               
-              SliverToBoxAdapter(
-                child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: double.infinity,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0, vertical: 20),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Container(
-                                height: 50,
-                                width: (MediaQuery.of(context).size.width / 2.5 ),
-                                //child will pend based on weather curr id exists in comm mem ids or not
-                                child: state.isMember ?
-                                   ElevatedButton(
-                                      onPressed: () => showLeaveCommuinity(),
-                                      child: Text( "Leave" , style: TextStyle(letterSpacing: 10)),
-                                      style: ElevatedButton.styleFrom(primary: Colors.grey[900])
-                                    ) :
-                                    ElevatedButton(
-                                  onPressed: () { setState(() {_onJoinCommuinity();}); },
-                                  child: Text("Join", style: TextStyle(letterSpacing: 10)),
-                                  style: ElevatedButton.styleFrom(primary: Colors.red[400])
-                                ) 
-                                ,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Expanded(
-                                child: Text(
-                                  "${widget.commuinity.memberIds.length} members" ,style: TextStyle(letterSpacing: 8), overflow: TextOverflow.ellipsis),
-                                  ),
-                            )
-                          ],
-                        ),
-                        SizedBox(height: 30),
-                        Container(height: 50, child: kings_cord_strbldr(userId)),
-                        SizedBox(height: 30),
-                        Container(
-                          height: 50.0,
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(primary: Colors.grey[900]),
-                            child: Text("CONTENT", style: TextStyle(letterSpacing: 10)),
-                            onPressed: () => Navigator.of(context).pushNamed(CommuinityFeedScreen.routeName, arguments: CommuinityFeedScreenArgs(commuinity: widget.commuinity))
+               SliverToBoxAdapter(
+                 child: Column(
+                   children: [
+                     
+                     Row(
+                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                       children: [
+                         Text("Chat Rooms"),
+                         new_kingscord(),
+                       ],
+                     ),
+                     Column(
+                       children: state.kingsCords.map((cord) {
+                         if (cord != null) {
+                           return GestureDetector(onTap: () => Navigator.of(context).pushNamed(KingsCordScreen.routeName, arguments: KingsCordArgs(commuinity: widget.commuinity, kingsCord: cord)),child: ListTile(title: cord.cordName != null ? Text(cord.cordName) : Text("New Room"),));
+                         } else {
+                           return SizedBox.shrink();
+                         }
+                       }).toList(),
+                     ), SizedBox(height: 15),
+                     Row(
+                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                       children:[
+                         Text("Voice / Video Rooms"),
+                         GestureDetector(
+                          onTap: () {},
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            child: Container(height: 25, width: 25, child: RiveAnimation.asset('assets/icons/add_icon.riv'),),)),
+                          Column(
+                            children: state.calls.map((call) {
+                              if (call != null) {
+                                return ListTile(title: Text(call.name));
+                              } else {
+                                return SizedBox.shrink();
+                              }
+                            }).toList(),
                           )
-                        ),
-                        //                                 THIS IS A P2, MAYBE AFTER INIT RELEACE AND SOME CORE UPDATES WE CAN ADD THIS IN A INOVATIVE  WAY!!!
-                        // Container(
-                        //   height: 50.0,
-                        //   width: double.infinity,
-                        //   child: ElevatedButton(
-                        //       style: ElevatedButton.styleFrom(
-                        //           primary: Colors.grey[900]),
-                        //       onPressed: () {
-                        //         Navigator.of(context).pushNamed(
-                        //             SoundsScreen.routeName,
-                        //             arguments: SoundsArgs(
-                        //                 commuinity: widget.commuinity));
-                        //       },
-                        //       child: Text('SOUNDS',
-                        //           style: TextStyle(letterSpacing: 10))),
-                        // ),
-                        //                                THIS IS A P1, MAYBE AFTER INIT RELEACE AND SOME CORE UPDATES WE CAN ADD THIS IN A INOVATIVE  WAY!!!
-                        // SizedBox(height: 30),
-                        // Container(
-                        //   height: 50.0,
-                        //   width: double.infinity,
-                        //   child: ElevatedButton(
-                        //       style: ElevatedButton.styleFrom(primary: Colors.grey[900]),
-                        //       onPressed: () => Navigator.of(context).pushNamed(CommuinityFeedScreen.routeName),
-                        //       child: Text('FEED', style: TextStyle(letterSpacing: 10))),
-                        // ),
-
-                        //                            THIS IS A P1, MAYBE AFTER INIT RELEACE AND SOME CORE UPDATES WE CAN ADD THIS IN A INOVATIVE  WAY!!!
-
-                        // SizedBox(height: 30),
-                        // Container(
-                        //   height: 50.0,
-                        //   width: double.infinity,
-                        //   child: ElevatedButton(
-                        //       style: ElevatedButton.styleFrom(
-                        //           primary: Colors.grey[900]),
-                        //       onPressed: () => Navigator.of(context)
-                        //           .pushNamed(
-                        //               StorysCommuinityScreen.routeName,
-                        //               arguments: StoryCommuinityArgs(
-                        //                   commuinity: widget.commuinity)),
-                        //       child: Text('STORYS',
-                        //           style: TextStyle(letterSpacing: 10))),
-                        // ),
-                        SizedBox(height: 30),
-                        Container(
-                          height: 50.0,
-                          width: double.infinity,
-                          child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  primary: Colors.grey[900]),
-                              onPressed: () {
-                                Navigator.of(context).pushNamed(
-                                    CallsHome.routeName,
-                                    arguments: CallsHomeArgs(
-                                        commuinity: widget.commuinity));
-                              },
-                              child: Text('CALLS',
-                                  style: TextStyle(letterSpacing: 10))),
-                        ),
-                        SizedBox(height: 30),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
+                       ]
+                     )
+                   ],
+                 )
+           ) ]),
         ));
       },
     );
   }
 
-  // ignore: non_constant_identifier_names
-  StreamBuilder<QuerySnapshot<Map<String, dynamic>>> kings_cord_strbldr(String userId) {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection(Paths.church)
-          .doc(widget.commuinity.id)
-          .collection(Paths.kingsCord)
-          .where('tag', isEqualTo: widget.commuinity.id)
-          .snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (!snapshot.hasData) {
-          return CircularProgressIndicator();
-        } else if (snapshot.data!.docs.isNotEmpty) {
-          final kingsCordPram = KingsCord.fromDoc(snapshot.data!.docs.first);
-          return Container(
-            height: 50.0,
-            width: double.infinity,
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(primary: Colors.grey[900]),
-                onPressed: () async {
-                  if (!kingsCordPram!.memberIds.contains(userId)) {
-                    // add the new member to the member info and the member ids
-                    FirebaseFirestore.instance.collection(Paths.church).doc(widget.commuinity.id).collection(Paths.kingsCord).doc(kingsCordPram.id).update({'memberIds' : FieldValue.arrayUnion([userId])});
-                    FirebaseFirestore.instance.collection(Paths.church).doc(widget.commuinity.id).collection(Paths.kingsCord).doc(kingsCordPram.id).update({'memberInfo' : widget.commuinity.memberInfo});
-                  } else {
-                    Navigator.of(context).pushNamed(KingsCordScreen.routeName,
-                      arguments: KingsCordArgs(
-                          kingsCord: kingsCordPram,
-                          commuinity: widget.commuinity));
-                  }
-                },
-                child: Text('MAIN ROOM', style: TextStyle(letterSpacing: 10))),
-          );
-        } else
-          return  CircularProgressIndicator();
-      },
+  GestureDetector new_kingscord() {
+    return GestureDetector(
+      onTap: () => new_kingsCord_sheet(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        child: Container(height: 25, width: 25, child: RiveAnimation.asset('assets/icons/add_icon.riv'),),
+      )
     );
   }
-  Widget _settingsBtn() {
+
+  new_kingsCord_sheet() => showModalBottomSheet(context: context, builder: (context) => BlocProvider<BuildchurchCubit>(
+    create: (context) => BuildchurchCubit(
+      callRepository: context.read<CallRepository>(),
+      churchRepository: context.read<ChurchRepository>(), 
+      storageRepository: context.read<StorageRepository>(), 
+      authBloc: context.read<AuthBloc>(), 
+      userrRepository: context.read<UserrRepository>()
+    ),
+    child: Container(
+      width: double.infinity,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 8.0),
+          Center(
+              child: Text(
+            "Name For New Chat Room",
+            style: TextStyle(color: Colors.blue[300]),
+          )),
+          SizedBox(height: 8.0),
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 10.0),
+            child: TextField(
+                decoration:
+                    InputDecoration(hintText: "Enter a name"),
+                onChanged: (value) =>
+                    _txtController.text = value),
+          ),
+          SizedBox(height: 8.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Container(
+              width: (double.infinity * .70),
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.blue[300]),
+                  onPressed: () {
+                    if (_txtController.value.text.length !=0) {
+                      context.read<BuildchurchCubit>().makeKingsCord(commuinity: widget.commuinity, cordName: _txtController.text);
+                      Navigator.of(context).pop();
+                      _txtController.clear();
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) =>
+                              AlertDialog(
+                                //title
+                                title: const Text("mmm, err my boi"),
+                                //content
+                                content: const Text("be sure you add a name for the Channel room you are making"),
+                                //actions
+                                actions: [
+                                  TextButton(
+                                    child: Text("Ok",style: TextStyle(color: Colors.blue[300]),),
+                                    onPressed: () =>Navigator.of(context).pop(),
+                                  )
+                                ],
+                              ));
+                    }
+                  },
+                  child: Text("Done"))),
+          )
+        ],
+      ),
+    )
+  )
+);
+
+  
+ 
+ _settingsBtn() {
     return IconButton(onPressed: () async {
       // show a list of all users in the commuinity, this can be done using a showmodel,
       // also allow to update image or chose a rive
@@ -338,7 +317,6 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
       }); 
     }, icon: Icon(Icons.settings));
   }
-
 
   Widget drawerWidget() =>  Drawer(
     child: ListView.builder(
@@ -424,6 +402,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
   Widget _editView({required Church commuinity}) {
     return BlocProvider<BuildchurchCubit>(
      create: (context) => BuildchurchCubit(
+     callRepository: context.read<CallRepository>(),
      churchRepository: context.read<ChurchRepository>(), 
      storageRepository: context.read<StorageRepository>(), 
      authBloc: context.read<AuthBloc>(), 
@@ -451,6 +430,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
 
   Future<dynamic> _updateCommuinityName({required Church commuinity, required BuildContext context}) async => showModalBottomSheet(context: context, builder: (context) => BlocProvider<BuildchurchCubit>(
     create: (context) => BuildchurchCubit(
+      callRepository: context.read<CallRepository>(),
       churchRepository: context.read<ChurchRepository>(), 
       storageRepository: context.read<StorageRepository>(), 
       authBloc: context.read<AuthBloc>(), 
@@ -522,6 +502,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
 
   Future<dynamic> _updateCommuinityImage({required Church commuinity}) async => showModalBottomSheet(context: context, builder: (context) => BlocProvider<BuildchurchCubit>(
     create: (context) => BuildchurchCubit(
+      callRepository: context.read<CallRepository>(),
       churchRepository: context.read<ChurchRepository>(), 
       storageRepository: context.read<StorageRepository>(), 
       authBloc: context.read<AuthBloc>(), 
@@ -562,6 +543,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
 
   Future<dynamic> _updateTheAbout({required Church commuinity}) async => showBottomSheet(context: context, builder: (context) => BlocProvider<BuildchurchCubit>(
     create: (context) => BuildchurchCubit(
+      callRepository: context.read<CallRepository>(),
       churchRepository: context.read<ChurchRepository>(), 
       storageRepository: context.read<StorageRepository>(), 
       authBloc: context.read<AuthBloc>(), 
@@ -574,6 +556,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
 
   Future<dynamic> _inviteBottomSheet(List<Userr> following) async => showModalBottomSheet(context: context, builder: (context) => BlocProvider<BuildchurchCubit>(
     create: (context) => BuildchurchCubit(
+      callRepository: context.read<CallRepository>(),
       churchRepository: context.read<ChurchRepository>(), 
       storageRepository: context.read<StorageRepository>(), 
       authBloc: context.read<AuthBloc>(), 

@@ -29,8 +29,7 @@ class UserrRepository extends BaseUserrRepository {
 
   @override
   Future<Userr> getUserrWithId({required String userrId}) async {
-    final doc =
-        await _firebaseFirestore.collection(Paths.users).doc(userrId).get();
+    final doc =await _firebaseFirestore.collection(Paths.users).doc(userrId).get();
     return doc.exists ? Userr.fromDoc(doc) : Userr.empty;
   }
 

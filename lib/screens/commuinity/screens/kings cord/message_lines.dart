@@ -1,16 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
-import 'package:kingsfam/models/church_kingscord_model.dart';
 import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/widgets/fancy_list_tile.dart';
-import 'package:kingsfam/widgets/profile_image.dart';
+
 
 class MessageLines extends StatelessWidget {
   //class data
-  final KingsCord kingsCord;
+  final Map<String, dynamic> kingsCord;
   final Message message;
 
   const MessageLines({ required this.kingsCord, required this.message});
@@ -60,11 +56,11 @@ class MessageLines extends StatelessWidget {
                 SizedBox(
                   width: 5.0,
                 ),
-                Text('${kingsCord.memberInfo[message.senderId]['username']}', 
+                Text('${kingsCord[message.senderId]['username']}', 
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: Color(hexcolor.hexcolorCode('${kingsCord.memberInfo[message.senderId]['colorPref']}'))
+                    color: Color(hexcolor.hexcolorCode('${kingsCord[message.senderId]['colorPref']}'))
                   ),
                 )
               ],
@@ -91,20 +87,20 @@ class MessageLines extends StatelessWidget {
             height: size.height / 18.5,
             width: size.width / 8,
             decoration: BoxDecoration(
-              color: Color(hexcolor.hexcolorCode('${kingsCord.memberInfo[message.senderId]['colorPref']}')),
+              color: Color(hexcolor.hexcolorCode('${kingsCord[message.senderId]['colorPref']}')),
               borderRadius: BorderRadius.circular(25)
             ),
           ),
         ),
         Padding(
           padding: EdgeInsets.all(8.0),
-          child: '${kingsCord.memberInfo[message.senderId]['pfpImageUrl']}' != "null" ? kingsCordProfileImg() : kingsCordProfileIcon(),
+          child: '${kingsCord[message.senderId]['pfpImageUrl']}' != "null" ? kingsCordProfileImg() : kingsCordProfileIcon(),
         )
       ],
     );
 
   }
-  Widget? kingsCordProfileImg() => CircleAvatar(backgroundColor: Colors.grey[400], backgroundImage:  CachedNetworkImageProvider('${kingsCord.memberInfo[message.senderId]['pfpImageUrl']}') );
+  Widget? kingsCordProfileImg() => CircleAvatar(backgroundColor: Colors.grey[400], backgroundImage:  CachedNetworkImageProvider('${kingsCord[message.senderId]['pfpImageUrl']}') );
   Widget? kingsCordProfileIcon() => Container(child: Icon(Icons.account_circle));
   
 }

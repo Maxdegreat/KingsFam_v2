@@ -13,13 +13,13 @@ class ChurchRepository extends BaseChurchRepository {
 
   @override
   Future<void> newChurch({required Church church, required ChurchMembers churchMemberIds,  required Userr recentSender }) async {
-    FirebaseFirestore.instance.collection(Paths.church).add(church.toDoc()).then((value) async {
+    fb.add(church.toDoc()).then((value) async {
       final doc = await value.get(); 
-    fire.collection(Paths.church).doc(doc.id).collection(Paths.churchMemIds).doc(doc.id).set(churchMemberIds.toDoc());
+    fb.doc(doc.id).collection(Paths.churchMemIds).doc(doc.id).set(churchMemberIds.toDoc());
       final kingsCord = KingsCord(
         tag: doc.id,
-        cordName: null,
-        memberInfo: church.memberInfo,
+        cordName: "Welcome Kings Family!",
+        // memberInfo: church.memberInfo,
         recentMessage: "whats good Gods People!",
         recentSender: recentSender.username,
         memberIds: church.memberIds
@@ -27,6 +27,25 @@ class ChurchRepository extends BaseChurchRepository {
       //send off the repo
     fb.doc(doc.id).collection(Paths.kingsCord).add(kingsCord.toDoc());
     });
+  }
+
+  Future<List<KingsCord?>> getCommuinityCords({required String churchId}) async {
+    var firebaseCommuinites = await FirebaseFirestore.instance
+          .collection(Paths.church)
+          .doc(churchId)
+          .collection(Paths.kingsCord)
+          .where('tag', isEqualTo: churchId).limit(7).get(); 
+    return firebaseCommuinites.docs.map((e) => KingsCord.fromDoc(e)).toList();
+  }
+
+  Future<KingsCord?> newKingsCord2({required Church ch, required String cordName}) async{
+    KingsCord kc = KingsCord(tag: ch.id!, recentMessage: "ayeee Yoo", recentSender: '', memberIds: ch.memberIds, cordName: cordName);
+    var kcPath = await FirebaseFirestore.instance
+        .collection(Paths.church)
+        .doc(ch.id)
+        .collection(Paths.kingsCord)
+        .add(kc.toDoc());
+      return kc;
   }
 
   @override

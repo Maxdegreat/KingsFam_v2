@@ -73,6 +73,7 @@ class MyApp extends StatelessWidget {
             )),
         BlocProvider<BuildchurchCubit>(
         create: (context) => BuildchurchCubit(
+          callRepository: context.read<CallRepository>(),
           churchRepository: context.read<ChurchRepository>(), 
           storageRepository: context.read<StorageRepository>(), 
           authBloc: context.read<AuthBloc>(), 

@@ -5,26 +5,26 @@ class KingsCord extends Equatable {
   //class data
   final String? id;
   final String tag;
-  final String? cordName;
+  final String cordName;
   final String recentSender;
   final String recentMessage;
   final List<String> memberIds;
-  final Map<String, dynamic> memberInfo;
+  // final Map<String, dynamic> memberInfo;
 
 
   //make a constructor for fields
   KingsCord({
     this.id,
     required this.tag,
-    this.cordName,
-    required this.memberInfo,
+    required this.cordName,
+    // required this.memberInfo,
     required this.recentMessage,
     required this.recentSender,
     required this.memberIds,
   });
   //gen the props
   @override
-  List<Object?> get props => [id, tag, cordName, recentMessage, recentMessage, memberIds];
+  List<Object?> get props => [id, tag, cordName, recentMessage, memberIds];
 
   //gen the copy with
   KingsCord copyWith(
@@ -34,7 +34,8 @@ class KingsCord extends Equatable {
       String? recentSender,
       String? recentMessage,
       List<String>? memberIds,
-      Map<String, dynamic>? memberInfo}) {
+      // Map<String, dynamic>? memberInfo
+  }) {
     return KingsCord(
       id: id ?? this.id,
       tag: tag ?? this.tag,
@@ -42,7 +43,7 @@ class KingsCord extends Equatable {
       recentSender: recentSender ?? this.recentSender,
       recentMessage: recentMessage ?? this.recentMessage,
       memberIds: memberIds ?? this.memberIds,
-      memberInfo: memberInfo ?? this.memberInfo,
+      // memberInfo: memberInfo ?? this.memberInfo,
     );
   }
 
@@ -54,7 +55,7 @@ class KingsCord extends Equatable {
       'recentSender': recentSender,
       'recentMessage': recentMessage,
       'memberIds': memberIds,
-      'memberInfo' : memberInfo, 
+      // 'memberInfo' : memberInfo, 
     };
   }
 
@@ -68,7 +69,7 @@ class KingsCord extends Equatable {
         recentMessage: data['recentMessage'],
         recentSender: data['recentSender'],
         memberIds: List<String>.from(data['memberIds'] ?? []),
-        memberInfo: Map<String, dynamic>.from(data['memberInfo'] ?? {} 
-      ));
+        // memberInfo: Map<String, dynamic>.from(data['memberInfo'] ?? {} 
+      );
   }
 }

@@ -87,7 +87,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     message.data?.docs.forEach((doc) {
       Message message = Message.fromDoc(doc);
       MessageLines messageLine = MessageLines(
-        kingsCord: widget.kingsCord,
+        kingsCord: widget.commuinity.memberInfo,
         message: message,
       );
       messageLines.add(messageLine);
@@ -193,7 +193,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     @override
     void initState() {
       super.initState();
-        isUserUpToDate(context, context.read<AuthBloc>().state.user!.uid, widget.kingsCord.memberInfo);
+        // isUserUpToDate(context, context.read<AuthBloc>().state.user!.uid, widget.kingsCord.memberInfo);
     }
 
   @override
