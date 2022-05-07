@@ -17,7 +17,7 @@ import 'package:kingsfam/widgets/widgets.dart';
 
 import 'cubit/buildchurch_cubit.dart';
 
-
+// ADMIN ID CODE ATTHE BOTTOM
 
 class BuildChurchArgs {
   final List<Userr> selectedMembers;
@@ -79,9 +79,7 @@ class _BuildChurchState extends State<BuildChurch> {
       },
       builder: (context, state) {
         return Scaffold(
-          //appBar: AppBar(
-          //  title: Text('Virtural Church'),
-          //),
+
           body: CustomScrollView(slivers: [
             SliverAppBar(
               expandedHeight: MediaQuery.of(context).size.height / 3,
@@ -217,6 +215,7 @@ class _BuildChurchState extends State<BuildChurch> {
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.red[400]),
                                 onPressed: () {
+                                  
                                   submitChurch(context: context,submitStatus: state.isSubmiting, isImage: state.imageFile == null);
                                   context.read<BuildchurchCubit>().onSubmiting();
                                   setState(() {});
@@ -269,6 +268,7 @@ class _BuildChurchState extends State<BuildChurch> {
 
   void _extractMemberId(BuildContext context, List<Userr> users) {
     List<String> ids = users.map((e) => e.id).toList();
+    
     ids.insert(0, context.read<AuthBloc>().state.user!.uid);
     context.read<BuildchurchCubit>().onMemberIdsAdded(ids);
   }

@@ -49,6 +49,7 @@ class ChatRoom extends StatefulWidget {
 
 class _ChatRoomState extends State<ChatRoom> {
   final TextEditingController _messageController = TextEditingController();
+  double textHeight = 35;
   // THE STREAM FOR THE MESSAGES
   _buildMessageStream() {
     return StreamBuilder(
@@ -105,15 +106,40 @@ class _ChatRoomState extends State<ChatRoom> {
                 },
                 icon: FaIcon(FontAwesomeIcons.image)),
             Expanded(
-              child: TextField(
-                controller: _messageController,
-                textCapitalization: TextCapitalization.sentences,
-                onChanged: (messageText) =>
-                    ctx.onIsTyping(messageText.length >= 1),
-                //setState(() => _isComposingMessage = messageText.isNotEmpty
-                decoration:
-                    InputDecoration.collapsed(hintText: 'Provbers 16:23'),
-              ),
+              child: Container(
+                height: textHeight,
+                decoration: BoxDecoration(
+                  color: Colors.grey[900],
+                  borderRadius: BorderRadius.circular(5.0)),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: TextField(
+                        controller: _messageController,
+                        textAlignVertical: TextAlignVertical.center,
+                        style: TextStyle(fontSize: 18),
+                        autocorrect: true,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        expands: true,
+                        textCapitalization: TextCapitalization.sentences,
+                        onChanged: (messageText) {
+                          if (messageText.length >= 29) 
+                            setState(() => textHeight = 50.0);
+                          else if (messageText.length >= 87)
+                            setState(() => textHeight = 65.0);
+                          else 
+                            setState(() => textHeight = 30.0 );
+                          ctx.onIsTyping(messageText.length >= 1);
+                        },
+                        //setState(() => _isComposingMessage = messageText.isNotEmpty
+                        decoration:
+                            InputDecoration.collapsed(hintText: 'Provbers 16:23'),
+                      ),
+                    ),
+                  ),
+                ),
             ),
             Container(
                 margin: const EdgeInsets.symmetric(horizontal: 4.0),

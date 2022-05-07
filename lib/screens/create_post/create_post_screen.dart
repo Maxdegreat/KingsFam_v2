@@ -263,7 +263,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> with SingleTickerPr
        },
        child: Container(
          height: 25, width: 75,
-         child: Icon(Icons.camera),
+         child: Icon(Icons.video_library),
          decoration: (BoxDecoration(color: Colors.black45, borderRadius: BorderRadius.circular(5))),),
      ),
        ],

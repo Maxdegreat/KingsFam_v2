@@ -109,7 +109,6 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
    
         context.read<BuildchurchCubit>().isCommuinityMember(widget.commuinity);
         return Scaffold(
-          drawer: drawerWidget(),
             body: SafeArea(
           child: CustomScrollView(
             slivers: <Widget>[
@@ -130,30 +129,29 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                         height: MediaQuery.of(context).size.height / 2,
                         padding: EdgeInsets.symmetric(horizontal: 5.0),
                         alignment: Alignment.bottomCenter,
-                        decoration: BoxDecoration(
-                           gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                             end: Alignment.bottomCenter,
-                             colors: <Color> [
-                               Colors.transparent,
-                               Colors.black12,
-                               Colors.black45,
-                               Colors.black87,
-                             ]
-                           )
+                        // decoration: BoxDecoration(
+                         
+                        //   )
                         )
-                      )  
+                     
                     ],
                   ),
                 ), 
                 
-                actions: [IconButton(onPressed: () => Navigator.of(context).pop(), icon: Icon(Icons.arrow_back)), _settingsBtn(), _inviteButton(), ],
+                actions: [ _settingsBtn(), _inviteButton(), ],
               ),
               
                SliverToBoxAdapter(
                  child: Column(
                    children: [
                      SizedBox(height: 25),
+                     Row(
+                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                       children: [
+                         Text("${widget.commuinity.name}\'s Content", style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w800,), overflow: TextOverflow.fade,),
+                       ],
+                     ),
+                     ContentContaner(context),
                      Row(
                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                        children: [
@@ -181,7 +179,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                      Column(
                        children: state.calls.map((call) {
                          if (call != null) {
-                           return GestureDetector(onTap: () => Navigator.of(context).pushNamed(VideoCallScreen.routeName), child: ListTile(title: Text(call.name)));
+                           return GestureDetector(onTap: () => Navigator.of(context).pushNamed(VideoCallScreen.routeName), child: callTile(context, call),);
                          } else {
                            return SizedBox.shrink();
                          }
@@ -193,6 +191,59 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
         ));
       },
     );
+  }
+
+  Padding ContentContaner(BuildContext context) {
+    return Padding(padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+     child: GestureDetector(
+       onTap: () => Navigator.of(context).pushNamed(CommuinityFeedScreen.routeName, arguments: CommuinityFeedScreenArgs(commuinity: widget.commuinity)),
+       child: Text("Content")
+     ),
+    );
+  }
+
+  Padding callTile(BuildContext context, CallModel call) {
+    return Padding(
+       padding: const EdgeInsets.all(8.0),
+       child: Stack(
+        children: [
+       Container(
+        height: 43,
+        decoration: BoxDecoration(
+            color: Colors.grey[900],
+            borderRadius: BorderRadius.circular(5.0)),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(width: 10.0),
+              SizedBox(
+                width: (MediaQuery.of(context).size.width / 1.8),
+                child: Text(
+                  call.name,
+                  style: Theme.of(context).textTheme.bodyText1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              SizedBox(width: 5.0),
+              Text("${call.allMembersIds.length.toString()}/5 In Call")
+            ],
+          ),
+        ),
+    ),
+    PositionedDirectional(
+      end: 0,
+      child: Container(
+        height: 50,
+        width: 30,
+        decoration: BoxDecoration(
+            color: call.hasDilled ? Colors.green[400] : Colors.red[700],
+            borderRadius: BorderRadius.circular(5.0)),
+      ))
+      ],
+    ),
+     );
   }
 
   GestureDetector _new_call() {
@@ -393,17 +444,6 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
     }, icon: Icon(Icons.settings));
   }
 
-  Widget drawerWidget() =>  Drawer(
-    child: ListView.builder(
-      itemCount: 5,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SubCommuinityTile(title: 'Houston'),
-        );
-      },
-    ),
-  );
 
   Widget _inviteButton() {
     return IconButton(
