@@ -65,6 +65,9 @@ class CustomRoute {
       // case PostView.routeName:
       //   return PostView.route(settings.arguments as PostViewAgrs);
 
+      case VideoCallScreen.routeName:
+        return VideoCallScreen.route();
+
       case ProfilePostView.routeName:
         return ProfilePostView.route(settings.arguments as ProfilePostViewArgs);
 

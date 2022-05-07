@@ -5,6 +5,7 @@ import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/models/models.dart';
 
 import 'package:kingsfam/repositories/call/base_call_repository.dart';
+import 'package:uuid/uuid.dart';
 
 class CallRepository extends BaseCallRepository {
 
@@ -19,6 +20,16 @@ class CallRepository extends BaseCallRepository {
 
 
   //CREATE A CALL COLLECTION
+  Future<CallModel> createCall2({required Church commuinity, required String callName}) async {
+    try {
+      CallModel call = CallModel(tag: commuinity.id!, name: callName, memberInfo: {}, allMembersIds: [], channelId: Uuid().v4(), hasDilled: false);
+      await firebase.doc(commuinity.id).collection(Paths.call).add(call.toDoc());
+      return call;
+    } catch (e) {
+      print("error in call repo createCall2 code: $e" );
+      return CallModel.empty;
+    }
+  }
   @override
   void createCall({required String doc, required CallModel call}) async {
     try {

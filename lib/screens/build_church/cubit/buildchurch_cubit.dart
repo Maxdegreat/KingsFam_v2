@@ -62,6 +62,15 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
     }
   }
 
+  Future<void> makeCallModel({required Church commuinity, required String callName}) async {
+    if (state.calls.length < 7) {
+      CallModel call = await _callRepository.createCall2(commuinity: commuinity , callName: callName);
+      var lst = state.calls;
+      lst.add(call);
+      emit(state.copyWith(calls: lst ));
+    }
+  }
+
     
   //void function to update image url
   void onImageChanged(File image) {

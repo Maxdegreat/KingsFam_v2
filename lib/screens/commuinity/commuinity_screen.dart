@@ -4,6 +4,7 @@
 //esentally this has the main room, events, storyes ,calls
 import 'dart:developer';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,20 +12,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/config/paths.dart';
+// import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/helpers.dart';
-import 'package:kingsfam/models/church_kingscord_model.dart';
+// import 'package:kingsfam/models/church_kingscord_model.dart';
 import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/build_church/cubit/buildchurch_cubit.dart';
-import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/calls_home.dart';
-import 'package:kingsfam/screens/commuinity/screens/feed/commuinity_feed.dart';
-import 'package:kingsfam/screens/commuinity/screens/sounds/sounds.dart';
+// import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/calls_home.dart';
+// import 'package:kingsfam/screens/commuinity/screens/feed/commuinity_feed.dart';
+// import 'package:kingsfam/screens/commuinity/screens/sounds/sounds.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscorc.dart';
-import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
+// import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
+import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/county_tile_widget.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:rive/rive.dart';
@@ -129,16 +131,16 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                         padding: EdgeInsets.symmetric(horizontal: 5.0),
                         alignment: Alignment.bottomCenter,
                         decoration: BoxDecoration(
-                          // gradient: LinearGradient(
-                          //    begin: Alignment.topCenter,
-                          //   end: Alignment.bottomCenter,
-                          //   colors: <Color> [
-                          //     Colors.transparent,
-                          //     Colors.black12,
-                          //     Colors.black45,
-                          //     Colors.black87,
-                          //   ]
-                          // )
+                           gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                             end: Alignment.bottomCenter,
+                             colors: <Color> [
+                               Colors.transparent,
+                               Colors.black12,
+                               Colors.black45,
+                               Colors.black87,
+                             ]
+                           )
                         )
                       )  
                     ],
@@ -151,11 +153,11 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                SliverToBoxAdapter(
                  child: Column(
                    children: [
-                     
+                     SizedBox(height: 25),
                      Row(
                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                        children: [
-                         Text("Chat Rooms"),
+                         Text("Chat Rooms", style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w800,), overflow: TextOverflow.fade,),
                          new_kingscord(),
                        ],
                      ),
@@ -167,27 +169,24 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                            return SizedBox.shrink();
                          }
                        }).toList(),
-                     ), SizedBox(height: 15),
+                     ), 
+                     SizedBox(height: 15),
                      Row(
                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                        children:[
-                         Text("Voice / Video Rooms"),
-                         GestureDetector(
-                          onTap: () {},
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            child: Container(height: 25, width: 25, child: RiveAnimation.asset('assets/icons/add_icon.riv'),),)),
-                          Column(
-                            children: state.calls.map((call) {
-                              if (call != null) {
-                                return ListTile(title: Text(call.name));
-                              } else {
-                                return SizedBox.shrink();
-                              }
-                            }).toList(),
-                          )
+                         Text("Voice / Video Rooms", style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w800,), overflow: TextOverflow.fade,),
+                         _new_call(),
                        ]
-                     )
+                     ),
+                     Column(
+                       children: state.calls.map((call) {
+                         if (call != null) {
+                           return GestureDetector(onTap: () => Navigator.of(context).pushNamed(VideoCallScreen.routeName), child: ListTile(title: Text(call.name)));
+                         } else {
+                           return SizedBox.shrink();
+                         }
+                       }).toList(),
+                     )  
                    ],
                  )
            ) ]),
@@ -195,6 +194,84 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
       },
     );
   }
+
+  GestureDetector _new_call() {
+    return GestureDetector(
+     onTap: () => _new_call_sheet(),
+     child: Padding(
+       padding: const EdgeInsets.symmetric(horizontal: 5),
+       child: Container(height: 25, width: 25, child: RiveAnimation.asset('assets/icons/add_icon.riv'),),));
+  }
+
+  _new_call_sheet() => showModalBottomSheet(context: context, builder: (context) => BlocProvider<BuildchurchCubit>(
+    create: (context) => BuildchurchCubit(
+      callRepository: context.read<CallRepository>(),
+      churchRepository: context.read<ChurchRepository>(), 
+      storageRepository: context.read<StorageRepository>(), 
+      authBloc: context.read<AuthBloc>(), 
+      userrRepository: context.read<UserrRepository>()
+    ),
+    child: Container(
+      width: double.infinity,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 8.0),
+          Center(
+              child: Text(
+            "Name For New Voice / Audio Call",
+            style: TextStyle(color: Colors.green[400]),
+          )),
+          SizedBox(height: 8.0),
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 10.0),
+            child: TextField(
+                decoration:
+                    InputDecoration(hintText: "aye yooo, Enter a name"),
+                onChanged: (value) =>
+                    _txtController.text = value),
+          ),
+          SizedBox(height: 8.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Container(
+              width: (double.infinity * .70),
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.green[400]),
+                  onPressed: () {
+                    if (_txtController.value.text.length !=0) {
+                      context.read<BuildchurchCubit>().makeCallModel(commuinity: widget.commuinity, callName: _txtController.text);
+                      Navigator.of(context).pop();
+                      _txtController.clear();
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) =>
+                              AlertDialog(
+                                //title
+                                title: const Text("mmm, err my boi"),
+                                //content
+                                content: const Text("be sure you add a name for the Channel room you are making"),
+                                //actions
+                                actions: [
+                                  TextButton(
+                                    child: Text("Ok",style: TextStyle(color: Colors.green[400]),),
+                                    onPressed: () =>Navigator.of(context).pop(),
+                                  )
+                                ],
+                              ));
+                    }
+                  },
+                  child: Text("Done"))),
+          )
+        ],
+      ),
+    )
+  )
+);
 
   GestureDetector new_kingscord() {
     return GestureDetector(
@@ -274,9 +351,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
       ),
     )
   )
-);
-
-  
+); 
  
  _settingsBtn() {
     return IconButton(onPressed: () async {
