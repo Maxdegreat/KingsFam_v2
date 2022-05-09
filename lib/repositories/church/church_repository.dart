@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/models/church_kingscord_model.dart';
@@ -27,6 +30,25 @@ class ChurchRepository extends BaseChurchRepository {
       //send off the repo
     fb.doc(doc.id).collection(Paths.kingsCord).add(kingsCord.toDoc());
     });
+  }
+
+  Future<List<Post?>> getCommuinityPosts({required Church cm}) async {
+    log("in the comget cm posts");
+    final cmDocRef =  FirebaseFirestore.instance.collection(Paths.church).doc(cm.id);
+    log("made doc ref");
+    
+    var posts = await FirebaseFirestore.instance.collection(Paths.posts).where('commuinity', isEqualTo: cmDocRef).limit(3).get();
+    log(posts.docs.toString());
+    log("The post is made");
+     List<Post?> bucket = [];
+     for (var doc in posts.docs) {
+       log("in loop");
+       var post = await Post.fromDoc(doc);
+       bucket.add(post);
+     } 
+
+    log(posts.docs.length.toString());
+    return bucket;
   }
 
   Future<List<KingsCord?>> getCommuinityCords({required String churchId}) async {
@@ -150,9 +172,18 @@ class ChurchRepository extends BaseChurchRepository {
   }
 
   void onJoinCommuinity({required Userr user, required Church commuinity}) {
+    final doc = fb.doc(commuinity.id);
+    // update the commuinity size
+    int size = 0;
+    if (commuinity.size != null)
+      size = commuinity.size!;
+    else 
+      size = 0;
+    size += 1;
+
+    doc.update({'size': size});
     print("in onJoinCommuinity function in church_repository");
     // create the docs we will be working with
-    final doc = fb.doc(commuinity.id);
     final joinMembersDoc = doc.collection(Paths.churchMemIds).doc(commuinity.id);
     
     //update the docs

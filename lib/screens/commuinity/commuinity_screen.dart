@@ -7,7 +7,6 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -103,8 +102,8 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
       builder: (context, state) {
     context.read<BuildchurchCubit>().getCalls(commuinityId: widget.commuinity.id!);
     context.read<BuildchurchCubit>().getKingsCords(commuinityId: widget.commuinity.id!);
-    log("The kingscords len: ${state.kingsCords.length}");
-    log("The Calls len: ${state.calls.length}");
+    context.read<BuildchurchCubit>().getCommuinityPosts(widget.commuinity);
+   
     // make a list commuinity_nav using the state's list calls nd commuinities.
    
         context.read<BuildchurchCubit>().isCommuinityMember(widget.commuinity);
@@ -129,9 +128,9 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                         height: MediaQuery.of(context).size.height / 2,
                         padding: EdgeInsets.symmetric(horizontal: 5.0),
                         alignment: Alignment.bottomCenter,
-                        // decoration: BoxDecoration(
-                         
-                        //   )
+                         decoration: BoxDecoration(
+                          // gradient: Gradient.linear(Alignment.bottomCenter, Alignment.topCenter, colors)
+                           )
                         )
                      
                     ],
@@ -140,10 +139,21 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                 
                 actions: [ _settingsBtn(), _inviteButton(), ],
               ),
+
+              
               
                SliverToBoxAdapter(
                  child: Column(
                    children: [
+                     SizedBox(height: 10),
+                     Row(
+                       mainAxisAlignment: MainAxisAlignment.start,
+                       children: [
+                        widget.commuinity.memberIds.contains(context.read<AuthBloc>().state.user!.uid) ? leaveBtn() : joinBtn(),
+                        SizedBox(width: 10),
+                        Text("${widget.commuinity.size} members")
+                       ],
+                     ),
                      SizedBox(height: 25),
                      Row(
                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -151,7 +161,21 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                          Text("${widget.commuinity.name}\'s Content", style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w800,), overflow: TextOverflow.fade,),
                        ],
                      ),
-                     ContentContaner(context),
+                     Container(
+                       height: 85, width: double.infinity,
+                       child: ListView.builder(
+                         itemCount: state.posts.length,
+                         scrollDirection: Axis.horizontal,
+                         itemBuilder: (context, index) {
+                           Post? post = state.posts[index];
+                           if (post!= null) {
+                             return contentPreview(post);
+                           } else {
+                             return SizedBox.shrink();
+                           }
+                         }),
+                     ),
+                     //ContentContaner(context),
                      Row(
                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                        children: [
@@ -162,7 +186,20 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                      Column(
                        children: state.kingsCords.map((cord) {
                          if (cord != null) {
-                           return GestureDetector(onTap: () => Navigator.of(context).pushNamed(KingsCordScreen.routeName, arguments: KingsCordArgs(commuinity: widget.commuinity, kingsCord: cord)),child: ListTile(title: cord.cordName != null ? Text(cord.cordName) : Text("New Room"),));
+                           return GestureDetector(onTap: () => Navigator.of(context).pushNamed(KingsCordScreen.routeName, arguments: KingsCordArgs(commuinity: widget.commuinity, kingsCord: cord)),
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 7, bottom: 7, left: MediaQuery.of(context).size.width / 7),
+                              child: Container(
+                                height: 35,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[900],
+                                  borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5))
+                                ),
+                                child: Center(child: Text(cord.cordName, overflow: TextOverflow.fade, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),)),
+                              ),
+                            )
+                          );
                          } else {
                            return SizedBox.shrink();
                          }
@@ -190,6 +227,78 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
            ) ]),
         ));
       },
+    );
+  }
+
+  Widget contentPreview( Post post) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      child: GestureDetector(
+        onTap: () => Navigator.of(context).pushNamed(CommuinityFeedScreen.routeName, arguments: CommuinityFeedScreenArgs(commuinity: widget.commuinity)),
+        child: Container(
+          height: 80, width: 200,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                height: 80, width: 80,
+                decoration: BoxDecoration(
+                  image: post.imageUrl != null ? DecorationImage(image: CachedNetworkImageProvider(post.imageUrl!), fit: BoxFit.fill) : post.thumbnailUrl != null ?
+                    DecorationImage(image: CachedNetworkImageProvider(post.thumbnailUrl!), fit: BoxFit.fill) : null,
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10) )
+                ),
+              ), 
+              SizedBox(width: 10),
+              Flexible(child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(post.author.username, style: TextStyle(fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.fade,),
+                  Text('Posted to', style: TextStyle(fontWeight: FontWeight.w500),maxLines: 1, overflow: TextOverflow.fade,),
+                  Text(widget.commuinity.name, style: TextStyle(fontWeight: FontWeight.w700),maxLines: 1, overflow: TextOverflow.fade,),
+                  // Text(post.date.toString(), style: TextStyle(fontWeight: FontWeight.w400),maxLines: 1, overflow: TextOverflow.fade,)
+                ],
+              ))
+            ],
+          ),
+        ),
+      ) ,
+    );
+  }
+
+  Widget leaveBtn() => ElevatedButton(
+    onPressed: () => _onLeaveCommuinity(), child: Text("...Leave :(", style: TextStyle(color: Colors.red),),
+    style: ButtonStyle(
+        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+        backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero,
+            side: BorderSide(color: Colors.red)
+          )
+        )
+      ),
+  );
+
+  Stack joinBtn() {
+    return Stack(
+      children: [
+        Container(
+          width: 100,
+          height: 40,
+          child: TextButton(
+            child: Text("JOINNN", style: TextStyle(color: Colors.white),),
+            onPressed: () => _onJoinCommuinity(),
+          ), decoration: BoxDecoration(color: Colors.grey[800], borderRadius: BorderRadius.circular(10)),
+        ),
+        PositionedDirectional(
+          start: 0,
+          child: Container(
+            width: 5,
+            height: 40 ,
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10))),
+          ),
+        )
+      ],
     );
   }
 
@@ -460,21 +569,25 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
     return ListView.builder(
       itemCount: widget.commuinity.memberIds.length,
       itemBuilder: (BuildContext context, int index) {
-        final user = users[index];
-
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5.0),
-          child: GestureDetector(
-            onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: user.id)),
-            child: ListTile(leading: ProfileImage(pfpUrl: user.profileImageUrl, radius: 25,), title: Text(user.username), trailing: _moreOptinos(user: user))),
-        );
+        final participant = users[index];
+        if (!participant.id.startsWith('del_')) {
+         return Padding(
+           padding: const EdgeInsets.symmetric(vertical: 5.0),
+           child: GestureDetector(
+             onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: participant.id)),
+             child: ListTile(leading: ProfileImage(pfpUrl: participant.profileImageUrl, radius: 25,), title: Text(participant.username, style: widget.commuinity.memberInfo[participant.id]['isAdmin'] ? TextStyle(color: Colors.blue, fontWeight: FontWeight.w700,) : null, overflow: TextOverflow.fade,) , trailing: _moreOptinos(user: participant))),
+         );
+       } else {
+         return SizedBox.shrink();
+       }
       },
     );
   }
 
   Widget _moreOptinos({required Userr user}) {
     //check to see if the curr id is a admin or not
-    final isAdmin = context.read<BuildchurchCubit>().isAdmin(commuinity: widget.commuinity);
+    //final isAdmin = context.read<BuildchurchCubit>().isAdmin(commuinity: widget.commuinity);
+    final isAdmin = widget.commuinity.memberInfo[context.read<AuthBloc>().state.user!.uid]['isAdmin'];
    return IconButton(
      icon: Icon(Icons.more_vert),
      onPressed: () async {
@@ -490,23 +603,34 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
   }
   
   Future<dynamic> _adminsOptions({required Church commuinity, required Userr participatant}) {
+    bool isParticipatantAdmin = widget.commuinity.memberInfo[participatant.id]["isAdmin"];
     return showDialog(
       context: context, 
-      builder: (context) => AlertDialog(
+      builder: (context) {
+      if (!isParticipatantAdmin)     {   
+       return AlertDialog(
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextButton(onPressed: () {
                 context.read<BuildchurchCubit>().makeAdmin(user: participatant, commuinity: commuinity);
                 Navigator.of(context).pop();
+                setState(() {});
               }, child: FittedBox(child: Text("Promote ${participatant.username} to an admin", overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyText1,))),
               TextButton(onPressed: () {
                 context.read<ChurchRepository>().leaveCommuinity(commuinity: commuinity, currId: participatant.id);
                 Navigator.of(context).pop();
+                setState(() {});
               }, child: FittedBox(child: Text("Remove ${participatant.username} from ${widget.commuinity.name}", overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyText1))),
-          ],
-        ),
-      )
+           ],
+          ),
+         );
+       } else {
+         return AlertDialog(
+           content: Text("${participatant.username} is alredy an Admin", overflow: TextOverflow.fade,)
+         );
+       }
+      }
     );
   }
 
@@ -582,11 +706,10 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                    onPressed: () {
                      var state = context.read<BuildchurchCubit>().state;
                      if (_txtController.value.text.length != 0) {
-                       print(_txtController.text);
-                       print("from the update Comu... name is ${state.name}");
                        context.read<BuildchurchCubit>().onNameChanged(_txtController.text);
                        context.read<BuildchurchCubit>().lightUpdate(commuinity.id);
                        Navigator.of(context).pop();
+                       this.setState(() {});
                        _txtController.clear();
                      } else {
                        print(state.name);

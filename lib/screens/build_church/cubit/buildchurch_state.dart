@@ -5,6 +5,7 @@ enum BuildChurchStatus { initial, loading, success, error }
 class BuildchurchState extends Equatable {
   //1 class data
   final File? imageFile;
+  final List<Post?> posts;
   final List<KingsCord?> kingsCords;
   final List<CallModel?> calls;
   final List<String>? caseSearchList;
@@ -14,7 +15,7 @@ class BuildchurchState extends Equatable {
   final String about;
   final String location;
   final List<String> memberIds;
-  final List<String> adminIds; // this will work by adding the certin ids into this list. when making user map if the key (an id) is found in the adminIds then pass isAdmin True in the map. i think this is better because it writes less.
+  final Set<String> adminIds; // this will work by adding the certin ids into this list. when making user map if the key (an id) is found in the adminIds then pass isAdmin True in the map. i think this is better because it writes less.
   final Map<String, dynamic> memberInfo;
   final bool isSubmiting;
   final bool isMember;
@@ -25,6 +26,7 @@ class BuildchurchState extends Equatable {
   final Userr? recentSenderAsUser;
   // 2 constructor
   BuildchurchState({
+    required this.posts,
     required this.isSubmiting,
     required this.imageFile,
     required this.caseSearchList,
@@ -49,6 +51,7 @@ class BuildchurchState extends Equatable {
   @override
   List<Object?> get props => [
         imageFile,
+        posts,
         isSubmiting,
         name,
         kingsCords,
@@ -72,6 +75,7 @@ class BuildchurchState extends Equatable {
   //4 copy with
   BuildchurchState copyWith(
       {List<String>? caseSearchList,
+      List<Post?>? posts,
       bool? isSubmiting,
       String? initHashTag,
       List<String>? hashTags,
@@ -81,7 +85,7 @@ class BuildchurchState extends Equatable {
       String? location,
       List<String>? memberIds,
       Map<String, dynamic>? memberInfo,
-      List<String>? adminIds,
+      Set<String>? adminIds,
       bool? isAdmin,
       bool? isMember,
       BuildChurchStatus? status,
@@ -93,6 +97,7 @@ class BuildchurchState extends Equatable {
       Userr? recentSenderAsUser,   
     }) {
     return BuildchurchState(
+        posts: posts ?? this.posts,
         calls: calls ?? this.calls,
         kingsCords: kingsCords ?? this.kingsCords,
         isSubmiting: isSubmiting ?? this.isSubmiting,
@@ -118,6 +123,7 @@ class BuildchurchState extends Equatable {
   // 5 the initial
   factory BuildchurchState.initial() {
     return BuildchurchState(
+        posts: [],
         calls: [],
         kingsCords: [],
         isSubmiting: false,
@@ -126,7 +132,7 @@ class BuildchurchState extends Equatable {
         hashTags: null,
         imageFile: null,
         name: '',
-        adminIds: [],
+        adminIds: {},
         about: '',
         location: '',
         memberIds: [],

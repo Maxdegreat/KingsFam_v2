@@ -33,8 +33,8 @@ class Userr extends Equatable {
   });
 
   static Userr empty = Userr(
-      id: '',
-      username: '',
+      id: 'del_not_found0987654321',
+      username: 'not found',
       usernameSearchCase: [],
       email: '',
       location: '',

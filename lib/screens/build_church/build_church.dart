@@ -3,6 +3,8 @@
 // check the bottom of the file.
 // after all navs back to prev pages but the church is now made :)
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -196,10 +198,18 @@ class _BuildChurchState extends State<BuildChurch> {
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 8.0),
                                           child: ListTile(
-                                            leading: ProfileImage(
-                                                pfpUrl: user.profileImageUrl,
-                                                radius: 35),
-                                            title: Text(user.username),
+                                            leading: ProfileImage(pfpUrl: user.profileImageUrl,radius: 35),
+                                            title: Text(user.username, style: state.adminIds.contains(user.id) ? TextStyle(color: Colors.blue, fontWeight: FontWeight.w700) : null,),
+                                            trailing: state.adminIds.contains(user.id) ? Text("Admin") : SizedBox.shrink(),
+                                            onTap: () {
+                                              if (state.adminIds.contains(user.id)) {
+                                                context.read<BuildchurchCubit>().onAdminRemoved(user.id);
+                                              } else {
+                                                context.read<BuildchurchCubit>().onAdminAdded(user.id);
+                                              }
+                                              setState(() {});
+                                            } 
+                                            
                                           ),
                                         );
                                       },
@@ -275,7 +285,8 @@ class _BuildChurchState extends State<BuildChurch> {
 
   void _makeAdminIds(BuildContext context) {
     final currId = context.read<AuthBloc>().state.user!.uid;
-    final List<String> adminIds = [];
+    
+    final Set<String> adminIds = context.read<BuildchurchCubit>().state.adminIds;
     adminIds.add(currId);
     context.read<BuildchurchCubit>().onAdminsAdded(adminIds);
   }

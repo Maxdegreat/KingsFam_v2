@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
@@ -71,7 +72,14 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
     }
   }
 
-    
+  // get commuinity posts
+  Future<void> getCommuinityPosts(Church cm) async {
+    log("The len of posts is ");
+    List<Post?> posts = await _churchRepository.getCommuinityPosts(cm: cm);
+    log(posts.length.toString());
+    emit(state.copyWith(posts: posts));
+  }
+
   //void function to update image url
   void onImageChanged(File image) {
     emit(state.copyWith(imageFile: image, status: BuildChurchStatus.initial));
@@ -99,7 +107,17 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
   }
 
   //void function to update the admin and on create the admin should init be the maker maybe do that outside cubit
-  void onAdminsAdded(List<String> ids) => emit(state.copyWith(adminIds: ids));
+  void onAdminsAdded(Set<String> ids) => emit(state.copyWith(adminIds: ids));
+  void onAdminAdded(String id) {
+    var lst = state.adminIds;
+    lst.add(id);
+    emit(state.copyWith(adminIds: lst));
+  }
+    void onAdminRemoved(String id) {
+    var lst = state.adminIds;
+    lst.remove(id);
+    emit(state.copyWith(adminIds: lst));
+  }
 
   //void function to add the users to the members list
   void onMemberIdsAdded(List<String> userrIds) {
@@ -137,23 +155,11 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
 
       //============================================================
       //populate the member info
-      
-      final user = await _userrRepository.getUserrWithId(userrId: state.adminIds.first);
-        Map<String, dynamic> userMap = {
-          'isAdmin' : true,
-          'username': user.username,
-          'pfpImageUrl': user.profileImageUrl,
-          'colorPref' : user.colorPref,
-          'email': user.email,
-          'token': user.token,
-        };
-        state.memberInfo[state.adminIds.first] = userMap;
-        state.memberIds.remove(state.adminIds.first);
 
       for (int i = 0; i < state.memberIds.length; i++) {
         final user = await _userrRepository.getUserrWithId(userrId: state.memberIds[i]);
             Map<String, dynamic> userMap = {
-              'isAdmin' : false,
+              'isAdmin' : state.adminIds.contains(user.id),
               'username': user.username,
               'pfpImageUrl': user.profileImageUrl,
               'colorPref' : user.colorPref,
@@ -163,7 +169,6 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
             state.memberInfo[state.memberIds[i]] = userMap;
       }
       //-----------------------------------
-      state.memberIds.add(state.adminIds.first);
       //----------------------------------------------------------
       
       //===========================================================
@@ -271,7 +276,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       'token': user.token,
     };
     //memberInfo[userrId] = userMap;  //prob best to actually check that the id exist in the map...
-    state.memberInfo[_authBloc.state.user!.uid] = usermap;
+    commuinity.memberInfo[user.id] = usermap;
     final Church updatedCommuinity = commuinity.copyWith(memberInfo: state.memberInfo[_authBloc.state.user!.uid]);
     _churchRepository.updateCommuinity(commuinity: updatedCommuinity);
   }
