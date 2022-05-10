@@ -74,9 +74,9 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
 
   // get commuinity posts
   Future<void> getCommuinityPosts(Church cm) async {
-    log("The len of posts is ");
+
     List<Post?> posts = await _churchRepository.getCommuinityPosts(cm: cm);
-    log(posts.length.toString());
+    
     emit(state.copyWith(posts: posts));
   }
 

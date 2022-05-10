@@ -60,7 +60,7 @@ class MessageBubble extends StatelessWidget {
                       child: Text(
                         isMe
                             ? '${message.date.timeAgo()}'//.timeAgo()
-                            : '${chat.memberInfo[message.senderId]['username']} ${message.date.timeAgo()}}',//.timeAgo()
+                            : '${chat.memberInfo[message.senderId]['username']} ${message.date.timeAgo()}',//.timeAgo()
                         style: TextStyle(
                           fontSize: 12.0,
                           color: Colors.white,

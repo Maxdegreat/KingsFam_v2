@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/models/models.dart';
+import 'package:kingsfam/extensions/extensions.dart';
 
 
 class MessageLines extends StatelessWidget {
@@ -56,13 +57,25 @@ class MessageLines extends StatelessWidget {
                 SizedBox(
                   width: 5.0,
                 ),
-                Text('${kingsCord[message.senderId]['username']}', 
+               Column(
+                 crossAxisAlignment: CrossAxisAlignment.start,
+                 children: [
+                    Text('${kingsCord[message.senderId]['username']}', 
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
                     color: Color(hexcolor.hexcolorCode('${kingsCord[message.senderId]['colorPref']}'))
                   ),
+                ), 
+                 Text('${message.date.timeAgo()}', 
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white, 
+                  ),
                 )
+                 ],
+               )
               ],
             ),
             SizedBox(height: 5.0),

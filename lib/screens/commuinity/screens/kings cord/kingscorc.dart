@@ -189,6 +189,20 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     }
   }
 
+  Widget _permissionDenied({required String messasge}) {
+    return Padding(
+      padding: const EdgeInsets.all(7.0),
+      child: Container(
+        width: double.infinity, height: 30,
+        child: Center(child: Text(messasge, style: Theme.of(context).textTheme.bodyText1,)),
+        decoration: BoxDecoration(
+          color: Colors.grey[900],
+          borderRadius: BorderRadius.circular(7),
+        ),
+      ),
+    );
+  }
+
 //============================================================================
     @override
     void initState() {
@@ -223,8 +237,11 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   commuinity: widget.commuinity, kingsCord: widget.kingsCord),
               //divider of a height 1
               Divider(height: 1.0),
+              widget.commuinity.memberIds.contains(context.read<AuthBloc>().state.user!.uid) ?
               //bottom sheet
-              _buildBottomTF(state, context)
+              _buildBottomTF(state, context) :
+
+            _permissionDenied(messasge: "Join Commuinity To say whats up")
             ],
           );
         },

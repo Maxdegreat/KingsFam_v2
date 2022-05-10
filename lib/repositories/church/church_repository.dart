@@ -33,21 +33,18 @@ class ChurchRepository extends BaseChurchRepository {
   }
 
   Future<List<Post?>> getCommuinityPosts({required Church cm}) async {
-    log("in the comget cm posts");
+    
     final cmDocRef =  FirebaseFirestore.instance.collection(Paths.church).doc(cm.id);
-    log("made doc ref");
+
     
     var posts = await FirebaseFirestore.instance.collection(Paths.posts).where('commuinity', isEqualTo: cmDocRef).limit(3).get();
-    log(posts.docs.toString());
-    log("The post is made");
+
      List<Post?> bucket = [];
      for (var doc in posts.docs) {
-       log("in loop");
        var post = await Post.fromDoc(doc);
        bucket.add(post);
      } 
 
-    log(posts.docs.length.toString());
     return bucket;
   }
 
@@ -137,6 +134,13 @@ class ChurchRepository extends BaseChurchRepository {
       final doc = fb.doc(commuinity.id); //FirebaseFirestore.instance.collection(Paths.church).doc(...)
       final joinMembersDoc = doc.collection(Paths.churchMemIds).doc(commuinity.id);
 
+      final kingsCordDocs = await doc.collection(Paths.kingsCord).where('tag', isEqualTo: commuinity.id).get();
+      //List<String> idContainer = [];
+      for (var kc in kingsCordDocs.docs) {
+        //idContainer.add(kc.id);
+        doc.collection(Paths.kingsCord).doc(kc.id).update({'memberIds' : FieldValue.arrayRemove([currId]) });
+        doc.collection(Paths.kingsCord).doc(kc.id).update({'memberIds' : FieldValue.arrayUnion(['del_$currId']) });
+      }
       
 
       doc.update({'memberIds': FieldValue.arrayRemove([currId])}); // updates main commuinity memids
@@ -171,7 +175,7 @@ class ChurchRepository extends BaseChurchRepository {
     .add(noty.toDoc());
   }
 
-  void onJoinCommuinity({required Userr user, required Church commuinity}) {
+  void onJoinCommuinity({required Userr user, required Church commuinity}) async  {
     final doc = fb.doc(commuinity.id);
     // update the commuinity size
     int size = 0;
@@ -182,10 +186,15 @@ class ChurchRepository extends BaseChurchRepository {
     size += 1;
 
     doc.update({'size': size});
-    print("in onJoinCommuinity function in church_repository");
     // create the docs we will be working with
     final joinMembersDoc = doc.collection(Paths.churchMemIds).doc(commuinity.id);
-    
+    final kingsCordDocs = await doc.collection(Paths.kingsCord).where('tag', isEqualTo: commuinity.id).get();
+    //List<String> idContainer = [];
+    for (var kc in kingsCordDocs.docs) {
+      //idContainer.add(kc.id);
+      doc.collection(Paths.kingsCord).doc(kc.id).update({'memberIds' : FieldValue.arrayUnion([user.id]) });
+      doc.collection(Paths.kingsCord).doc(kc.id).update({'memberIds' : FieldValue.arrayRemove(['del_${user.id}']) });
+    }
     //update the docs
     doc.update({'memberIds': FieldValue.arrayUnion([user.id])});
     doc.update({'memberIds': FieldValue.arrayRemove(['del_${user.id}'])});
