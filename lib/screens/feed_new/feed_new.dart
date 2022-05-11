@@ -5,7 +5,6 @@
 import 'package:flutter/material.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
-import 'package:kingsfam/screens/edit_profile/cubit/edit_profile_cubit.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:kingsfam/cubits/cubits.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -92,18 +91,21 @@ class FeedNewState extends State<FeedNewScreen> {
                 }
                 final Post? post = state.posts[index];
                 if (post != null) {
-                    final ctx = context.read<FeedBloc>();
-                    final likedPost = context.read<FeedBloc>().state.likedPostIds;
+                   final LikedPostState = context.watch<LikedPostCubit>().state;
+                   final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
+                   final recentlyLiked = LikedPostState.recentlyLikedPostIds.contains(post.id!);
 
-                  return GestureDetector(
-                    onDoubleTap: () {
-                     if (likedPost.contains(post.id)) {
-                       // todo unlike
+                  return PostSingleView(
+                    isLiked: isLiked,
+                    post: post,
+                    recentlyLiked: recentlyLiked,
+                    onLike: () {
+                      if (isLiked) {
+                       context.read<LikedPostCubit>().unLikePost(post: post);
                      } else {
-                       context.read<FeedBloc>()..add(FeedLikePost(lkedPost: post));
+                       context.read<LikedPostCubit>().likePost(post: post);
                      }
                     },
-                    child: PostSingleView(post: post, recentlyLiked: likedPost.contains(post.id))
                   );
                 }
                 print(post);

@@ -29,9 +29,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       yield* _mapFeedCommuinityFetchPostToState(event.commuinityId);
     } else if (event is FeedPaginatePosts) {
       yield* _mapFeedPaginatePosts();
-    } else if (event is FeedLikePost) {
-      yield* _mapLikeddPostToState(event.lkedPost);
-    }
+    } 
   }
 
 
@@ -40,6 +38,8 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     try {
 
       final posts = await _postsRepository.getCommuinityFeed(commuinityId: commuinityId);
+      log("likes commuinity: ${posts.first!.likes}");
+
       _likedPostCubit.clearAllLikedPosts();
       //Set<String?> postIds = posts.map((e) => e != null ? e.id : "").toSet();
       //_likedPostCubit.updateLikedPosts(postIds: postIds);
@@ -52,24 +52,21 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     }
   }
 
-  Stream<FeedState> _mapLikeddPostToState(Post likedPost) async* {
-    try {
-      _likedPostCubit.likePost(post: likedPost);
-      Set<String?> likedPostset = Set<String?>.from(state.likedPostIds)..add(likedPost.id);
-      yield state.copyWith(likedPostIds: likedPostset);
-    } catch (e) {
-      log("Error in Feed_bloc -> _mapLikedPostToState -> e.code :${e.toString()}");
-    }
-  }
+
 
   Stream<FeedState> _mapFeedFetchPostToState() async* {
     yield state.copyWith(posts: [], status: FeedStatus.loading);
     try {
+      log("get user feed");
       final posts = await _postsRepository.getUserFeed(userId: _authBloc.state.user!.uid, limit: 8);
-      _likedPostCubit.clearAllLikedPosts();
+      log("likes feed: ${posts.first!.likes}");
+      // log(posts.toString());
+       _likedPostCubit.clearAllLikedPosts();
+      
 
       final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: posts);
       _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
+      
       yield state.copyWith(posts: posts ,status: FeedStatus.success);
 
     } catch (err) {

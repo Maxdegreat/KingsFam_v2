@@ -78,15 +78,24 @@ class _ChatsScreenState extends State<ChatsScreen>
     super.initState();
     setupInteractedMessage();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
+    _tabController.addListener(tabControllerListener);
     //super.build(context);
   }
+
+  bool hideTabBar = false;
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
-
+  void tabControllerListener() {
+    if (_tabController.index == 0) {
+      hideTabBar = true;
+    } else {
+      hideTabBar = false;
+    }
+  }
   late TabController _tabController;
   @override
   Widget build(BuildContext context) {
@@ -121,11 +130,16 @@ class _ChatsScreenState extends State<ChatsScreen>
         listener: (context, state) {},
         builder: (context, state) {
           //final bloc = context.read<ChatscreenBloc>();
-          return SingleChildScrollView(
-            child: Column(
-              
-              children: [       //ring_view(_ringStream,  context),
-                TabBar(
+          return CustomScrollView(
+
+
+            slivers: [ 
+              hideTabBar ? SliverAppBar(
+                floating: true,
+                
+                toolbarHeight: 10,
+                expandedHeight: 10,
+                bottom: TabBar(
                   controller: _tabController,
                   tabs: [
                     Tab(text: "Feed"),
@@ -133,23 +147,24 @@ class _ChatsScreenState extends State<ChatsScreen>
                     Tab(text: "Chats")
                   ],
                 ),
-                Container(
-                  height: MediaQuery.of(context).size.height,
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      ScreensForPageView()._feed(context),
-                      ScreensForPageView().commuinity_view(userId, context),
-                      ScreensForPageView().chats_view(userId)
-                    ],
+              ) : SliverToBoxAdapter(child: SizedBox.shrink(),) ,    //ring_view(_ringStream,  context),
+               
+                SliverToBoxAdapter(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height,
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        ScreensForPageView()._feed(context),
+                        ScreensForPageView().commuinity_view(userId, context),
+                        ScreensForPageView().chats_view(userId)
+                      ],
+                    ),
                   ),
                 ),
               ],
               
-            ),
-            
-        
-          );
+            );
         },
         
       ),
@@ -379,7 +394,7 @@ class ScreensForPageView {
             ));
   }
  
-  Widget _feed(context) => FeedScreenWidget();
+  Widget _feed(context) => Container(child: FeedScreenWidget());
 }
 
 class Constants{

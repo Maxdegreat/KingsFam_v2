@@ -16,7 +16,3 @@ class FeedCommuinityFetchPosts extends FeedEvent {
 
 class FeedPaginatePosts extends FeedEvent{}
 
-class FeedLikePost extends FeedEvent{
-  final Post lkedPost;
-  const FeedLikePost({required this.lkedPost});
-}

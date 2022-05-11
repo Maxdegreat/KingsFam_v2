@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,7 +9,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
 import 'package:kingsfam/widgets/widgets.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+
 
 class FeedScreenWidget extends StatefulWidget {
   const FeedScreenWidget({Key? key}) : super(key: key);
@@ -30,7 +32,7 @@ class _FeedScreenWidgetState extends State<FeedScreenWidget> with AutomaticKeepA
         authBloc: context.read<AuthBloc>(),
         likedPostCubit: context.read<LikedPostCubit>(),
         postsRepository: context.read<PostsRepository>(),
-      ),
+      )..add(FeedFetchPosts()),
       child: _buildBody(size: size),
     );
   }
@@ -48,18 +50,27 @@ class _buildBody extends StatefulWidget {
 
 class __buildBodyState extends State<_buildBody> {
     @override
+    ScrollController scrollController = ScrollController();
   void initState() {
-    
+        scrollController.addListener(listenToScrolling);
     super.initState();
-    context.read<FeedBloc>().add(FeedFetchPosts());
-    context.read<LikedPostCubit>().clearAllLikedPosts();
   }
+
+  void listenToScrolling() {
+    //TODO you need to add this later make it a p1 requirment
+     if (scrollController.position.atEdge) {
+       if (scrollController.position.pixels != 0.0 && scrollController.position.maxScrollExtent == scrollController.position.pixels) {
+        //  const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
+        //  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+         context.read<FeedBloc>()..add(FeedPaginatePosts());
+       }
+     }
+  }
+
   @override
   Widget build(BuildContext context) {
-    ItemScrollController itemController = ItemScrollController();
     return BlocConsumer<FeedBloc, FeedState>(
       listener: (context, state) {
-
       },
       builder: (context, state) {
         switch (state.status) {
@@ -75,31 +86,34 @@ class __buildBodyState extends State<_buildBody> {
                 context.read<FeedBloc>().add(FeedFetchPosts());
                 context.read<LikedPostCubit>().clearAllLikedPosts();
               },
-              child: ScrollablePositionedList.builder(
-              itemScrollController: itemController,
+              child: ListView.builder(
+              controller: scrollController ,
               itemCount: state.posts!.length,
               itemBuilder: (BuildContext context, int index) {
                 if (index == state.posts!.length) {
                   // TODO call paginate post 
                 }
                 final Post? post = state.posts![index];
+               final Post? posts = state.posts![index];
                 if (post != null) {
-                    final ctx = context.read<FeedBloc>();
-                    final likedPost = context.read<FeedBloc>().state.likedPostIds;
-
-                  return GestureDetector(
-                    onDoubleTap: () {
-                     if (likedPost.contains(post.id)) {
-                       // todo unlike
+                    final LikedPostState = context.watch<LikedPostCubit>().state;
+                    final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
+                    final recentlyLiked = LikedPostState.recentlyLikedPostIds.contains(post.id!);
+                  return PostSingleView(
+                    isLiked: isLiked,
+                    post: post,
+                    recentlyLiked: recentlyLiked,
+                    onLike: () {
+                      
+                      if (isLiked) {
+                       context.read<LikedPostCubit>().unLikePost(post: post);
                      } else {
-                       context.read<FeedBloc>()..add(FeedLikePost(lkedPost: post));
+                       context.read<LikedPostCubit>().likePost(post: post);
                      }
                     },
-                    child: PostSingleView(post: post, recentlyLiked: likedPost.contains(post.id))
                   );
-                }
-                print(post);
-                return Text("post is null");
+                    }
+                return SizedBox.shrink();
               },
             ));
         }

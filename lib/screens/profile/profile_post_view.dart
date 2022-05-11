@@ -143,18 +143,20 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                 
                 final Post? post = state.post[index];
                 if (post != null) {
-                    final ctx = context.read<ProfileBloc>();
-                    final likedPost = context.read<ProfileBloc>().state.likedPostIds;
-
-                  return GestureDetector(
-                    onDoubleTap: () {
-                     if (likedPost.contains(post.id)) {
-                       // todo unlike
+                    final LikedPostState = context.watch<LikedPostCubit>().state;
+                    final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
+                    final recentlyLiked = LikedPostState.recentlyLikedPostIds.contains(post.id!);
+                  return PostSingleView(
+                    isLiked: isLiked,
+                    post: post,
+                    recentlyLiked: recentlyLiked,
+                    onLike: () {
+                      if (isLiked) {
+                       context.read<LikedPostCubit>().unLikePost(post: post);
                      } else {
-                       context.read<ProfileBloc>()..add(ProfileLikePost(lkedPost: post));
+                       context.read<LikedPostCubit>().likePost(post: post);
                      }
                     },
-                    child: PostSingleView(post: post, recentlyLiked: likedPost.contains(post.id))
                   );
                     }
                 print(post);

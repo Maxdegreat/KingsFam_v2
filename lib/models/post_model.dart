@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/models/comment_model.dart';
 import 'package:kingsfam/models/user_model.dart';
 
 import 'church_model.dart';
@@ -64,6 +65,7 @@ class PrePost extends Equatable {
 class Post extends Equatable {
   final String? id; //1 make the model
   final Userr author;
+  final List<Comment?> comments;
   final Church? commuinity;
   final String? quote; // String qoute that will be uploaded to fb
   final String? imageUrl; //img url uploaded to fb
@@ -78,6 +80,7 @@ class Post extends Equatable {
     this.id,
     required this.author, //2 make the constructor
     this.commuinity,
+    required this.comments,
     required this.quote,
     required this.imageUrl,
     required this.videoUrl,
@@ -89,15 +92,16 @@ class Post extends Equatable {
     required this.height,
   });
 
-  static Post empty = Post(author: Userr.empty, quote: null, imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: 'This post has been ctrl + alt + del ...', likes: 0, date: Timestamp.now(), height: 10);
+  static Post empty = Post(comments: [], author: Userr.empty, quote: null, imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: 'This post has been ctrl + alt + del ...', likes: 0, date: Timestamp.now(), height: 10);
 
   @override
   List<Object?> get props =>
-      [id, height, author, commuinity,  quote, imageUrl, videoUrl, thumbnailUrl, soundTrackUrl, caption, likes, date]; //3 do props
+      [comments, id, height, author, commuinity,  quote, imageUrl, videoUrl, thumbnailUrl, soundTrackUrl, caption, likes, date]; //3 do props
 
   Post copyWith({
     String? id, //4 do the copy with
     Userr? author,
+    List<Comment?>? comments,
     Church? commuinity,
     String? quote,
     String? imageUrl,
@@ -110,6 +114,7 @@ class Post extends Equatable {
     int? height,
   }) {
     return Post(
+      comments: comments ?? this.comments,
       id: id ?? this.id,
       author: author ?? this.author,
       commuinity: commuinity ?? this.commuinity,
@@ -132,6 +137,7 @@ class Post extends Equatable {
       'commuinity' : 
           FirebaseFirestore.instance.collection(Paths.church).doc(commuinity!.id),
       'quote' : quote,
+      'comments' : comments,
       'imageUrl': imageUrl,
       'videoUrl' : videoUrl,
       'thumbnailUrl' : thumbnailUrl,
@@ -145,7 +151,7 @@ class Post extends Equatable {
 
   Map<String, dynamic> toDocNoCommuinitys() =>{
     'author': FirebaseFirestore.instance.collection(Paths.users).doc(author.id),
-      'quote' : quote,
+    'comments' : comments,
       'imageUrl': imageUrl,
       'videoUrl' : videoUrl,
       'thumbnailUrl': thumbnailUrl,
@@ -169,6 +175,7 @@ class Post extends Equatable {
       print("_+_+_+_+_+_+_+_+_+_ COMM REFF IS NOT NULL");
          return Post(
             id: doc.id,
+            comments: [],//data['comments'],
             author: Userr.fromDoc(authDoc),
             commuinity: null,
             quote: data['quote'] ?? null,
@@ -176,23 +183,24 @@ class Post extends Equatable {
             videoUrl: data['videoUrl'] ?? null,
             thumbnailUrl: data['thumbnailUrl'] ?? null,
             soundTrackUrl: data['soundTrackUrl'] ?? null,
-            likes: data['likes'] ?? 0,
+            likes: data['likes'] ?? 77,
             caption: data['caption'] ?? null,
             date: (data['date'] ?? null ),
             height: (data['height']) ?? null,
         );
       } else {
-      print("_+_+_+_+_+_+_+_+_+_ COMM REFF IS NULL FOUND OUT TOO LATE TO CATCH TRAIN THO");
+      //print("_+_+_+_+_+_+_+_+_+_ COMM REFF IS NULL FOUND OUT TOO LATE TO CATCH TRAIN THO");
         return Post(
             id: doc.id,
             author: Userr.fromDoc(authDoc),
+            comments: [],//data['comments'] ?? null,
             commuinity: null,
             quote: data['quote'] ?? null,
             imageUrl: data['imageUrl'] ?? null,
             videoUrl: data['videoUrl'] ?? null,
             thumbnailUrl: data['thumbnailUrl'] ?? null,
             soundTrackUrl: data['soundTrackUrl'] ?? null,
-            likes: data['likes'] ?? 0,
+            likes: data['likes'] ?? 77,
             caption: data['caption'] ?? null,
             date: (data['date'] ?? null ),
             height: (data['height']) ?? null,
@@ -207,6 +215,7 @@ class Post extends Equatable {
       if (authDoc.data() != null ) {
          return Post(
             id: doc.id,
+            comments: [],//data['comments'] ?? null,
             author: Userr.fromDoc(authDoc),
             commuinity: null,
             quote: data['quote'] ?? null,
@@ -214,7 +223,7 @@ class Post extends Equatable {
             videoUrl: data['videoUrl'] ?? null,
             thumbnailUrl: data['thumbnailUrl'] ?? null,
             soundTrackUrl: data['soundTrackUrl'] ?? null,
-            likes: data['likes'] ?? 0,
+            likes: (data['likes']).toInt() ?? 77,
             caption: data['caption'] ?? null,
             date: (data['date'] ?? null ),
             height: (data['height']) ?? null,

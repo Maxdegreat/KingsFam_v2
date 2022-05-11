@@ -111,7 +111,7 @@ exports.onCreatePost = functions.firestore
       .doc(authorId)
       .collection("userFollowers");
     const userFollowerSnapshot = await userFollowersRef.get();
-    userFollowerSnapshot.forEach(async (doc) => {
+    userFollowerSnapshot.forEach(async (doc) => { // doc.id is the user followilng's id
       admin
         .firestore()
         .collection("feeds")
@@ -123,33 +123,35 @@ exports.onCreatePost = functions.firestore
   });
 //======================================================================================================
 exports.onUpdatePost = functions.firestore
-.document("/posts/{postsId}").onUpdate(async (snapshot, context) => {
-  const postId = context.params.postsId;
+  .document('/posts/{postId}')
+  .onUpdate(async (snapshot, context) => {
+    const postId = context.params.postId;
 
-  //get author id
-  const authorRef = snapshot.after.get('author');
-  const authorId = authorRef.path.split('/')[1];
+    // Get author id.
+    const authorRef = snapshot.after.get('author');
+    const authorId = authorRef.path.split('/')[1];
 
-  //update post data in each followers feed
-  const updatedPostData = snapshot.after.data();
-  const userFollowerRef = admin.firestore()
-    .collection('followers').doc(authorId)
-    .collection('userFollowers');
-  const userFollowerSnapshot = await userFollowerRef.get();
-  userFollowerSnapshot.forEach(async (doc) => {
-    const postRef = admin 
+    // Update post data in each follower's feed.
+    const updatedPostData = snapshot.after.data();
+    const userFollowersRef = admin
       .firestore()
-      .collection('feeds')
-      .doc(doc.id)
-      .collection('userFeed');
-    const postDoc = await postRef.doc(postId).get();
-    if (postDoc.exist) {
-      postDoc.ref.update(updatedPostData);
-    }
-  })
+      .collection('followers')
+      .doc(authorId)
+      .collection('userFollowers');
+    const userFollowersSnapshot = await userFollowersRef.get();
+    userFollowersSnapshot.forEach(async (doc) => {
+      const postRef = admin
+        .firestore()
+        .collection('feeds')
+        .doc(doc.id)
+        .collection('userFeed');
+      const postDoc = await postRef.doc(postId).get();
+      if (postDoc.exists) {
+        postDoc.ref.update(updatedPostData);
+      }
+    });
+  });
 
-
-})
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //set all read status to false
 exports.addChatMessage = functions.firestore

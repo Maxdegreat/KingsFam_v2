@@ -20,9 +20,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 class PostSingleView extends StatefulWidget {
-  const PostSingleView({required this.post, required this.recentlyLiked});
+
+
   final Post post;
+  final bool isLiked;
+  final VoidCallback onLike;
   final bool recentlyLiked;
+
+
+   PostSingleView({this.recentlyLiked = false, required this.post, required this.isLiked, required this.onLike,});
 
   @override
   _PostSingleViewState createState() => _PostSingleViewState();
@@ -39,7 +45,7 @@ class _PostSingleViewState extends State<PostSingleView> {
         viewCommuinity(commuinity: widget.post.commuinity),
         captionBox(caption: widget.post.caption, size: size),
         contentContainer(post: widget.post, size: size),
-        interactions(widget.post.likes)
+        interactions()
       ],
     );
   }
@@ -80,8 +86,7 @@ class _PostSingleViewState extends State<PostSingleView> {
     SizedBox.shrink();
   }
 
-  Widget interactions(int likes) {
-    bool liked = widget.recentlyLiked;
+  Widget interactions() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0, top: 5),
       child: Column(
@@ -89,7 +94,7 @@ class _PostSingleViewState extends State<PostSingleView> {
           Row(
             children: [
               SizedBox(width: 10),
-              liked ? Icon(Icons.thumb_up, color: Colors.green,) : Icon(Icons.thumb_up),
+              widget.isLiked ? Icon(Icons.thumb_up, color: Colors.green) : Icon(Icons.thumb_up),
               SizedBox(width: 5),
               Container(
                   //margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: .5),
@@ -99,8 +104,9 @@ class _PostSingleViewState extends State<PostSingleView> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Text(likes.toString()),
-                ),),
+                  child: Text("${widget.recentlyLiked ? widget.post.likes + 1 : widget.post.likes}"),
+                ),
+              ),
                 SizedBox(width: 15,),
                 Icon(Icons.message),
                 SizedBox(width: 5),
@@ -112,7 +118,7 @@ class _PostSingleViewState extends State<PostSingleView> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Text(likes.toString()),
+                  child: Text("${widget.post.comments.length}"),
                 ),),
 
             ],
@@ -192,23 +198,28 @@ class _PostSingleViewState extends State<PostSingleView> {
 
   Widget contentContainer({required Post post, required Size size}) {
     if (post.imageUrl != null) {
-      return ConstrainedBox(
-      constraints: BoxConstraints(
-        minHeight: size.height / 1.7
-      ),
-      child: Container(
-
-        decoration: BoxDecoration(
-          image: DecorationImage(image: CachedNetworkImageProvider(post.imageUrl!), fit: BoxFit.fitWidth)
-        ),
-      ),
-    );
-    } else if (post.videoUrl != null) {
-      return ConstrainedBox(
+      return GestureDetector(
+        onDoubleTap: widget.onLike,
+        child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxHeight: size.height / 1.15
+          minHeight: size.height / 1.7
         ),
-        child: VidoeDisplay(videoUrl: post.videoUrl!)
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(image: CachedNetworkImageProvider(post.imageUrl!), fit: BoxFit.fitWidth)
+          ),
+        ),
+          ),
+      );
+    } else if (post.videoUrl != null) {
+      return GestureDetector(
+        onDoubleTap: widget.onLike,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: size.height / 1.15
+          ),
+          child: VidoeDisplay(videoUrl: post.videoUrl!)
+        ),
       );
     } else if (post.quote != null) {
       return Text("caption ${post.quote}");
@@ -216,11 +227,11 @@ class _PostSingleViewState extends State<PostSingleView> {
     
   }
 
-  Future<List<int>> getImageData(Image i, double h, double w) async {
-    File image = new File('image.png'); // Or any other way to get a File instance.
-    var decodedImage = await decodeImageFromList(image.readAsBytesSync());
-    print(decodedImage.width);
-    print(decodedImage.height);
-    return [decodedImage.height, decodedImage.width];
-  }
+  // Future<List<int>> getImageData(Image i, double h, double w) async {
+  //   File image = new File('image.png'); // Or any other way to get a File instance.
+  //   var decodedImage = await decodeImageFromList(image.readAsBytesSync());
+  //   print(decodedImage.width);
+  //   print(decodedImage.height);
+  //   return [decodedImage.height, decodedImage.width];
+  // }
 }

@@ -1,10 +1,10 @@
 
  
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:equatable/equatable.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/config/paths.dart';
+
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
 
@@ -21,12 +21,6 @@ class LikedPostCubit extends Cubit<LikedPostState> {
 
   LikedPostCubit({ required PostsRepository postsRepository, required AuthBloc authBloc})  
     : _postsRepository = postsRepository, _authBloc = authBloc,super(LikedPostState.initial());
-  
-   // check to see if our ID is in the posts likes, if so display ui as such.
-   void isLiked({required Post post }) async {
-     var likeExist = await FirebaseFirestore.instance.collection(Paths.likes).doc(post.id).collection(Paths.postLikes).doc(_authBloc.state.user!.uid).get();
-     emit(state.copyWith(isLiked: likeExist.exists));
-   }
 
 
   // will update our liked post display for this session
@@ -40,7 +34,7 @@ class LikedPostCubit extends Cubit<LikedPostState> {
 
     emit(state.copyWith(
         likedPostsIds: Set<String>.from(state.likedPostsIds)..add(post.id!),
-        // recentlyLikedPostIds: Set<String>.from(state.likedPostsIds)..add(post.id!))
+        recentlyLikedPostIds: Set<String>.from(state.recentlyLikedPostIds)..add(post.id!)
     ));
   }
 
@@ -48,8 +42,9 @@ class LikedPostCubit extends Cubit<LikedPostState> {
     _postsRepository.deleteLike(postId: post.id!, userId: _authBloc.state.user!.uid);
 
     emit(state.copyWith(
-        likedPostsIds: Set<String>.from(state.likedPostsIds)..remove(post.id!)));
-        // recentlyLikedPostIds: Set<String>.from(state.likedPostsIds)..remove(post.id!)));
+        likedPostsIds: Set<String>.from(state.likedPostsIds)..remove(post.id!),
+        recentlyLikedPostIds: Set<String>.from(state.recentlyLikedPostIds)..remove(post.id!)
+      ));
   }
 
   void clearAllLikedPosts() {

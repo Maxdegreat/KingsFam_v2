@@ -56,21 +56,26 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
                   itemBuilder: (BuildContext context, int index) {
                     final Post? post = state.posts![index];
                     if (post != null) {
-                    final ctx = context.read<FeedBloc>();
-                    final likedPost = context.read<FeedBloc>().state.likedPostIds;
+            
+                    // ignore: non_constant_identifier_names
+                    final LikedPostState = context.watch<LikedPostCubit>().state;
+                    final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
+                    final recentlyLiked = LikedPostState.recentlyLikedPostIds.contains(post.id!);
 
-                  return GestureDetector(
-                    onDoubleTap: () {
-                     if (likedPost.contains(post.id)) {
-                       // todo unlike
+                  return PostSingleView(
+                    isLiked: isLiked,
+                    post: post, 
+                    recentlyLiked: recentlyLiked,
+                    onLike: () {
+                      if (isLiked) {
+                       context.read<LikedPostCubit>().unLikePost(post: post);
                      } else {
-                       context.read<FeedBloc>()..add(FeedLikePost(lkedPost: post));
+                       context.read<LikedPostCubit>().likePost(post: post);
                      }
                     },
-                    child: PostSingleView(post: post, recentlyLiked: likedPost.contains(post.id))
                   );
                     }
-                    return Text("Error, Post is null");
+                    return SizedBox.shrink();
 
 
                   },

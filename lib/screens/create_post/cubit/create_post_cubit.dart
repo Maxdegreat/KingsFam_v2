@@ -126,6 +126,7 @@ void onRemovePostContent() {
         final post = Post(
             author: author,
             quote: null,
+            comments: [],
             imageUrl: postImageUrl,
             videoUrl: null,
             thumbnailUrl: null,
@@ -164,6 +165,7 @@ void onRemovePostContent() {
         final post = Post(
             author: author,
             quote: null,
+            comments: [],
             imageUrl: null,
             videoUrl: postVideoUrl,
             thumbnailUrl: thumbnailUrl,

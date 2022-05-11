@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/post_model.dart';
@@ -110,6 +112,8 @@ class PostsRepository extends BasePostsRepository {
     }
 
     // wait for all documents and return the post.
+    // var x =postSnap.docs.first.data();
+    // log(x.toString());
     final posts = Future.wait(postSnap.docs.map((doc) => Post.fromDoc(doc)).toList());
     return posts;
   }
