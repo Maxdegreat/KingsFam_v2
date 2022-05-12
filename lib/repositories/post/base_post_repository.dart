@@ -3,7 +3,7 @@ import 'package:kingsfam/models/models.dart';
 
 abstract class BasePostsRepository {
   Future<void> createPost({required Post post});
-  Future<void> createComment({required Comment comment});
+  Future<void> createComment({required Comment comment, required Post? post});
   Stream<List<Future<Post?>>> getUserPosts({required String userId, required int limit, required DocumentSnapshot<Map<String, dynamic>>? lastPostDoc});
   Stream<List<Future<Comment?>>> getPostComments({required String postId});
   Future<List<Post?>> getUserFeed({required String userId, String? lastPostId, required int limit});

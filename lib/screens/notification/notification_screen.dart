@@ -94,6 +94,8 @@ class NotyTile extends StatelessWidget {
         return " invited you to a call";
       case Notification_type.direct_message:
         return " sent you a direct message  ";
+      case Notification_type.comment_post:
+        return " commented on your post";
     }
   }
 
@@ -109,29 +111,6 @@ class NotyTile extends StatelessWidget {
        return Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: notifications.fromUser.id));
  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

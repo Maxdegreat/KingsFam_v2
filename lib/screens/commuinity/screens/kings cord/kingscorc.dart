@@ -122,7 +122,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
               child: Container(
                 height: textHeight,
                 decoration: BoxDecoration(
-                    color: Colors.grey[900],
+                    color: Colors.grey[900],                                                                                        
                     borderRadius: BorderRadius.circular(5.0)),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 3.0),

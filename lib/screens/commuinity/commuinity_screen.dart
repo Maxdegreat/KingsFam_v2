@@ -26,7 +26,6 @@ import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscorc.dart'
 // import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
 import 'package:kingsfam/screens/screens.dart';
-import 'package:kingsfam/widgets/county_tile_widget.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:rive/rive.dart';
 

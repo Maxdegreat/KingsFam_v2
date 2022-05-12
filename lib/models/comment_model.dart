@@ -9,7 +9,7 @@ class Comment extends Equatable {
   final String postId;    //first declear the vars in the model
   final Userr author;
   final String content;
-  final DateTime date;
+  final Timestamp date;
 
   Comment({
     this.id,                    //2nd make the constructor
@@ -28,7 +28,7 @@ class Comment extends Equatable {
     String? postId,
     Userr? author,
     String? content,
-    DateTime? date,   //forth do the copy with
+    Timestamp? date,   //forth do the copy with
   }) {
     return Comment(
       id: id ?? this.id,
@@ -45,7 +45,7 @@ class Comment extends Equatable {
       'author':
           FirebaseFirestore.instance.collection(Paths.users).doc(author.id),  //5 do the copy with
       'content': content,
-      'date': Timestamp.fromDate(date)
+      'date': Timestamp.now()
     };
   }
 
@@ -60,7 +60,7 @@ class Comment extends Equatable {
             postId: data['postId'] ?? '',
             author: Userr.fromDoc(authorDoc),
             content: data['content'] ?? '',
-            date: (data['date'] as Timestamp).toDate());
+            date: (data['date'] as Timestamp));
       }
     }
     return null;

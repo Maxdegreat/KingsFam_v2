@@ -1,7 +1,10 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/enums/enums.dart';
+import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/models/post_model.dart';
 import 'package:kingsfam/models/comment_model.dart';
 
@@ -26,12 +29,22 @@ class PostsRepository extends BasePostsRepository {
   }
 
   @override
-  Future<void> createComment({required Comment comment}) async {
+  Future<void> createComment({required Comment comment, required Post? post}) async {
     await _firebaseFirestore
         .collection(Paths.comments)
         .doc(comment.postId)
         .collection(Paths.postsComments)
         .add(comment.toDoc());
+        log("added comment to firestore");
+        if (post != null) {
+          final notification = NotificationKF(
+            fromUser: comment.author, 
+            notificationType: Notification_type.comment_post, 
+            date: Timestamp.now()
+          );
+
+          _firebaseFirestore.collection(Paths.noty).doc(comment.author.id).collection(Paths.notifications).add(notification.toDoc());
+        }
   }
 
   Future<DocumentSnapshot<Map<String, dynamic>>?> getUserPostHelper({required String userId, required String? lastPostId}) async {

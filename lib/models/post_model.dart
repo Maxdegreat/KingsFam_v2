@@ -65,7 +65,6 @@ class PrePost extends Equatable {
 class Post extends Equatable {
   final String? id; //1 make the model
   final Userr author;
-  final List<Comment?> comments;
   final Church? commuinity;
   final String? quote; // String qoute that will be uploaded to fb
   final String? imageUrl; //img url uploaded to fb
@@ -80,7 +79,6 @@ class Post extends Equatable {
     this.id,
     required this.author, //2 make the constructor
     this.commuinity,
-    required this.comments,
     required this.quote,
     required this.imageUrl,
     required this.videoUrl,
@@ -92,16 +90,15 @@ class Post extends Equatable {
     required this.height,
   });
 
-  static Post empty = Post(comments: [], author: Userr.empty, quote: null, imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: 'This post has been ctrl + alt + del ...', likes: 0, date: Timestamp.now(), height: 10);
+  static Post empty = Post( author: Userr.empty, quote: null, imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: '', likes: 0, date: Timestamp(0, 0), height: 10);
 
   @override
   List<Object?> get props =>
-      [comments, id, height, author, commuinity,  quote, imageUrl, videoUrl, thumbnailUrl, soundTrackUrl, caption, likes, date]; //3 do props
+      [id, height, author, commuinity,  quote, imageUrl, videoUrl, thumbnailUrl, soundTrackUrl, caption, likes, date]; //3 do props
 
   Post copyWith({
     String? id, //4 do the copy with
     Userr? author,
-    List<Comment?>? comments,
     Church? commuinity,
     String? quote,
     String? imageUrl,
@@ -114,7 +111,6 @@ class Post extends Equatable {
     int? height,
   }) {
     return Post(
-      comments: comments ?? this.comments,
       id: id ?? this.id,
       author: author ?? this.author,
       commuinity: commuinity ?? this.commuinity,
@@ -137,7 +133,7 @@ class Post extends Equatable {
       'commuinity' : 
           FirebaseFirestore.instance.collection(Paths.church).doc(commuinity!.id),
       'quote' : quote,
-      'comments' : comments,
+    
       'imageUrl': imageUrl,
       'videoUrl' : videoUrl,
       'thumbnailUrl' : thumbnailUrl,
@@ -151,7 +147,7 @@ class Post extends Equatable {
 
   Map<String, dynamic> toDocNoCommuinitys() =>{
     'author': FirebaseFirestore.instance.collection(Paths.users).doc(author.id),
-    'comments' : comments,
+
       'imageUrl': imageUrl,
       'videoUrl' : videoUrl,
       'thumbnailUrl': thumbnailUrl,
@@ -175,7 +171,6 @@ class Post extends Equatable {
       print("_+_+_+_+_+_+_+_+_+_ COMM REFF IS NOT NULL");
          return Post(
             id: doc.id,
-            comments: [],//data['comments'],
             author: Userr.fromDoc(authDoc),
             commuinity: null,
             quote: data['quote'] ?? null,
@@ -193,7 +188,6 @@ class Post extends Equatable {
         return Post(
             id: doc.id,
             author: Userr.fromDoc(authDoc),
-            comments: [],//data['comments'] ?? null,
             commuinity: null,
             quote: data['quote'] ?? null,
             imageUrl: data['imageUrl'] ?? null,
@@ -215,7 +209,6 @@ class Post extends Equatable {
       if (authDoc.data() != null ) {
          return Post(
             id: doc.id,
-            comments: [],//data['comments'] ?? null,
             author: Userr.fromDoc(authDoc),
             commuinity: null,
             quote: data['quote'] ?? null,

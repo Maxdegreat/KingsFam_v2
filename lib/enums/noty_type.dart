@@ -5,6 +5,7 @@ enum Notification_type {
   invite_to_commuinity, //invite to commuinity
   new_follower,  // new follower
   invite_to_call, // invite to call
-  direct_message //direct message
+  direct_message, //direct message
+  comment_post, // comment on a post
 }
 

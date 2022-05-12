@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'; 
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/blocs/comment/bloc/comment_bloc.dart';
 import 'package:kingsfam/blocs/search/search_bloc.dart';
 import 'package:kingsfam/blocs/simple_bloc_observer.dart';
 import 'package:kingsfam/config/custum_router.dart';
@@ -85,7 +86,12 @@ class MyApp extends StatelessWidget {
             authBloc: context.read<AuthBloc>(), 
             likedPostCubit: context.read<LikedPostCubit>()
           ),
-        )
+        ),
+        // BlocProvider<CommentBloc>(
+        //   create: (context) => CommentBloc(
+        //     postsRepository: context.read<PostsRepository>(), 
+        //     authBloc:context.read<AuthBloc>()
+        //   )),
         // BlocProvider<RingerBloc>(
           // create: (context) => RingerBloc(
             // authBloc: context.read<AuthBloc>())
