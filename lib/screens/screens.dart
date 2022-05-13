@@ -27,3 +27,7 @@ export 'feed_new/feed_new.dart';
 export 'video_call/video_call_screen.dart';
 
 
+
+// switch to modle sheet when u get the chance
+export 'comment_ui/comment_screen.dart';
+

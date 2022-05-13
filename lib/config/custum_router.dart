@@ -120,6 +120,9 @@ class CustomRoute {
       case FeedNewScreen.routeName:
         return FeedNewScreen.route(args: settings.arguments as FeedNewScreenArgs);
 
+      case CommentScreen.routeName:
+        return CommentScreen.route(args: settings.arguments as CommentScreenArgs);
+
       default:
         return _errorRoute();
     }
