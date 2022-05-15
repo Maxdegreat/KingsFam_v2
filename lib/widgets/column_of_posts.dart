@@ -5,6 +5,7 @@ import 'package:kingsfam/extensions/extensions.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/screens.dart';
+import 'package:kingsfam/widgets/videoPostView16_9.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 class ColumnOfPost extends StatelessWidget {
@@ -57,7 +58,7 @@ class ColumnOfPost extends StatelessWidget {
                     ? imageDisplay()
                     // 2 if post.videoUrl is not null
                     : post!.videoUrl != null
-                        ? VidoeDisplay(videoUrl: post!.videoUrl!)
+                        ?  VideoPostView16_9(post: post!, userr: post!.author, videoUrl: post!.videoUrl!,) 
                         // 3 else quote is not null
                         : QuoteDisplay(
                             quote: post!.quote!,

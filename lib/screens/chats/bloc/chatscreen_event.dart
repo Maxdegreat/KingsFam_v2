@@ -19,3 +19,8 @@ class LoadChats extends ChatscreenEvent {
     required this.chatId,
   });
 }
+
+class ChatScreenFetchPosts extends ChatscreenEvent {}
+
+
+class ChatScreenPaginatePosts extends ChatscreenEvent{}

@@ -1,5 +1,6 @@
 part of 'comment_bloc.dart';
 enum CommentStatus {inital, loading, success, paginating, error}
+
 abstract class CommentState extends Equatable {
   const CommentState();
 }

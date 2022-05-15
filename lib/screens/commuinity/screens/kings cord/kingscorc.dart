@@ -25,8 +25,7 @@ class KingsCordScreen extends StatefulWidget {
   //class data
   final Church commuinity;
   final KingsCord kingsCord;
-  const KingsCordScreen(
-      {Key? key, required this.commuinity, required this.kingsCord}) : super(key: key);
+  const KingsCordScreen({Key? key, required this.commuinity, required this.kingsCord}) : super(key: key);
 
   // will need a static const string route name
   static const String routeName = '/kingsCord';
@@ -233,8 +232,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           return Column(
             children: [
               // bulid message stream
-              _buildMessageStream(
-                  commuinity: widget.commuinity, kingsCord: widget.kingsCord),
+              _buildMessageStream( commuinity: widget.commuinity, kingsCord: widget.kingsCord  ),
               //divider of a height 1
               Divider(height: 1.0),
               widget.commuinity.memberIds.contains(context.read<AuthBloc>().state.user!.uid) ?

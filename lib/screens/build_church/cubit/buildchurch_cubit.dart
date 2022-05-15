@@ -4,8 +4,6 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/church_kingscord_model.dart';
@@ -50,7 +48,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
   }
 
   void getCalls({required String commuinityId}) async {
-    var lst = await _callRepository.getCommuinityCalls(CommuinityId: commuinityId);
+    var lst = await _callRepository.getCommuinityCalls(commuinityId: commuinityId);
     emit(state.copyWith(calls: lst));
   }
 
@@ -108,12 +106,14 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
 
   //void function to update the admin and on create the admin should init be the maker maybe do that outside cubit
   void onAdminsAdded(Set<String> ids) => emit(state.copyWith(adminIds: ids));
+  
   void onAdminAdded(String id) {
     var lst = state.adminIds;
     lst.add(id);
     emit(state.copyWith(adminIds: lst));
   }
-    void onAdminRemoved(String id) {
+  
+  void onAdminRemoved(String id) {
     var lst = state.adminIds;
     lst.remove(id);
     emit(state.copyWith(adminIds: lst));
@@ -130,13 +130,15 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
 
   //void functoion to invite users A.K.A populate list
   // future bool to see if a user is in commuinity or not
-     void isCommuinityMember (Church commuinity) async {
+  void isCommuinityMember (Church commuinity) async {
      final userId = _authBloc.state.user!.uid;
      bool isMember = await  _churchRepository.isCommuinityMember(commuinity: commuinity, authorId: userId);
      print("Member status :$isMember");
      emit(state.copyWith( isMember: isMember ));
      print("state member status: ${state.isMember}");
    }
+
+
   //void function to upload church
   void submit() async {
     print("We are in the submit function");

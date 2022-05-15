@@ -9,10 +9,14 @@ import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/base_church_repository.dart';
 
-class ChurchRepository extends BaseChurchRepository {
+class   ChurchRepository extends BaseChurchRepository {
 
   final fb = FirebaseFirestore.instance.collection(Paths.church);
   final fire = FirebaseFirestore.instance;
+
+  delCord({required KingsCord cord, required Church cmmuinity}) {
+    fb.doc(cmmuinity.id).collection(Paths.kingsCord).doc(cord.id).delete();
+  }
 
   @override
   Future<void> newChurch({required Church church, required ChurchMembers churchMemberIds,  required Userr recentSender }) async {
@@ -46,6 +50,12 @@ class ChurchRepository extends BaseChurchRepository {
      } 
 
     return bucket;
+  }
+
+  Stream<List<Future<KingsCord?>>> getCommuinityCordsStream({required String churchId, required int limit}) {
+    return FirebaseFirestore.instance.collection(Paths.church).doc(churchId)  
+      .collection(Paths.kingsCord).where('tag', isEqualTo: churchId).limit(limit)
+      .snapshots().map((snap) => snap.docs.map((doc) => KingsCord.fromDocAsync(doc)).toList());
   }
 
   Future<List<KingsCord?>> getCommuinityCords({required String churchId}) async {

@@ -135,4 +135,21 @@ class CallModel extends Equatable {
   }
 
 
+  static Future<CallModel> fromDocAsync(DocumentSnapshot doc) async {
+    final data = doc.data() as Map<String, dynamic>;
+    return CallModel(
+      id: doc.id,
+      callerId: data['callerId'] ?? null,
+      name: data['name'] ?? null,
+      callerUsername: data['callerUsername'] ?? null,
+      callerPicUrl: data['callerPicUrl'] ?? null,
+      allMembersIds: List<String>.from(data['allMembersIds'] ?? []),
+      memberInfo: Map<String, dynamic>.from(data['memberInfo'] ?? {}),
+      channelId: data['channelId'] ?? null,
+      hasDilled: data['hasDilled'] ?? false,
+      tag: data['tag'] ?? ""
+    );
+  }
+
+
 }

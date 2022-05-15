@@ -11,6 +11,7 @@ import 'package:kingsfam/blocs/simple_bloc_observer.dart';
 import 'package:kingsfam/config/custum_router.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/build_call/bloc/ringer_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/cubit/calls_home_cubit.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
@@ -85,7 +86,14 @@ class MyApp extends StatelessWidget {
             authBloc: context.read<AuthBloc>(), 
             likedPostCubit: context.read<LikedPostCubit>()
           ),
-        ),
+        ), BlocProvider<CommuinityBloc>(
+          create: (context) => CommuinityBloc(
+          callRepository: context.read<CallRepository>(),
+          churchRepository: context.read<ChurchRepository>(), 
+          storageRepository: context.read<StorageRepository>(), 
+          authBloc: context.read<AuthBloc>(), 
+          userrRepository: context.read<UserrRepository>()
+        )), 
         // BlocProvider<CommentBloc>(
         //   create: (context) => CommentBloc(
         //     postsRepository: context.read<PostsRepository>(), 

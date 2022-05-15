@@ -72,4 +72,21 @@ class KingsCord extends Equatable {
         // memberInfo: Map<String, dynamic>.from(data['memberInfo'] ?? {} 
       );
   }
+
+
+  static Future<KingsCord?> fromDocAsync(DocumentSnapshot doc) async {
+    final data = doc.data() as Map<String, dynamic>;
+    return KingsCord(
+        id: doc.id,
+        tag: data['tag'],
+        cordName: data['cordName'] ?? 'MainRoom',
+        recentMessage: data['recentMessage'],
+        recentSender: data['recentSender'],
+        memberIds: List<String>.from(data['memberIds'] ?? []),
+        // memberInfo: Map<String, dynamic>.from(data['memberInfo'] ?? {} 
+      );
+  }
+
+
+
 }

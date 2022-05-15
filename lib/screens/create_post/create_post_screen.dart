@@ -516,7 +516,7 @@ class _InitilizeVideoState extends State<InitilizeVideo> {
   Widget build(BuildContext context) =>
       _videoPlayerController.value.isInitialized
           ? Container(
-              child: BuildVideo(
+              child: BuildVideoFile(
               controller: _videoPlayerController,
             ))
           : CircularProgressIndicator(

@@ -13,8 +13,13 @@ class CallRepository extends BaseCallRepository {
 
   final firebase = FirebaseFirestore.instance.collection(Paths.church);
 
-  Future<List<CallModel>> getCommuinityCalls({required String CommuinityId}) async {
-    var fire = await firebase.doc(CommuinityId).collection(Paths.call).where('tag', isEqualTo: CommuinityId).limit(7).get();
+  Stream<List<Future<CallModel>>> getCommuinityCallsStream({required String commuinityId, required int limit}) {
+    return firebase.doc(commuinityId).collection(Paths.call).where('tag', isEqualTo: commuinityId)
+      .limit(limit).snapshots().map((snap) => snap.docs.map((doc) => CallModel.fromDocAsync(doc)).toList());
+  }
+
+  Future<List<CallModel>> getCommuinityCalls({required String commuinityId}) async {
+    var fire = await firebase.doc(commuinityId).collection(Paths.call).where('tag', isEqualTo: commuinityId).limit(7).get();
     return fire.docs.map((e) => CallModel.fromDoc(e)).toList();
   }
 

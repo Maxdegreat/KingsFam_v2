@@ -86,37 +86,42 @@ class __buildBodyState extends State<_buildBody> {
                 context.read<FeedBloc>().add(FeedFetchPosts());
                 context.read<LikedPostCubit>().clearAllLikedPosts();
               },
-              child: ListView.builder(
-              controller: scrollController ,
-              itemCount: state.posts!.length,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == state.posts!.length) {
-                  // TODO call paginate post 
-                }
-                final Post? post = state.posts![index];
-               final Post? posts = state.posts![index];
-                if (post != null) {
-                    final LikedPostState = context.watch<LikedPostCubit>().state;
-                    final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
-                    final recentlyLiked = LikedPostState.recentlyLikedPostIds.contains(post.id!);
-                  return PostSingleView(
-                    isLiked: isLiked,
-                    post: post,
-                    recentlyLiked: recentlyLiked,
-                    onLike: () {
-                      
-                      if (isLiked) {
-                       context.read<LikedPostCubit>().unLikePost(post: post);
-                     } else {
-                       context.read<LikedPostCubit>().likePost(post: post);
-                     }
-                    },
-                  );
-                    }
-                return SizedBox.shrink();
-              },
-            ));
+              child:  listviewsinglePost(state));
         }
+      },
+    );
+  }
+
+  ListView listviewsinglePost(FeedState state) {
+    return ListView.builder(
+      shrinkWrap: false,
+      controller: scrollController ,
+      itemCount: state.posts!.length,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == state.posts!.length) {
+          // TODO call paginate post 
+        }
+        final Post? post = state.posts![index];
+       final Post? posts = state.posts![index];
+        if (post != null) {
+            final LikedPostState = context.watch<LikedPostCubit>().state;
+            final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
+            final recentlyLiked = LikedPostState.recentlyLikedPostIds.contains(post.id!);
+          return PostSingleView(
+            isLiked: isLiked,
+            post: post,
+            recentlyLiked: recentlyLiked,
+            onLike: () {
+              
+              if (isLiked) {
+               context.read<LikedPostCubit>().unLikePost(post: post);
+             } else {
+               context.read<LikedPostCubit>().likePost(post: post);
+             }
+            },
+          );
+            }
+        return SizedBox.shrink();
       },
     );
   }

@@ -51,6 +51,8 @@ class TabNavigator extends StatelessWidget {
       case BottomNavItem.chats:
         return BlocProvider(
           create: (_) => ChatscreenBloc(
+              postsRepository: ctx.read<PostsRepository>(),
+              likedPostCubit: ctx.read<LikedPostCubit>(),
               authBloc: ctx.read<AuthBloc>(),
               chatRepository: ctx.read<ChatRepository>())
             ..add(LoadChats(chatId: ctx.read<AuthBloc>().state.user!.uid)),

@@ -29,7 +29,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       yield* _mapFeedCommuinityFetchPostToState(event.commuinityId);
     } else if (event is FeedPaginatePosts) {
       yield* _mapFeedPaginatePosts();
-    } 
+    }  // jesus
   }
 
 

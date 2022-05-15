@@ -20,6 +20,7 @@ import 'package:kingsfam/screens/screens.dart';
 
 import 'package:kingsfam/widgets/commuinity_pf_image.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
+import 'package:kingsfam/widgets/videoPostView16_9.dart';
 import 'package:kingsfam/widgets/video_display.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -248,9 +249,9 @@ class _PostSingleViewState extends State<PostSingleView> {
     } else if (post.videoUrl != null) {
       return GestureDetector(
         onDoubleTap: widget.onLike,
-        child: ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: size.height / 1.15),
-            child: VidoeDisplay(videoUrl: post.videoUrl!)),
+        child: AspectRatio(
+            aspectRatio: 9 / 16,
+            child:  VideoPostView16_9(post: widget.post, userr: widget.post.author, videoUrl: widget.post.videoUrl!,) ),
       );
     } else if (post.quote != null) {
       return Text("caption ${post.quote}");

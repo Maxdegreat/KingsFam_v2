@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/cubits/cubits.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
@@ -25,8 +26,9 @@ class ChatsScreen extends StatefulWidget {
   _ChatsScreenState createState() => _ChatsScreenState();
 }
 
-class _ChatsScreenState extends State<ChatsScreen>
-    with SingleTickerProviderStateMixin  {
+class _ChatsScreenState extends State<ChatsScreen> with SingleTickerProviderStateMixin  {
+
+   ScrollController scrollController = ScrollController();
 
   //bool get wantKeepAlive => true;
 
@@ -79,22 +81,32 @@ class _ChatsScreenState extends State<ChatsScreen>
     setupInteractedMessage();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
     _tabController.addListener(tabControllerListener);
+    scrollController.addListener(listenToScrolling);
     //super.build(context);
   }
 
-  bool hideTabBar = false;
+  void listenToScrolling() {
+     if (scrollController.position.atEdge) {
+       if (scrollController.position.pixels != 0.0 && scrollController.position.maxScrollExtent == scrollController.position.pixels) {
+        //  const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
+        //  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+         context.read<ChatscreenBloc>()..add(ChatScreenPaginatePosts());
+       }
+     }
+  }
+  bool feedBeenLoaded = false;
+  void tabControllerListener() {
+    if (_tabController.index == 0 && !feedBeenLoaded) {
+      context.read<ChatscreenBloc>()..add(ChatScreenFetchPosts());
+      feedBeenLoaded = true;
+    }
+  }
+
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
-  }
-  void tabControllerListener() {
-    if (_tabController.index == 0) {
-      hideTabBar = true;
-    } else {
-      hideTabBar = false;
-    }
   }
   late TabController _tabController;
   @override
@@ -102,14 +114,7 @@ class _ChatsScreenState extends State<ChatsScreen>
     HexColor hexcolor = HexColor();
     bool showKfCrown = false;
     final userId = context.read<AuthBloc>().state.user!.uid;
-    return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      // floatingActionButton: FloatingActionButton(
-      //   // isExtended: true,
-      //     child: Icon(Icons.menu_rounded),
-      //     backgroundColor: Color(hexcolor.hexcolorCode('#FFC050')),
-      //     onPressed: () => Navigator.of(context).pushNamed(CreateComuinity.routeName)
-      //   ),
+    return Scaffold(  
       appBar: AppBar(
         title: Row(children: [Text('K I N G S F A M', style: TextStyle(color: Color(hexcolor.hexcolorCode('#FFC050'))),), SizedBox(width:  5), KFCrownV2()  ],),
         actions: [
@@ -130,32 +135,31 @@ class _ChatsScreenState extends State<ChatsScreen>
         listener: (context, state) {},
         builder: (context, state) {
           //final bloc = context.read<ChatscreenBloc>();
-          return CustomScrollView(
-
-
+          return DefaultTabController(
+            length: 3, 
+            child: CustomScrollView(
             slivers: [ 
-              hideTabBar ? SliverAppBar(
+               SliverAppBar(
                 floating: true,
-                
                 toolbarHeight: 10,
                 expandedHeight: 10,
                 bottom: TabBar(
-                  controller: _tabController,
-                  tabs: [
-                    Tab(text: "Feed"),
-                    Tab(text: "Commuinities"),
-                    Tab(text: "Chats")
-                  ],
+                controller: _tabController,
+                tabs: [
+                  Tab(text: "Feed"),
+                  Tab(text: "Commuinities"),
+                  Tab(text: "Chats")
+                 ],
                 ),
-              ) : SliverToBoxAdapter(child: SizedBox.shrink(),) ,    //ring_view(_ringStream,  context),
-               
+               ),   //ring_view(_ringStream,  context),
+        
                 SliverToBoxAdapter(
                   child: Container(
                     height: MediaQuery.of(context).size.height,
                     child: TabBarView(
                       controller: _tabController,
                       children: [
-                        ScreensForPageView()._feed(context),
+                        _feedViewUi(state),
                         ScreensForPageView().commuinity_view(userId, context),
                         ScreensForPageView().chats_view(userId)
                       ],
@@ -164,25 +168,52 @@ class _ChatsScreenState extends State<ChatsScreen>
                 ),
               ],
               
-            );
+            )
+          );
         },
         
       ),
     );
   }
-  //  FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>  ring_view(Future<DocumentSnapshot<Map<String, dynamic>>> _ringStream, BuildContext context) =>
-  //  FutureBuilder(
-  //  future: _ringStream,
-  //  builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-  //  if (snapshot.hasData && snapshot.data!.exists) {
-//
-  // Navigator.of(context).pushNamed(RingScreen.routeName, arguments: RingScreenArgs(call: CallModel.fromDoc(snapshot.data!)));
-  // return SizedBox.shrink();
-  //  } else {
-  //  return SizedBox.shrink();
-  //  }
-  //  },
-  //  );
+   _feedViewUi(ChatscreenState state) {
+     
+    return listviewsinglePost(state);
+  }
+
+  ListView listviewsinglePost(ChatscreenState state) {
+    return ListView.builder(
+      shrinkWrap: false,
+      controller: scrollController ,
+      itemCount: state.posts!.length,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == state.posts!.length) {
+          // TODO call paginate post 
+        }
+        final Post? post = state.posts![index];
+       final Post? posts = state.posts![index];
+        if (post != null) {
+            final LikedPostState = context.watch<LikedPostCubit>().state;
+            final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
+            final recentlyLiked = LikedPostState.recentlyLikedPostIds.contains(post.id!);
+          return PostSingleView(
+            isLiked: isLiked,
+            post: post,
+            recentlyLiked: recentlyLiked,
+            onLike: () {
+              
+              if (isLiked) {
+               context.read<LikedPostCubit>().unLikePost(post: post);
+             } else {
+               context.read<LikedPostCubit>().likePost(post: post);
+             }
+            },
+          );
+            }
+        return SizedBox.shrink();
+      },
+    );
+  }
+
 }
 
 class KFCrownV2 extends StatelessWidget {
@@ -368,8 +399,7 @@ class ScreensForPageView {
     );
   }
 
-  Future<dynamic> _leaveCommuinity(
-      {required Church commuinity, required BuildContext context}) {
+  Future<dynamic> _leaveCommuinity(  {required Church commuinity, required BuildContext context}) {
     return showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -394,7 +424,10 @@ class ScreensForPageView {
             ));
   }
  
-  Widget _feed(context) => Container(child: FeedScreenWidget());
+  //Widget _feed(context) => Container();
+
+
+  //Container(child: FeedScreenWidget());
 }
 
 class Constants{

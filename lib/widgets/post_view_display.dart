@@ -11,6 +11,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/extensions/extensions.dart';
 import 'package:kingsfam/screens/screens.dart';
+import 'package:kingsfam/widgets/videoPostView16_9.dart';
 
 import 'package:kingsfam/widgets/widgets.dart';
 
@@ -72,9 +73,7 @@ class _PostViewDisplayState extends State<PostViewDisplay> {
         widget.post.videoUrl != null
             ? GestureDetector(
                 onDoubleTap: widget.onLike,
-                child: VidoeDisplay(
-                    videoUrl: widget.post.videoUrl!,
-                    scrollCtrl: widget.scrollCtrl!))
+                child: VideoPostView16_9(post: widget.post, userr: widget.post.author, videoUrl: widget.post.videoUrl!, scrollCtrl: widget.scrollCtrl!,) )
             : widget.post.imageUrl != null
                 ? imageDisplay()
                 : SizedBox.shrink(),

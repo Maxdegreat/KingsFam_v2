@@ -19,6 +19,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/build_church/cubit/buildchurch_cubit.dart';
+import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 // import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/calls_home.dart';
 // import 'package:kingsfam/screens/commuinity/screens/feed/commuinity_feed.dart';
 // import 'package:kingsfam/screens/commuinity/screens/sounds/sounds.dart';
@@ -45,14 +46,14 @@ class CommuinityScreen extends StatefulWidget {
   static Route route({required CommuinityScreenArgs args}) {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
-        builder: (context) => BlocProvider<BuildchurchCubit>(
-              create: (context) => BuildchurchCubit(
+        builder: (context) => BlocProvider<CommuinityBloc>(
+              create: (context) => CommuinityBloc(
                 callRepository: context.read<CallRepository>(),
                 authBloc: context.read<AuthBloc>(),
                 churchRepository: context.read<ChurchRepository>(),
                 storageRepository: context.read<StorageRepository>(),
                 userrRepository: context.read<UserrRepository>(),
-              ),
+              )..add(CommuinityLoadCommuinity(commuinity: args.commuinity)),
               child: CommuinityScreen(
                 commuinity: args.commuinity,
               ),
@@ -65,7 +66,6 @@ class CommuinityScreen extends StatefulWidget {
 }
 
 class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerProviderStateMixin {
-
 
   late TabController _tabController;
   late TextEditingController _txtController;
@@ -85,149 +85,202 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
    super.dispose();
  }
 
-
-
   @override
   Widget build(BuildContext context) {
+    bool isMemberGetter = widget.commuinity.memberIds.contains(context.read<AuthBloc>().state.user!.uid);
     final userId = context.read<AuthBloc>().state.user!.uid;
-    return BlocConsumer<BuildchurchCubit, BuildchurchState>(
+    return BlocConsumer<CommuinityBloc, CommuinityState>(
       listener: (context, state) {
-        if (state.status == BuildChurchStatus.error) {
+        if (state is CommuinityError) {
+          log("commuinityScreenError: ${state.failure.code}");
           ErrorDialog(
             content: 'hmm, something went worong. check your connection',
           );
         }
       },
       builder: (context, state) {
-    context.read<BuildchurchCubit>().getCalls(commuinityId: widget.commuinity.id!);
-    context.read<BuildchurchCubit>().getKingsCords(commuinityId: widget.commuinity.id!);
-    context.read<BuildchurchCubit>().getCommuinityPosts(widget.commuinity);
    
-    // make a list commuinity_nav using the state's list calls nd commuinities.
+        // make a list commuinity_nav using the state's list calls nd commuinities.
    
-        context.read<BuildchurchCubit>().isCommuinityMember(widget.commuinity);
-        return Scaffold(
-            body: SafeArea(
-          child: CustomScrollView(
-            slivers: <Widget>[
-              SliverAppBar(
-                expandedHeight: MediaQuery.of(context).size.height / 3,
-                flexibleSpace: FlexibleSpaceBar(
-                  title: Text(widget.commuinity.name),
-                  background: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: CachedNetworkImageProvider(
-                                    widget.commuinity.imageUrl),
-                                fit: BoxFit.cover)),
-                      ),
-                      Container(
-                        height: MediaQuery.of(context).size.height / 2,
-                        padding: EdgeInsets.symmetric(horizontal: 5.0),
-                        alignment: Alignment.bottomCenter,
-                         decoration: BoxDecoration(
-                          // gradient: Gradient.linear(Alignment.bottomCenter, Alignment.topCenter, colors)
-                           )
-                        )
-                     
-                    ],
-                  ),
-                ), 
-                
-                actions: [ _settingsBtn(), _inviteButton(), ],
-              ),
+        //context.read<BuildchurchCubit>().isCommuinityMember(widget.commuinity);
 
-              
-              
-               SliverToBoxAdapter(
-                 child: Column(
-                   children: [
-                     SizedBox(height: 10),
-                     Row(
-                       mainAxisAlignment: MainAxisAlignment.start,
-                       children: [
-                        widget.commuinity.memberIds.contains(context.read<AuthBloc>().state.user!.uid) ? leaveBtn() : joinBtn(),
-                        SizedBox(width: 10),
-                        Text("${widget.commuinity.size} members")
-                       ],
-                     ),
-                     SizedBox(height: 25),
-                     Row(
-                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                       children: [
-                         Text("${widget.commuinity.name}\'s Content", style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w800,), overflow: TextOverflow.fade,),
-                       ],
-                     ),
-                     Container(
-                       height: 85, width: double.infinity,
-                       child: ListView.builder(
-                         itemCount: state.posts.length,
-                         scrollDirection: Axis.horizontal,
-                         itemBuilder: (context, index) {
-                           Post? post = state.posts[index];
-                           if (post!= null) {
-                             return contentPreview(post);
-                           } else {
-                             return SizedBox.shrink();
-                           }
-                         }),
-                     ),
-                     //ContentContaner(context),
-                     Row(
-                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                       children: [
-                         Text("Chat Rooms", style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w800,), overflow: TextOverflow.fade,),
-                         new_kingscord(),
-                       ],
-                     ),
-                     Column(
-                       children: state.kingsCords.map((cord) {
-                         if (cord != null) {
-                           return GestureDetector(onTap: () => Navigator.of(context).pushNamed(KingsCordScreen.routeName, arguments: KingsCordArgs(commuinity: widget.commuinity, kingsCord: cord)),
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 7, bottom: 7, left: MediaQuery.of(context).size.width / 7),
-                              child: Container(
-                                height: 35,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[900],
-                                  borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5))
-                                ),
-                                child: Center(child: Text(cord.cordName, overflow: TextOverflow.fade, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),)),
-                              ),
-                            )
-                          );
-                         } else {
-                           return SizedBox.shrink();
-                         }
-                       }).toList(),
-                     ), 
-                     SizedBox(height: 15),
-                     Row(
-                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                       children:[
-                         Text("Voice / Video Rooms", style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w800,), overflow: TextOverflow.fade,),
-                         _new_call(),
-                       ]
-                     ),
-                     Column(
-                       children: state.calls.map((call) {
-                         if (call != null) {
-                           return GestureDetector(onTap: () => Navigator.of(context).pushNamed(VideoCallScreen.routeName), child: callTile(context, call),);
-                         } else {
-                           return SizedBox.shrink();
-                         }
-                       }).toList(),
-                     )  
-                   ],
-                 )
-           ) ]),
-        ));
+        if (state is CommuinityInitial) {
+          return CircularProgressIndicator();
+        } else if (state is CommuinityLoading) {
+          return CircularProgressIndicator();
+        } else if (state is CommuinityLoaded) {
+          return _loadedDisplay(context, state, isMemberGetter);
+        } else if (state is CommuinityError) {
+          return Center(child: Text("error: my bad yall, i probably messed up the code"));
+        } else return SizedBox.shrink();
+
       },
     );
   }
+
+  Scaffold _loadedDisplay(BuildContext context, CommuinityLoaded state, bool isMemberGetter) {
+    return Scaffold(
+          body: SafeArea(
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar(
+              expandedHeight: MediaQuery.of(context).size.height / 3,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(widget.commuinity.name),
+                background: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: CachedNetworkImageProvider(
+                                  widget.commuinity.imageUrl),
+                              fit: BoxFit.cover)),
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height / 2,
+                      padding: EdgeInsets.symmetric(horizontal: 5.0),
+                      alignment: Alignment.bottomCenter,
+                       decoration: BoxDecoration(
+                        // gradient: Gradient.linear(Alignment.bottomCenter, Alignment.topCenter, colors)
+                         )
+                      )
+                  ],
+                ),
+              ), 
+              
+              actions: [ _settingsBtn(), _inviteButton(), ],
+            ),
+
+             SliverToBoxAdapter(
+               child: Column(
+                 children: [
+                   SizedBox(height: 10),
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.start,
+                     children: [
+                      
+                      isMemberGetter ? ElevatedButton(
+                        onPressed: () { _onLeaveCommuinity(); setState(() => isMemberGetter = false); log(isMemberGetter.toString());}, child: Text("...Leave :(", style: TextStyle(color: Colors.red),),
+                        style: ButtonStyle(
+                            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                            backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero,
+                                side: BorderSide(color: Colors.red)
+                              )
+                            )
+                          ),
+                      ) : joinBtn(state),
+                      SizedBox(width: 10),
+                      
+                      Text("${widget.commuinity.size} members")
+                     ],
+                   ),
+                   SizedBox(height: 25),
+                       //TODO remove row below?
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children: [
+                       Text("${widget.commuinity.name}\'s Content", style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w800,), overflow: TextOverflow.fade,),
+                     ],
+                   ),
+                   Container(
+                     height: 85, width: double.infinity,
+                     child: ListView.builder(
+                       itemCount: state.postDisplay.length,
+                       scrollDirection: Axis.horizontal,
+                       itemBuilder: (context, index) {
+                         Post? post = state.postDisplay[index];
+                         if (post!= null) {
+                           return contentPreview(post);
+                         } else {
+                           return SizedBox.shrink();
+                         }
+                       }),
+                   ),
+                   //ContentContaner(context),
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children: [
+                       Text("Chat Rooms", style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w800,), overflow: TextOverflow.fade,),
+                       //TODO check btn
+                       new_kingscord(),
+                     ],
+                   ),
+                   //TODO below should work if change name else use lib?
+                   Column(
+                     children: state.kingCords.map((cord) {
+                       if (cord != null) {
+                         return GestureDetector(onTap: () => Navigator.of(context).pushNamed(KingsCordScreen.routeName, arguments: KingsCordArgs(commuinity: widget.commuinity, kingsCord: cord)),
+                          onLongPress: () => _delKcDialog(cord: cord, commuinity: widget.commuinity),
+                          child: Padding(
+                            padding: EdgeInsets.only(top: 7, bottom: 7, left: MediaQuery.of(context).size.width / 7),
+                            child: Container(
+                              height: 35,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[900],
+                                borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5))
+                              ),
+                              child: Center(child: Text(cord.cordName, overflow: TextOverflow.fade, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),)),
+                            ),
+                          )
+                        );
+                       } else {
+                         return SizedBox.shrink();
+                       }
+                     }).toList(),
+                   ), 
+                   SizedBox(height: 15),
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children:[
+                       Text("Voice / Video Rooms", style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w800,), overflow: TextOverflow.fade,),
+                       _new_call(),
+                     ]
+                   ),
+                   Column(
+                     children: state.calls.map((call) {
+                       if (call != null) {
+                         return GestureDetector(onTap: () => Navigator.of(context).pushNamed(VideoCallScreen.routeName), child: callTile(context, call),);
+                       } else {
+                         return SizedBox.shrink();
+                       }
+                     }).toList(),
+                   )  
+                 ],
+               )
+         ) ]),
+      ));
+  }
+
+  _delKcDialog({required KingsCord cord, required Church commuinity})  =>
+   showModalBottomSheet(context: context, builder: (ctx) => BlocProvider<CommuinityBloc>(
+    create: (_) => CommuinityBloc(
+      callRepository: ctx.read<CallRepository>(),
+      churchRepository: ctx.read<ChurchRepository>(), 
+      storageRepository: ctx.read<StorageRepository>(), 
+      authBloc: ctx.read<AuthBloc>(), 
+      userrRepository: ctx.read<UserrRepository>()
+    ), child: Container(
+      child: Row(children: [
+        TextButton(onPressed: () {
+          ctx.read<CommuinityBloc>().delKc(cord: cord, commuinity: commuinity);
+          Navigator.of(context).pop();
+        } , child: Text("Remove ${cord.cordName}", style: TextStyle(color: Colors.red),)
+        ),
+
+        TextButton(onPressed: () {
+          Navigator.of(context).pop();
+        } , child: Text("Nevermind, keep ${cord.cordName}", style: TextStyle(color: Colors.green),)
+        ),
+      ],
+    ),
+  )
+    
+    ));
+
 
   Widget contentPreview( Post post) {
     return Padding(
@@ -264,28 +317,16 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
     );
   }
 
-  Widget leaveBtn() => ElevatedButton(
-    onPressed: () => _onLeaveCommuinity(), child: Text("...Leave :(", style: TextStyle(color: Colors.red),),
-    style: ButtonStyle(
-        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-        backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.zero,
-            side: BorderSide(color: Colors.red)
-          )
-        )
-      ),
-  );
+  // Widget leaveBtn(bool isMemberGetter) => 
 
-  Stack joinBtn() {
+  Stack joinBtn(CommuinityLoaded state) {
     return Stack(
       children: [
         Container(
           width: 100,
           height: 40,
           child: TextButton(
-            child: Text("JOINNN", style: TextStyle(color: Colors.white),),
+            child:  Text("JOINNN", style: TextStyle(color: Colors.white),),
             onPressed: () => _onJoinCommuinity(),
           ), decoration: BoxDecoration(color: Colors.grey[800], borderRadius: BorderRadius.circular(10)),
         ),
@@ -358,7 +399,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
     return GestureDetector(
      onTap: () => _new_call_sheet(),
      child: Padding(
-       padding: const EdgeInsets.symmetric(horizontal: 5),
+       padding: const EdgeInsets.symmetric(horizontal: 25),
        child: Container(height: 25, width: 25, child: RiveAnimation.asset('assets/icons/add_icon.riv'),),));
   }
 
@@ -432,9 +473,9 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
   )
 );
 
-  GestureDetector new_kingscord() {
+  GestureDetector new_kingscord()  {
     return GestureDetector(
-      onTap: () => new_kingsCord_sheet(),
+      onTap:  ()  => new_kingsCord_sheet(),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Container(height: 25, width: 25, child: RiveAnimation.asset('assets/icons/add_icon.riv'),),
@@ -514,9 +555,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
  
  _settingsBtn() {
     return IconButton(onPressed: () async {
-      // show a list of all users in the commuinity, this can be done using a showmodel,
-      // also allow to update image or chose a rive
-      // also allow to invite usesers
+
       final usersInCommuiinity = await context.read<BuildchurchCubit>().commuinityParcticipatents(ids: widget.commuinity.memberIds);
       showModalBottomSheet(context: context, builder: (context) {
         return Container(
@@ -830,6 +869,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
       ),
     ),
   ));
+ 
   _showInviteDialog(Userr user) {
     showDialog(context: context, builder: (context) {
       return AlertDialog(
@@ -852,20 +892,16 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
       );
     });
   }
+ 
   _onJoinCommuinity() {
-    context.read<BuildchurchCubit>().onJoinCommuinity(commuinity: widget.commuinity);
-    setState(() {
-      
-    });
+    context.read<CommuinityBloc>().onJoinCommuinity(commuinity: widget.commuinity);
   }
+ 
   _onLeaveCommuinity() {
-    context.read<BuildchurchCubit>().onLeaveCommuinity(commuinity: widget.commuinity);
-    setState(() {
-      
-    });
+    context.read<CommuinityBloc>().onLeaveCommuinity(commuinity: widget.commuinity);
   }
-  showLeaveCommuinity() => 
-    showModalBottomSheet(context: context, builder: (context) =>
+ 
+  showLeaveCommuinity() => showModalBottomSheet(context: context, builder: (context) =>
       Container(
         //height: 200,
         color: Colors.black,
