@@ -610,7 +610,14 @@ Future<dynamic> previewPost({ required PrePost prePost, required BuildContext co
               child: FutureBuilder(
                 future: context.read<ChurchRepository>().getCommuinitysUserIn(userrId: context.read<AuthBloc>().state.user!.uid, limit: 30),
                 builder: (BuildContext context, AsyncSnapshot<List<Church>> snapshot) {
-                  return ListView.builder(
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  } else if (snapshot.connectionState == ConnectionState.done) {
+                    return ListView.builder(
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                    
@@ -640,6 +647,7 @@ Future<dynamic> previewPost({ required PrePost prePost, required BuildContext co
                       ],
                     );
                   });
+                  } else return SizedBox.shrink();
                 }
               ),
       ),

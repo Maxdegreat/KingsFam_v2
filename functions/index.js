@@ -34,22 +34,22 @@ exports.onFollowUserr = functions.firestore.document("/followers/{userrId}/userF
     }
 
     //add followed users post to users post feed
-    // const followedUserPostRef = admin
-    //   .firestore()
-    //   .collection("posts")
-    //   .where("author", "==", followedUserrRef);
-    // const userFeedRef = admin
-    //   .firestore()
-    //   .collection("feeds")
-    //   .doc(followerId)
-    //   .collection("userFeed");
+    const followedUserPostRef = admin
+      .firestore()
+      .collection("posts")
+      .where("author", "==", followedUserrRef);
+    const userFeedRef = admin
+      .firestore()
+      .collection("feeds")
+      .doc(followerId)
+      .collection("userFeed");
 
-    // const followedUserPostsSnapshot = await followedUserPostRef.get();
-    // followedUserPostsSnapshot.forEach((doc) => {
-    //   if (doc.exists) {
-    //     userFeedRef.doc(doc.id).set(doc.data());
-    //   }
-    // });
+    const followedUserPostsSnapshot = await followedUserPostRef.get();
+    followedUserPostsSnapshot.forEach((doc) => {
+      if (doc.exists) {
+        userFeedRef.doc(doc.id).set(doc.data());
+      }
+    });
   });
 
 //================================================================================

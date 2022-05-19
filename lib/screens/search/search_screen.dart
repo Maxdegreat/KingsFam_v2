@@ -36,7 +36,9 @@ class SearchScreen extends StatefulWidget {
             ));
   }
 }
+
 HexColor hexcolor = HexColor();
+
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _textEditingController = TextEditingController();
   ScrollController scrollController = ScrollController();
@@ -47,16 +49,19 @@ class _SearchScreenState extends State<SearchScreen> {
     super.initState();
   }
 
-  
   void listenToScrolling() {
-     if (scrollController.position.atEdge) 
-       if (scrollController.position.pixels != 0.0 && scrollController.position.maxScrollExtent == scrollController.position.pixels) {
-         //const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
-         //ScaffoldMessenger.of(context).showSnackBar(snackBar);
-         context.read<SearchBloc>()..add(GrabUsersPaginate(currId: context.read<AuthBloc>().state.user!.uid));
-       }
-     }
-  
+    if (scrollController.position.atEdge) if (scrollController
+                .position.pixels !=
+            0.0 &&
+        scrollController.position.maxScrollExtent ==
+            scrollController.position.pixels) {
+      //const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
+      //ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      context.read<SearchBloc>()
+        ..add(GrabUsersPaginate(
+            currId: context.read<AuthBloc>().state.user!.uid));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,68 +76,72 @@ class _SearchScreenState extends State<SearchScreen> {
           onTap: () => FocusScope.of(context).unfocus(),
           child: Scaffold(
               body: BlocConsumer<SearchBloc, SearchState>(
-                listener: (context, state) {
-                  if (state.status == SearchStatus.error) {
-                    //show error Dialog
-                    showDialog(
-                        context: context,
-                        builder: (context) =>
-                            ErrorDialog(content: state.failure.message));
-                  }
-                },
-                builder: (context, state) {
-                  return Scaffold(appBar:
-                   AppBar(
-                     title: TextField(
-                   controller: _textEditingController,
-                   decoration: InputDecoration(
-                       fillColor: Colors.black87,
-                       filled: true,
-                       
-                       border: InputBorder.none,
-                       hintText: 'Search For The Fam',
-                       suffixIcon: IconButton(
-                           onPressed: () {
-                             context.read<SearchBloc>().clearSearch();
-                             _textEditingController.clear();
-                           },
-                           icon: Icon(Icons.clear))),
-                   textInputAction: TextInputAction.search,
-                   textAlignVertical: TextAlignVertical.center,
-                   onChanged: (value) {
-                     context.read<SearchBloc>().searchUserAdvanced(value.trim());
-                     //context.read<SearchBloc>().searchChurch(value.trim());
-                   },
-                 ),
-      
-                   ),
-                    body: _builBody(state: state, context: context),
-                  );
-                },
-              )),
+            listener: (context, state) {
+              if (state.status == SearchStatus.error) {
+                //show error Dialog
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        ErrorDialog(content: state.failure.message));
+              }
+            },
+            builder: (context, state) {
+              return Scaffold(
+                appBar: AppBar(
+                  title: TextField(
+                    controller: _textEditingController,
+                    decoration: InputDecoration(
+                        fillColor: Colors.black87,
+                        filled: true,
+                        border: InputBorder.none,
+                        hintText: 'Search For The Fam',
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              context.read<SearchBloc>().clearSearch();
+                              _textEditingController.clear();
+                            },
+                            icon: Icon(Icons.clear))),
+                    textInputAction: TextInputAction.search,
+                    textAlignVertical: TextAlignVertical.center,
+                    onChanged: (value) {
+                      context
+                          .read<SearchBloc>()
+                          .searchUserAdvanced(value.trim());
+                      //context.read<SearchBloc>().searchChurch(value.trim());
+                    },
+                  ),
+                ),
+                body: _builBody(state: state, context: context),
+              );
+            },
+          )),
         ));
   }
 
-  Widget _builBody({required SearchState state, required BuildContext context}) {
+  Widget _builBody(
+      {required SearchState state, required BuildContext context}) {
     switch (state.status) {
       case SearchStatus.pag:
       case SearchStatus.initial:
-      return CustomScrollView(
-        controller: scrollController ,
-          slivers: [ 
-            
-            //  
-            
+        return CustomScrollView(
+          controller: scrollController,
+          slivers: [
+            //
+
             SliverToBoxAdapter(
               child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 10),
-                Text("Commuinities Around You", style: TextStyle(fontSize: 20, color: Color(hexcolor.hexcolorCode('#FFC050')))),
-                SizedBox(height: 5.0),
-                Container(
-                    height: 170,
-                    child: ListView.builder(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 10),
+                  Text("Commuinities Around You",
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Color(hexcolor.hexcolorCode('#FFC050')))),
+                  SizedBox(height: 5.0),
+                  state.churches.length > 0
+                      ? Container(
+                          height: 170,
+                          child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: state.churches.length,
                             itemBuilder: (context, index) {
@@ -140,58 +149,82 @@ class _SearchScreenState extends State<SearchScreen> {
                               return GestureDetector(
                                   onTap: () => navToChurch(
                                       context: context, commuinity: church),
-                                  child: search_Church_container(church: church));
+                                  child:
+                                      search_Church_container(church: church));
                             },
-                          )),
-                          SizedBox(height: 20.0),
-               
-                Text("Commuinitys All Over", style: TextStyle(fontSize: 20, color: Color(hexcolor.hexcolorCode('#FFC050')) ),),
-                // to find most popular write a script that finds greater than sum of of all commuinities then
-                SizedBox(height: 5.0),
-                Container(
-                  height: 170,
-                  child: 
-                  ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: state.chruchesList3.length,
-                    itemBuilder: (context, index) {
-                    Church church = state.chruchesList3[index];
-                    return GestureDetector(
-                      onTap: () => navToChurch(context: context, commuinity: church),
-                      child: search_Church_container(church: church));
-                  },
-                 ) ),
-                        
-                        SizedBox(height: 20.0),
-                Text("Find The Fam", style: TextStyle(fontSize: 20, color: Color(hexcolor.hexcolorCode('#FFC050'))),),
-                // to find most popular write a script that finds greater than sum of of all commuinities then       
-              ],
-                      ),
+                          ))
+                      : Container(
+                          height: 170,
+                          child: Center(
+                              child: Text("You Are In Every Community?!?!"))),
+                  SizedBox(height: 20.0),
+
+                  Text(
+                    "Commuinitys All Over",
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Color(hexcolor.hexcolorCode('#FFC050'))),
+                  ),
+                  // to find most popular write a script that finds greater than sum of of all commuinities then
+                  SizedBox(height: 5.0),
+                  state.chruchesList3.length > 0
+                      ? Container(
+                          height: 170,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: state.chruchesList3.length,
+                            itemBuilder: (context, index) {
+                              Church church = state.chruchesList3[index];
+                              return GestureDetector(
+                                  onTap: () => navToChurch(
+                                      context: context, commuinity: church),
+                                  child:
+                                      search_Church_container(church: church));
+                            },
+                          ))
+                      : Container(
+                          height: 170,
+                          child: Center(
+                              child: Text("You Are In Every Community?!?!"))),
+
+                  SizedBox(height: 20.0),
+                  Text(
+                    "Find The Fam",
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Color(hexcolor.hexcolorCode('#FFC050'))),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  )
+                  // to find most popular write a script that finds greater than sum of of all commuinities then
+                ],
+              ),
             ),
-        
-                          SliverToBoxAdapter(
-                            child: GridView.builder(
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+
+            SliverToBoxAdapter(
+                child: state.userExploreList.length > 0
+                    ? GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
                                 crossAxisSpacing: 10,
                                 mainAxisSpacing: 10,
-                                mainAxisExtent: 100
-                              ),
-                              primary: false,
-                              shrinkWrap: true,
-                              itemCount: state.userExploreList.length,
-                              itemBuilder: (context, index) {
-                                Userr userr = state.userExploreList[index];
-                                return ProfileCard(userr);
-                              }
-                            ),
-                          )
-                        
-            
-            ],
-            
+                                mainAxisExtent: 100),
+                        primary: false,
+                        shrinkWrap: true,
+                        itemCount: state.userExploreList.length,
+                        itemBuilder: (context, index) {
+                          Userr userr = state.userExploreList[index];
+                          return ProfileCard(userr);
+                        })
+                    : Container(
+                        height: 170,
+                        child: Center(
+                            child: Text("You are folloing all the fam!?!?"))))
+          ],
         );
-     
+
       case SearchStatus.loading:
         return Center(
           child: CircularProgressIndicator(
@@ -247,7 +280,7 @@ class _SearchScreenState extends State<SearchScreen> {
     Navigator.of(context).pushNamed(AddUsers.routeName,
         arguments: CreateNewGroupArgs(typeOf: 'Virtural Church'));
   }
-  
+
   Widget search_Church_container({required Church church}) {
     return Stack(
       alignment: AlignmentDirectional.bottomCenter,
@@ -291,17 +324,21 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget ProfileCard(Userr user) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: user.id)),
+      onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName,
+          arguments: ProfileScreenArgs(userId: user.id)),
       child: Container(
         height: 100,
-    
         width: MediaQuery.of(context).size.width * .70,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ProfileCardTop(pfpImgUrl: user.profileImageUrl, bimgUrl: user.bannerImageUrl),
-            Text(user.username, style: Theme.of(context).textTheme.bodyText1,),
+            ProfileCardTop(
+                pfpImgUrl: user.profileImageUrl, bimgUrl: user.bannerImageUrl),
+            Text(
+              user.username,
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
             SizedBox(height: 3),
             // Text("") // TODO bio
           ],
@@ -310,20 +347,28 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-Widget ProfileCardTop({required String? bimgUrl, required String? pfpImgUrl }) {
-  double widthsize = MediaQuery.of(context).size.width * .70;
-  return Container(
-
-    height: 75,
-    width: widthsize,
-    child: Stack(
-      children: [
-        BannerImage(isOpasaty: false, bannerImageUrl: bimgUrl, passedheight: 50,),
-        Positioned(top: 20, left: (65), child: ProfileImage(radius: 25, pfpUrl: pfpImgUrl!),)
-      ],
-    ),
-  );
-}
+  Widget ProfileCardTop(
+      {required String? bimgUrl, required String? pfpImgUrl}) {
+    double widthsize = MediaQuery.of(context).size.width * .70;
+    return Container(
+      height: 75,
+      width: widthsize,
+      child: Stack(
+        children: [
+          BannerImage(
+            isOpasaty: false,
+            bannerImageUrl: bimgUrl,
+            passedheight: 50,
+          ),
+          Positioned(
+            top: 20,
+            left: (65),
+            child: ProfileImage(radius: 25, pfpUrl: pfpImgUrl!),
+          )
+        ],
+      ),
+    );
+  }
 }
 
 class CenterdText extends StatelessWidget {

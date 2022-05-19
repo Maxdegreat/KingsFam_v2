@@ -43,7 +43,7 @@ class PostsRepository extends BasePostsRepository {
             date: Timestamp.now()
           );
 
-          _firebaseFirestore.collection(Paths.noty).doc(comment.author.id).collection(Paths.notifications).add(notification.toDoc());
+          _firebaseFirestore.collection(Paths.noty).doc(post.author.id).collection(Paths.notifications).add(notification.toDoc());
         }
   }
 
