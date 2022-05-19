@@ -43,7 +43,7 @@ class KingscordCubit extends Cubit<KingscordState> {
     }
 
     void onLoadInit({required String cmId, required String kcId, required int limit}) async {
-      int limit = 30;
+    int limit = 45;
     _msgStreamSubscription?.cancel();
     _msgStreamSubscription = _churchRepository.
      getMsgStream(cmId: cmId, kcId: kcId, limit: limit)

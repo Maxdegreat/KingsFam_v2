@@ -11,7 +11,7 @@ class CommuinityLoadCommuinity extends CommuinityEvent {
   final Church commuinity;
   CommuinityLoadCommuinity({required this.commuinity});
   @override
-  // TODO: implement props
+
   List<Object> get props => [commuinity];
 }
 

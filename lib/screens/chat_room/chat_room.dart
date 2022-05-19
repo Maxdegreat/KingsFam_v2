@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_cropper/image_cropper.dart';
-
+//
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/helpers.dart';
@@ -51,41 +51,33 @@ class _ChatRoomState extends State<ChatRoom> {
   final TextEditingController _messageController = TextEditingController();
   double textHeight = 35;
   // THE STREAM FOR THE MESSAGES
-  _buildMessageStream() {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection(Paths.chats)
-          .doc(widget.chat.id)
-          .collection(Paths.messages)
-          .orderBy('date', descending: true)
-          .limit(50)
-          .snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return Expanded(
-          child: GestureDetector(
-            onTap: () => Focus.of(context).unfocus(),
-            child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                physics: AlwaysScrollableScrollPhysics(),
-                reverse: true,
-                children: _buidlMessageBubbles(snapshot)),
-          ),
-        );
-      },
+  _buildMessageStream(List<Message?> msgs) {
+    return Expanded(
+      flex: 1,
+      child: GestureDetector(
+        onTap: () => Focus.of(context).unfocus(),
+        child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            physics: AlwaysScrollableScrollPhysics(),
+            reverse: true,
+            children: _buidlMessageBubbles(msgs)),
+      ),
     );
   }
+
   // THE CREATION OF THE TEXT FORM
-  List<MessageBubble> _buidlMessageBubbles(AsyncSnapshot<QuerySnapshot> message) {
+  List<MessageBubble> _buidlMessageBubbles(List<Message?> msgs) {
     List<MessageBubble> messagebubbles = [];
-    
-    message.data?.docs.forEach((doc) async {
-      Message message = await Message.fromDoc(doc);
+
+    msgs.forEach((message) async {
+      if (message == null) return;
       MessageBubble messagebubble =
           MessageBubble(chat: widget.chat, message: message);
       messagebubbles.add(messagebubble);
     });
     return messagebubbles;
   }
+
   // BUILD MESSAGE TEXTFORM
   _buildMessageTF(ChatroomState state, BuildContext context) {
     final ctx = context.read<ChatroomCubit>();
@@ -109,37 +101,37 @@ class _ChatRoomState extends State<ChatRoom> {
               child: Container(
                 height: textHeight,
                 decoration: BoxDecoration(
-                  color: Colors.grey[900],
-                  borderRadius: BorderRadius.circular(5.0)),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: TextField(
-                        controller: _messageController,
-                        textAlignVertical: TextAlignVertical.center,
-                        style: TextStyle(fontSize: 18),
-                        autocorrect: true,
-                        keyboardType: TextInputType.multiline,
-                        maxLines: null,
-                        expands: true,
-                        textCapitalization: TextCapitalization.sentences,
-                        onChanged: (messageText) {
-                          if (messageText.length >= 29) 
-                            setState(() => textHeight = 50.0);
-                          else if (messageText.length >= 87)
-                            setState(() => textHeight = 65.0);
-                          else 
-                            setState(() => textHeight = 30.0 );
-                          ctx.onIsTyping(messageText.length >= 1);
-                        },
-                        //setState(() => _isComposingMessage = messageText.isNotEmpty
-                        decoration:
-                            InputDecoration.collapsed(hintText: 'Provbers 16:23'),
-                      ),
+                    color: Colors.grey[900],
+                    borderRadius: BorderRadius.circular(5.0)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: TextField(
+                      controller: _messageController,
+                      textAlignVertical: TextAlignVertical.center,
+                      style: TextStyle(fontSize: 18),
+                      autocorrect: true,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      expands: true,
+                      textCapitalization: TextCapitalization.sentences,
+                      onChanged: (messageText) {
+                        if (messageText.length >= 29)
+                          setState(() => textHeight = 50.0);
+                        else if (messageText.length >= 87)
+                          setState(() => textHeight = 65.0);
+                        else
+                          setState(() => textHeight = 30.0);
+                        ctx.onIsTyping(messageText.length >= 1);
+                      },
+                      //setState(() => _isComposingMessage = messageText.isNotEmpty
+                      decoration:
+                          InputDecoration.collapsed(hintText: 'Provbers 16:23'),
                     ),
                   ),
                 ),
+              ),
             ),
             Container(
                 margin: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -163,10 +155,16 @@ class _ChatRoomState extends State<ChatRoom> {
         ));
   }
 
-  // WIDGET BUILD 
+  @override
+  void initState() {
+    super.initState();
+    context.read<ChatroomCubit>().onLoadInit(chatId: widget.chat.id!, limit: 45);
+  }
+  // WIDGET BUILD
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.chat.name, overflow: TextOverflow.ellipsis),
@@ -189,7 +187,7 @@ class _ChatRoomState extends State<ChatRoom> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildMessageStream(),
+                _buildMessageStream(state.msgs),
                 Divider(height: 1.0),
                 _buildMessageTF(state, context),
               ],

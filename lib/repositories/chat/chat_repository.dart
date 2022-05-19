@@ -17,6 +17,19 @@ class ChatRepository extends BaseChatRepository {
     _firebaseFirestore.collection(Paths.chats).add(chat.toDoc());
   }
 
+  Stream<List<Future<Message?>>> getChatMessages({required String chatId, required int limit}) {
+    return FirebaseFirestore.instance.collection(Paths.chats)
+      .doc(chatId).collection(Paths.messages).limit(limit).orderBy('date', descending: true).snapshots().map((snap) {
+         List<Future<Message?>> bucket = [];
+         snap.docs.forEach((doc) { 
+           Future<Message?> msg = Message.fromDoc(doc);
+           bucket.add(msg);
+        });
+        return bucket;
+      });
+      
+  }
+
   @override
   Stream<List<Future<Chat?>>> getUserChats({required String userId}) {
     return _firebaseFirestore

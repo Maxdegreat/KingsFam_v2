@@ -245,7 +245,14 @@ class   ChurchRepository extends BaseChurchRepository {
     doc.update({'members': FieldValue.arrayUnion([FirebaseFirestore.instance.collection(Paths.users).doc(user.id)])});
     return;
   }
-  
+  Stream<bool> streamIsCmMember({required Church cm, required String authorId}) {
+    var ids = cm.members.map((e) => e.id).toSet();
+    if (ids.contains(authorId)) {
+       return Stream<bool>.value(true);
+    } else {
+      return Stream<bool>.value(false);
+    }
+  }
   Future<bool> isCommuinityMember({required Church commuinity, required String authorId}) async {
     final DocumentReference userRef = FirebaseFirestore.instance.collection(Paths.users).doc(authorId);
     final docRef = await

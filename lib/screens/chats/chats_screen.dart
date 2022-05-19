@@ -10,6 +10,7 @@ import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
+import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/feed_screen_widget.dart';
 import 'package:kingsfam/widgets/widgets.dart';
@@ -186,39 +187,42 @@ class _ChatsScreenState extends State<ChatsScreen>
     return listviewsinglePost(state);
   }
 
-  Widget listviewsinglePost(ChatscreenState state) {
+  Widget listviewsinglePost(ChatscreenState state, ) {
     return Expanded(
       flex: 1,
-      child: ListView.builder(
-        shrinkWrap: false,
-        controller: scrollController,
-        itemCount: state.posts!.length,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == state.posts!.length) {
-            // TODO call paginate post
-          }
-          final Post? post = state.posts![index];
-          final Post? posts = state.posts![index];
-          if (post != null) {
-            final LikedPostState = context.watch<LikedPostCubit>().state;
-            final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
-            final recentlyLiked =
-                LikedPostState.recentlyLikedPostIds.contains(post.id!);
-            return PostSingleView(
-              isLiked: isLiked,
-              post: post,
-              recentlyLiked: recentlyLiked,
-              onLike: () {
-                if (isLiked) {
-                  context.read<LikedPostCubit>().unLikePost(post: post);
-                } else {
-                  context.read<LikedPostCubit>().likePost(post: post);
-                }
-              },
-            );
-          }
-          return SizedBox.shrink();
-        },
+      child: RefreshIndicator(
+        onRefresh: () async => context.read<FeedBloc>()..add(FeedFetchPosts()),
+        child: ListView.builder(
+          shrinkWrap: false,
+          controller: scrollController,
+          itemCount: state.posts!.length,
+          itemBuilder: (BuildContext context, int index) {
+            if (index == state.posts!.length) {
+              // TODO call paginate post
+            }
+            final Post? post = state.posts![index];
+            final Post? posts = state.posts![index];
+            if (post != null) {
+              final LikedPostState = context.watch<LikedPostCubit>().state;
+              final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
+              final recentlyLiked =
+                  LikedPostState.recentlyLikedPostIds.contains(post.id!);
+              return PostSingleView(
+                isLiked: isLiked,
+                post: post,
+                recentlyLiked: recentlyLiked,
+                onLike: () {
+                  if (isLiked) {
+                    context.read<LikedPostCubit>().unLikePost(post: post);
+                  } else {
+                    context.read<LikedPostCubit>().likePost(post: post);
+                  }
+                },
+              );
+            }
+            return SizedBox.shrink();
+          },
+        ),
       ),
     );
   }

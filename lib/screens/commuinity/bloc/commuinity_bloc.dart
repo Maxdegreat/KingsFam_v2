@@ -22,6 +22,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   StreamSubscription<List<Future<KingsCord?>>>? _streamSubscriptionKingsCord;
   StreamSubscription<List<Future<CallModel>>>? _streamSubscriptionCalls;
+  StreamSubscription<bool>? _streamSubscriptionIsMember;
 
 
   CommuinityBloc({
@@ -41,7 +42,8 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
      @override
   Future<void> close() {
     _streamSubscriptionCalls!.cancel();
-    _streamSubscriptionKingsCord!.cancel();     
+    _streamSubscriptionKingsCord!.cancel();
+    _streamSubscriptionIsMember!.cancel();  
     return super.close();
   }
 
@@ -88,9 +90,15 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   Stream<CommuinityState> _mapCommuinityLoadedToState(CommuinityLoadedEvent event) async* {
     var cmIds = event.commuinity.members.map((e) => e.id).toList();
-    bool isMem = cmIds.contains(_authBloc.state.user!.uid);
+    late bool isMem;
     eKcs = event.kcs; eCalls = event.calls; ePosts = event.posts;
-    yield CommuinityLoaded(calls: event.calls, kingCords: event.kcs, postDisplay: event.posts, isMember: isMem);
+    _streamSubscriptionIsMember = _churchRepository
+      .streamIsCmMember(cm: event.commuinity, authorId: _authBloc.state.user!.uid)
+      .listen((isMemStream) {
+        isMem = isMemStream; 
+        emit(CommuinityLoaded(isMember: isMemStream, calls: event.calls, kingCords: event.kcs, postDisplay: event.posts));  
+      });
+    //yield CommuinityLoaded(calls: event.calls, kingCords: event.kcs, postDisplay: event.posts, isMember: isMem);
   }
 
   // ============== funcs =======================

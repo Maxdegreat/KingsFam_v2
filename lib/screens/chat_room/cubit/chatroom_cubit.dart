@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
@@ -10,11 +12,13 @@ import 'package:kingsfam/repositories/repositories.dart';
 
 part 'chatroom_state.dart';
 
+
 class ChatroomCubit extends Cubit<ChatroomState> {
   //class data
   final StorageRepository _storageRepository;
   final ChatRepository _chatRepository;
   final AuthBloc _authBloc;
+  StreamSubscription<List<Future<Message?>>>? _msgStreamSubscription; 
   ChatroomCubit({
     required StorageRepository storageRepository,
     required ChatRepository chatRepository,
@@ -24,6 +28,25 @@ class ChatroomCubit extends Cubit<ChatroomState> {
         _authBloc = authBloc,
         super(ChatroomState.initial());
   //methods
+
+  @override
+  Future<void> close() {
+     _msgStreamSubscription!.cancel();
+    return super.close();
+  }
+
+  void onLoadInit({required String chatId, required int limit}) async {
+    int limit = 45;
+    _msgStreamSubscription?.cancel();
+    _msgStreamSubscription = _chatRepository
+      .getChatMessages(chatId: chatId, limit: limit).listen((messages) async { 
+        final List<Message?> msgs = await Future.wait(messages);
+        log("The length of messages is ${messages.length}");
+        emit(state.copyWith(msgs: msgs));
+      });
+    }  
+
+
   void onUploadImage(File image) {
     emit(state.copyWith(chatImage: image, status: ChatRoomStatus.inital));
   }

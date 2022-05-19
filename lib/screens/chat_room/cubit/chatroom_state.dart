@@ -7,13 +7,15 @@ class ChatroomState extends Equatable {
   final bool isTyping;
   final String? textMesage;
   final File? chatImage;
+  final List<Message?> msgs;
   final ChatRoomStatus status;
   //2 gen constructor
   ChatroomState(
       {required this.isTyping,
       required this.chatImage,
       required this.status,
-      required this.textMesage});
+      required this.textMesage,
+      required this.msgs});
 
   //5 the init
   factory ChatroomState.initial() {
@@ -21,7 +23,9 @@ class ChatroomState extends Equatable {
         textMesage: null,
         isTyping: false,
         chatImage: null,
-        status: ChatRoomStatus.inital);
+        status: ChatRoomStatus.inital,
+        msgs: [],
+      );
   }
 //3 the props
   @override
@@ -32,12 +36,15 @@ class ChatroomState extends Equatable {
       {String? textMessage,
       bool? isTyping,
       File? chatImage,
-      ChatRoomStatus? status}) {
+      ChatRoomStatus? status,
+      List<Message?>? msgs,
+      }) {
     return ChatroomState(
       textMesage: textMesage ?? this.textMesage,
       isTyping: isTyping ?? this.isTyping,
       chatImage: chatImage ?? this.chatImage,
       status: status ?? this.status,
+      msgs: msgs ?? this.msgs,
     );
   }
 }
