@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -15,6 +16,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final PostsRepository _postsRepository;
   final AuthBloc _authBloc;
   final LikedPostCubit _likedPostCubit;
+  final ChurchRepository _churchRepository;
 
   StreamSubscription<List<Future<Post?>>>? _postStreamSubscription;
 
@@ -23,10 +25,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     required AuthBloc authBloc,
     required PostsRepository postRepository,
     required LikedPostCubit likedPostCubit,
+    required ChurchRepository churchRepository,
   })  : _userrRepository = userrRepository,
         _authBloc = authBloc,
         _postsRepository = postRepository,
         _likedPostCubit = likedPostCubit,
+        _churchRepository = churchRepository,
         super(ProfileState.initial());
 
   @override
@@ -47,8 +51,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     //}
     else if (event is ProfilePaginatePosts) {
       yield* _mapProfilePaginatePost(event);
-    }
-     else if (event is ProfileUpdatePost) {
+    } else if (event is ProfileUpdatePost) {
       yield* _mapProfileUpdatePostsToState(event);
     } else if (event is ProfileFollowUserr) {
       yield* _mapProfileFollowUserToState();
@@ -77,22 +80,29 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   //TODO FOR OPTIMIZE YOU CAN MAKE A SET. IF LASTPOSTID HAS BEEN SEEN THEN DO NOT EVEN ENTER FUNCTIONS THAT WILL DO READS.
   Stream<ProfileState> _mapProfilePaginatePost (ProfilePaginatePosts event) async* {
+    log('PAGINATEEEEEEEEEEEE PFP BLOCCCCCCCCCCCC POSTSSSSSSSSSSSSSSS');
+    log('PAGINATEEEEEEEEEEEE PFP BLOCCCCCCCCCCCC POSTSSSSSSSSSSSSSSS');
     yield state.copyWith(status: ProfileStatus.paginating);
     try {
       Stream<List<Future<Post?>>> posts;
       final lastPostId = state.post.isNotEmpty ? state.post.last!.id : null;
       var lastPostDoc = await _postsRepository.getUserPostHelper(userId: event.userId, lastPostId: lastPostId);
+      if (lastPostDoc != null && !lastPostDoc.exists) return;
       if (lastPostDoc!=null && lastPostDoc.exists) {
       _postStreamSubscription?.cancel();
       _postStreamSubscription = _postsRepository
-        .getUserPosts(userId: event.userId, limit: 8, lastPostDoc: lastPostDoc).listen((posts) async { 
-          final allPost = await Future.wait(posts);
+        .getUserPosts(userId: event.userId, limit: 8, lastPostDoc: lastPostDoc).listen((posts) async {
+          List<Post?> allPost = [];
+          for (var p in posts) {
+            var post = await p;
+            if (post!.id == lastPostId) continue;
+            else 
+              allPost.add(post);
+          }
         add(ProfileUpdatePost(post: allPost));
-
          });
         print("got new posts");
       }
-      
       yield state.copyWith(status: ProfileStatus.loaded);
     } catch (e) {
       print("There was an error. location ProfileBloc paginatePosts. code: ${e.toString()}");
@@ -100,6 +110,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   }
 
   Stream<ProfileState> _mapProfileLoadUserToState(ProfileLoadUserr event) async* {
+    log("LLLLLLLLLLLLLLLLOOOOOOOOOOOOOOOOOOAAAAAAAAAAAAAAAAADDDDDDDDDDDDEEEEEEEEEEEEEEDDDDDDDDDDDDDD");
+    
     yield state.copyWith(status: ProfileStatus.loading);
     try {
       final userr = await _userrRepository.getUserrWithId(userrId: event.userId);
@@ -108,20 +120,35 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
       final isFollowing = await _userrRepository.isFollowing(userrId: _authBloc.state.user!.uid, otherUserId: event.userId);
 
+      final cms = await _churchRepository.getCommuinitysUserIn(userrId: event.userId, limit: 3);
+      Set<String> seen = state.seen;
+      var beenSeen = state.post.length > 0 ?  state.post.last : null;
+      // log("seen id's: $seen");
       // whenever a new post is posted it will update the home page post view
       _postStreamSubscription?.cancel();
       _postStreamSubscription = _postsRepository
          
         .getUserPosts(userId: event.userId, limit: 8, lastPostDoc: null ).listen((posts) async {
-        final allPost = await Future.wait(posts);
-        add(ProfileUpdatePost(post: allPost));
+          List<Post?> postList = [];
+        for (var i in posts) {
+          Post? p = await i;
+          if (p != null && !seen.contains(p.id) ) {
+            seen.add(p.id!);
+            postList.add(p);
+          }
+        }
+        if (postList.contains(beenSeen) && beenSeen != null) return;
+        add(ProfileUpdatePost(post: postList));
       });
 
       yield state.copyWith(
+          seen: seen,
           userr: userr,
           isCurrentUserr: isCurrentUser,
           isFollowing: isFollowing,
-          status: ProfileStatus.loaded);
+          cms: cms,
+          status: ProfileStatus.loaded
+      );
     } /*on PlatformException*/ catch (e) {
       yield state.copyWith(
           status: ProfileStatus.error, failure: Failure( code: 'the error code is $e', message: e.toString()//'hmm, unable to load this profile. Check your connection.'

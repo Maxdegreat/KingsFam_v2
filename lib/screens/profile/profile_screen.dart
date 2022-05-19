@@ -5,12 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/models/models.dart';
-
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/profile/widgets/commuinity_container.dart';
 import 'package:kingsfam/screens/screens.dart';
-
 import 'package:kingsfam/widgets/widgets.dart';
 
 import 'widgets/widgets.dart';
@@ -25,19 +23,26 @@ class ProfileScreen extends StatefulWidget {
 
   static const String routeName = '/profileScreen';
 
+   final String? ownerId;
+  const ProfileScreen({
+    required this.ownerId,
+  });
+
   static Route route({required ProfileScreenArgs args}) {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
         builder: (context) => BlocProvider<ProfileBloc>(
               create: (_) => ProfileBloc(
+                  churchRepository: context.read<ChurchRepository>(),
                   likedPostCubit: context.read<LikedPostCubit>(),
                   userrRepository: context.read<UserrRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   postRepository: context.read<PostsRepository>())
                 ..add(ProfileLoadUserr(userId: args.userId)),
-              child: ProfileScreen(),
+              child: ProfileScreen(ownerId: args.userId,),
             ));
   }
+
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -81,7 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen>  {
           showDialog(
               context: context,
               builder: (context) => ErrorDialog(
-                    content: state.failure.message,
+                    content: 'Profile Screen: ${state.failure.message}',
                   ));
         }
       },
@@ -164,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen>  {
 
 
                       // add a linked list of commuinitys that I am in ... lol im done with this alredy but linked list dont make me laugh
-                      CommuinityContainer(userId: state.userr.id, username: state.userr.username,),
+                      CommuinityContainer( cms: state.cms, ownerId: widget.ownerId!),
                   ]
                 ),
               ),

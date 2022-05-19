@@ -53,7 +53,6 @@ class PostsRepository extends BasePostsRepository {
   
   @override
   Stream<List<Future<Post?>>> getUserPosts({required String userId, required int limit, required DocumentSnapshot<Map<String, dynamic>>? lastPostDoc}) {
-    
     final authorRef = _firebaseFirestore.collection(Paths.users).doc(userId);
     if (lastPostDoc == null) {
       return _firebaseFirestore
@@ -64,14 +63,10 @@ class PostsRepository extends BasePostsRepository {
         //convert or map each query snap into a post
         .map((snap) => snap.docs.map((doc) => Post.fromDoc(doc)).toList());
     } else {
-      print("We are in the else and ********************************");
-      
-      var updatedStream =  _firebaseFirestore.collection(Paths.posts)
+        return  _firebaseFirestore.collection(Paths.posts)
         .where('author', isEqualTo: authorRef).limit(limit)
         .orderBy('date', descending: true).startAfterDocument(lastPostDoc).snapshots()
         .map((snap) => snap.docs.map((doc) => Post.fromDoc(doc)).toList());
-
-      return updatedStream;
     }
     
   }

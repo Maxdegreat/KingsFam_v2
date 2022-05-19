@@ -78,8 +78,8 @@ class _ChatRoomState extends State<ChatRoom> {
   List<MessageBubble> _buidlMessageBubbles(AsyncSnapshot<QuerySnapshot> message) {
     List<MessageBubble> messagebubbles = [];
     
-    message.data?.docs.forEach((doc) {
-      Message message = Message.fromDoc(doc);
+    message.data?.docs.forEach((doc) async {
+      Message message = await Message.fromDoc(doc);
       MessageBubble messagebubble =
           MessageBubble(chat: widget.chat, message: message);
       messagebubbles.add(messagebubble);

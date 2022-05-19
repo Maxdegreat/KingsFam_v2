@@ -68,11 +68,13 @@ Map<String, dynamic> toDoc () {
         if (callRef != null) {
           //if both exist return here
           final commuinityDoc = await commuinityRef.get();
+          var ch = await Church.fromDoc(commuinityDoc);
           final callDoc = await callRef.get();
-          return NotificationKF(fromUser: Userr.fromDoc(userDoc), fromCommuinity: Church.fromDoc(commuinityDoc), fromCall: CallModel.fromDoc(callDoc), fromDirectMessage: null, notificationType: notificationTypeAsString!, date: data['date'], );
+          return NotificationKF(fromUser: Userr.fromDoc(userDoc), fromCommuinity: ch, fromCall: CallModel.fromDoc(callDoc), fromDirectMessage: null, notificationType: notificationTypeAsString!, date: data['date'], );
         }
         final commuinityDoc = await commuinityRef.get();
-        return NotificationKF(fromUser: Userr.fromDoc(userDoc), fromCommuinity: Church.fromDoc(commuinityDoc), fromCall: null, fromDirectMessage: null, notificationType: notificationTypeAsString!, date: data['date'], );
+        var ch = await Church.fromDoc(commuinityDoc);
+        return NotificationKF(fromUser: Userr.fromDoc(userDoc), fromCommuinity: ch, fromCall: null, fromDirectMessage: null, notificationType: notificationTypeAsString!, date: data['date'], );
       }
 
       //in this case all if statments failed so we just will return with the user and required prams

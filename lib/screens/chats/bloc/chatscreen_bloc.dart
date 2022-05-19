@@ -8,6 +8,7 @@ import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/chat/chat_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:kingsfam/screens/chats/chats_screen.dart';
 
 part 'chatscreen_event.dart';
 part 'chatscreen_state.dart';
@@ -17,23 +18,28 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   final AuthBloc _authBloc;
   final PostsRepository _postsRepository;
   final LikedPostCubit _likedPostCubit;
+  final ChurchRepository _churchRepository;
 
   StreamSubscription<List<Future<Chat?>>>? _chatsStreamSubscription;
+  StreamSubscription<List<Future<Church?>>>? _churchStreamSubscription;
 
   ChatscreenBloc({
     required ChatRepository chatRepository,
     required AuthBloc authBloc,
     required LikedPostCubit likedPostCubit,
     required PostsRepository postsRepository,
+    required ChurchRepository churchRepository,
   })  : _chatRepository = chatRepository,
         _authBloc = authBloc,
         _likedPostCubit = likedPostCubit,
         _postsRepository = postsRepository,
+        _churchRepository = churchRepository,
         super(ChatscreenState.initial());
 
   @override
   Future<void> close() {
     _chatsStreamSubscription!.cancel();
+    _churchStreamSubscription!.cancel();
     return super.close();
   }
 
@@ -47,10 +53,24 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
       yield* _mapFetchPostToState();
     } else if (event is ChatScreenPaginatePosts) {
       yield* _mapPaginatePost();
+    } else if (event is LoadCms) {
+      yield* _mapLoadCmsToState();
     }
   }
 
-
+  Stream<ChatscreenState> _mapLoadCmsToState() async* {
+    try {
+      _churchStreamSubscription?.cancel();
+      _churchStreamSubscription = _churchRepository.
+      getCmsStream(currId: _authBloc.state.user!.uid)
+      .listen((churchs) async { 
+        final allChs = await Future.wait(churchs);
+         emit(state.copyWith(chs: allChs));
+      });
+      yield state.copyWith(status: ChatStatus.sccuess);
+    } catch (e) {
+    }
+  }
 
   Stream<ChatscreenState> _mapLoadChatsToState(event) async* { //jesus
     try {
@@ -64,7 +84,8 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
         final allChats = await Future.wait(chat);
         state.copyWith(chat: allChats);
       });
-      state.copyWith(status: ChatStatus.sccuess);
+      add(LoadCms());
+      // state.copyWith(status: ChatStatus.sccuess);
     } catch (e) {
       state.copyWith(
           failure: Failure(

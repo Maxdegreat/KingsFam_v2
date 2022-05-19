@@ -26,9 +26,9 @@ class ChatsScreen extends StatefulWidget {
   _ChatsScreenState createState() => _ChatsScreenState();
 }
 
-class _ChatsScreenState extends State<ChatsScreen> with SingleTickerProviderStateMixin  {
-
-   ScrollController scrollController = ScrollController();
+class _ChatsScreenState extends State<ChatsScreen>
+    with SingleTickerProviderStateMixin {
+  ScrollController scrollController = ScrollController();
 
   //bool get wantKeepAlive => true;
 
@@ -86,14 +86,17 @@ class _ChatsScreenState extends State<ChatsScreen> with SingleTickerProviderStat
   }
 
   void listenToScrolling() {
-     if (scrollController.position.atEdge) {
-       if (scrollController.position.pixels != 0.0 && scrollController.position.maxScrollExtent == scrollController.position.pixels) {
+    if (scrollController.position.atEdge) {
+      if (scrollController.position.pixels != 0.0 &&
+          scrollController.position.maxScrollExtent ==
+              scrollController.position.pixels) {
         //  const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
         //  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-         context.read<ChatscreenBloc>()..add(ChatScreenPaginatePosts());
-       }
-     }
+        context.read<ChatscreenBloc>()..add(ChatScreenPaginatePosts());
+      }
+    }
   }
+
   bool feedBeenLoaded = false;
   void tabControllerListener() {
     if (_tabController.index == 0 && !feedBeenLoaded) {
@@ -102,118 +105,123 @@ class _ChatsScreenState extends State<ChatsScreen> with SingleTickerProviderStat
     }
   }
 
-
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
+
   late TabController _tabController;
   @override
   Widget build(BuildContext context) {
     HexColor hexcolor = HexColor();
     bool showKfCrown = false;
     final userId = context.read<AuthBloc>().state.user!.uid;
-    return Scaffold(  
-      appBar: AppBar(
-        title: Row(children: [Text('K I N G S F A M', style: TextStyle(color: Color(hexcolor.hexcolorCode('#FFC050'))),), SizedBox(width:  5), KFCrownV2()  ],),
-        actions: [
-          IconButton(
-              onPressed: () =>
-                  Navigator.of(context).pushNamed(CreatePostScreen.routeName),
-              icon: Icon(Icons.camera)),
-          GestureDetector(
-            onTap: () => Navigator.of(context).pushNamed(CreateComuinity.routeName),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: Container(height: 25, width: 25, child: RiveAnimation.asset('assets/icons/add_icon.riv'),),
-            )
+     return DefaultTabController(
+       length: 3,
+       child: Scaffold(
+        appBar: AppBar(
+          title: Row(
+            children: [
+              Text(
+                'K I N G S F A M',
+                style: TextStyle(color: Color(hexcolor.hexcolorCode('#FFC050'))),
+              ),
+              SizedBox(width: 5),
+              KFCrownV2()
+            ],
           ),
-        ],
-      ),
-      body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
-        listener: (context, state) {},
-        builder: (context, state) {
-          //final bloc = context.read<ChatscreenBloc>();
-          return DefaultTabController(
-            length: 3, 
-            child: CustomScrollView(
-            slivers: [ 
-               SliverAppBar(
-                floating: true,
-                toolbarHeight: 10,
-                expandedHeight: 10,
-                bottom: TabBar(
-                controller: _tabController,
-                tabs: [
-                  Tab(text: "Feed"),
-                  Tab(text: "Commuinities"),
-                  Tab(text: "Chats")
-                 ],
-                ),
-               ),   //ring_view(_ringStream,  context),
-        
-                SliverToBoxAdapter(
+          actions: [
+            IconButton(
+                onPressed: () =>
+                    Navigator.of(context).pushNamed(CreatePostScreen.routeName),
+                icon: Icon(Icons.camera)),
+            GestureDetector(
+                onTap: () =>
+                    Navigator.of(context).pushNamed(CreateComuinity.routeName),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   child: Container(
-                    height: MediaQuery.of(context).size.height,
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        _feedViewUi(state),
-                        ScreensForPageView().commuinity_view(userId, context),
-                        ScreensForPageView().chats_view(userId)
-                      ],
-                    ),
+                    height: 25,
+                    width: 25,
+                    child: RiveAnimation.asset('assets/icons/add_icon.riv'),
                   ),
-                ),
-              ],
-              
-            )
-          );
-        },
-        
-      ),
-    );
-  }
-   _feedViewUi(ChatscreenState state) {
-     
+                )),
+          ],
+        ),
+        body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
+          listener: (context, state) {
+            if (state.status == ChatStatus.error) {
+              ErrorDialog(content: 'chat_screen e-code: ${state.failure.code}');
+            }
+          },
+          builder: (context, state) {
+            return NestedScrollView(
+              headerSliverBuilder: (BuildContext context, bool isScrollableInnerBox) {
+                return <Widget>[
+                  SliverAppBar(
+                    floating: true,
+                    toolbarHeight: 10,
+                    expandedHeight: 10,
+                    bottom: TabBar(
+                      controller: _tabController,
+                      tabs: [
+                        Tab(text: "Feed"),
+                        Tab(text: "Commuinities"),
+                        Tab(text: "Chats")
+                      ],
+                    ))];
+              }, 
+            body: TabBarView(
+                        controller: _tabController,
+                        children: [
+                          _feedViewUi(state),
+                          ScreensForPageView().commuinity_view(userId, context),
+                          ScreensForPageView().chats_view(userId)
+                        ],
+                      ));
+  })));}
+
+  _feedViewUi(ChatscreenState state) {
     return listviewsinglePost(state);
   }
 
-  ListView listviewsinglePost(ChatscreenState state) {
-    return ListView.builder(
-      shrinkWrap: false,
-      controller: scrollController ,
-      itemCount: state.posts!.length,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == state.posts!.length) {
-          // TODO call paginate post 
-        }
-        final Post? post = state.posts![index];
-       final Post? posts = state.posts![index];
-        if (post != null) {
+  Widget listviewsinglePost(ChatscreenState state) {
+    return Expanded(
+      flex: 1,
+      child: ListView.builder(
+        shrinkWrap: false,
+        controller: scrollController,
+        itemCount: state.posts!.length,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == state.posts!.length) {
+            // TODO call paginate post
+          }
+          final Post? post = state.posts![index];
+          final Post? posts = state.posts![index];
+          if (post != null) {
             final LikedPostState = context.watch<LikedPostCubit>().state;
             final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
-            final recentlyLiked = LikedPostState.recentlyLikedPostIds.contains(post.id!);
-          return PostSingleView(
-            isLiked: isLiked,
-            post: post,
-            recentlyLiked: recentlyLiked,
-            onLike: () {
-              
-              if (isLiked) {
-               context.read<LikedPostCubit>().unLikePost(post: post);
-             } else {
-               context.read<LikedPostCubit>().likePost(post: post);
-             }
-            },
-          );
-            }
-        return SizedBox.shrink();
-      },
+            final recentlyLiked =
+                LikedPostState.recentlyLikedPostIds.contains(post.id!);
+            return PostSingleView(
+              isLiked: isLiked,
+              post: post,
+              recentlyLiked: recentlyLiked,
+              onLike: () {
+                if (isLiked) {
+                  context.read<LikedPostCubit>().unLikePost(post: post);
+                } else {
+                  context.read<LikedPostCubit>().likePost(post: post);
+                }
+              },
+            );
+          }
+          return SizedBox.shrink();
+        },
+      ),
     );
   }
-
 }
 
 class KFCrownV2 extends StatelessWidget {
@@ -223,59 +231,50 @@ class KFCrownV2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(height: 22, width: 22, color: Colors.black, child: RiveAnimation.asset('assets/crown/KFCrownV2.riv'),);
+    return Container(
+      height: 22,
+      width: 22,
+      color: Colors.black,
+      child: RiveAnimation.asset('assets/crown/KFCrownV2.riv'),
+    );
   }
 }
 
 class ScreensForPageView {
   // ignore: non_constant_identifier_names
-  StreamBuilder<QuerySnapshot<Map<String, dynamic>>> commuinity_view(String userId, BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection(Paths.church)
-          .where('memberIds', arrayContains: userId)
-          .snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot2) {
-        // look at navscreen.dart for the bottom sheet thing
-        if (!snapshot2.hasData)
-          return commuinitysList_chatsScreen(context);
-        else if (snapshot2.data!.docs.length <= 0)
-          return commuinitysList_chatsScreen(context);
-        else 
-          return commuintysListChatsScreen2(context, snapshot2);
-        
+  Widget commuinity_view(String userId, BuildContext) {
+    return
+    BlocConsumer<ChatscreenBloc, ChatscreenState>(
+      listener: (context, state) {
+        // TODO: implement listener
       },
-    );
-  }
-
-  Padding commuintysListChatsScreen2(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot2) {
-    return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
-              child: Container(
-                height: MediaQuery.of(context).size.height / 1.25,
-                width: double.infinity,
-                child: Column(
-                  children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height / 1.25,
+      builder: (context, state) {
+        return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
+            child: Container(
+              height: MediaQuery.of(context).size.height / 1.25,
+              width: double.infinity,
+              child: Column(
+                children: [
+                  Expanded(
+                      flex: 1,
                       child: ListView.builder(
-                        itemCount: snapshot2.data!.docs.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          Church commuinity =
-                              Church.fromDoc(snapshot2.data!.docs[index]);
+                        itemCount: state.chs.length,
+                        itemBuilder: (context, index) {
+                          Church? commuinity = state.chs[index];
                           return GestureDetector(
                             onLongPress: () => _leaveCommuinity(
-                                commuinity: commuinity, context: context),
+                                commuinity: commuinity!, context: context),
                             onTap: () => Navigator.of(context)
                                 .pushNamed(CommuinityScreen.routeName,
                                     arguments: CommuinityScreenArgs(
-                                      commuinity: commuinity,
+                                      commuinity: commuinity!,
                                     )),
                             child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 10.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10.0),
                                 child: FancyListTile(
-                                    location: commuinity.location,
+                                    location: commuinity!.location,
                                     username: commuinity.name,
                                     imageUrl: commuinity.imageUrl,
                                     onTap: () => Navigator.of(context)
@@ -288,31 +287,35 @@ class ScreensForPageView {
                                     width: 12.0)),
                           );
                         },
-                      ),
-                    ),
-                  ],
-                ),
+                      )),
+                ],
               ),
-              
-            );
+            ),
+          );
+      },
+    );
   }
 
-  Widget commuinitysList_chatsScreen(BuildContext context) {
+ 
+
+  Widget KFStarAmination(BuildContext context) {
     // instance of hexcolor class
     HexColor hexcolor = HexColor();
     return Column(
       children: [
-        Container(height: 400, width: 400, child:  RiveAnimation.asset('assets/crown/KFCrown.riv')) ,
+        Container(
+            height: 400,
+            width: 400,
+            child: RiveAnimation.asset('assets/crown/KFCrown.riv')),
         Center(
             child: Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(primary:  Color(hexcolor.hexcolorCode('#FFC050'))),
-                onPressed: () => helpDialog(context),
-                child: Text("Hey Fam, Need Help?"),
-              ),
-            )
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                primary: Color(hexcolor.hexcolorCode('#FFC050'))),
+            onPressed: () => helpDialog(context),
+            child: Text("Hey Fam, Need Help?"),
           ),
-
+        )),
       ],
     );
   }
@@ -338,8 +341,8 @@ class ScreensForPageView {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(height: 20),
-                    Container(
-                      height: MediaQuery.of(context).size.height / 1.30,
+                    Expanded(
+                      flex: 1,
                       child: GridView.builder(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           mainAxisSpacing: 20.0,
@@ -399,7 +402,8 @@ class ScreensForPageView {
     );
   }
 
-  Future<dynamic> _leaveCommuinity(  {required Church commuinity, required BuildContext context}) {
+  Future<dynamic> _leaveCommuinity(
+      {required Church commuinity, required BuildContext context}) {
     return showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -423,15 +427,14 @@ class ScreensForPageView {
               ],
             ));
   }
- 
-  //Widget _feed(context) => Container();
 
+  //Widget _feed(context) => Container();
 
   //Container(child: FeedScreenWidget());
 }
 
-class Constants{
+class Constants {
   Constants._();
-  static const double padding =20;
-  static const double avatarRadius =45;
+  static const double padding = 20;
+  static const double avatarRadius = 45;
 }

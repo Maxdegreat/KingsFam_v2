@@ -14,22 +14,61 @@ class   ChurchRepository extends BaseChurchRepository {
   final fb = FirebaseFirestore.instance.collection(Paths.church);
   final fire = FirebaseFirestore.instance;
 
+  Stream<List<Future<Message?>>> getMsgStream({required String cmId, required String kcId, required int limit}) {
+    return fb.doc(cmId).collection(Paths.kingsCord).doc(kcId).collection(Paths.messages).limit(limit).orderBy('date', descending: true)
+      .snapshots().map((snap) {
+         List<Future<Message?>> bucket = [];
+         snap.docs.forEach((doc) { 
+           Future<Message?> msg = Message.fromDoc(doc);
+           bucket.add(msg);
+        });
+        return bucket;
+      });
+  }
+  
+  Stream<List<Future<Church?>>> getCmsStream({required String currId}) {
+    final userRef = FirebaseFirestore.instance.collection(Paths.users).doc(currId);
+    return FirebaseFirestore.instance.collection(Paths.church).where('members',arrayContains: userRef)
+    .snapshots().map((snap) {
+      List<Future<Church?>> chs = [];
+      snap.docs.forEach((doc) async{ 
+        Future<Church> ch = Church.fromDoc(doc);
+        chs.add(ch);
+      });
+      return chs;
+    });
+  }
+  Future<List<Church>> getCommuinitysUserIn({required String userrId, required int limit  }) async {
+    try {
+    List<Church> bucket = [];
+    DocumentReference userRef = FirebaseFirestore.instance.collection(Paths.users).doc(userrId);
+    var querys = await fb.where('members', arrayContains: userRef).limit(limit).get();
+    for (var snap in querys.docs) {
+      var ch = await Church.fromDoc(snap);
+      bucket.add(ch);
+      
+    }
+    
+    return bucket;
+    } catch (err) {
+      log(err.toString());
+    }
+    return [];
+  }
+
   delCord({required KingsCord cord, required Church cmmuinity}) {
     fb.doc(cmmuinity.id).collection(Paths.kingsCord).doc(cord.id).delete();
   }
 
   @override
-  Future<void> newChurch({required Church church, required ChurchMembers churchMemberIds,  required Userr recentSender }) async {
+  Future<void> newChurch({required Church church, required Userr recentSender}) async {
     fb.add(church.toDoc()).then((value) async {
       final doc = await value.get(); 
-    fb.doc(doc.id).collection(Paths.churchMemIds).doc(doc.id).set(churchMemberIds.toDoc());
       final kingsCord = KingsCord(
         tag: doc.id,
-        cordName: "Welcome Kings Family!",
-        // memberInfo: church.memberInfo,
+        cordName: "Welcome To ${church.name}!",
         recentMessage: "whats good Gods People!",
         recentSender: recentSender.username,
-        memberIds: church.memberIds
       );
       //send off the repo
     fb.doc(doc.id).collection(Paths.kingsCord).add(kingsCord.toDoc());
@@ -68,7 +107,7 @@ class   ChurchRepository extends BaseChurchRepository {
   }
 
   Future<KingsCord?> newKingsCord2({required Church ch, required String cordName}) async{
-    KingsCord kc = KingsCord(tag: ch.id!, recentMessage: "ayeee Yoo", recentSender: '', memberIds: ch.memberIds, cordName: cordName);
+    KingsCord kc = KingsCord(tag: ch.id!, recentMessage: "Welcome To $cordName!", recentSender: '', cordName: cordName);
     var kcPath = await FirebaseFirestore.instance
         .collection(Paths.church)
         .doc(ch.id)
@@ -94,7 +133,13 @@ class   ChurchRepository extends BaseChurchRepository {
         .where('searchPram', arrayContains: query)
         .get();
 
-    return churchSnap.docs.map((snap) => Church.fromDoc(snap)).toList();
+    List<Church> bucket = [];
+    for (var x in churchSnap.docs) {
+      var ch = await Church.fromDoc(x);
+      bucket.add(ch);
+    }
+    return bucket;
+    // return churchSnap.docs.map((snap) async =>  Church.fromDoc(snap)).toList();
   }
 
   @override
@@ -103,7 +148,14 @@ class   ChurchRepository extends BaseChurchRepository {
         .collection(Paths.church)
         .where('location', isEqualTo: location)
         .get();
-    return churches.docs.map((doc) => Church.fromDoc(doc)).toList();
+
+    List<Church> bucket = [];
+    for (var x in churches.docs) {
+      var ch = await Church.fromDoc(x);
+      bucket.add(ch);
+    }
+    return bucket;
+    // return churches.docs.map((doc) => Church.fromDoc(doc)).toList();
     //return userSnap.docs.map((doc) => Userr.fromDoc(doc)).toList();
   }
 
@@ -113,7 +165,8 @@ class   ChurchRepository extends BaseChurchRepository {
         .collection(Paths.church)
         .doc(commuinity.id)
         .get();
-    return churchSnap.exists ? Church.fromDoc(churchSnap) : Church.empty;
+    var ch = await Church.fromDoc(churchSnap);
+    return churchSnap.exists ? ch : Church.empty;
   }
 
   Future<Church> grabChurchWithIdStr({required String commuinity}) async {
@@ -121,7 +174,8 @@ class   ChurchRepository extends BaseChurchRepository {
         .collection(Paths.church)
         .doc(commuinity)
         .get();
-    return churchSnap.exists ? Church.fromDoc(churchSnap) : Church.empty;
+    var ch = await Church.fromDoc(churchSnap);
+    return churchSnap.exists ? ch : Church.empty;
   }
 
   @override
@@ -130,43 +184,37 @@ class   ChurchRepository extends BaseChurchRepository {
         .collection(Paths.church)
         .where('hashTags', arrayContains: special)
         .get();
-    return churchSnap.docs.map((doc) => Church.fromDoc(doc)).toList();
+    List<Church> bucket = [];
+    for (var doc in churchSnap.docs) {
+      var ch = await Church.fromDoc(doc);
+      bucket.add(ch);
+    }
+    return bucket;
+    // return churchSnap.docs.map((doc) => Church.fromDoc(doc)).toList();
   }
 
   Future<List<Church>> grabChurchAllOver({required String location}) async  {
     final churchSnap = await FirebaseFirestore.instance.collection(Paths.church).where('location', isNotEqualTo: location).get();
-    return churchSnap.docs.map((doc) => Church.fromDoc(doc)).toList();
+     List<Church> bucket = [];
+    for (var doc in churchSnap.docs) {
+      var ch = await Church.fromDoc(doc);
+      bucket.add(ch);
+    }
+    return bucket;
+    // return churchSnap.docs.map((doc) => Church.fromDoc(doc)).toList();
   }
 
   Future <void> updateCommuinity({required Church commuinity}) async => FirebaseFirestore.instance.collection(Paths.church).doc(commuinity.id).update(commuinity.toDoc());
 
-  Future<void> leaveCommuinity({required Church commuinity, required String currId}) async {
+  Future<void> leaveCommuinity({required Church commuinity, required currId}) async {
+      var cmIds = commuinity.members.map((usr) => usr.id).toList();
+      if (!cmIds.contains(currId)) return;
+
+
       final doc = fb.doc(commuinity.id); //FirebaseFirestore.instance.collection(Paths.church).doc(...)
-      final joinMembersDoc = doc.collection(Paths.churchMemIds).doc(commuinity.id);
-
-      final kingsCordDocs = await doc.collection(Paths.kingsCord).where('tag', isEqualTo: commuinity.id).get();
-      //List<String> idContainer = [];
-      for (var kc in kingsCordDocs.docs) {
-        //idContainer.add(kc.id);
-        doc.collection(Paths.kingsCord).doc(kc.id).update({'memberIds' : FieldValue.arrayRemove([currId]) });
-        doc.collection(Paths.kingsCord).doc(kc.id).update({'memberIds' : FieldValue.arrayUnion(['del_$currId']) });
-      }
-      
-
-      doc.update({'memberIds': FieldValue.arrayRemove([currId])}); // updates main commuinity memids
-      doc.update({'memberIds': FieldValue.arrayUnion(['del_$currId'])});
-      
-      joinMembersDoc.update({'memberIds' : FieldValue.arrayRemove([currId])}); // updates main -> churchmemids memids
-      joinMembersDoc.update({'memberIds' : FieldValue.arrayUnion(['del_$currId'])});
-
       // to update the size
-      doc.update({'size' : commuinity.size! - 1});
-
-      
-      //commuinity.memberInfo.remove(currId);
-      
-      //doc.update({'memberInfo': commuinity.memberInfo});
-      
+      doc.update({'size' : commuinity.members.length - 1});
+      doc.update({'members': FieldValue.arrayRemove([FirebaseFirestore.instance.collection(Paths.users).doc(currId)])});
     }
     
   void inviteUserToCommuinity({required Userr fromUser, required String toUserId, required Church commuinity}) {
@@ -186,72 +234,35 @@ class   ChurchRepository extends BaseChurchRepository {
   }
 
   void onJoinCommuinity({required Userr user, required Church commuinity}) async  {
-    final doc = fb.doc(commuinity.id);
-    // update the commuinity size
-    int size = 0;
-    if (commuinity.size != null)
-      size = commuinity.size!;
-    else 
-      size = 0;
-    size += 1;
+    
+    var cmIds = commuinity.members.map((usr) => usr.id).toList();
+    if (cmIds.contains(user.id)) return;
 
-    doc.update({'size': size});
-    // create the docs we will be working with
-    final joinMembersDoc = doc.collection(Paths.churchMemIds).doc(commuinity.id);
-    final kingsCordDocs = await doc.collection(Paths.kingsCord).where('tag', isEqualTo: commuinity.id).get();
-    //List<String> idContainer = [];
-    for (var kc in kingsCordDocs.docs) {
-      //idContainer.add(kc.id);
-      doc.collection(Paths.kingsCord).doc(kc.id).update({'memberIds' : FieldValue.arrayUnion([user.id]) });
-      doc.collection(Paths.kingsCord).doc(kc.id).update({'memberIds' : FieldValue.arrayRemove(['del_${user.id}']) });
-    }
-    //update the docs
-    doc.update({'memberIds': FieldValue.arrayUnion([user.id])});
-    doc.update({'memberIds': FieldValue.arrayRemove(['del_${user.id}'])});
-    joinMembersDoc.update({'memberIds' : FieldValue.arrayUnion([user.id])});
-    joinMembersDoc.update({'memberInfo' : FieldValue.arrayRemove(['del_${user.id}'])});
-    //create a user map for the new memeber info
-    Map<String, dynamic> userMap = {
-      'isAdmin' : false,
-      'username': user.username,
-      'pfpImageUrl': user.profileImageUrl,
-      'email': user.email,
-      'token': user.token,
-    };
-    print("updating commuinity data");
-    // bc when a user leaves i keep his memberinfo to prevent an error so when joining again
-    // no use in writing it twice. it will update based on another function found in the commuinity 
-    // screen or kingscord screen on join. the update in case anything is diff.
-    if (!commuinity.memberInfo.containsKey(user.id)) {
-      commuinity.memberInfo[user.id] = userMap; // this is an updated commuinity member map
-      doc.update({'memberInfo': commuinity.memberInfo}); // this is the application of the updated map
-    }
+    final doc = fb.doc(commuinity.id);
     
-    print("updating commuinity kingscord");
-   
-    
+    // update the commuinity size
+    doc.update({'size': commuinity.members.length + 1});
+    doc.update({'members': FieldValue.arrayUnion([FirebaseFirestore.instance.collection(Paths.users).doc(user.id)])});
+    return;
   }
   
   Future<bool> isCommuinityMember({required Church commuinity, required String authorId}) async {
-    final docRef = 
-      await
+    final DocumentReference userRef = FirebaseFirestore.instance.collection(Paths.users).doc(authorId);
+    final docRef = await
       FirebaseFirestore
      .instance
       .collection(Paths.church)
       .doc(commuinity.id)
       .collection(Paths.churchMemIds)
-      .where('memberIds', arrayContains: authorId)
+      .where('members', arrayContains: userRef)
       .get();
 
     final List<DocumentSnapshot> docs = docRef.docs;
-    print("The docs length is ${docs.length}" );
+    print("The docs length is of commuinities member of: ${docs.length}" );
     return docs.length == 1;
       
   }
 
-  Future<void> onLeaveCommuinity({required Church commuinity, required Userr user}) async {
-    // remove from commuinity
-  }
   // Future<List<Userr>> searchForUsersInCommuinity(
   //     {required String query, required String doc}) async {
   //   final churchSnap = await FirebaseFirestore.instance

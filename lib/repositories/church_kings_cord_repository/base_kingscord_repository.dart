@@ -9,6 +9,6 @@ abstract class BaseKingsCordRepository {
 
   // method to send a message
   Future<void> sendMsgTxt(
-      {required String churchId, required String kingsCordId, required Message message});
+      {required String churchId, required String kingsCordId, required Message message, required String senderId});
 
 }

@@ -278,7 +278,7 @@ class _SearchScreenState extends State<SearchScreen> {
               Text("At ${church.location}",
                   style: TextStyle(fontSize: 20), overflow: TextOverflow.fade),
               Text(
-                "${church.memberIds.length} members",
+                "${church.members.length} members",
                 style: TextStyle(fontSize: 20),
                 overflow: TextOverflow.fade,
               ),

@@ -1,4 +1,4 @@
-import 'dart:developer';
+
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
@@ -42,15 +42,15 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
   
   final _fb = FirebaseFirestore.instance;
 
-  void getKingsCords({required String commuinityId}) async {
-    var lst = await _churchRepository.getCommuinityCords(churchId: commuinityId);
-    emit(state.copyWith(kingsCords: lst));
-  }
+  // void getKingsCords({required String commuinityId}) async {
+  //   var lst = await _churchRepository.getCommuinityCords(churchId: commuinityId);
+  //   emit(state.copyWith(kingsCords: lst));
+  // }
 
-  void getCalls({required String commuinityId}) async {
-    var lst = await _callRepository.getCommuinityCalls(commuinityId: commuinityId);
-    emit(state.copyWith(calls: lst));
-  }
+  // void getCalls({required String commuinityId}) async {
+  //   var lst = await _callRepository.getCommuinityCalls(commuinityId: commuinityId);
+  //   emit(state.copyWith(calls: lst));
+  // }
 
   Future<void> makeKingsCord({required Church commuinity, required String cordName}) async {
     if (state.kingsCords.length < 7) {
@@ -120,6 +120,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
   }
 
   //void function to add the users to the members list
+  //TODO
   void onMemberIdsAdded(List<String> userrIds) {
     emit(state.copyWith(memberIds: userrIds, status: BuildChurchStatus.initial));
   }
@@ -130,10 +131,10 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
 
   //void functoion to invite users A.K.A populate list
   // future bool to see if a user is in commuinity or not
-  void isCommuinityMember (Church commuinity) async {
+   isCommuinityMember (Church commuinity) async {
      final userId = _authBloc.state.user!.uid;
      bool isMember = await  _churchRepository.isCommuinityMember(commuinity: commuinity, authorId: userId);
-     print("Member status :$isMember");
+     print("Member status :$isMember for checking if commuinity member");
      emit(state.copyWith( isMember: isMember ));
      print("state member status: ${state.isMember}");
    }
@@ -157,19 +158,13 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
 
       //============================================================
       //populate the member info
-
+      List<Userr> mems = [];
       for (int i = 0; i < state.memberIds.length; i++) {
         final user = await _userrRepository.getUserrWithId(userrId: state.memberIds[i]);
-            Map<String, dynamic> userMap = {
-              'isAdmin' : state.adminIds.contains(user.id),
-              'username': user.username,
-              'pfpImageUrl': user.profileImageUrl,
-              'colorPref' : user.colorPref,
-              'email': user.email,
-              'token': user.token,
-            };
-            state.memberInfo[state.memberIds[i]] = userMap;
+        mems.add(user); // may not work so maybe make a list then emit list o
       }
+
+      emit(state.copyWith(members: mems));
       //-----------------------------------
       //----------------------------------------------------------
       
@@ -181,8 +176,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
           name: state.name,
           location: state.location,
           imageUrl: imageUrl,
-          memberIds: state.memberIds,
-          memberInfo: state.memberInfo,
+          members: state.members,
           events: [],
           about: state.about,
           size: state.memberIds.length,
@@ -198,7 +192,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
 
       
       //call my church repo and use the upload method to launch commuinity to firestore
-      await _churchRepository.newChurch(church: commuinity, churchMemberIds: churchMemberIds, recentSender: recentSender);
+      await _churchRepository.newChurch(church: commuinity, recentSender: recentSender);
       
       //-------------------------------------------------------
       print("The church is made my boi");
@@ -226,26 +220,26 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
 */  
 
   // ignore: non_constant_identifier_names
-  Future<void> make_main_room(Church commuinity, String cordName) async {
-    //=============================================================
-    //geters
-    print("we are in the make main room");
-    final recentSenderGetter = await _userrRepository.getUserrWithId(
-        userrId: _authBloc.state.user!.uid);
+  // Future<void> make_main_room(Church commuinity, String cordName) async {
+  //   //=============================================================
+  //   //geters
+  //   print("we are in the make main room");
+  //   final recentSenderGetter = await _userrRepository.getUserrWithId(
+  //       userrId: _authBloc.state.user!.uid);
 
-    final kingsCord = KingsCord(
-        tag: commuinity.id!,
-        cordName: cordName,
-        // memberInfo: commuinity.memberInfo,
-        recentMessage: "whats good Gods People!",
-        recentSender: recentSenderGetter.username,
-        memberIds: commuinity.memberIds);
-        //send off the repo
-        await _churchRepository.newKingsCord(
-        church: commuinity, kingsCord: kingsCord);
+  //   final kingsCord = KingsCord(
+  //       tag: commuinity.id!,
+  //       cordName: cordName,
+  //       // memberInfo: commuinity.memberInfo,
+  //       recentMessage: "whats good Gods People!",
+  //       recentSender: recentSenderGetter.username,
+  //     );
+  //       //send off the repo
+  //       await _churchRepository.newKingsCord(
+  //       church: commuinity, kingsCord: kingsCord);
 
-    //--------------------------------------------------------------
-  }
+  //   //--------------------------------------------------------------
+  // }
 
   //this is for the commuinity screen, this is used if we need to find all users in the commuinity
   // we will paginatee... eventually, but basically we will grab all users via their id and return back 
@@ -266,21 +260,25 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       return bucket;
   }
 
-  bool isAdmin({required Church commuinity}) => commuinity.memberInfo[_authBloc.state.user!.uid]['isAdmin'];
+  bool isAdmin({required Church commuinity}) {
+    var ids = commuinity.members.map((e) => e.id).toList();
+    return ids.contains(_authBloc.state.user!.uid);
+  }
 
   void makeAdmin({required Userr user, required Church commuinity}) async  {
-    Map<String, dynamic> usermap = {
-      'isAdmin' : true,
-      'username': user.username,
-      'pfpImageUrl': user.profileImageUrl,
-      'colorPref' : user.colorPref,
-      'email': user.email,
-      'token': user.token,
-    };
-    //memberInfo[userrId] = userMap;  //prob best to actually check that the id exist in the map...
-    commuinity.memberInfo[user.id] = usermap;
-    final Church updatedCommuinity = commuinity.copyWith(memberInfo: state.memberInfo[_authBloc.state.user!.uid]);
-    _churchRepository.updateCommuinity(commuinity: updatedCommuinity);
+    //TODO just make admin set and add the user id to the admin set.
+    // Map<String, dynamic> usermap = {
+    //   'isAdmin' : true,
+    //   'username': user.username,
+    //   'pfpImageUrl': user.profileImageUrl,
+    //   'colorPref' : user.colorPref,
+    //   'email': user.email,
+    //   'token': user.token,
+    // };
+    // //memberInfo[userrId] = userMap;  //prob best to actually check that the id exist in the map...
+    // commuinity.memberInfo[user.id] = usermap;
+    // final Church updatedCommuinity = commuinity.copyWith(memberInfo: state.memberInfo[_authBloc.state.user!.uid]);
+    // _churchRepository.updateCommuinity(commuinity: updatedCommuinity);
   }
 
  

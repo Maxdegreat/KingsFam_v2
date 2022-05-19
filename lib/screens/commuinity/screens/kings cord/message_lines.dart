@@ -7,10 +7,9 @@ import 'package:kingsfam/extensions/extensions.dart';
 
 class MessageLines extends StatelessWidget {
   //class data
-  final Map<String, dynamic> kingsCord;
   final Message message;
 
-  const MessageLines({ required this.kingsCord, required this.message});
+  const MessageLines({ required this.message});
 
   // if i send the message.
   _buildText() {
@@ -52,7 +51,7 @@ class MessageLines extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                //FancyListTile(username: '${kingsCord.memberInfo[message.senderId]['username']}', imageUrl: '${kingsCord.memberInfo[message.senderId]['profileImageUrl']}', onTap: null, isBtn: false, BR: 18, height: 18, width: 18),
+                //FancyListTile(username: '${kingsCordMemInfo.memberInfo[message.senderId]['username']}', imageUrl: '${kingsCordMemInfo.memberInfo[message.senderId]['profileImageUrl']}', onTap: null, isBtn: false, BR: 18, height: 18, width: 18),
                 kingsCordAvtar(context),
                 SizedBox(
                   width: 5.0,
@@ -60,11 +59,11 @@ class MessageLines extends StatelessWidget {
                Column(
                  crossAxisAlignment: CrossAxisAlignment.start,
                  children: [
-                    Text('${kingsCord[message.senderId]['username']}', 
+                    Text(message.sender!.username, 
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: Colors.red//Color(hexcolor.hexcolorCode('${kingsCord[message.senderId]['colorPref']}'))
+                    color: message.sender!.colorPref == null || message.sender!.colorPref == "" ? Colors.red : Color(hexcolor.hexcolorCode(message.sender!.colorPref))
                   ),
                 ), 
                  Text('${message.date.timeAgo()}', 
@@ -89,6 +88,7 @@ class MessageLines extends StatelessWidget {
         ));
   }
   Widget kingsCordAvtar(BuildContext context) {
+    
     HexColor hexcolor = HexColor();
     Size size = MediaQuery.of(context).size;
     return Stack(
@@ -100,20 +100,20 @@ class MessageLines extends StatelessWidget {
             height: size.height / 18.5,
             width: size.width / 8,
             decoration: BoxDecoration(
-              color: Colors.pink,//Color(hexcolor.hexcolorCode('${kingsCord[message.senderId]['colorPref']}')),
+              color: message.sender!.colorPref == null || message.sender!.colorPref == "" ? Colors.red : Color(hexcolor.hexcolorCode(message.sender!.colorPref)),
               borderRadius: BorderRadius.circular(25)
             ),
           ),
         ),
         Padding(
           padding: EdgeInsets.all(8.0),
-          child: '${kingsCord[message.senderId]['pfpImageUrl']}' != "null" ? kingsCordProfileImg() : kingsCordProfileIcon(),
+          child: message.sender!.profileImageUrl != "null" ? kingsCordProfileImg() : kingsCordProfileIcon(),
         )
       ],
     );
 
   }
-  Widget? kingsCordProfileImg() => CircleAvatar(backgroundColor: Colors.grey[400], backgroundImage:  CachedNetworkImageProvider('${kingsCord[message.senderId]['pfpImageUrl']}') );
+  Widget? kingsCordProfileImg() => CircleAvatar(backgroundColor: Colors.grey[400], backgroundImage:  CachedNetworkImageProvider(message.sender!.profileImageUrl) );
   Widget? kingsCordProfileIcon() => Container(child: Icon(Icons.account_circle));
   
 }

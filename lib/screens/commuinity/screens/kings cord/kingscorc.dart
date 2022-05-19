@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,6 +24,8 @@ class KingsCordArgs {
 }
 
 class KingsCordScreen extends StatefulWidget {
+
+
   //class data
   final Church commuinity;
   final KingsCord kingsCord;
@@ -40,7 +44,8 @@ class KingsCordScreen extends StatefulWidget {
                   storageRepository: context.read<StorageRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   kingsCordRepository: context.read<
-                      KingsCordRepository>() // may need to report to main reposityory collection
+                      KingsCordRepository>(), 
+                  churchRepository: context.read<ChurchRepository>() // may need to report to main reposityory collection
                   ),
               child: KingsCordScreen(
                 commuinity: args.commuinity,
@@ -53,43 +58,32 @@ class KingsCordScreen extends StatefulWidget {
   _KingsCordScreenState createState() => _KingsCordScreenState();
 }
 
+  
 class _KingsCordScreenState extends State<KingsCordScreen> {
   final TextEditingController _messageController = TextEditingController();
   double textHeight = 35;
-  _buildMessageStream({required Church commuinity, required KingsCord kingsCord}) {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection(Paths.church)
-          .doc(commuinity.id)
-          .collection(Paths.kingsCord)
-          .doc(kingsCord.id)
-          .collection(Paths.messages)
-          .orderBy('date', descending: true)
-          .limit(30)
-          .snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return Expanded(
-            child: ListView(
+  _buildMessageStream({required Church commuinity, required KingsCord kingsCord, required List<Message?> msgs }) {
+
+    return Expanded(
+          flex: 1,
+          child: ListView(
           padding: EdgeInsets.symmetric(horizontal: 7.0),
           physics: AlwaysScrollableScrollPhysics(),
           reverse: true,
-          children: _buildMessageLines(snapshot),
+          children: _buildMessageLines(msgs),
         ));
-      },
-    );
   }
 
 //==========================================================================S 
-  List<MessageLines> _buildMessageLines(AsyncSnapshot<QuerySnapshot> message) {
+  List<MessageLines> _buildMessageLines(List<Message?> message) {
     List<MessageLines> messageLines = [];
 
-    message.data?.docs.forEach((doc) {
-      Message message = Message.fromDoc(doc);
-      MessageLines messageLine = MessageLines(
-        kingsCord: widget.commuinity.memberInfo,
-        message: message,
-      );
+    message.forEach((sms) {
+      if (sms != null) {
+        MessageLines messageLine = MessageLines(
+        message: sms,);
       messageLines.add(messageLine);
+      }
     });
 
     return messageLines;
@@ -177,18 +171,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         ));
   }
 
-  Future<void> isUserUpToDate(BuildContext context, String userId, Map<String, dynamic> fieldMap ) async {
-    // if flag is true then we need to update this user in the commuinity else we do nothing
-    bool flag = await context.read<UserrRepository>().updateUserInField(userId, fieldMap);
-    print("The User Flag is flag: $flag ================");
-
-    if (flag) {
-      // now update the user
-      context.read<KingscordCubit>().updateUserMap(userId: userId, commuinity: widget.commuinity, kingsCord: widget.kingsCord);
-    }
-  }
 
   Widget _permissionDenied({required String messasge}) {
+
     return Padding(
       padding: const EdgeInsets.all(7.0),
       child: Container(
@@ -212,15 +197,23 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   @override
   Widget build(BuildContext context) {
 
-
-
+    Map<String, dynamic> memInfo = {};
+    for (Userr user in widget.commuinity.members) {
+      memInfo[user.id] = {
+        'username' : user.username,
+        'userId' : user.id,
+        'colorPref' : user.colorPref,
+        'pfpImageUrl' : user.profileImageUrl,
+      };
+    }
 
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.commuinity.name,
+          '${widget.kingsCord.cordName} ~ ${widget.commuinity.name}',
           style: TextStyle(letterSpacing: 1.0),
+          overflow: TextOverflow.fade,
         ),
       ),
       // the body is a collumn containeing message widgets... with a bottom sheet for the txt controller
@@ -229,13 +222,18 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           // TODO: implement listener
         },
         builder: (context, state) {
+          context.read<KingscordCubit>().onLoadInit(
+            cmId: widget.commuinity.id!,
+            kcId: widget.kingsCord.id!,
+            limit: 30,
+          );
           return Column(
             children: [
               // bulid message stream
-              _buildMessageStream( commuinity: widget.commuinity, kingsCord: widget.kingsCord  ),
+              _buildMessageStream( commuinity: widget.commuinity, kingsCord: widget.kingsCord, msgs: state.msgs),
               //divider of a height 1
               Divider(height: 1.0),
-              widget.commuinity.memberIds.contains(context.read<AuthBloc>().state.user!.uid) ?
+              memInfo.containsKey(context.read<AuthBloc>().state.user!.uid) ?
               //bottom sheet
               _buildBottomTF(state, context) :
 

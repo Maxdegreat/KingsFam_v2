@@ -20,6 +20,9 @@ class LoadChats extends ChatscreenEvent {
   });
 }
 
+class LoadCms extends ChatscreenEvent {
+}
+
 class ChatScreenFetchPosts extends ChatscreenEvent {}
 
 

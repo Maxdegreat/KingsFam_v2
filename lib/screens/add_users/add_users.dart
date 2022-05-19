@@ -60,7 +60,7 @@ class _AddUsersState extends State<AddUsers> {
           showDialog(
               context: context,
               builder: (context) => ErrorDialog(
-                    content: state.failure.message,
+                    content: 'AddUsers: ${state.failure.message}',
                   ));
         }
       },

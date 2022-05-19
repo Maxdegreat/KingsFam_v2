@@ -71,7 +71,7 @@ class _BuildChurchState extends State<BuildChurch> {
         }
         else if (state.status == BuildChurchStatus.error) {
           ErrorDialog(
-            content: 'hmm, something went worong. check your connection',
+            content: 'hmm, something went worong. check your connection --- build_church e-code: ${state.failure.message} ',
           );
         } else if (state.status == BuildChurchStatus.success) {
           Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));

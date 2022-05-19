@@ -60,12 +60,13 @@ class Event extends Equatable {
     final commuinityRef = data['formCommuinity'] as DocumentReference?;
     if (commuinityRef != null) {
       final commuinityDoc = await commuinityRef.get();
+      var ch = await Church.fromDoc(commuinityDoc);
       if (commuinityDoc.exists) {
         return Event(
           eventTitle: data['eventTitle'], 
           authorId: data['authorId'], 
           date: (data['date'] as Timestamp).toDate(), 
-          fromCommuinity: Church.fromDoc(commuinityDoc)
+          fromCommuinity: ch
         );
       }
     }

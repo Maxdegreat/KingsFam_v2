@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
@@ -51,6 +53,7 @@ class TabNavigator extends StatelessWidget {
       case BottomNavItem.chats:
         return BlocProvider(
           create: (_) => ChatscreenBloc(
+              churchRepository:  ctx.read<ChurchRepository>(),
               postsRepository: ctx.read<PostsRepository>(),
               likedPostCubit: ctx.read<LikedPostCubit>(),
               authBloc: ctx.read<AuthBloc>(),
@@ -82,13 +85,14 @@ class TabNavigator extends StatelessWidget {
       case BottomNavItem.profile:
         return BlocProvider<ProfileBloc>(
           create: (_) => ProfileBloc(
+            churchRepository: ctx.read<ChurchRepository>(),
             likedPostCubit: ctx.read<LikedPostCubit>(),
             userrRepository: ctx.read<UserrRepository>(),
             authBloc: ctx.read<AuthBloc>(),
             postRepository: ctx.read<PostsRepository>(),
           )..add(
               ProfileLoadUserr(userId: ctx.read<AuthBloc>().state.user!.uid)),
-          child: ProfileScreen(),
+          child: ProfileScreen(ownerId: ctx.read<AuthBloc>().state.user!.uid,),
         );
       default:
         return Scaffold();

@@ -10,10 +10,12 @@ class KingscordState extends Equatable {
   final String? txtVidUrl;
   final KingsCordStatus status;
   final Failure failure;
+  final List<Message?> msgs;
   //gen constructor
   KingscordState({
     required this.isTyping,
     this.txtMsg,
+    required this.msgs,
     this.txtImgUrl,
     this.txtVidUrl,
     required this.status,
@@ -21,11 +23,12 @@ class KingscordState extends Equatable {
   });
   // props
   List<Object?> get props =>
-      [isTyping, txtImgUrl, txtMsg, txtVidUrl, status, failure];
+      [isTyping, txtImgUrl, txtMsg, msgs, txtVidUrl, status, failure];
   //copy with
     KingscordState copyWith({
       bool? isTyping,
       File? txtMsg,
+      List<Message?>? msgs,
       File? txtImgUrl,
       String? txtVidUrl,
       KingsCordStatus? status,
@@ -34,6 +37,7 @@ class KingscordState extends Equatable {
       return KingscordState(
         isTyping: isTyping ?? this.isTyping,
         txtMsg: txtMsg ?? this.txtMsg,
+        msgs: msgs ?? this.msgs,
         txtImgUrl: txtImgUrl ?? this.txtImgUrl,
         txtVidUrl: txtVidUrl ?? this.txtVidUrl,
         status: status ?? this.status,
@@ -45,6 +49,7 @@ class KingscordState extends Equatable {
     return KingscordState(
         isTyping: false,
         txtMsg: null,
+        msgs: [],
         txtImgUrl: null,
         txtVidUrl: null,
         status: KingsCordStatus.initial,

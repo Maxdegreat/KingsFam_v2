@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/chat_model.dart';
 import 'package:kingsfam/models/message_model.dart';
@@ -26,12 +27,12 @@ class ChatRepository extends BaseChatRepository {
   }
 
   @override
-  void sendChatMessage({required Chat chat, required Message message}) {
+  void sendChatMessage({required Chat chat, required Message message, required String senderId}) {
     _firebaseFirestore
         .collection(Paths.chats)
         .doc(chat.id)
         .collection(Paths.messages)
-        .add(message.ToDoc());
+        .add(message.ToDoc(senderId: senderId));
   }
 
   @override

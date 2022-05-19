@@ -87,14 +87,15 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
-    bool isMemberGetter = widget.commuinity.memberIds.contains(context.read<AuthBloc>().state.user!.uid);
+
+    // ignore: unused_local_variable
     final userId = context.read<AuthBloc>().state.user!.uid;
     return BlocConsumer<CommuinityBloc, CommuinityState>(
       listener: (context, state) {
         if (state is CommuinityError) {
           log("commuinityScreenError: ${state.failure.code}");
           ErrorDialog(
-            content: 'hmm, something went worong. check your connection',
+            content: 'hmm, something went worong. check your connection - ecode: commuinityScreenError: ${state.failure.code}',
           );
         }
       },
@@ -109,7 +110,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
         } else if (state is CommuinityLoading) {
           return CircularProgressIndicator();
         } else if (state is CommuinityLoaded) {
-          return _loadedDisplay(context, state, isMemberGetter);
+          return _loadedDisplay(context, state);
         } else if (state is CommuinityError) {
           return Center(child: Text("error: my bad yall, i probably messed up the code"));
         } else return SizedBox.shrink();
@@ -118,7 +119,9 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
     );
   }
 
-  Scaffold _loadedDisplay(BuildContext context, CommuinityLoaded state, bool isMemberGetter) {
+  Scaffold _loadedDisplay(BuildContext context, CommuinityLoaded state) {
+    var cmMemSet = widget.commuinity.members.map((e) => e.id).toSet();
+    var currId = context.read<AuthBloc>().state.user!.uid;
     return Scaffold(
           body: SafeArea(
         child: CustomScrollView(
@@ -159,8 +162,8 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                      mainAxisAlignment: MainAxisAlignment.start,
                      children: [
                       
-                      isMemberGetter ? ElevatedButton(
-                        onPressed: () { _onLeaveCommuinity(); setState(() => isMemberGetter = false); log(isMemberGetter.toString());}, child: Text("...Leave :(", style: TextStyle(color: Colors.red),),
+                      cmMemSet.contains(currId)? ElevatedButton(
+                        onPressed: () { _onLeaveCommuinity();}, child: Text("...Leave :(", style: TextStyle(color: Colors.red),),
                         style: ButtonStyle(
                             foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
                             backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
@@ -243,7 +246,8 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                    Column(
                      children: state.calls.map((call) {
                        if (call != null) {
-                         return GestureDetector(onTap: () => Navigator.of(context).pushNamed(VideoCallScreen.routeName), child: callTile(context, call),);
+                         return Container();
+                         //return GestureDetector(onTap: () => Navigator.of(context).pushNamed(VideoCallScreen.routeName), child: callTile(context, call),);
                        } else {
                          return SizedBox.shrink();
                        }
@@ -556,7 +560,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
  _settingsBtn() {
     return IconButton(onPressed: () async {
 
-      final usersInCommuiinity = await context.read<BuildchurchCubit>().commuinityParcticipatents(ids: widget.commuinity.memberIds);
+      // final usersInCommuiinity = await context.read<BuildchurchCubit>().commuinityParcticipatents(ids: widget.commuinity.memberIds);
       showModalBottomSheet(context: context, builder: (context) {
         return Container(
           height: MediaQuery.of(context).size.height / 2,
@@ -579,7 +583,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                  _participantsView(usersInCommuiinity),
+                  _participantsView(widget.commuinity.members),
                   _editView(commuinity: widget.commuinity)
                 ]),
               )
@@ -602,10 +606,10 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
       }
     );
   }
-
+  //TODO ADMIN WHERE 2==2
   Widget _participantsView(List<Userr> users) {
     return ListView.builder(
-      itemCount: widget.commuinity.memberIds.length,
+      itemCount: widget.commuinity.members.length,
       itemBuilder: (BuildContext context, int index) {
         final participant = users[index];
         if (!participant.id.startsWith('del_')) {
@@ -613,7 +617,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
            padding: const EdgeInsets.symmetric(vertical: 5.0),
            child: GestureDetector(
              onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: participant.id)),
-             child: ListTile(leading: ProfileImage(pfpUrl: participant.profileImageUrl, radius: 25,), title: Text(participant.username, style: widget.commuinity.memberInfo[participant.id]['isAdmin'] ? TextStyle(color: Colors.blue, fontWeight: FontWeight.w700,) : null, overflow: TextOverflow.fade,) , trailing: _moreOptinos(user: participant))),
+             child: ListTile(leading: ProfileImage(pfpUrl: participant.profileImageUrl, radius: 25,), title: Text(participant.username, style: 2 == 2 ? TextStyle(color: Colors.blue, fontWeight: FontWeight.w700,) : null, overflow: TextOverflow.fade,) , trailing: _moreOptinos(user: participant))),
          );
        } else {
          return SizedBox.shrink();
@@ -621,11 +625,12 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
       },
     );
   }
-
+  //TODO THE ADMIN
   Widget _moreOptinos({required Userr user}) {
     //check to see if the curr id is a admin or not
     //final isAdmin = context.read<BuildchurchCubit>().isAdmin(commuinity: widget.commuinity);
-    final isAdmin = widget.commuinity.memberInfo[context.read<AuthBloc>().state.user!.uid]['isAdmin'];
+    final isAdmin = true;
+    //widget.commuinity.memberInfo[context.read<AuthBloc>().state.user!.uid]['isAdmin']
    return IconButton(
      icon: Icon(Icons.more_vert),
      onPressed: () async {
@@ -639,9 +644,9 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
      },
     );
   }
-  
+  // TODO ADMIN
   Future<dynamic> _adminsOptions({required Church commuinity, required Userr participatant}) {
-    bool isParticipatantAdmin = widget.commuinity.memberInfo[participatant.id]["isAdmin"];
+    bool isParticipatantAdmin = true;
     return showDialog(
       context: context, 
       builder: (context) {

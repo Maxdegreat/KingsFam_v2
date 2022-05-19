@@ -7,6 +7,7 @@ enum FeedStatus_chats {inital, loading, success, paginating, error}
 class ChatscreenState extends Equatable {
   //1 make class data
   final List<Chat?> chat;
+  final List<Church?> chs;
   final bool inAChat;
   final bool isToggle;
   final ChatStatus status;
@@ -21,6 +22,7 @@ class ChatscreenState extends Equatable {
   //2 make the constructor
   const ChatscreenState({
     required this.chat,
+    required this.chs,
     required this.inAChat,
     required this.isToggle,
     required this.status,
@@ -35,6 +37,7 @@ class ChatscreenState extends Equatable {
   factory ChatscreenState.initial() {
     return ChatscreenState(
         chat: [],
+        chs: [],
         inAChat: false,
         isToggle: true,
         status: ChatStatus.initial,
@@ -48,13 +51,14 @@ class ChatscreenState extends Equatable {
 
   //3 make the props
   @override
-  List<Object?> get props => [posts, likedPostIds,  fstatus, isToggle, chat, inAChat, status, failure];
+  List<Object?> get props => [posts, likedPostIds,  fstatus, isToggle, chat, chs, inAChat, status, failure];
 
   //4 gen the copy with
   ChatscreenState copyWith({
     List<Chat?>? chat,
     bool? inAChat,
     bool? isToggle,
+    List<Church?>? chs,
     ChatStatus? status,
     List<Post?>? posts,
     Set<String?>? likedPostIds,
@@ -64,6 +68,7 @@ class ChatscreenState extends Equatable {
   }) {
     return ChatscreenState(
       posts: posts ?? this.posts,
+      chs: chs ?? this.chs,
       fstatus: fstatus ?? this.fstatus,
       likedPostIds: likedPostIds ?? this.likedPostIds,
       chat: chat ?? this.chat,

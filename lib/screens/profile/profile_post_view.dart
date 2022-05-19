@@ -48,6 +48,7 @@ class ProfilePostView extends StatefulWidget {
         settings: const RouteSettings(name: routeName),
         builder: (context) => BlocProvider<ProfileBloc>(
               create: (_) => ProfileBloc(
+                churchRepository: context.read<ChurchRepository>(),
                 authBloc: context.read<AuthBloc>(),
                 likedPostCubit: context.read<LikedPostCubit>(),
                 postRepository: context.read<PostsRepository>(),

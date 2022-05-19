@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
@@ -17,15 +18,40 @@ class KingscordCubit extends Cubit<KingscordState> {
   final StorageRepository _storageRepository;
   final AuthBloc _authBloc;
   final KingsCordRepository _kingsCordRepository;
+  final ChurchRepository _churchRepository;
+  
+ StreamSubscription<List<Future<Message?>>>? _msgStreamSubscription;  
+
   //gen the constructor
   KingscordCubit(
       {required StorageRepository storageRepository,
       required AuthBloc authBloc,
-      required KingsCordRepository kingsCordRepository})
+      required KingsCordRepository kingsCordRepository,
+      required ChurchRepository churchRepository,
+    })
       : _storageRepository = storageRepository,
         _authBloc = authBloc,
         _kingsCordRepository = kingsCordRepository,
+        _churchRepository = churchRepository,
         super(KingscordState.initial());
+
+
+    @override
+    Future<void> close() {
+      _msgStreamSubscription!.cancel();
+      return super.close();
+    }
+
+    void onLoadInit({required String cmId, required String kcId, required int limit}) async {
+      int limit = 30;
+    _msgStreamSubscription?.cancel();
+    _msgStreamSubscription = _churchRepository.
+     getMsgStream(cmId: cmId, kcId: kcId, limit: limit)
+     .listen((msgs) async { 
+       final allMsgs = await Future.wait(msgs);
+       emit(state.copyWith(msgs: allMsgs));
+     });
+    }
   // time for some methods babby
 
   // is typing
@@ -40,13 +66,12 @@ class KingscordCubit extends Cubit<KingscordState> {
       required String txtMsgBody}) {
     // the creation of the message
     final message = Message(
-        senderId: _authBloc.state.user!.uid,
         text: txtMsgBody,
         date: Timestamp.fromDate(DateTime.now()),
         imageUrl: null);
     //uploading the message to cloud
     _kingsCordRepository.sendMsgTxt(
-        churchId: churchId, kingsCordId: kingsCordId, message: message);
+        churchId: churchId, kingsCordId: kingsCordId, message: message, senderId: _authBloc.state.user!.uid);
   }
 
 
@@ -62,40 +87,20 @@ class KingscordCubit extends Cubit<KingscordState> {
     final chatImageUrl = await _storageRepository.uploadKingsCordImage(imageFile: state.txtImgUrl!);
     //make the message
     final message = Message(
-      senderId: _authBloc.state.user!.uid,
       date: Timestamp.now(),
       imageUrl: chatImageUrl,
       text: null,
+
     );
     //upload message to the cloud
     _kingsCordRepository.sendMsgTxt(
-        churchId: churchId, kingsCordId: kingsCordId, message: message);
-    //set state back to initial
+        churchId: churchId, kingsCordId: kingsCordId, message: message, senderId: _authBloc.state.user!.uid);
+    
     emit(state.copyWith(status: KingsCordStatus.initial));
   }
 
   
 
-   Future<void> updateUserMap({required String userId, required Church commuinity, required KingsCord kingsCord}) async {
-    // get the user
-    Userr user = await UserrRepository().getUserrWithId(userrId: userId);
-    
-    // make the new map
-    Map<String, dynamic> userMap = {
-      'isAdmin' : commuinity.memberInfo[userId]["isAdmin"],
-      'username': user.username,
-      'pfpImageUrl': user.profileImageUrl,
-      'colorPref' : user.colorPref,
-      'email': user.email,
-      'token': user.token,
-    };
-
-    // replace key value of old map with new map
-    commuinity.memberInfo[userId] = userMap;
-    // grab path to commuinit
-    var path = FirebaseFirestore.instance.collection(Paths.church).doc(commuinity.id).collection(Paths.kingsCord).doc(kingsCord.id);
-    // update the usermap in commuinity
-    path.update({"memberInfo":commuinity.memberInfo});
-  }
+   
 
 }

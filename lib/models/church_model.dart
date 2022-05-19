@@ -1,5 +1,10 @@
+
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 
 class Church extends Equatable {
@@ -11,8 +16,7 @@ class Church extends Equatable {
   final String imageUrl;
   final String about;
   final List<String> searchPram;
-  final List<String> memberIds;
-  final Map<String, dynamic> memberInfo;
+  final List<Userr> members;
   final List<String> events;
   final int? size;
   // 2 gen the constructor
@@ -22,9 +26,8 @@ class Church extends Equatable {
     required this.name,
     required this.location,
     required this.imageUrl,
-    required this.memberIds,
     this.hashTags,
-    required this.memberInfo,
+    required this.members,
     required this.events,
     required this.about,
     this.size,
@@ -39,8 +42,7 @@ class Church extends Equatable {
         hashTags,
         imageUrl,
         about,
-        memberIds,
-        memberInfo,
+        members,
         events,
         size,
       ];
@@ -53,8 +55,7 @@ class Church extends Equatable {
     String? location,
     String? imageUrl,
     String? about,
-    List<String>? memberIds,
-    Map<String, dynamic>? memberInfo,
+    List<Userr>? members,
     List<String>? events,
     int? size,
   }) {
@@ -66,8 +67,7 @@ class Church extends Equatable {
       location: location ?? this.location,
       imageUrl: imageUrl ?? this.imageUrl,
       about: about ?? this.about,
-      memberIds: memberIds ?? this.memberIds,
-      memberInfo: memberInfo ?? this.memberInfo,
+      members: members ?? this.members,
       events: events ?? this.events,
       size: size ?? this.size,
     );
@@ -75,7 +75,13 @@ class Church extends Equatable {
 
   //5 make the to doc
   Map<String, dynamic> toDoc() {
-    
+    List<String> ids = members.map((x) => x.id).toList();
+    List<DocumentReference<Map<String, dynamic>>> memRefs = [];
+    for (String id in ids) {
+      DocumentReference<Map<String, dynamic>> ref = 
+        FirebaseFirestore.instance.collection(Paths.users).doc(id);
+      memRefs.add(ref);
+    }
     return {
       'name': name,
       'location': location,
@@ -83,17 +89,29 @@ class Church extends Equatable {
       'hashTags': hashTags,
       'about': about,
       'imageUrl': imageUrl,
-      'memberIds': memberIds,
-      'memberInfo': memberInfo,
+      'members' : memRefs,
       'events': events,
       'size' : size,
     };
   }
 
   //6 from doc
-  static Church fromDoc(DocumentSnapshot doc) {
+  static Future<Church> fromDoc(DocumentSnapshot doc) async {
     final data = doc.data() as Map<String, dynamic>;
+    List<Userr> members = [];
+    final memRefs = data['members'];
+  
+    if (memRefs == null) return Church.empty;
+    for (DocumentReference doc in memRefs) {
+      var snap = await doc.get();
+      if (snap.exists && snap.data() != null) {
+        Userr user = Userr.fromDoc(snap);
+        members.add(user);
+      }
+    }
+
     return Church(
+        members: members,
         id: doc.id,
         size: data['size'] ?? 0,
         searchPram: List<String>.from(data['searchPram'] ?? []),
@@ -102,9 +120,9 @@ class Church extends Equatable {
         location: data['location'] ?? 'Heaven',
         about: data['about'] ?? 'bio',
         imageUrl: data['imageUrl'] ?? '',
-        events: List<String>.from(data['events'] ?? []),
-        memberIds: List<String>.from(data['memberIds'] ?? []),
-        memberInfo: Map<String, dynamic>.from(data['memberInfo'] ?? {}));
+        events: List<String>.from(data['events'] ?? []), 
+        
+      );
   }
 
   //7 church. empty
@@ -113,8 +131,7 @@ class Church extends Equatable {
       name: '...',
       location: '... ',
       imageUrl: '...',
-      memberIds: [],
-      memberInfo: {},
+      members: [],
       events: [],
       about: '...',
       hashTags: [],

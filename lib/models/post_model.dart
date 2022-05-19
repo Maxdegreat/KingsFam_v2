@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -184,7 +185,7 @@ class Post extends Equatable {
             height: (data['height']) ?? null,
         );
       } else {
-      //print("_+_+_+_+_+_+_+_+_+_ COMM REFF IS NULL FOUND OUT TOO LATE TO CATCH TRAIN THO");
+      log("_+_+_+_+_+_+_+_+_+_ COMM REFF IS NULL FOUND OUT TOO LATE TO CATCH TRAIN THO");
         return Post(
             id: doc.id,
             author: Userr.fromDoc(authDoc),

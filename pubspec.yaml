@@ -61,8 +61,8 @@ dependencies:
   timeago: ^3.1.0
   intl: ^0.17.0
   # agora rtc
-  agora_uikit: ^0.0.4
-  agora_rtc_engine: ^4.0.7
+#  agora_uikit: ^0.0.4
+
   # permissions handeler
   permission_handler: 
   #audioplayers: ^0.20.1
@@ -72,6 +72,8 @@ dependencies:
   camera: 
   scrollable_positioned_list: ^0.2.3
   video_thumbnail: ^0.5.0
+
+  #google_mobile_ads: ^1.2.0
   
   
 

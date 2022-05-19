@@ -1,6 +1,6 @@
 
 import 'dart:developer';
-// import 'dart:io';
+
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -91,7 +91,7 @@ class _PostSingleViewState extends State<PostSingleView> {
               ),
             ),
           )
-        : SizedBox.shrink();
+        : Text("No Commuinity bruv");
   }
 
   Widget interactions() {
@@ -144,7 +144,7 @@ class _PostSingleViewState extends State<PostSingleView> {
 
   Widget userPicAndName({required String name, required String imgurl}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 7),
       child: GestureDetector(
         onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName,
             arguments: ProfileScreenArgs(userId: widget.post.author.id)),

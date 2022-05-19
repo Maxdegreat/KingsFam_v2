@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:kingsfam/config/paths.dart';
+
 import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
+import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/widgets/fancy_list_tile.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
@@ -13,9 +13,9 @@ import 'package:kingsfam/widgets/widgets.dart';
 // 2) streambuilder????
 
 class CommuinityContainer extends StatefulWidget {
-  const CommuinityContainer({ required String this.userId, required String this.username });
-  final String userId;
-  final String username;
+  const CommuinityContainer({ required this.cms, required this.ownerId });
+  final List<Church?> cms;
+  final String ownerId;
   @override
   State<CommuinityContainer> createState() => _CommuinityContainerState();
 }
@@ -23,48 +23,25 @@ class CommuinityContainer extends StatefulWidget {
 class _CommuinityContainerState extends State<CommuinityContainer> {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection(Paths.church).where('memberIds', arrayContains: widget.userId).snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-
-        if (!snapshot.hasData) { // has no daat
-            return SizedBox.shrink();
-        } else if (snapshot.data!.docs.length <= 0) {// has data but no docs , bad
-          return SizedBox.shrink();
-        } else { // is good
-          // return the listtile 
-          return CommuinityListTile(context, snapshot, widget.username);
-        }
-      },
-    );
+    return widget.cms.length > 0 ? CommuinityListTile(widget.cms, context, widget.ownerId) : SizedBox.shrink();
   }
 }
 
 
-Widget CommuinityHolder(BuildContext context) {
-  return Container(
-    height: MediaQuery.of(context).size.height / 12, width: double.infinity,
-    decoration: BoxDecoration(
-      color: Colors.grey[600],
-      borderRadius: BorderRadius.circular(12),
-    ),
-  );
-}
-
-Padding CommuinityListTile(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot, String username) {
+CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
   bool moreBtn = true;
   // make data for first two commuinitys
-  Church commuinity1 = Church.fromDoc(snapshot.data!.docs[0]);
-  Church? commuinity2 = snapshot.data!.docs.length >= 2 ? Church.fromDoc(snapshot.data!.docs[1]) : null;
+  Church? commuinity1 = cms[0];
+  Church? commuinity2 = cms.length >= 2 ? cms[1] : null;
 
-  bool greaterThan2 = snapshot.data!.docs.length >= 2 ? true : false;
+  bool greaterThan2 = cms.length >= 2 ? true : false;
 
 
   var oneCommuinitys = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          FancyListTile(username: commuinity1.name, imageUrl: commuinity1.imageUrl, onTap: null, isBtn: false, BR: 12, height: 12 , width: 12),
+          FancyListTile(username: commuinity1!.name, imageUrl: commuinity1.imageUrl, onTap: null, isBtn: false, BR: 12, height: 12 , width: 12),
         ],
       );
   
@@ -92,27 +69,31 @@ Padding CommuinityListTile(BuildContext context, AsyncSnapshot<QuerySnapshot> sn
             TextButton(onPressed:()  {
               // show an alert dialog that list all commuinitys
               showModalBottomSheet(context: context, builder: (context) {
-
-                return Container(
-                  height: 200,
-                  color: Colors.black,
-                  child: ListView.builder(
-                     itemCount: snapshot.data!.docs.length,
-                     itemBuilder: (BuildContext context, int index) {
-                       Church commuinity = Church.fromDoc(snapshot.data!.docs[index]);
-                       return Padding(
-                         padding: const EdgeInsets.symmetric(vertical: 10),
-                         child: ListTile(leading: commuinity_pf_img(commuinity.imageUrl, 90, 105), title: Text(commuinity.name), onTap: () => Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: commuinity)),),
-                       );
-                     },
-                   ),
+                final _churchRepo = context.read<ChurchRepository>();
+                
+                return FutureBuilder(
+                  future: _churchRepo.getCommuinitysUserIn(userrId: ownerId , limit: 7),
+                  builder: (BuildContext context, AsyncSnapshot<List<Church>> snapshot) {
+                    if (snapshot.hasData && snapshot.data != null) {
+                      return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        Church ch = snapshot.data![index];
+                        return ListTile(
+                          leading: ProfileImage(pfpUrl: ch.imageUrl, radius: 25,),
+                          title: Text(ch.name),
+                        );
+                      },
+                    );
+                    } else return SizedBox.shrink();
+                  },
                 );
               });
 
 
             }, style: TextButton.styleFrom(primary: Colors.white), child: Text("See More", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),),),
             SizedBox(width: 10),
-            Text("${snapshot.data!.docs.length} Commuintys",  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),)
+            Text(" Commuintys",  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),)
           ],
         ),
         Container(

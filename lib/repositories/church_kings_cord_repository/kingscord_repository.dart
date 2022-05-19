@@ -29,14 +29,15 @@ class KingsCordRepository extends BaseKingsCordRepository {
   Future<void> sendMsgTxt(
       {required String churchId,
       required String kingsCordId,
-      required Message message}) async {
+      required Message message,
+      required String senderId}) async {
     _firebaseFirestore
         .collection(Paths.church)
         .doc(churchId)
         .collection(Paths.kingsCord)
         .doc(kingsCordId)
         .collection(Paths.messages)
-        .add(message.ToDoc());
+        .add(message.ToDoc(senderId: senderId));
   }
 
 }

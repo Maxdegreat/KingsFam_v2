@@ -605,22 +605,16 @@ Future<dynamic> previewPost({ required PrePost prePost, required BuildContext co
               SizedBox(height: 10),
               //commuinityList(context), //------------------------------------------------------ down
               Expanded(
-           child: StreamBuilder(
-            stream: FirebaseFirestore.instance
-            .collection(Paths.church)
-            .where('memberIds', arrayContains: context.read<AuthBloc>().state.user!.uid)
-            .snapshots(),
-             builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
-             if (snapshot.data != null && snapshot.data!.docs.length > 0) {
-                String tapedCommuinity = "";
-                Color commuinityNameColor = Colors.white;
-            return Container(
+           child: Container(
               height: 100,
-              child: ListView.builder(
-                  itemCount: snapshot.data!.docs.length,
+              child: FutureBuilder(
+                future: context.read<ChurchRepository>().getCommuinitysUserIn(userrId: context.read<AuthBloc>().state.user!.uid, limit: 30),
+                builder: (BuildContext context, AsyncSnapshot<List<Church>> snapshot) {
+                  return ListView.builder(
+                  itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                    
-                    Church commuinity = Church.fromDoc(snapshot.data!.docs[index]);
+                    Church commuinity = snapshot.data![index];
                     return Column(
                       children: [
                         Padding(
@@ -645,12 +639,9 @@ Future<dynamic> previewPost({ required PrePost prePost, required BuildContext co
                         Divider(height: 1, color: Colors.white,)
                       ],
                     );
-                  }),
-            );
-          } else {
-            return Text("Join Some Commuinitys Fam!");
-          }
-        },
+                  });
+                }
+              ),
       ),
     ),
     // ------------------------------------------------------------------------------- commuinty list tile ^^^^

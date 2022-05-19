@@ -67,7 +67,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       .getCommuinityCordsStream(churchId: event.commuinity.id!, limit: 7)
       .listen((kcords) async {
         final allCords = await Future.wait(kcords);
-        log("the length of the stream gotten cords: ${allCords.length}");
         add(ComuinityLoadingCords(commuinity: event.commuinity, cords: allCords));
       });
   }
@@ -83,13 +82,13 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       .getCommuinityCallsStream(commuinityId: event.commuinity.id!, limit: 7)
       .listen((calls) async {
         final allCalls = await Future.wait(calls);
-        log("the len of stream gotten calls is: ${allCalls.length}");
         add(CommuinityLoadedEvent(calls: allCalls, kcs: event.cords, posts: posts, commuinity: event.commuinity));
       });
   }
 
   Stream<CommuinityState> _mapCommuinityLoadedToState(CommuinityLoadedEvent event) async* {
-    bool isMem = event.commuinity.memberIds.contains(_authBloc.state.user!.uid);
+    var cmIds = event.commuinity.members.map((e) => e.id).toList();
+    bool isMem = cmIds.contains(_authBloc.state.user!.uid);
     eKcs = event.kcs; eCalls = event.calls; ePosts = event.posts;
     yield CommuinityLoaded(calls: event.calls, kingCords: event.kcs, postDisplay: event.posts, isMember: isMem);
   }

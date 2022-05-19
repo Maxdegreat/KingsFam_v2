@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:kingsfam/models/models.dart';
 
 class KingsCord extends Equatable {
   //class data
@@ -8,7 +9,7 @@ class KingsCord extends Equatable {
   final String cordName;
   final String recentSender;
   final String recentMessage;
-  final List<String> memberIds;
+  final List<Userr>? members; // call this when opening the screen, get info from parent commuinity
   // final Map<String, dynamic> memberInfo;
 
 
@@ -20,11 +21,11 @@ class KingsCord extends Equatable {
     // required this.memberInfo,
     required this.recentMessage,
     required this.recentSender,
-    required this.memberIds,
+    this.members,
   });
   //gen the props
   @override
-  List<Object?> get props => [id, tag, cordName, recentMessage, memberIds];
+  List<Object?> get props => [id, tag, cordName, recentMessage, members];
 
   //gen the copy with
   KingsCord copyWith(
@@ -33,7 +34,7 @@ class KingsCord extends Equatable {
       String? cordName,
       String? recentSender,
       String? recentMessage,
-      List<String>? memberIds,
+      List<Userr>? members,
       // Map<String, dynamic>? memberInfo
   }) {
     return KingsCord(
@@ -42,7 +43,7 @@ class KingsCord extends Equatable {
       cordName: cordName ?? this.cordName,
       recentSender: recentSender ?? this.recentSender,
       recentMessage: recentMessage ?? this.recentMessage,
-      memberIds: memberIds ?? this.memberIds,
+      members: members ?? this.members,
       // memberInfo: memberInfo ?? this.memberInfo,
     );
   }
@@ -51,11 +52,12 @@ class KingsCord extends Equatable {
   Map<String, dynamic> toDoc() {
     return {
       'tag' : tag,
-      'cordName' : cordName,
+      'cordName' :  cordName,
       'recentSender': recentSender,
       'recentMessage': recentMessage,
-      'memberIds': memberIds,
-      // 'memberInfo' : memberInfo, 
+      // members, get members from parent commuinity, this is if a user sends msg store only then that way 
+      // on leave it does not cause a null err on their msg
+      // 'members': so null for now, I will add a func to do this.
     };
   }
 
@@ -68,8 +70,6 @@ class KingsCord extends Equatable {
         cordName: data['cordName'] ?? 'MainRoom',
         recentMessage: data['recentMessage'],
         recentSender: data['recentSender'],
-        memberIds: List<String>.from(data['memberIds'] ?? []),
-        // memberInfo: Map<String, dynamic>.from(data['memberInfo'] ?? {} 
       );
   }
 
@@ -81,9 +81,7 @@ class KingsCord extends Equatable {
         tag: data['tag'],
         cordName: data['cordName'] ?? 'MainRoom',
         recentMessage: data['recentMessage'],
-        recentSender: data['recentSender'],
-        memberIds: List<String>.from(data['memberIds'] ?? []),
-        // memberInfo: Map<String, dynamic>.from(data['memberInfo'] ?? {} 
+        recentSender: data['recentSender'], 
       );
   }
 

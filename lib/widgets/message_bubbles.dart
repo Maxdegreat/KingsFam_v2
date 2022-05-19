@@ -41,7 +41,7 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isMe =
-        context.read<AuthBloc>().state.user!.uid == message.senderId;
+        context.read<AuthBloc>().state.user!.uid == message.sender!.id;
     return Padding(
         padding: const EdgeInsets.all(10.0),
         child: Row(
@@ -60,7 +60,7 @@ class MessageBubble extends StatelessWidget {
                       child: Text(
                         isMe
                             ? '${message.date.timeAgo()}'//.timeAgo()
-                            : '${chat.memberInfo[message.senderId]['username']} ${message.date.timeAgo()}',//.timeAgo()
+                            : '${message.sender!.username} ${message.date.timeAgo()}',//.timeAgo()
                         style: TextStyle(
                           fontSize: 12.0,
                           color: Colors.white,
