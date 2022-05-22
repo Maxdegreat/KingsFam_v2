@@ -15,7 +15,7 @@ class ChatscreenState extends Equatable {
 
   // ===== feed half =====
 
-  final List<Post?>? posts;
+  final List<Post?> posts;
   final FeedStatus_chats fstatus;
   final Set<String?> likedPostIds;
 

@@ -1,9 +1,13 @@
 //this screen is for making a new gc either a church or a commuinity
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:kingsfam/data/ad_helper.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:rive/rive.dart';
 
-class CreateComuinity extends StatelessWidget {
+class CreateComuinity extends StatefulWidget {
   const CreateComuinity({Key? key}) : super(key: key);
 
   static const String routeName = '/createComuinity';
@@ -15,8 +19,48 @@ class CreateComuinity extends StatelessWidget {
   }
 
   @override
+  _CreateComuinityState createState() => _CreateComuinityState();
+}
+
+class _CreateComuinityState extends State<CreateComuinity> {
+
+late BannerAd _bottomBannerAd;
+    bool _isBottomBannerAdLoaded = false;
+    void _createBottomBannerAd() {
+    _bottomBannerAd = BannerAd(
+        size: AdSize.banner,
+        adUnitId: AdHelper.bannerAdUnitId,
+        listener: BannerAdListener(onAdLoaded: (_) {
+          setState(() {
+            _isBottomBannerAdLoaded = true;
+          });
+        }, onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          log("chatsScreen ad error: ${error.toString()}");
+        }),
+        request: AdRequest());
+    _bottomBannerAd.load();
+  }
+    @override
+    void initState() {
+      _createBottomBannerAd();
+      super.initState();
+    }
+
+    @override
+  void dispose() {
+    _bottomBannerAd.dispose();
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      persistentFooterButtons: [
+        _isBottomBannerAdLoaded ?
+        Container(height: AdSize.banner.height.toDouble(), width: double.infinity, child: AdWidget(ad: _bottomBannerAd,),) : SizedBox.shrink()
+      ],
       appBar: AppBar(
         title: Text.rich(TextSpan(children: [TextSpan(text: 'Create Something ', style: Theme.of(context).textTheme.bodyText1), TextSpan(text: 'Great', style: TextStyle(color: Colors.deepPurple[200], fontSize: 20, letterSpacing: 1.5, fontWeight: FontWeight.bold))])),
       ),

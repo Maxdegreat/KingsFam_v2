@@ -1,11 +1,15 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/cubits.dart';
+import 'package:kingsfam/data/ad_helper.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
@@ -13,6 +17,7 @@ import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/feed_screen_widget.dart';
+import 'package:kingsfam/widgets/kf_crown_v2.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:rive/rive.dart';
 
@@ -76,6 +81,52 @@ class _ChatsScreenState extends State<ChatsScreen>
     }
   }
 
+
+  late BannerAd _bottomBannerAd;
+  late BannerAd _inLineBannerAd;
+  // ignore: unused_field
+  bool _isBottomBannerAdLoaded = false;
+  bool _isInLineBannerAdLoaded = false;
+  int _inLineAdIndex = 0;
+  int _getListViewIndex(int index) {
+    if (index >= _inLineAdIndex && _isInLineBannerAdLoaded) {
+      return index -1;
+    }
+    return index;
+  }
+  void _createBottomBannerAd() {
+    _bottomBannerAd = BannerAd(
+        size: AdSize.banner,
+        adUnitId: AdHelper.bannerAdUnitId,
+        listener: BannerAdListener(onAdLoaded: (_) {
+          setState(() {
+            _isBottomBannerAdLoaded = true;
+          });
+        }, onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          log("chatsScreen ad error: ${error.toString()}");
+        }),
+        request: AdRequest());
+    _bottomBannerAd.load();
+  }
+  void _createInlineBannerAd() {
+    _inLineBannerAd = BannerAd(
+        size: AdSize.banner,
+        adUnitId: AdHelper.bannerAdUnitId,
+        listener: BannerAdListener(onAdLoaded: (_) {
+          setState(() {
+            _isInLineBannerAdLoaded = true;
+          });
+        }, onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          log("chatsScreen ad error: ${error.toString()}");
+        }),
+        request: AdRequest());
+    _inLineBannerAd.load();
+  }
+
+
+
   @override
   void initState() {
     super.initState();
@@ -83,6 +134,7 @@ class _ChatsScreenState extends State<ChatsScreen>
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
     _tabController.addListener(tabControllerListener);
     scrollController.addListener(listenToScrolling);
+    _createBottomBannerAd();
     //super.build(context);
   }
 
@@ -93,6 +145,7 @@ class _ChatsScreenState extends State<ChatsScreen>
               scrollController.position.pixels) {
         //  const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
         //  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        _createInlineBannerAd();
         context.read<ChatscreenBloc>()..add(ChatScreenPaginatePosts());
       }
     }
@@ -109,6 +162,7 @@ class _ChatsScreenState extends State<ChatsScreen>
   @override
   void dispose() {
     _tabController.dispose();
+    _bottomBannerAd.dispose();
     super.dispose();
   }
 
@@ -118,90 +172,101 @@ class _ChatsScreenState extends State<ChatsScreen>
     HexColor hexcolor = HexColor();
     bool showKfCrown = false;
     final userId = context.read<AuthBloc>().state.user!.uid;
-     return DefaultTabController(
-       length: 3,
-       child: Scaffold(
-        appBar: AppBar(
-          title: Row(
-            children: [
-              Text(
-                'K I N G S F A M',
-                style: TextStyle(color: Color(hexcolor.hexcolorCode('#FFC050'))),
-              ),
-              SizedBox(width: 5),
-              KFCrownV2()
-            ],
-          ),
-          actions: [
-            IconButton(
-                onPressed: () =>
-                    Navigator.of(context).pushNamed(CreatePostScreen.routeName),
-                icon: Icon(Icons.camera)),
-            GestureDetector(
-                onTap: () =>
-                    Navigator.of(context).pushNamed(CreateComuinity.routeName),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  child: Container(
-                    height: 25,
-                    width: 25,
-                    child: RiveAnimation.asset('assets/icons/add_icon.riv'),
+    return DefaultTabController(
+        length: 3,
+        child: Scaffold(
+            appBar: AppBar(
+              title: Row(
+                children: [
+                  Text(
+                    'K I N G S F A M',
+                    style: TextStyle(
+                        color: Color(hexcolor.hexcolorCode('#FFC050'))),
                   ),
-                )),
-          ],
-        ),
-        body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
-          listener: (context, state) {
-            if (state.status == ChatStatus.error) {
-              ErrorDialog(content: 'chat_screen e-code: ${state.failure.code}');
-            }
-          },
-          builder: (context, state) {
-            return NestedScrollView(
-              headerSliverBuilder: (BuildContext context, bool isScrollableInnerBox) {
-                return <Widget>[
-                  SliverAppBar(
-                    floating: true,
-                    toolbarHeight: 10,
-                    expandedHeight: 10,
-                    bottom: TabBar(
-                      controller: _tabController,
-                      tabs: [
-                        Tab(text: "Feed"),
-                        Tab(text: "Commuinities"),
-                        Tab(text: "Chats")
-                      ],
-                    ))];
-              }, 
-            body: TabBarView(
-                        controller: _tabController,
-                        children: [
-                          _feedViewUi(state),
-                          ScreensForPageView().commuinity_view(userId, context),
-                          ScreensForPageView().chats_view(userId)
-                        ],
-                      ));
-  })));}
+                  SizedBox(width: 5),
+                  KFCrownV2()
+                ],
+              ),
+              actions: [
+                IconButton(
+                    onPressed: () => Navigator.of(context)
+                        .pushNamed(CreatePostScreen.routeName),
+                    icon: Icon(Icons.camera)),
+                GestureDetector(
+                    onTap: () => Navigator.of(context)
+                        .pushNamed(CreateComuinity.routeName),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Container(
+                        height: 25,
+                        width: 25,
+                        child: RiveAnimation.asset('assets/icons/add_icon.riv'),
+                      ),
+                    )),
+              ],
+            ),
+            body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
+                listener: (context, state) {
+              if (state.status == ChatStatus.error) {
+                ErrorDialog(
+                    content: 'chat_screen e-code: ${state.failure.code}');
+              }
+            }, builder: (context, state) {
+              return NestedScrollView(
+                  headerSliverBuilder:
+                      (BuildContext context, bool isScrollableInnerBox) {
+                    return <Widget>[
+                      SliverAppBar(
+                          floating: true,
+                          toolbarHeight: 10,
+                          expandedHeight: 10,
+                          bottom: TabBar(
+                            controller: _tabController,
+                            tabs: [
+                              Tab(text: "Feed"),
+                              Tab(text: "Commuinities"),
+                              Tab(text: "Chats")
+                            ],
+                          ))
+                    ];
+                  },
+                  body: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _feedViewUi(state),
+                      ScreensForPageView().commuinity_view(userId, context,
+                          _bottomBannerAd, _isBottomBannerAdLoaded),
+                      ScreensForPageView().chats_view(userId)
+                    ],
+                  ));
+            })));
+  }
 
   _feedViewUi(ChatscreenState state) {
     return listviewsinglePost(state);
   }
 
-  Widget listviewsinglePost(ChatscreenState state, ) {
+  Widget listviewsinglePost(
+    ChatscreenState state,
+  ) {
+    
     return Expanded(
+      
       flex: 1,
       child: RefreshIndicator(
         onRefresh: () async => context.read<FeedBloc>()..add(FeedFetchPosts()),
         child: ListView.builder(
           shrinkWrap: false,
           controller: scrollController,
-          itemCount: state.posts!.length,
-          itemBuilder: (BuildContext context, int index) {
-            if (index == state.posts!.length) {
-              // TODO call paginate post
-            }
-            final Post? post = state.posts![index];
-            final Post? posts = state.posts![index];
+          itemCount: state.posts.length + (_isInLineBannerAdLoaded ? 1 : 0),
+          itemBuilder: (BuildContext context, int index ) {
+            if (_isInLineBannerAdLoaded && index == _inLineAdIndex) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                child: Container(height: AdSize.fullBanner.height.toDouble(), width: double.infinity, child: AdWidget(ad: _inLineBannerAd),),
+              );
+            } else {
+              final Post? post = state.posts[_getListViewIndex(index)];
             if (post != null) {
               final LikedPostState = context.watch<LikedPostCubit>().state;
               final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
@@ -220,6 +285,7 @@ class _ChatsScreenState extends State<ChatsScreen>
                 },
               );
             }
+            }
             return SizedBox.shrink();
           },
         ),
@@ -228,79 +294,94 @@ class _ChatsScreenState extends State<ChatsScreen>
   }
 }
 
-class KFCrownV2 extends StatelessWidget {
-  const KFCrownV2({
-    Key? key,
-  }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 22,
-      width: 22,
-      color: Colors.black,
-      child: RiveAnimation.asset('assets/crown/KFCrownV2.riv'),
-    );
-  }
-}
 
 class ScreensForPageView {
   // ignore: non_constant_identifier_names
-  Widget commuinity_view(String userId, BuildContext) {
-    return
-    BlocConsumer<ChatscreenBloc, ChatscreenState>(
+  Widget commuinity_view(String userId, BuildContext context, BannerAd bannerAd,
+      bool bannerAdLoaded) {
+    return BlocConsumer<ChatscreenBloc, ChatscreenState>(
       listener: (context, state) {
         // TODO: implement listener
       },
       builder: (context, state) {
-        return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
-            child: Container(
-              height: MediaQuery.of(context).size.height / 1.25,
-              width: double.infinity,
-              child: Column(
-                children: [
-                  Expanded(
-                      flex: 1,
-                      child: ListView.builder(
-                        itemCount: state.chs.length,
-                        itemBuilder: (context, index) {
-                          Church? commuinity = state.chs[index];
-                          return GestureDetector(
-                            onLongPress: () => _leaveCommuinity(
-                                commuinity: commuinity!, context: context),
-                            onTap: () => Navigator.of(context)
-                                .pushNamed(CommuinityScreen.routeName,
-                                    arguments: CommuinityScreenArgs(
-                                      commuinity: commuinity!,
-                                    )),
-                            child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10.0),
-                                child: FancyListTile(
-                                    location: commuinity!.location,
-                                    username: commuinity.name,
-                                    imageUrl: commuinity.imageUrl,
-                                    onTap: () => Navigator.of(context)
-                                        .pushNamed(CommuinityScreen.routeName,
-                                            arguments: CommuinityScreenArgs(
-                                                commuinity: commuinity)),
-                                    isBtn: false,
-                                    BR: 12.0,
-                                    height: 12.0,
-                                    width: 12.0)),
-                          );
-                        },
-                      )),
-                ],
-              ),
-            ),
-          );
+        return Scaffold(
+          persistentFooterButtons: [
+            state.chs.length  > 0 ? bannerAdLoaded
+                ? Container(
+                    height: bannerAd.size.height.toDouble(),
+                    width: double.infinity,
+                    child: AdWidget(ad: bannerAd, ),
+                  )
+                : SizedBox.shrink() : SizedBox.shrink()
+          ],
+          body: RefreshIndicator(
+              onRefresh: () async =>
+                  context.read<ChatscreenBloc>()..add(LoadCms()),
+              child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
+                  child: Container(
+                    height: MediaQuery.of(context).size.height / 1.25,
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        state.chs.length == 0
+                            ? Column(
+                                children: [
+                                  Center(
+                                      child: Container(
+                                          height: 150,
+                                          width: 150,
+                                          child: KFCrownV2())),
+                                  howToBox()
+                                ],
+                              )
+                            : Expanded(
+                                flex: 1,
+                                child: ListView.builder(
+                                  itemCount: state.chs.length,
+                                  itemBuilder: (context, index) {
+                                    Church? commuinity = state.chs[index];
+                                    return GestureDetector(
+                                      onLongPress: () => _leaveCommuinity(
+                                          commuinity: commuinity!,
+                                          context: context),
+                                      onTap: () => Navigator.of(context)
+                                          .pushNamed(CommuinityScreen.routeName,
+                                              arguments: CommuinityScreenArgs(
+                                                commuinity: commuinity!,
+                                              )),
+                                      child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 10.0),
+                                          child: FancyListTile(
+                                              location: commuinity!.location,
+                                              username: commuinity.name,
+                                              imageUrl: commuinity.imageUrl,
+                                              onTap: () => Navigator.of(context)
+                                                  .pushNamed(
+                                                      CommuinityScreen
+                                                          .routeName,
+                                                      arguments:
+                                                          CommuinityScreenArgs(
+                                                              commuinity:
+                                                                  commuinity)),
+                                              isBtn: false,
+                                              BR: 12.0,
+                                              height: 12.0,
+                                              width: 12.0)),
+                                    );
+                                  },
+                                )),
+                      ],
+                    ),
+                  ))),
+        );
       },
     );
   }
-
- 
 
   Widget KFStarAmination(BuildContext context) {
     // instance of hexcolor class

@@ -20,6 +20,7 @@ import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/build_church/cubit/buildchurch_cubit.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
+import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 // import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/calls_home.dart';
 // import 'package:kingsfam/screens/commuinity/screens/feed/commuinity_feed.dart';
 // import 'package:kingsfam/screens/commuinity/screens/sounds/sounds.dart';
@@ -29,6 +30,7 @@ import 'package:kingsfam/screens/profile/profile_screen.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:rive/rive.dart';
+import 'package:uuid/uuid.dart';
 
 class CommuinityScreenArgs {
   final Church commuinity;
@@ -89,7 +91,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     final userId = context.read<AuthBloc>().state.user!.uid;
     return BlocConsumer<CommuinityBloc, CommuinityState>(
       listener: (context, state) {
-        if (state is CommuinityError) {
+        if (state.status == CommuintyStatus.error) {
           log("commuinityScreenError: ${state.failure.code}");
           ErrorDialog(
             content:
@@ -102,13 +104,11 @@ class _CommuinityScreenState extends State<CommuinityScreen>
 
         //context.read<BuildchurchCubit>().isCommuinityMember(widget.commuinity);
 
-        if (state is CommuinityInitial) {
-          return CircularProgressIndicator();
-        } else if (state is CommuinityLoading) {
-          return CircularProgressIndicator();
-        } else if (state is CommuinityLoaded) {
+        if (state.status == CommuintyStatus.loading) {
+          return Container(child: Center(child: CircularProgressIndicator()));
+        } else if (state.status == CommuintyStatus.loaded) {
           return _loadedDisplay(context, state);
-        } else if (state is CommuinityError) {
+        } else if (state.status == CommuintyStatus.error) {
           return Center(
               child: Text("error: my bad yall, i probably messed up the code"));
         } else
@@ -117,7 +117,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     );
   }
 
-  Scaffold _loadedDisplay(BuildContext context, CommuinityLoaded state) {
+  Scaffold _loadedDisplay(BuildContext context, CommuinityState state) {
     var cmMemSet = widget.commuinity.members.map((e) => e.id).toSet();
     var currId = context.read<AuthBloc>().state.user!.uid;
     return Scaffold(
@@ -286,8 +286,13 @@ class _CommuinityScreenState extends State<CommuinityScreen>
             Column(
               children: state.calls.map((call) {
                 if (call != null) {
-                  return Container();
-                  //return GestureDetector(onTap: () => Navigator.of(context).pushNamed(VideoCallScreen.routeName), child: callTile(context, call),);
+                  // return Container();
+                  return GestureDetector(
+                    onTap: () => Navigator.of(context).pushNamed(
+                        VideoCallScreen.routeName,
+                        arguments: VideoCallScreenArgs(channlName: call.name, tokenUrl: call.id! + widget.commuinity.id! + call.name)),
+                    child: callTile(context, call),
+                  );
                 } else {
                   return SizedBox.shrink();
                 }
@@ -402,7 +407,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
 
   // Widget leaveBtn(bool isMemberGetter) =>
 
-  Stack joinBtn(CommuinityLoaded state) {
+  Stack joinBtn(CommuinityState state) {
     return Stack(
       children: [
         Container(

@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/comment_model.dart';
@@ -76,6 +78,8 @@ class Post extends Equatable {
   final int likes;
   final Timestamp date;
   final int? height;
+  final Widget? nativeAd;
+  final BannerAd? bannerAd;
   Post({
     this.id,
     required this.author, //2 make the constructor
@@ -89,13 +93,15 @@ class Post extends Equatable {
     required this.likes,
     required this.date,
     required this.height,
+    this.nativeAd,
+    this.bannerAd,
   });
 
   static Post empty = Post( author: Userr.empty, quote: null, imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: '', likes: 0, date: Timestamp(0, 0), height: 10);
 
   @override
   List<Object?> get props =>
-      [id, height, author, commuinity,  quote, imageUrl, videoUrl, thumbnailUrl, soundTrackUrl, caption, likes, date]; //3 do props
+      [id, height, author, commuinity,  quote, imageUrl, videoUrl, thumbnailUrl, soundTrackUrl, caption, likes, date, nativeAd, bannerAd]; //3 do props
 
   Post copyWith({
     String? id, //4 do the copy with

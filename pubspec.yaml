@@ -61,7 +61,7 @@ dependencies:
   timeago: ^3.1.0
   intl: ^0.17.0
   # agora rtc
-#  agora_uikit: ^0.0.4
+  agora_uikit: ^0.0.4
 
   # permissions handeler
   permission_handler: 

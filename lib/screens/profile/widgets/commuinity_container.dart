@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
+import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 import 'package:kingsfam/widgets/fancy_list_tile.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
@@ -79,9 +80,12 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
                       itemCount: snapshot.data!.length,
                       itemBuilder: (BuildContext context, int index) {
                         Church ch = snapshot.data![index];
-                        return ListTile(
-                          leading: ProfileImage(pfpUrl: ch.imageUrl, radius: 25,),
-                          title: Text(ch.name),
+                        return GestureDetector(
+                          onTap: () => Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: ch)),
+                          child: ListTile(
+                            leading: ProfileImage(pfpUrl: ch.imageUrl, radius: 25,),
+                            title: Text(ch.name),
+                          ),
                         );
                       },
                     );

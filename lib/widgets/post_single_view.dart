@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:kingsfam/extensions/extensions.dart';
 
@@ -45,7 +46,7 @@ class _PostSingleViewState extends State<PostSingleView> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Column(
+    return widget.post.bannerAd == null ? Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         userPicAndName(
@@ -56,7 +57,7 @@ class _PostSingleViewState extends State<PostSingleView> {
         contentContainer(post: widget.post, size: size),
         interactions()
       ],
-    );
+    ) : Container(color: Colors.green, height: 100, width: double.infinity, );
   }
 
   Widget viewCommuinity({required Church? commuinity}) {
