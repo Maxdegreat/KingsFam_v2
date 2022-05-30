@@ -27,8 +27,9 @@ class ImageHelper {
 
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
+
     if (pickedFile != null) {
-      final cropedFile = await ImageCropper.cropImage(
+      final cropedFile = await ImageCropper().cropImage(
         maxHeight: 500,
         sourcePath: pickedFile.path,
         cropStyle: cropStyle,
@@ -40,7 +41,7 @@ class ImageHelper {
           initAspectRatio: CropAspectRatioPreset.square,
           lockAspectRatio: false,
         ),
-        iosUiSettings: const IOSUiSettings(),   
+        iosUiSettings: const IOSUiSettings(),
         compressQuality: 100,
       );
       // Image decodedImage = (await decodeImageFromList(cropedFile.readAsBytesSync())) as Image;
@@ -61,7 +62,7 @@ class ImageHelper {
         await ImagePicker().pickImage(source: ImageSource.camera);
     //checks nullsafty if not null add crop properties
     if (pickedFile != null) {
-      final cropedFile = await ImageCropper.cropImage(
+      final cropedFile = await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
         cropStyle: cropStyle,
         androidUiSettings: AndroidUiSettings(
@@ -85,9 +86,8 @@ class ImageHelper {
   }) async {
     final pickedFile =
         await ImagePicker().pickVideo(source: ImageSource.camera);
-    if (pickedFile != null) 
-      return File(pickedFile.path);
-    
+    if (pickedFile != null) return File(pickedFile.path);
+
     return null;
   }
 }

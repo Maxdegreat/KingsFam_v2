@@ -1,7 +1,6 @@
-      //   <meta-data
-      // android:name="com.google.android.gms.ads.APPLICATION_ID"
-      // android:value="ca-app-pub-3940256099942544~3347511713"/>
-
+//   <meta-data
+// android:name="com.google.android.gms.ads.APPLICATION_ID"
+// android:value="ca-app-pub-3940256099942544~3347511713"/>
 
 import 'package:equatable/equatable.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -22,7 +21,7 @@ import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/build_call/bloc/ringer_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/cubit/calls_home_cubit.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
-
+import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 
 import 'repositories/auth/auth_repository.dart';
 import 'screens/build_church/cubit/buildchurch_cubit.dart';
@@ -32,7 +31,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
   await Firebase.initializeApp();
-  
+
   EquatableConfig.stringify = kDebugMode;
   Bloc.observer = SimpleBlocObserver();
   runApp(MyApp());
@@ -61,6 +60,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MultiBlocProvider(
         providers: [
+          
           BlocProvider<AuthBloc>(
             create: (context) =>
                 AuthBloc(authRepository: context.read<AuthRepository>()),
@@ -103,6 +103,14 @@ class MyApp extends StatelessWidget {
                   storageRepository: context.read<StorageRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   userrRepository: context.read<UserrRepository>())),
+          // BlocProvider<ProfileBloc>(
+          //   create: (context) => ProfileBloc(
+          //       userrRepository: context.read<UserrRepository>(),
+          //       authBloc: context.read<AuthBloc>(),
+          //       postRepository: context.read<PostsRepository>(),
+          //       likedPostCubit: context.read<LikedPostCubit>(),
+          //       churchRepository: context.read<ChurchRepository>()),
+          // ),
           // BlocProvider<CommentBloc>(
           //   create: (context) => CommentBloc(
           //     postsRepository: context.read<PostsRepository>(),

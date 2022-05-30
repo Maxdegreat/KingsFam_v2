@@ -13,8 +13,11 @@ import 'package:kingsfam/data/ad_helper.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
+import 'package:kingsfam/repositories/post/post_repository.dart';
+import 'package:kingsfam/repositories/userr/userr_repository.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
+import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/feed_screen_widget.dart';
 import 'package:kingsfam/widgets/kf_crown_v2.dart';
@@ -81,7 +84,6 @@ class _ChatsScreenState extends State<ChatsScreen>
     }
   }
 
-
   late BannerAd _bottomBannerAd;
   late BannerAd _inLineBannerAd;
   // ignore: unused_field
@@ -90,10 +92,11 @@ class _ChatsScreenState extends State<ChatsScreen>
   int _inLineAdIndex = 0;
   int _getListViewIndex(int index) {
     if (index >= _inLineAdIndex && _isInLineBannerAdLoaded) {
-      return index -1;
+      return index - 1;
     }
     return index;
   }
+
   void _createBottomBannerAd() {
     _bottomBannerAd = BannerAd(
         size: AdSize.banner,
@@ -109,6 +112,7 @@ class _ChatsScreenState extends State<ChatsScreen>
         request: AdRequest());
     _bottomBannerAd.load();
   }
+
   void _createInlineBannerAd() {
     _inLineBannerAd = BannerAd(
         size: AdSize.banner,
@@ -124,8 +128,6 @@ class _ChatsScreenState extends State<ChatsScreen>
         request: AdRequest());
     _inLineBannerAd.load();
   }
-
-
 
   @override
   void initState() {
@@ -249,9 +251,7 @@ class _ChatsScreenState extends State<ChatsScreen>
   Widget listviewsinglePost(
     ChatscreenState state,
   ) {
-    
     return Expanded(
-      
       flex: 1,
       child: RefreshIndicator(
         onRefresh: () async => context.read<FeedBloc>()..add(FeedFetchPosts()),
@@ -259,32 +259,36 @@ class _ChatsScreenState extends State<ChatsScreen>
           shrinkWrap: false,
           controller: scrollController,
           itemCount: state.posts.length + (_isInLineBannerAdLoaded ? 1 : 0),
-          itemBuilder: (BuildContext context, int index ) {
+          itemBuilder: (BuildContext context, int index) {
             if (_isInLineBannerAdLoaded && index == _inLineAdIndex) {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-                child: Container(height: AdSize.fullBanner.height.toDouble(), width: double.infinity, child: AdWidget(ad: _inLineBannerAd),),
+                child: Container(
+                  height: AdSize.fullBanner.height.toDouble(),
+                  width: double.infinity,
+                  child: AdWidget(ad: _inLineBannerAd),
+                ),
               );
             } else {
               final Post? post = state.posts[_getListViewIndex(index)];
-            if (post != null) {
-              final LikedPostState = context.watch<LikedPostCubit>().state;
-              final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
-              final recentlyLiked =
-                  LikedPostState.recentlyLikedPostIds.contains(post.id!);
-              return PostSingleView(
-                isLiked: isLiked,
-                post: post,
-                recentlyLiked: recentlyLiked,
-                onLike: () {
-                  if (isLiked) {
-                    context.read<LikedPostCubit>().unLikePost(post: post);
-                  } else {
-                    context.read<LikedPostCubit>().likePost(post: post);
-                  }
-                },
-              );
-            }
+              if (post != null) {
+                final LikedPostState = context.watch<LikedPostCubit>().state;
+                final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
+                final recentlyLiked =
+                    LikedPostState.recentlyLikedPostIds.contains(post.id!);
+                return PostSingleView(
+                  isLiked: isLiked,
+                  post: post,
+                  recentlyLiked: recentlyLiked,
+                  onLike: () {
+                    if (isLiked) {
+                      context.read<LikedPostCubit>().unLikePost(post: post);
+                    } else {
+                      context.read<LikedPostCubit>().likePost(post: post);
+                    }
+                  },
+                );
+              }
             }
             return SizedBox.shrink();
           },
@@ -293,8 +297,6 @@ class _ChatsScreenState extends State<ChatsScreen>
     );
   }
 }
-
-
 
 class ScreensForPageView {
   // ignore: non_constant_identifier_names
@@ -307,13 +309,17 @@ class ScreensForPageView {
       builder: (context, state) {
         return Scaffold(
           persistentFooterButtons: [
-            state.chs.length  > 0 ? bannerAdLoaded
-                ? Container(
-                    height: bannerAd.size.height.toDouble(),
-                    width: double.infinity,
-                    child: AdWidget(ad: bannerAd, ),
-                  )
-                : SizedBox.shrink() : SizedBox.shrink()
+            state.chs.length > 0
+                ? bannerAdLoaded
+                    ? Container(
+                        height: bannerAd.size.height.toDouble(),
+                        width: double.infinity,
+                        child: AdWidget(
+                          ad: bannerAd,
+                        ),
+                      )
+                    : SizedBox.shrink()
+                : SizedBox.shrink()
           ],
           body: RefreshIndicator(
               onRefresh: () async =>
@@ -335,6 +341,37 @@ class ScreensForPageView {
                                           height: 150,
                                           width: 150,
                                           child: KFCrownV2())),
+                                  // Padding(
+                                  //   padding: const EdgeInsets.only(
+                                  //       bottom: 10, right: 12, left: 12),
+                                  //   child: Center(
+                                  //     child: GestureDetector(
+                                  //       onTap: () => Navigator.of(context).pushNamed(EditProfileScreen.routeName, arguments: EditProfileScreenArgs(context: context)),
+                                  //       child: Container(
+                                  //         height: MediaQuery.of(context)
+                                  //                 .size
+                                  //                 .height /
+                                  //             12,
+                                  //         width: double.infinity,
+                                  //         child: Center(
+                                  //             child: Text(
+                                  //           "Create Your Profile FAM!",
+                                  //           style: TextStyle(
+                                  //               color: Colors.white,
+                                  //               fontSize: 18,
+                                  //               fontWeight: FontWeight.w700,
+                                  //               letterSpacing: 3),
+                                  //         )),
+                                  //         decoration: BoxDecoration(
+                                  //             borderRadius:
+                                  //                 BorderRadius.circular(15),
+                                  //             // color: Colors.red[400],
+                                  //             border: Border.all(
+                                  //                 color: Colors.red[400]!)),
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  // ),
                                   howToBox()
                                 ],
                               )

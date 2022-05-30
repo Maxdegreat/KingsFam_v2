@@ -21,8 +21,8 @@ Widget howToBox() {
   return StatefulBuilder(
     builder: (BuildContext context, setState) {
       return Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(25), color: Colors.grey[900]),
-        height: 400,
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(25), color: Colors.white10),
+        height: MediaQuery.of(context).size.height / 3,
         width: 450,
         child: PageView.builder(
           itemCount: buildDotLen ,
@@ -55,7 +55,7 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
         ),
 
 
-        SizedBox(height: 35),
+        SizedBox(height: 25),
 
         Container(
           child: Row(
@@ -65,7 +65,7 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
         ),
 
 
-        SizedBox(height: 30),
+        SizedBox(height: 15),
 
 
         ElevatedButton(
@@ -85,7 +85,7 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
 
         Container(height: 35, width: 35, child: RiveAnimation.asset('assets/icons/search_icon.riv')),
 
-        SizedBox(height: 35),
+        SizedBox(height: 25),
 
 
         Container(
@@ -96,7 +96,7 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
         ),
 
 
-        SizedBox(height: 30),
+        SizedBox(height: 15),
 
 
         ElevatedButton(
@@ -119,7 +119,7 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
 
         Container(height: 35, width: 35, child: RiveAnimation.asset('assets/icons/add_icon.riv')),
 
-        SizedBox(height: 35),
+        SizedBox(height: 25),
 
 
         Container(
@@ -130,7 +130,7 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
         ),
 
 
-        SizedBox(height: 30),
+        SizedBox(height: 15),
 
 
         ElevatedButton(
@@ -152,7 +152,7 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
 
-        SizedBox(height: 35),
+        SizedBox(height: 25),
 
 
         Container(
@@ -162,11 +162,11 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
           ),
         ),
 
-        SizedBox(height: 30),
+        SizedBox(height: 15),
 
         ElevatedButton(
           onPressed: () {}, 
-          child: Text("Lets Go!"),
+          child: Text("You Are Loved! :)"),
           style: ElevatedButton.styleFrom(primary: Color(hexcolor.hexcolorCode('#FFC050'))),
         )
       ],

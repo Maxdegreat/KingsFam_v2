@@ -29,7 +29,6 @@ BuildContext? pb;
 class EditProfileScreen extends StatefulWidget {
   static const String routeName = '/editProfile';
   static Route route({required EditProfileScreenArgs args}) {
-    pb = args.context;
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
         builder: (context) => BlocProvider(
@@ -39,15 +38,13 @@ class EditProfileScreen extends StatefulWidget {
                   userrRepository: context.read<UserrRepository>()),
               child: EditProfileScreen(
                 userr: args.context.read<ProfileBloc>().state.userr, 
-                args: args,
               ),
             ));
   }
 
-  EditProfileScreen({required this.args, required this.userr});
+  EditProfileScreen({required this.userr});
   
   final Userr userr;
-  final EditProfileScreenArgs args;
 
 
   @override

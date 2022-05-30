@@ -1,8 +1,0 @@
-KingsFam
-	commuinitys
-	- a way for commuinication [done]
-	- people to upload audio files [working on]
-		- for now this use case will allow pople to upload podcasts
-		- (p1) find a way for to share a link and this will allow you to play the audio from said yt channel
-	- a feed set to them alone [waiting...]
-	- (P1) Live calls 

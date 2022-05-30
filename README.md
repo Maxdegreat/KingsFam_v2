@@ -2,24 +2,15 @@
 
 A new Flutter project.
 
-# Things to remember
+## Getting Started
 
-in android/app/build.graddel add firebase dependencies without numbers in the dependices
+This project is a starting point for a Flutter application.
 
-# About Kingsfam
+A few resources to get you started if this is your first Flutter project:
 
-This is a closed source project for the glory of our father who art in heaven, yezirrrr
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-this is ment to be a chat app for the "church" other fetures can and probably will be implemeted 
-
-but for now the main goal is a closed source project.
-
-# Goal fetures
-
-- messaging gc
-
-- welcoming
-
-- good ui
-
-- good ux
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.

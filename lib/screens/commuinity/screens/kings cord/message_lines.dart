@@ -27,6 +27,7 @@ class MessageLines extends StatelessWidget {
       height: size.height * 0.2,
       width: size.width * 0.6,
       decoration: BoxDecoration(
+        border: Border.all(width: 2.0, color: const Color(0xFFFFFFFF)), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
           borderRadius: BorderRadius.circular(20.0),
           image: DecorationImage(
               fit: BoxFit.cover,
@@ -91,26 +92,16 @@ class MessageLines extends StatelessWidget {
     
     HexColor hexcolor = HexColor();
     Size size = MediaQuery.of(context).size;
-    return Stack(
-      children: [
-        Positioned(
-          top: 7.5,
-          right: 5.5,
-          child: Container(
+    return Container(
             height: size.height / 18.5,
             width: size.width / 8,
+            child: message.sender!.profileImageUrl != "null" ? kingsCordProfileImg() : kingsCordProfileIcon(),
             decoration: BoxDecoration(
+              border: Border.all(width: 2, color: message.sender!.colorPref == null || message.sender!.colorPref == "" ? Colors.red : Color(hexcolor.hexcolorCode(message.sender!.colorPref))),
               color: message.sender!.colorPref == null || message.sender!.colorPref == "" ? Colors.red : Color(hexcolor.hexcolorCode(message.sender!.colorPref)),
               borderRadius: BorderRadius.circular(25)
             ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.all(8.0),
-          child: message.sender!.profileImageUrl != "null" ? kingsCordProfileImg() : kingsCordProfileIcon(),
-        )
-      ],
-    );
+          );
 
   }
   Widget? kingsCordProfileImg() => CircleAvatar(backgroundColor: Colors.grey[400], backgroundImage:  CachedNetworkImageProvider(message.sender!.profileImageUrl) );
