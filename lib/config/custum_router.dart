@@ -6,7 +6,6 @@ import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
 import 'package:kingsfam/screens/edit_profile/edit_profile_screen.dart';
 import 'package:kingsfam/screens/loginForm/login_form_screen.dart';
 import 'package:kingsfam/screens/screens.dart';
-import 'package:kingsfam/widgets/post_view.dart';
 
 class CustomRoute {
   static Route onGenerateRoute(RouteSettings settings) {
@@ -113,9 +112,6 @@ class CustomRoute {
       case CommuinityScreen.routeName:
         return CommuinityScreen.route(
             args: settings.arguments as CommuinityScreenArgs);
-
-      case RingScreen.routeName:
-        return RingScreen.route(args: settings.arguments as RingScreenArgs);
       
       case FeedNewScreen.routeName:
         return FeedNewScreen.route(args: settings.arguments as FeedNewScreenArgs);

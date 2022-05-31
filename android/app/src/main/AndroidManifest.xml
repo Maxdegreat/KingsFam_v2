@@ -7,9 +7,7 @@
 <uses-permission android:name="android.permission.CAMERA" />
 <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-<!-- The Flutter Sound-->
-<uses-permission android:name="android.permission.RECORD_AUDIO" />
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
 
 <!-- The Agora SDK requires Bluetooth permissions in case users are using Bluetooth devices.-->
 <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -20,7 +18,7 @@
         <!-- android:name="${applicationName}" -->
 
    <application
-        android:label="kingsfam"
+        android:label="KingsFam"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
