@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kingsfam/config/paths.dart';
-import 'package:kingsfam/models/message_model.dart';
-import 'package:kingsfam/models/church_kingscord_model.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church_kings_cord_repository/base_kingscord_repository.dart';
 

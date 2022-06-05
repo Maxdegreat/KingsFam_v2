@@ -5,10 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/config/paths.dart';
-import 'package:kingsfam/models/failure_model.dart';
 import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/repositories/church_kings_cord_repository/kingscord_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 
 part 'kingscord_state.dart';

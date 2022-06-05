@@ -1,9 +1,9 @@
 
+
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 
@@ -93,6 +93,20 @@ class Church extends Equatable {
       'events': events,
       'size' : size,
     };
+  }
+
+  static Future<Set<String>> getCommunityMemberIds(DocumentSnapshot doc) async {
+    final data = doc.data() as Map<String, dynamic>;
+    Set<String> memberIds  = {};
+    final memRefs = data['members'];
+    if (memRefs == null) return {}; 
+    for (DocumentReference doc in memRefs) {
+      var snap = await doc.get();
+      if (snap.exists && snap.data() != null) {
+        memberIds.add(snap.id);
+      }
+    }
+    return memberIds;
   }
 
   //6 from doc

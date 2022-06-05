@@ -3,10 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 import 'package:kingsfam/screens/notification/bloc/noty_bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
-import 'package:kingsfam/widgets/profile_image.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 class NotificationsScreen extends StatelessWidget {

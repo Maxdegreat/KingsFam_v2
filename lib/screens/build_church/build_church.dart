@@ -3,7 +3,6 @@
 // check the bottom of the file.
 // after all navs back to prev pages but the church is now made :)
 
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +13,6 @@ import 'package:kingsfam/extensions/extensions.dart';
 import 'package:kingsfam/helpers/helpers.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
-import 'package:kingsfam/screens/chats/chats_screen.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 import 'cubit/buildchurch_cubit.dart';

@@ -1,7 +1,7 @@
 part of 'feed_bloc.dart';
 enum FeedStatus {inital, loading, success, paginating, error}
 class FeedState extends Equatable {
-  final List<Post?>? posts;
+  final List<Post?> posts;
   final FeedStatus status;
   final Failure failure;
   final Set<String?> likedPostIds;

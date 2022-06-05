@@ -3,7 +3,6 @@
 // second task select video from gallerey
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +13,7 @@ class ImageHelper {
     final pickedFileVideo =
         await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (pickedFileVideo != null) return File(pickedFileVideo.path);
+    return null;
   }
 
   //IF WE ARE SLECTING A IMAGE FROM GALLEREY

@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/extensions/locations.dart';
 import 'package:kingsfam/helpers/image_helper.dart';

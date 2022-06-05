@@ -1,7 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/widgets/profile_image.dart';
 
 class StoryCommuinityArgs {
   final Church commuinity;

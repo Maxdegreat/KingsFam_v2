@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kingsfam/models/models.dart';
 
 abstract class BaseUserrRepository {

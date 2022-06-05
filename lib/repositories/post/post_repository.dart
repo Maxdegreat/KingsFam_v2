@@ -1,12 +1,9 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/models/post_model.dart';
-import 'package:kingsfam/models/comment_model.dart';
 
 import 'package:kingsfam/repositories/post/base_post_repository.dart';
 

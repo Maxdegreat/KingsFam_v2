@@ -5,7 +5,6 @@ import 'package:kingsfam/cubits/cubits.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
-import 'package:kingsfam/screens/feed_new/feed_new.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 class CommuinityFeedScreenArgs {
@@ -52,9 +51,9 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
         return Scaffold(
             appBar: AppBar(title: Text("${widget.commuinity.name}\'s Content", overflow: TextOverflow.fade, style: Theme.of(context).textTheme.bodyText1,),),
             body: ListView.builder(
-                  itemCount: state.posts!.length,
+                  itemCount: state.posts.length,
                   itemBuilder: (BuildContext context, int index) {
-                    final Post? post = state.posts![index];
+                    final Post? post = state.posts[index];
                     if (post != null) {
             
                     // ignore: non_constant_identifier_names

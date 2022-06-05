@@ -102,7 +102,7 @@ class _ProfileScreenState extends State<ProfileScreen>  {
 
   //---------------------------------------------------------body widget extracted
   Widget _bodyBabbyyyy(ProfileState state) {
-    var post_img_vid_size = MediaQuery.of(context).size.height / 5;
+    var postImgVidSize = MediaQuery.of(context).size.height / 5;
     switch (state.status) {
       case ProfileStatus.initial:
         return CircularProgressIndicator(color: Colors.red[400]);

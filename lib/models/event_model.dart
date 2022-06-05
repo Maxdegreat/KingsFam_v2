@@ -70,5 +70,6 @@ class Event extends Equatable {
         );
       }
     }
+    return null;
   }
 }

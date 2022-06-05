@@ -4,7 +4,6 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,7 +20,6 @@ import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/cubit/calls_home_cubit.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
 
-import 'repositories/auth/auth_repository.dart';
 import 'screens/build_church/cubit/buildchurch_cubit.dart';
 import 'screens/screens.dart';
 
@@ -58,7 +56,6 @@ class MyApp extends StatelessWidget {
       ],
       child: MultiBlocProvider(
         providers: [
-          
           BlocProvider<AuthBloc>(
             create: (context) =>
                 AuthBloc(authRepository: context.read<AuthRepository>()),
@@ -68,8 +65,7 @@ class MyApp extends StatelessWidget {
                   userrRepository: context.read<UserrRepository>(),
                   churchRepository: context.read<ChurchRepository>(),
                   authBloc: context.read<AuthBloc>())
-                ..add(InitializeUser(
-                    currentUserrId: context.read<AuthBloc>().state.user!.uid))),
+                ),
           BlocProvider<LikedPostCubit>(
             create: (context) => LikedPostCubit(
                 postsRepository: context.read<PostsRepository>(),
@@ -126,7 +122,6 @@ class MyApp extends StatelessWidget {
               appBarTheme: AppBarTheme(color: Colors.black),
               scaffoldBackgroundColor: Colors.black,
               primaryColorDark: Colors.red[300],
-              accentColor: Colors.white,
               textTheme: TextTheme(
                   bodyText1: TextStyle(
                     fontSize: 18,
@@ -140,7 +135,8 @@ class MyApp extends StatelessWidget {
                   headline2: TextStyle(
                       fontSize: 23.0,
                       color: Colors.white,
-                      fontWeight: FontWeight.bold))),
+                      fontWeight: FontWeight.bold)),
+              accentColor: Colors.white),
           debugShowCheckedModeBanner: false,
           title: 'KingsFam',
           onGenerateRoute: CustomRoute.onGenerateRoute,

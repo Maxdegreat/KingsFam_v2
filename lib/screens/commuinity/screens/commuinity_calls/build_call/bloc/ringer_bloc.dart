@@ -5,7 +5,6 @@ import 'package:equatable/equatable.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/models/call_model.dart';
 import 'package:kingsfam/models/failure_model.dart';
-import 'package:kingsfam/repositories/repositories.dart';
 
 part 'ringer_event.dart';
 part 'ringer_state.dart';

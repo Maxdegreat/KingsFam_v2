@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kingsfam/screens/profile/widgets/widgets.dart';
 
 class ProfileStats extends StatelessWidget {
   final int posts;

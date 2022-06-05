@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
@@ -14,7 +13,6 @@ import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
 
 import 'package:kingsfam/widgets/widgets.dart';
-import 'package:rive/rive.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -29,9 +27,7 @@ class SearchScreen extends StatefulWidget {
               create: (_) => SearchBloc(
                   authBloc: context.read<AuthBloc>(),
                   userrRepository: context.read<UserrRepository>(),
-                  churchRepository: context.read<ChurchRepository>())
-                ..add(InitializeUser(
-                    currentUserrId: context.read<AuthBloc>().state.user!.uid)),
+                  churchRepository: context.read<ChurchRepository>()),
               child: SearchScreen(),
             ));
   }
@@ -42,10 +38,12 @@ HexColor hexcolor = HexColor();
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _textEditingController = TextEditingController();
   ScrollController scrollController = ScrollController();
+  bool initSearchScreen = false;
 
   @override
   void initState() {
     scrollController.addListener(listenToScrolling);
+    initSearchScreen = false;
     super.initState();
   }
 
@@ -63,9 +61,23 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+  // this is to make sure the search screen is initalized only once 
+  // unless refreshed. soon find a way to only load once the screen is opened
+  // i usupect the need to rewrite the stack logic for that tho.
+
+  initializeSeachScreen(BuildContext context) {
+    initSearchScreen = true;
+     context.read<SearchBloc>()..add(InitializeUser(
+               currentUserrId: context.read<AuthBloc>().state.user!.uid));
+  }
+
+  // the build method is shown below
+
   @override
   Widget build(BuildContext context) {
-    //--------------------------------------------------ADD TO SEARCH CUBIT THAT WAY GET CHURCH FROM STATE
+    if (initSearchScreen == false)
+      initializeSeachScreen(context);
+
     return RefreshIndicator(
         onRefresh: () async {
           context.read<SearchBloc>()
@@ -270,8 +282,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  void navToChurch(
-      {required BuildContext context, required Church commuinity}) {
+  void navToChurch({required BuildContext context, required Church commuinity}) {
     Navigator.of(context).pushNamed(CommuinityScreen.routeName,
         arguments: CommuinityScreenArgs(commuinity: commuinity));
   }

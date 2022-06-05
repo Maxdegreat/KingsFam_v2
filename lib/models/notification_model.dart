@@ -117,5 +117,6 @@ Map<String, dynamic> toDoc () {
       catch (e) {
         print("When in the notificationKF model the error thrown is: $e");
     }
+    return null;
 }
 }

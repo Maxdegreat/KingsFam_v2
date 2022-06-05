@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/calls_home.dart';
-import 'package:kingsfam/screens/commuinity/screens/sounds/sounds.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscorc.dart';
 import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
-import 'package:kingsfam/screens/edit_profile/edit_profile_screen.dart';
-import 'package:kingsfam/screens/loginForm/login_form_screen.dart';
 import 'package:kingsfam/screens/screens.dart';
 
 class CustomRoute {
@@ -64,8 +60,8 @@ class CustomRoute {
       // case PostView.routeName:
       //   return PostView.route(settings.arguments as PostViewAgrs);
 
-      case VideoCallScreen.routeName:
-        return VideoCallScreen.route(args: settings.arguments as VideoCallScreenArgs);
+      //case VideoCallScreen.routeName:
+      //  return VideoCallScreen.route(args: settings.arguments as VideoCallScreenArgs);
 
       case ProfilePostView.routeName:
         return ProfilePostView.route(settings.arguments as ProfilePostViewArgs);

@@ -7,7 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:kingsfam/config/paths.dart';
-import 'package:kingsfam/models/comment_model.dart';
 import 'package:kingsfam/models/user_model.dart';
 
 import 'church_model.dart';
@@ -166,6 +165,7 @@ class Post extends Equatable {
   };
 
   static Future<Post?> fromDoc(DocumentSnapshot doc) async {
+    log ("function: fromDoc ~ file: post_model.dart");
     //6 from doc
     final data = doc.data() as Map<String, dynamic>;
     final authorRef = data['author'] as DocumentReference?;
@@ -175,11 +175,11 @@ class Post extends Equatable {
       var authDoc = await authorRef.get();
       var commDoc = await commRef.get();
       if (authDoc.data() != null && commDoc.data() != null) {
-      print("_+_+_+_+_+_+_+_+_+_ COMM REFF IS NOT NULL");
+      final Church cm = await Church.fromDoc(commDoc);
          return Post(
             id: doc.id,
             author: Userr.fromDoc(authDoc),
-            commuinity: null,
+            commuinity: cm,
             quote: data['quote'] ?? null,
             imageUrl: data['imageUrl'] ?? null,
             videoUrl: data['videoUrl'] ?? null,
@@ -191,7 +191,6 @@ class Post extends Equatable {
             height: (data['height']) ?? null,
         );
       } else {
-      log("_+_+_+_+_+_+_+_+_+_ COMM REFF IS NULL FOUND OUT TOO LATE TO CATCH TRAIN THO");
         return Post(
             id: doc.id,
             author: Userr.fromDoc(authDoc),
@@ -210,7 +209,6 @@ class Post extends Equatable {
     }
 
     else if (authorRef != null) {
-      print("_+_+_+_+_+_+_+_+_+_ COMM REFF IS NULL");
 
       var authDoc = await authorRef.get();
       if (authDoc.data() != null ) {
@@ -230,6 +228,7 @@ class Post extends Equatable {
         );
       }    
     }
+      return null;
 
   }
 

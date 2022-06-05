@@ -64,7 +64,7 @@ class MessageLines extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: message.sender!.colorPref == null || message.sender!.colorPref == "" ? Colors.red : Color(hexcolor.hexcolorCode(message.sender!.colorPref))
+                    color: message.sender!.colorPref == "" ? Colors.red : Color(hexcolor.hexcolorCode(message.sender!.colorPref))
                   ),
                 ), 
                  Text('${message.date.timeAgo()}', 
@@ -97,8 +97,8 @@ class MessageLines extends StatelessWidget {
             width: size.width / 8,
             child: message.sender!.profileImageUrl != "null" ? kingsCordProfileImg() : kingsCordProfileIcon(),
             decoration: BoxDecoration(
-              border: Border.all(width: 2, color: message.sender!.colorPref == null || message.sender!.colorPref == "" ? Colors.red : Color(hexcolor.hexcolorCode(message.sender!.colorPref))),
-              color: message.sender!.colorPref == null || message.sender!.colorPref == "" ? Colors.red : Color(hexcolor.hexcolorCode(message.sender!.colorPref)),
+              border: Border.all(width: 2, color: message.sender!.colorPref == "" ? Colors.red : Color(hexcolor.hexcolorCode(message.sender!.colorPref))),
+              color: message.sender!.colorPref == "" ? Colors.red : Color(hexcolor.hexcolorCode(message.sender!.colorPref)),
               borderRadius: BorderRadius.circular(25)
             ),
           );

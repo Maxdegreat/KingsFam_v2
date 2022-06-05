@@ -34,7 +34,7 @@ class AuthRepository extends BaseAuthRepository {
       
       String userId = currUser!.uid;
       if(currUser == null) {
-        String? userId = null;
+        String? userId;
         print("***************************");
         print("The currUser in saveTokenToDataBase is null in Auth_repo");
         print("****************************");

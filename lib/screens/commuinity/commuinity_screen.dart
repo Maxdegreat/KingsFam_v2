@@ -4,7 +4,6 @@
 //esentally this has the main room, events, storyes ,calls
 import 'dart:developer';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -14,23 +13,18 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 // import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/helpers.dart';
 // import 'package:kingsfam/models/church_kingscord_model.dart';
-import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/build_church/cubit/buildchurch_cubit.dart';
-import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 // import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/calls_home.dart';
 // import 'package:kingsfam/screens/commuinity/screens/feed/commuinity_feed.dart';
 // import 'package:kingsfam/screens/commuinity/screens/sounds/sounds.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscorc.dart';
 // import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
-import 'package:kingsfam/screens/profile/profile_screen.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:rive/rive.dart';
-import 'package:uuid/uuid.dart';
 
 class CommuinityScreenArgs {
   final Church commuinity;
@@ -82,6 +76,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   void dispose() {
     _tabController.dispose();
     _txtController.dispose();
+    context.read<CommuinityBloc>().close();
+    context.read<CommuinityBloc>().dispose();
     super.dispose();
   }
 
@@ -288,9 +284,10 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                 if (call != null) {
                   // return Container();
                   return GestureDetector(
-                    onTap: () => Navigator.of(context).pushNamed(
-                        VideoCallScreen.routeName,
-                        arguments: VideoCallScreenArgs(channlName: call.name, tokenUrl: call.id! + widget.commuinity.id! + call.name)),
+                    onTap: () {},
+                    // onTap: () => Navigator.of(context).pushNamed(
+                    //     VideoCallScreen.routeName,
+                    //     arguments: VideoCallScreenArgs(channlName: call.name, tokenUrl: call.id! + widget.commuinity.id! + call.name)),
                     child: callTile(context, call),
                   );
                 } else {
@@ -497,7 +494,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
 
   GestureDetector _new_call() {
     return GestureDetector(
-        onTap: () => _new_call_sheet(),
+        onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("VVR will be added shortly in an update"))),//_new_call_sheet(),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25),
           child: Container(

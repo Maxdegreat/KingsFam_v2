@@ -3,7 +3,8 @@
 // add users takes a type of. this typeOf wil be used to determin which type of chat is being made
 // acepts type of from a named pram CreateNewGroupArgs
 // once typeOf has been made you can select the users to add to your chat
-import 'dart:ui';
+
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,7 +13,6 @@ import 'package:kingsfam/config/type_of.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/widgets/widgets.dart';
-import 'package:provider/provider.dart';
 
 import '../screens.dart';
 
@@ -105,8 +105,15 @@ class _AddUsersState extends State<AddUsers> {
                       Container(
                         height: MediaQuery.of(context).size.height / 1.38,
                         width: double.infinity,
-                        child: state.status == SearchStatus.initial
-                            ? ListView.builder(
+                        child: state.status == SearchStatus.initial 
+
+                          ? state.users.length == 0 ? 
+
+                                    Center(
+                                      child: Text("You have to follow some fam before you can create a community!"),
+                                    ) :
+
+                             ListView.builder(
                               itemCount: state.followingUsers.length,
                               itemBuilder: (BuildContext context, int index) {
                                 Userr user = state.followingUsers[index];
@@ -134,9 +141,12 @@ class _AddUsersState extends State<AddUsers> {
                                 // once listview is a sucess
                                 : state.status == SearchStatus.success
                        
-                                    ? ListView.builder(
+                                    ?
+                                    
+                                    ListView.builder(
                                         itemCount: state.users.length,
                                         itemBuilder: (BuildContext context, int index) {
+                                          log("The len of users is ${state.users.length}");
                                           Userr user = state.users[index];
                                           return Padding(padding: EdgeInsets.symmetric(vertical: 13 ),
                                             child: ListTile(

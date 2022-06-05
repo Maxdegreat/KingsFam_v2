@@ -8,7 +8,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/chat_room_settings/cubit/roomsettings_cubit.dart';
 import 'package:kingsfam/screens/screens.dart';
-import 'package:kingsfam/widgets/banner_image_widget.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 class ChatRoomSettingsArgs {

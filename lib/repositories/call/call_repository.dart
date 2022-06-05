@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kingsfam/config/paths.dart';
-import 'package:kingsfam/models/call_model.dart';
-import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/models/models.dart';
 
 import 'package:kingsfam/repositories/call/base_call_repository.dart';

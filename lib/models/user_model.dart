@@ -114,6 +114,11 @@ class Userr extends Equatable {
     };
   }
 
+  factory Userr.getId(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return Userr(id: doc.id, username: '', usernameSearchCase: [], email: '', token: [], bio: 'bio', location: '', profileImageUrl: '', bannerImageUrl: '', following: 0, followers: 0, friends: [], colorPref: '');
+  }
+
   factory Userr.fromDoc(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return Userr(

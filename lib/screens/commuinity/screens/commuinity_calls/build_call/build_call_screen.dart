@@ -1,9 +1,6 @@
 //uses the calls home cubit
 import 'package:flutter/material.dart';
-import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kingsfam/models/call_model.dart';
-import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/cubit/calls_home_cubit.dart';
 import 'package:kingsfam/widgets/profile_image.dart';

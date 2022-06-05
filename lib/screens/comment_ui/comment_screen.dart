@@ -39,7 +39,7 @@ class CommentScreen extends StatefulWidget {
 
 class _CommentScreenState extends State<CommentScreen> {
   final TextEditingController _messageController = TextEditingController();
-  double textHeight = 45;   
+  double textHeight = 35;   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -122,12 +122,8 @@ class _CommentScreenState extends State<CommentScreen> {
            Expanded(
              child: Container(
                  decoration: BoxDecoration(
-                     color: Colors.blue, borderRadius: BorderRadius.circular(5.0)),
+                     color: Colors.grey[900], borderRadius: BorderRadius.circular(5.0)),
                  height: textHeight,
-                 child: Padding(
-                   padding: const EdgeInsets.symmetric(
-                     horizontal: 7.0,
-                   ),
                    child: Align(
                      alignment: Alignment.center,
                      child: TextField(
@@ -140,18 +136,17 @@ class _CommentScreenState extends State<CommentScreen> {
                        expands: true,
                        textCapitalization: TextCapitalization.sentences,
                        onChanged: (messageText) {
-                         if (messageText.length >= 19)
-                           setState(() => textHeight = 67);
-                         else if (messageText.length >= 77)
-                           setState(() => textHeight = 75.0);
-                         else
-                           setState(() => textHeight = 45.0);
-                         // ctx.onIsTyping(messageText.length >= 1);
-                       },
+                        if (messageText.length >= 29) 
+                          setState(() => textHeight = 50.0);
+                        else if (messageText.length >= 87)
+                          setState(() => textHeight = 65.0);
+                        else 
+                          setState(() => textHeight = 30.0 );
+                      },
                      ),
                    ),
                  )),
-           ),
+           
            IconButton(
                onPressed: () {
                  final content = _messageController.text.trim();

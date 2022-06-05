@@ -1,7 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/signupForm/cubit/signupform_cubit.dart';
 import 'package:kingsfam/widgets/widgets.dart';

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/screens/edit_profile/edit_profile_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';

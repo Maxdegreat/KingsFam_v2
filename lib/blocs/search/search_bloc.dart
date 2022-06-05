@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 //import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
@@ -6,7 +8,6 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
-import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
 
 part 'search_event.dart';
 part 'search_state.dart';
@@ -62,6 +63,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     }
   }
   Stream<SearchState> _mapLoadUserToState(InitializeUser event) async* {
+    log("lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll");
     yield state.copyWith(status: SearchStatus.loading);
     try {
       print("Now in the map load user to state");

@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:firebase_auth/firebase_auth.dart';
 
 //this is the base to the actual auth repository!!!
 abstract class BaseAuthRepository {

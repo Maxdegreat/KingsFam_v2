@@ -1,19 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.kingsfam">
 
- <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.RECORD_AUDIO" />
-<uses-permission android:name="android.permission.CAMERA" />
-<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-
-<!-- The Agora SDK requires Bluetooth permissions in case users are using Bluetooth devices.-->
-<uses-permission android:name="android.permission.BLUETOOTH" />
-<!--This is for the ig gall capture-->
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
         <!-- android:name="${applicationName}" -->
 
@@ -56,15 +43,6 @@
             android:value="ca-app-pub-3940256099942544~3347511713"/>
     </application>
     
-
-<uses-permission  android:name="android.permission.READ_PHONE_STATE"/>
-<uses-permission  android:name="android.permission.INTERNET"  />
-<uses-permission  android:name="android.permission.RECORD_AUDIO"  />
-<uses-permission  android:name="android.permission.CAMERA"  />
-<uses-permission  android:name="android.permission.MODIFY_AUDIO_SETTINGS"  />
-<uses-permission  android:name="android.permission.ACCESS_NETWORK_STATE"  />
-<!-- The Agora SDK requires Bluetooth permissions in case users are using Bluetooth devices.-->
-<uses-permission  android:name="android.permission.BLUETOOTH"  />
 
 
 </manifest>

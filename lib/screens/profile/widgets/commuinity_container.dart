@@ -1,11 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
-import 'package:kingsfam/widgets/fancy_list_tile.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 // a list view of commuinitys that i am a part of yeahhhh

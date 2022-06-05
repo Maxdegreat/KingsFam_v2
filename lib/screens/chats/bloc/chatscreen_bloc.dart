@@ -2,16 +2,11 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
-import 'package:kingsfam/data/ad_helper.dart';
 import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/repositories/chat/chat_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
-import 'package:kingsfam/screens/chats/chats_screen.dart';
 
 part 'chatscreen_event.dart';
 part 'chatscreen_state.dart';
@@ -25,6 +20,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
   StreamSubscription<List<Future<Chat?>>>? _chatsStreamSubscription;
   StreamSubscription<List<Future<Church?>>>? _churchStreamSubscription;
+
 
   ChatscreenBloc({
     required ChatRepository chatRepository,
@@ -53,14 +49,12 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
     if (event is LoadChats) {
       yield* _mapLoadChatsToState(event);
     }
-    if (event is ChatScreenFetchPosts) {
-      yield* _mapFetchPostToState();
-    } else if (event is ChatScreenPaginatePosts) {
-      yield* _mapPaginatePost();
-    } else if (event is LoadCms) {
+    else if (event is LoadCms) {
       yield* _mapLoadCmsToState();
     }
   }
+
+  // This is the maping of commuinity to state
 
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
@@ -75,8 +69,11 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
     } catch (e) {}
   }
 
-  Stream<ChatscreenState> _mapLoadChatsToState(event) async* {
+  // This is the maping of chats to state, (this is currently not being used, rather a streamblder in UI is
+  // this needs to be addressed)
+
     //jesus
+  Stream<ChatscreenState> _mapLoadChatsToState(event) async* {
     try {
       state.copyWith(status: ChatStatus.loading);
 
@@ -94,53 +91,6 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
       state.copyWith(
           failure: Failure(
               message: 'error loading your chats, check ur connection fam'));
-    }
-  }
-
-  Stream<ChatscreenState> _mapFetchPostToState() async* {
-    yield state.copyWith(posts: [], fstatus: FeedStatus_chats.loading);
-
-      try {
-        log("get user feed");
-        final postsGot = await _postsRepository.getUserFeed(
-            userId: _authBloc.state.user!.uid, limit: 8);
-
-        // log(posts.toString());
-        _likedPostCubit.clearAllLikedPosts();
-
-        final likedPostIds = await _postsRepository.getLikedPostIds(
-            userId: _authBloc.state.user!.uid, posts: postsGot);
-        _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
-        List<Post?> posts = List<Post?>.from(state.posts)..addAll(postsGot);
-        yield state.copyWith(posts: posts, fstatus: FeedStatus_chats.success);
-      } catch (err) {
-        yield state.copyWith(
-            fstatus: FeedStatus_chats.error,
-            failure: Failure(
-                message: "Um, something went wrong when loading the feed???"));
-      }
-    }
-  
-  Stream<ChatscreenState> _mapPaginatePost() async* {
-    yield state.copyWith(fstatus: FeedStatus_chats.paginating);
-    try {
-      final lastPostId = state.posts.isNotEmpty ? state.posts.last!.id : null;
-      final posts = await _postsRepository.getUserFeed(
-          userId: _authBloc.state.user!.uid, lastPostId: lastPostId, limit: 8);
-
-      final updatedPosts = List<Post?>.from(state.posts)..addAll(posts);
-
-      final likedPostIds = await _postsRepository.getLikedPostIds(
-          userId: _authBloc.state.user!.uid, posts: posts);
-      yield state.copyWith(
-          posts: updatedPosts, fstatus: FeedStatus_chats.success);
-      _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
-    } catch (e) {
-      yield state.copyWith(
-          failure: Failure(
-              message: "dang, max messed up you're pagination code...",
-              code: e.toString()),
-          fstatus: FeedStatus_chats.error);
     }
   }
 }

@@ -1,5 +1,3 @@
-import 'package:kingsfam/models/call_model.dart';
-import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/models/models.dart';
 
 abstract class BaseCallRepository {

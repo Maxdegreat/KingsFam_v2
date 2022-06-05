@@ -15,6 +15,9 @@ import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 
 import '../../screens.dart';
 
+// this screen can controll how data is loaded on the open of the app by using the chain opperator.
+// for many reasons we will try to not load what we do not nead initally
+
 class TabNavigator extends StatelessWidget {
   static const String tabNavigatorRoot = '/';
   final GlobalKey<NavigatorState> navigatorKey;
@@ -62,16 +65,10 @@ class TabNavigator extends StatelessWidget {
           child: ChatsScreen(),
         );
 
+      // removed the chain operator that ads the init user
       case BottomNavItem.search:
-        return BlocProvider<SearchBloc>(
-          create: (context) => SearchBloc(
-            authBloc: context.read<AuthBloc>(),
-            churchRepository: context.read<ChurchRepository>(),
-            userrRepository: context.read<UserrRepository>(),
-          )..add(InitializeUser(
-              currentUserrId: ctx.read<AuthBloc>().state.user!.uid)),
-          child: SearchScreen(),
-        );
+        return SearchScreen();
+        
 
       case BottomNavItem.notifications:
         return BlocProvider<NotyBloc>(

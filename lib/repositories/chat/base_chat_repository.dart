@@ -1,4 +1,3 @@
-import 'package:kingsfam/models/chat_model.dart';
 import 'package:kingsfam/models/models.dart';
 
 abstract class BaseChatRepository {

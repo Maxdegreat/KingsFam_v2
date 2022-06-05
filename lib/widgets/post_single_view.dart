@@ -1,12 +1,8 @@
 
-import 'dart:developer';
 
-import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-import 'package:kingsfam/extensions/extensions.dart';
 
 import 'package:flutter/material.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
@@ -15,14 +11,11 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
 
-import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
-import 'package:kingsfam/screens/profile/profile_screen.dart';
 import 'package:kingsfam/screens/screens.dart';
 
 import 'package:kingsfam/widgets/commuinity_pf_image.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
 import 'package:kingsfam/widgets/videoPostView16_9.dart';
-import 'package:kingsfam/widgets/video_display.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PostSingleView extends StatefulWidget {
@@ -133,7 +126,7 @@ class _PostSingleViewState extends State<PostSingleView> {
                     borderRadius: BorderRadius.circular(7)),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Text("to do"),
+                  child: Text("Comments"),
                 ),
               ),
             ],

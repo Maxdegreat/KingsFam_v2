@@ -1,13 +1,9 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/models/failure_model.dart';
 import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/repositories/post/post_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 
 part 'commuinity_event.dart';
@@ -20,6 +16,8 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   final UserrRepository _userrRepository;
   final CallRepository _callRepository;
 
+  // three stream subscriptions used for listening to new values of each
+  // respectivly
   StreamSubscription<List<Future<KingsCord?>>>? _streamSubscriptionKingsCord;
   StreamSubscription<List<Future<CallModel>>>? _streamSubscriptionCalls;
   StreamSubscription<bool>? _streamSubscriptionIsMember;
@@ -62,13 +60,15 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   String failed = 'failed to load commuinty screen';
 
-  Stream<CommuinityState> _mapCommuinityLoadCommuinityToState(
-      CommuinityLoadCommuinity event) async* {
+  
+
+  Stream<CommuinityState> _mapCommuinityLoadCommuinityToState(CommuinityLoadCommuinity event) async* {
+
     emit(state.copyWith(status: CommuintyStatus.loading));
     try {
       _streamSubscriptionKingsCord?.cancel();
       _streamSubscriptionKingsCord = _churchRepository
-          .getCommuinityCordsStream(churchId: event.commuinity.id!, limit: 7)
+          .getCommuinityCordsStream(commuinity: event.commuinity, limit: 7)
           .listen((kcords) async {
         final allCords = await Future.wait(kcords);
         add(ComuinityLoadingCords(
@@ -84,12 +84,11 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   Stream<CommuinityState> _mapCommuinityLoadingCordsToState(
       ComuinityLoadingCords event) async* {
     // make calls sream
-    // add calls to loaded yield
+    // add calls to loaded then yield
     // also add this.event to loaded yield ... now has both list
-    //  STILL LOAFDING SO NO YIELD YET
+    // STILL LOAFDING SO NO YIELD YET
     try {
-      List<Post?> posts =
-          await _churchRepository.getCommuinityPosts(cm: event.commuinity);
+      List<Post?> posts = await _churchRepository.getCommuinityPosts(cm: event.commuinity);
       _streamSubscriptionCalls?.cancel();
       _streamSubscriptionCalls = _callRepository
           .getCommuinityCallsStream(
@@ -113,14 +112,11 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     try {
       var cmIds = event.commuinity.members.map((e) => e.id).toList();
       late bool isMem;
-      eKcs = event.kcs;
-      eCalls = event.calls;
-      ePosts = event.posts;
-      _streamSubscriptionIsMember = _churchRepository
-          .streamIsCmMember(
-              cm: event.commuinity, authorId: _authBloc.state.user!.uid)
-          .listen((isMemStream) {
-        isMem = isMemStream;
+  
+      var ism = await _churchRepository
+          .streamIsCmMember(cm: event.commuinity, authorId: _authBloc.state.user!.uid);
+      _streamSubscriptionIsMember = ism.listen((isMemStream) async {
+        isMem = await isMemStream;
         emit(state.copyWith(
             calls: event.calls,
             isMember: isMem,
@@ -153,5 +149,9 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   Future<void> delKc(
       {required KingsCord cord, required Church commuinity}) async {
     await _churchRepository.delCord(cmmuinity: commuinity, cord: cord);
+  }
+
+  dispose() {
+    state.copyWith(calls: [], failure: Failure(), isMember: false, kingCords: [], postDisplay: [], status: CommuintyStatus.inital);
   }
 }
