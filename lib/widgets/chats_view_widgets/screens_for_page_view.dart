@@ -13,7 +13,6 @@ import 'package:kingsfam/widgets/kf_crown_v2.dart';
 import 'package:kingsfam/widgets/chats_view_widgets/chats_screen_widgets.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
-
 class ScreensForPageView {
   // ignore: non_constant_identifier_names
   Widget commuinity_view(String userId, BuildContext context, BannerAd bannerAd,
@@ -51,14 +50,30 @@ class ScreensForPageView {
                       children: [
                         state.chs.length == 0
                             ? Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Center(
                                       child: Container(
-                                          height: 150,
-                                          width: 150,
+                                          height: 100,
+                                          width: 100,
                                           child: KFCrownV2())),
-                                 
-                                  howToBox()
+                                  Container(
+                                      width: 125,
+                                      child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                              primary: Color(hexcolor
+                                                  .hexcolorCode('#FFC050'))),
+                                          onPressed: () async {
+                                            helpDialog(context);
+                                          },
+                                          child: Text(
+                                            "Getting Started",
+                                            textAlign: TextAlign.center,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1,
+                                          )))
                                 ],
                               )
                             : Expanded(
@@ -80,7 +95,11 @@ class ScreensForPageView {
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 10.0),
                                           child: FancyListTile(
-                                              location: commuinity!.location.length > 1 ? commuinity.location : null,
+                                              location:
+                                                  commuinity!.location.length >
+                                                          1
+                                                      ? commuinity.location
+                                                      : null,
                                               username: commuinity.name,
                                               imageUrl: commuinity.imageUrl,
                                               onTap: () => Navigator.of(context)
@@ -105,8 +124,6 @@ class ScreensForPageView {
       },
     );
   }
-
-  
 
   // ignore: non_constant_identifier_names
   StreamBuilder<QuerySnapshot<Map<String, dynamic>>> chats_view(String userId) {
@@ -156,10 +173,6 @@ class ScreensForPageView {
           }
         });
   }
-
-  
-
-  
 
   Widget feed(context) => FeedScreenWidget();
 

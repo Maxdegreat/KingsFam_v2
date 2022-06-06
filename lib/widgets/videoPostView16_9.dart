@@ -33,9 +33,17 @@ class _VideoPostView16_9State extends State<VideoPostView16_9> {
     // IF ID.POSTVIDEO != NULL PLAY VIDEO ONCE OFFSET MOVES PAUSE THE VIDEO.
 
     controller = VideoPlayerController.network(widget.videoUrl)
-      ..addListener(() => setState(() {}))
+      ..addListener(() {
+        setState(() {});
+      } )
       ..setLooping(true)
       ..initialize().then((_) => controller.pause());
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override

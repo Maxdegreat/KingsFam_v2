@@ -6,6 +6,7 @@ import 'package:rive/rive.dart';
 Future<void> helpDialog(BuildContext context) async {
   return showDialog(context: context, builder: (context) {
     return AlertDialog(
+      
       backgroundColor: Colors.grey[900] ,
       content: howToBox(),
     );
@@ -19,8 +20,8 @@ Widget howToBox() {
   return StatefulBuilder(
     builder: (BuildContext context, setState) {
       return Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(25), color: Colors.white10),
-        height: MediaQuery.of(context).size.height / 3,
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(25), color: Colors.transparent),
+        height: MediaQuery.of(context).size.height / 2.5,
         width: 450,
         child: PageView.builder(
           itemCount: buildDotLen ,

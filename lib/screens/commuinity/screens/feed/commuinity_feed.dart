@@ -50,7 +50,7 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
       builder: (context, state) {
         return Scaffold(
             appBar: AppBar(title: Text("${widget.commuinity.name}\'s Content", overflow: TextOverflow.fade, style: Theme.of(context).textTheme.bodyText1,),),
-            body: ListView.builder(
+            body: state.posts.length > 0 ? ListView.builder(
                   itemCount: state.posts.length,
                   itemBuilder: (BuildContext context, int index) {
                     final Post? post = state.posts[index];
@@ -78,8 +78,8 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
 
 
                   },
-                )
-            );
+                ) : Center(child: Text("Your Community's post will show here"),)
+        );
       },
     );
   }

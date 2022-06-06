@@ -84,7 +84,7 @@ class __buildBodyState extends State<_buildBody> {
                 context.read<FeedBloc>().add(FeedFetchPosts());
                 context.read<LikedPostCubit>().clearAllLikedPosts();
               },
-              child:  listviewsinglePost(state));
+              child:  state.posts.length > 0 ? listviewsinglePost(state) : Center(child: Text("Follow Some Fam First To Have A Feed")));
         }
       },
     );

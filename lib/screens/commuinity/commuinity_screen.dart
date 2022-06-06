@@ -198,7 +198,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
             Container(
               height: 85,
               width: double.infinity,
-              child: ListView.builder(
+              child: state.postDisplay.length > 0 ? ListView.builder(
                   itemCount: state.postDisplay.length,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
@@ -208,7 +208,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                     } else {
                       return SizedBox.shrink();
                     }
-                  }),
+                  }) :  Center(child: Text("Your Community's post will show here")),
             ),
             //ContentContaner(context),
             Row(
