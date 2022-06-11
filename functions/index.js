@@ -3,6 +3,30 @@ const admin = require("firebase-admin");
 
 admin.initializeApp();
 
+exports.onMentionedUser = functions.firestore.document("/mention/{mentionedId}/{churchId}/{kingsCordId}")
+  .onCreate(async (_, context) => {
+    const mentionedId = context.params.mentionedId;
+    const cmId = context.params.churchId;
+    const kcId = context.params.kingsCordId;
+    // get the mentioned user info
+    var mentionedRef = admin.firestore().collection('users').doc(mentionedId);
+    var mentionedDoc = await mentionedRef.get();
+    var mentionedData = mentionedDoc.data();
+    // make the FCM
+    const payload = {
+      notification: {
+        title: 'Hey! you were mentioned in ' + mentionedData['communityName'],
+        body: mentionedData['txtMsgBody'],
+        color: '#4169E1'
+      },
+  };
+
+  const options = {
+    priority: 'high',
+};
+    admin.messaging.sendToDevice(mentionedData.token, payload, options)
+  })
+
 //name of our cloud function
 exports.onFollowUserr = functions.firestore.document("/followers/{userrId}/userFollowers/{followerId}")
   //when a new doc is created at this path it will fire
