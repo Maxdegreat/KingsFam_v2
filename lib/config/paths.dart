@@ -22,6 +22,7 @@ class Paths {
   static const String call = 'callModel';
   static const String activeInCall = 'activeInCall';
   static const String event = 'evnt';
+  static const String mention = 'mention';
 
   //sub collections
   static const String postsComments = 'postComments';

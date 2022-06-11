@@ -7,8 +7,10 @@ class Message {
   final String? id;
   final String? text;
   final String? imageUrl;
+  final String? videoUrl;
   final Timestamp date;
   final Userr? sender;
+  final List<String>? mentionedIds;
 
 //2 gen the constructor
   Message({
@@ -16,6 +18,8 @@ class Message {
     this.sender, // do not call this in the to doc bc 
     this.text,
     this.imageUrl,
+    this.videoUrl,
+    this.mentionedIds,
     required this.date
   });
 
@@ -25,7 +29,9 @@ class Message {
         sender,
         text,
         imageUrl,
+        videoUrl,
         date,
+        mentionedIds,
       ];
 
   // 4 make the copy with
@@ -34,19 +40,23 @@ class Message {
     Userr? sender,
     String? text,
     String? imageUrl,
-    Timestamp? date
+    String? videoUrl,
+    Timestamp? date,
+    List<String>? mentionedIds,
   }) {
     return Message(
       id: id ?? this.id,
       sender: sender ?? this.sender,
       text: text ?? this.text,
       imageUrl: imageUrl ?? this.imageUrl,
+      videoUrl: videoUrl ?? this.videoUrl,
       date: date ?? this.date,
+      mentionedIds: mentionedIds ?? this.mentionedIds,
     );
   }
 
   factory Message.empty() {
-    return Message(date: Timestamp.now(), sender: Userr.empty, text: '', imageUrl: null,);
+    return Message(date: Timestamp.now(), sender: Userr.empty, text: '',);
   }
 
   // 5 make the to doc
@@ -55,7 +65,9 @@ class Message {
       'sender': FirebaseFirestore.instance.collection(Paths.users).doc(senderId),
       'text': text,
       'imageUrl': imageUrl,
-      'date': date 
+      'videoUrl': videoUrl,
+      'date': date, 
+      'mentionedIds' : mentionedIds
     };
   }
 
@@ -72,7 +84,9 @@ class Message {
       sender: user,
       text: data['text'] ?? null,
       imageUrl: data['imageUrl'] ?? null,
+      videoUrl: data['videoUrl'] ?? null,
       date: (data['date']),
+      mentionedIds:  List<String>.from(data['mentionedIds'] ?? [])
       
     );
   }

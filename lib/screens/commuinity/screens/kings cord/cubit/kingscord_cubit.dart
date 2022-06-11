@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 
@@ -60,12 +63,29 @@ class KingscordCubit extends Cubit<KingscordState> {
   void onSendTxtMsg(
       {required String churchId,
       required String kingsCordId,
-      required String txtMsgBody}) {
+      required String txtMsgBody,
+      required Set<String> mentionIdsSet,
+      required String cmTitle,
+      }) {
+    // This should tell the cloud that the mentioned id was mentioned through the cloud
+    // I have added the function to send a noti to the users phone. the update for this to happen is in the 
+    // functions index.js file.
+    if (txtMsgBody.length > 1 && txtMsgBody.length < 250) {
+      for (String mentionedId in mentionIdsSet){
+        FirebaseFirestore.instance.collection(Paths.mention).doc(mentionedId).collection(churchId).doc(kingsCordId).set({
+          'communityName' : cmTitle,
+          'messageBody' : txtMsgBody
+        });
+        log("the mentioned id here is $mentionedId");
+      }
+
+    }
     // the creation of the message
     final message = Message(
         text: txtMsgBody,
         date: Timestamp.fromDate(DateTime.now()),
-        imageUrl: null);
+        imageUrl: null
+      );
     //uploading the message to cloud
     _kingsCordRepository.sendMsgTxt(
         churchId: churchId, kingsCordId: kingsCordId, message: message, senderId: _authBloc.state.user!.uid);
