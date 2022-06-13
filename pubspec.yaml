@@ -83,7 +83,6 @@ dependencies:
   #     ref: dev/flutter-upgrade-3.0
 
 
-  # permissions handeler
   permission_handler: 
   
   camera: 

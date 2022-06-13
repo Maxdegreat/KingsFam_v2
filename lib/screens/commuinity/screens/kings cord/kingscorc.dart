@@ -63,7 +63,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   String? _mentionedController = null;
   int idxWhereStartWithat = 0;
   bool containsAt = false;
-  Set<String> mentionIdsSet = {};
+  Map<String, dynamic> mentionIdsMap = {};
   HexColor hexColor = HexColor();
   @override
   void dispose() {
@@ -72,6 +72,12 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   }
   double textHeight = 25;
   _buildMessageStream({required Church commuinity, required KingsCord kingsCord, required List<Message?> msgs }) {
+    Set<String> memIds = {};
+    Map<String, dynamic> mems = {};
+    for (var user in widget.commuinity.members) {
+      memIds.add(user.id);
+      mems[user.username] = user.id;
+    }
 
     return Expanded(
           flex: 1,
@@ -184,16 +190,15 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   ),
                   onPressed: state.isTyping
                       ? () {
-                          bool isValidAt = false;
-                          //ctx.onTextMessage(_messageController.text);
-                          if (_messageController.text.isEmpty || _messageController.text != ' ') {
-                            for (int i = 0; i < _messageController.text.length; i++) {
-                              if (_messageController.text[i] != '@')
-                                continue;
-                              else if (_messageController.text[i] == '@') {
-                                for (int j = i; j < _messageController.text.length; j++) {
+                          Set<String> mentionedUserNames = {};
+                          var msgAsLst = _messageController.text.split(' ');
+                          for (String msg in msgAsLst) {
+                            if (msg.length >= 2 && msg[0] == '@') {
+                              var mentionedUserName = msg.substring(1, msg.length);
+                              if (!mentionedUserNames.contains(mentionedUserName)) {
 
-                                }
+                                mentionedUserNames.add(mentionedUserName);
+                                if (mems)
                               }
                             }
                           }
@@ -201,7 +206,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                               churchId: widget.commuinity.id!,
                               kingsCordId: widget.kingsCord.id!,
                               txtMsgBody: _messageController.text,
-                              mentionIdsSet: mentionIdsSet,
+                              mentionIdsMap: mentionIdsMap,
                               cmTitle: widget.commuinity.name
                             );
                           ctx.onIsTyping(false);
@@ -234,6 +239,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       _containerHeight = 150;
 
     return username != null ? Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(15)
+      ),
       height: _containerHeight!.toDouble(),
       width: double.infinity,
       child: ListView.builder(
@@ -247,7 +256,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
               var oldMessageControllerBody = _messageController.text.substring(0, idxWhereStartWithat);
               _messageController.text = oldMessageControllerBody += '@${_mentioned.username} ';
                _messageController.selection = TextSelection.fromPosition(TextPosition(offset:  _messageController.text.length));
-               mentionIdsSet.add(_mentioned.id);
+               mentionIdsMap[_mentioned.id] = {
+                'token': _mentioned.token,
+                'username': _mentioned.username,
+               };
               _mentionedController = null;
             },
           );
@@ -282,7 +294,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   @override
   Widget build(BuildContext context) {
 
-    Set<String> memIds = widget.commuinity.members.map((e) => e.id).toSet();
+
 
 
     return Scaffold(

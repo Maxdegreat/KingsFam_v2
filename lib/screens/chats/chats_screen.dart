@@ -7,7 +7,8 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
-import 'package:kingsfam/models/models.dart';
+//import 'package:firebase_messaging/firebase_messaging.dart';
+//import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/chats_view_widgets/screens_for_page_view.dart';
@@ -28,13 +29,11 @@ class ChatsScreen extends StatefulWidget {
 
 class _ChatsScreenState extends State<ChatsScreen>
     with SingleTickerProviderStateMixin {
-  
-
   //bool get wantKeepAlive => true;
+  // handel permissions for notifications using FCM
 
-  // It is assumed that all messages contain a data field with the key 'type'
+  // make support for FCM
   Future<void> setupInteractedMessage() async {
-    print("running setupInteractedMessage()");
     // Get any messages which caused the application to open from
     // a terminated state.
     RemoteMessage? initialMessage =
@@ -49,29 +48,13 @@ class _ChatsScreenState extends State<ChatsScreen>
     // Also handle any interaction when the app is in the background via a
     // Stream listener
     FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+
+    //FirebaseMessaging.instance.requestPermission()
   }
 
   void _handleMessage(RemoteMessage message) {
     if (2 == 2) {
-      print("THE DANG MESSAGE DATA BOY ${message.data}");
-      print("the date time is ${message.data['date']}");
-      final obj = message.data;
-      DateTime date = DateTime.parse(obj['date']);
-      Chat chat = Chat(
-          name: obj['name'],
-          recentMessage: obj['recentMessage'],
-          searchPram: obj['searchPram'],
-          imageUrl: obj['imageUrl'],
-          recentSender: obj['recentSender'],
-          date: date,
-          memberIds: obj['memberIds'],
-          memberInfo: obj['memberInfo'],
-          readStatus: obj['readStatus']);
-      Navigator.pushNamed(
-        context,
-        ChatRoom.routeName,
-        arguments: ChatRoomArgs(chat: chat),
-      );
+      print('The message is $message');
     }
   }
 
@@ -123,15 +106,36 @@ class _ChatsScreenState extends State<ChatsScreen>
   @override
   void initState() {
     super.initState();
+    fcmpermissions();
     setupInteractedMessage();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
     // _tabController.addListener(tabControllerListener);
-    
     _createBottomBannerAd();
     //super.build(context);
   }
 
-  
+  void fcmpermissions() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      print('User granted provisional permission');
+    } else {
+      print('User declined or has not accepted permission');
+    }
+  }
 
   // bool feedBeenLoaded = false;
   // void tabControllerListener() {
@@ -215,8 +219,9 @@ class _ChatsScreenState extends State<ChatsScreen>
                   body: TabBarView(
                     controller: _tabController,
                     children: [
-                       ScreensForPageView().feed(context),
-                      ScreensForPageView().commuinity_view(userId, context,_bottomBannerAd, _isBottomBannerAdLoaded),
+                      ScreensForPageView().feed(context),
+                      ScreensForPageView().commuinity_view(userId, context,
+                          _bottomBannerAd, _isBottomBannerAdLoaded),
                       ScreensForPageView().chats_view(userId)
                     ],
                   ));
