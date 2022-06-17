@@ -6,10 +6,12 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/paths.dart';
 // import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/helpers.dart';
 // import 'package:kingsfam/models/church_kingscord_model.dart';
@@ -198,17 +200,19 @@ class _CommuinityScreenState extends State<CommuinityScreen>
             Container(
               height: 85,
               width: double.infinity,
-              child: state.postDisplay.length > 0 ? ListView.builder(
-                  itemCount: state.postDisplay.length,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    Post? post = state.postDisplay[index];
-                    if (post != null) {
-                      return contentPreview(post);
-                    } else {
-                      return SizedBox.shrink();
-                    }
-                  }) :  Center(child: Text("Your Community's post will show here")),
+              child: state.postDisplay.length > 0
+                  ? ListView.builder(
+                      itemCount: state.postDisplay.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        Post? post = state.postDisplay[index];
+                        if (post != null) {
+                          return contentPreview(post);
+                        } else {
+                          return SizedBox.shrink();
+                        }
+                      })
+                  : Center(child: Text("Your Community's post will show here")),
             ),
             //ContentContaner(context),
             Row(
@@ -231,11 +235,23 @@ class _CommuinityScreenState extends State<CommuinityScreen>
             Column(
               children: state.kingCords.map((cord) {
                 if (cord != null) {
+                  log("is the kc mentioned? ${state.mentionedMap[cord.id]}");
                   return GestureDetector(
-                      onTap: () => Navigator.of(context).pushNamed(
-                          KingsCordScreen.routeName,
-                          arguments: KingsCordArgs(
-                              commuinity: widget.commuinity, kingsCord: cord)),
+                      onTap: () {
+                        // handels the navigation to the kingscord screen and also handels the 
+                        // deletion of a noti if it eist. we check if noty eist by through a function insde the bloc.
+                        Navigator.of(context).pushNamed(
+                            KingsCordScreen.routeName,
+                            arguments: KingsCordArgs(
+                                commuinity: widget.commuinity,
+                                kingsCord: cord));
+                      
+                        if (state.mentionedMap[cord.id] != false) {
+                          // del the @ notification (del the mention)
+                          String currId = context.read<AuthBloc>().state.user!.uid;
+                          FirebaseFirestore.instance.collection(Paths.mention).doc(currId).collection(widget.commuinity.id!).doc(cord.id).delete();
+                        }
+                      },
                       onLongPress: () => _delKcDialog(
                           cord: cord, commuinity: widget.commuinity),
                       child: Padding(
@@ -256,8 +272,12 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                             cord.cordName,
                             overflow: TextOverflow.fade,
                             style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700),
+                                color: state.mentionedMap[cord.id] == true
+                                    ? Colors.amber
+                                    : Colors.white,
+                                fontWeight: state.mentionedMap[cord.id] == true
+                                    ? FontWeight.w900
+                                    : FontWeight.w700),
                           )),
                         ),
                       ));
@@ -494,7 +514,9 @@ class _CommuinityScreenState extends State<CommuinityScreen>
 
   GestureDetector _new_call() {
     return GestureDetector(
-        onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("VVR will be added shortly in an update"))),//_new_call_sheet(),
+        onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                "VVR will be added shortly in an update"))), //_new_call_sheet(),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25),
           child: Container(

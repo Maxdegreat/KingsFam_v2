@@ -8,10 +8,12 @@ class ChatscreenState extends Equatable {
   //1 make class data
   final List<Chat?> chat;
   final List<Church?> chs;
+  final Map<String, dynamic> mentionedMap;
   final bool inAChat;
   final bool isToggle;
   final ChatStatus status;
   final Failure failure;
+  
 
   // ===== feed half =====
 
@@ -26,6 +28,7 @@ class ChatscreenState extends Equatable {
     required this.inAChat,
     required this.isToggle,
     required this.status,
+    required this.mentionedMap,
     required this.failure,
     //==== feed half ====
     required this.posts,
@@ -40,6 +43,7 @@ class ChatscreenState extends Equatable {
         chs: [],
         inAChat: false,
         isToggle: true,
+        mentionedMap: {},
         status: ChatStatus.initial,
         failure: Failure(),
         posts: [], 
@@ -51,7 +55,7 @@ class ChatscreenState extends Equatable {
 
   //3 make the props
   @override
-  List<Object?> get props => [posts, likedPostIds,  fstatus, isToggle, chat, chs, inAChat, status, failure];
+  List<Object?> get props => [posts, likedPostIds, mentionedMap, fstatus, isToggle, chat, chs, inAChat, status, failure];
 
   //4 gen the copy with
   ChatscreenState copyWith({
@@ -62,6 +66,7 @@ class ChatscreenState extends Equatable {
     ChatStatus? status,
     List<Post?>? posts,
     Set<String?>? likedPostIds,
+    Map<String, dynamic>? mentionedMap,
     FeedStatus_chats? fstatus,
     Failure? failure,
 
@@ -72,6 +77,7 @@ class ChatscreenState extends Equatable {
       fstatus: fstatus ?? this.fstatus,
       likedPostIds: likedPostIds ?? this.likedPostIds,
       chat: chat ?? this.chat,
+      mentionedMap: mentionedMap ?? this.mentionedMap,
       isToggle: isToggle ?? this.isToggle,
       inAChat: inAChat ?? this.inAChat,
       status: status ?? this.status,

@@ -27,6 +27,13 @@ class NotificationsScreen extends StatelessWidget {
                 child: Center(child: CircularProgressIndicator(color: Colors.red[400],),),
               );
             case NotyStatus.loaded:
+              if (state.notifications.length == 0) {
+                return Center(
+                      child: Container(
+                        child: Text("Hmm, you have no notifications to view here fam"),
+                      ),
+                    );
+              } else {
               return ListView.builder(
                 itemCount: state.notifications.length,
                 itemBuilder: (BuildContext context, int index) {
@@ -41,8 +48,9 @@ class NotificationsScreen extends StatelessWidget {
                     //child 4
                     SizedBox(height: 10)
                   ]);
-                },
+                  }
               );
+          }
           }
         }
       )

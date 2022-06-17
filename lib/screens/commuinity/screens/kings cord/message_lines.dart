@@ -15,8 +15,16 @@ class MessageLines extends StatelessWidget {
   _buildText() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
-      child: Text(message.text!,
-          style: TextStyle(color: Colors.grey[400], fontSize: 17.0, fontWeight: FontWeight.w800)),
+      child: RichText(
+        text: TextSpan(
+          style: TextStyle(color: Colors.grey[400], fontSize: 17.0, fontWeight: FontWeight.w800),
+          children: [
+            message.text!.contains('@')  ?
+            TextSpan(text: message.text!, style: TextStyle(color: Colors.blueGrey, fontSize: 17.0, fontWeight: FontWeight.w800)) : 
+            TextSpan(text: message.text!)
+          ]
+        )
+      )
     );
   }
 
@@ -81,7 +89,7 @@ class MessageLines extends StatelessWidget {
             SizedBox(height: 5.0),
             Container(
                 constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width ,
+                  maxWidth: MediaQuery.of(context).size.width,
                 ),
                 child:
                     message.text != null ? _buildText() : _buildImage(context)),

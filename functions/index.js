@@ -158,7 +158,7 @@ exports.onFollowUserr = functions.firestore.document("/followers/{userrId}/userF
   
 
   // IN A LOCAL ENV 
-  exports.onMentionedUser = functions.firestore.document("/mention/{churchId}/{kingsCordId}/{mentionedId}")
+  exports.onMentionedUser = functions.firestore.document("/mention/{mentionedId}/{churchId}/{kingsCordId}")
     .onCreate((snapshot, context) => {
       // curr data of what was written to firestore
       const snap = snapshot.data(); // can access any val of snap as i would any js obj

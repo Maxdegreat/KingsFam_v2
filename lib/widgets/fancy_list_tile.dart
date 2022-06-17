@@ -9,6 +9,7 @@ class FancyListTile extends StatelessWidget {
   final double BR;
   final double height;
   final double width;
+  final bool? isMentioned;
   final String? location;
   const FancyListTile(
       {Key? key,
@@ -19,7 +20,8 @@ class FancyListTile extends StatelessWidget {
       required this.BR,
       required this.height,
       required this.width,
-      this.location
+      this.location, 
+      this.isMentioned,
       })
       : super(key: key);
 
@@ -52,14 +54,19 @@ class FancyListTile extends StatelessWidget {
                   style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w600, color: Colors.grey[700])),
             ],
           ),
-          SizedBox(width: 0),
-          isBtn ? Icon(Icons.check_circle) : SizedBox.shrink()
+          SizedBox(width: width - (width*.10)),
+          isBtn ? Icon(Icons.check_circle) : isMentioned!=null&&isMentioned==true? Icon(Icons.alternate_email_outlined, color: Colors.amber,) : SizedBox.shrink()
+
         ],
       ),
       decoration: BoxDecoration(
         color: Colors.black,
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(BR), bottomLeft: Radius.circular(BR)),
-      ),
+        borderRadius: BorderRadius.only( topLeft: Radius.circular(BR), bottomLeft: Radius.circular(BR)),
+        border: Border.all(color: isMentioned== null || isMentioned==false? Colors.transparent:Colors.amber)
+          
+          )
+          
+      
     );
   }
 }

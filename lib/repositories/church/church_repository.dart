@@ -25,7 +25,7 @@ class   ChurchRepository extends BaseChurchRepository {
   
   Stream<List<Future<Church?>>> getCmsStream({required String currId}) {
     final userRef = FirebaseFirestore.instance.collection(Paths.users).doc(currId);
-    return FirebaseFirestore.instance.collection(Paths.church).where('members',arrayContains: userRef)
+    return FirebaseFirestore.instance.collection(Paths.church).limit(10).where('members',arrayContains: userRef)
     .snapshots().map((snap) {
       List<Future<Church?>> chs = [];
       snap.docs.forEach((doc) async{ 
@@ -251,7 +251,6 @@ class   ChurchRepository extends BaseChurchRepository {
     
     Set<String> memIds = await Church.getCommunityMemberIds(doc);
     
-    log("in streamIsCmMember: value: ${memIds.contains(authorId)}");
     return Stream<bool>.value(memIds.contains(authorId));
     // var ids = cm.members.map((e) => e.id).toSet();
     // if (ids.contains(authorId)) {

@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/models/mentioned_model.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 
@@ -66,11 +70,33 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
     emit(state.copyWith(status: CommuintyStatus.loading));
     try {
+      final List<KingsCord> allCords = [];
+      final Map<String, bool> mentionedMap = {};
       _streamSubscriptionKingsCord?.cancel();
       _streamSubscriptionKingsCord = _churchRepository
           .getCommuinityCordsStream(commuinity: event.commuinity, limit: 7)
           .listen((kcords) async {
-        final allCords = await Future.wait(kcords);
+        //final allCords = await Future.wait(kcords);
+          for (var kcAwait in kcords) {
+            final kc = await kcAwait;
+            if (kc!=null) {
+              allCords.add(kc);
+
+              var docRef = await FirebaseFirestore.instance.collection(Paths.mention).doc(_authBloc.state.user!.uid).collection(event.commuinity.id!).doc(kc.id);
+              docRef.get().then((value) => {
+                if (value.exists) {
+                  mentionedMap[kc.id!] = true,
+                }
+                else {
+                  mentionedMap[kc.id!] = false
+                },
+                //print(mentionedMap[kc.id!]),
+                //log("That is the value above"),
+                emit(state.copyWith(mentionedMap: mentionedMap))
+              });
+            }
+          }
+          
         add(ComuinityLoadingCords(
             commuinity: event.commuinity, cords: allCords));
       });

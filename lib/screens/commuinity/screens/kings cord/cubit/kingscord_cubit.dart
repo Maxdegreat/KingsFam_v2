@@ -63,25 +63,28 @@ class KingscordCubit extends Cubit<KingscordState> {
     required String churchId,
     required String kingsCordId,
     required String txtMsgBody,
-    required Map<String, dynamic> mentionIdsMap,
+    required Map<String, dynamic> mentionedInfo,
     required String cmTitle,
   }) {
     // This should tell the cloud that the mentioned id was mentioned through the cloud
     // I have added the function to send a noti to the users phone. the update for this to happen is in the
     // functions index.js file
-    var msgAsLst = txtMsgBody.split(' ');
-    for (String msg in msgAsLst) {
-      if (msg[0] == '@') {
-        msg.substring(1, msg.length)
+
+    for (var id in mentionedInfo.keys) {
+      if (txtMsgBody.length > 1 && txtMsgBody.length < 250) {
+        FirebaseFirestore.instance
+            .collection(Paths.mention)
+            .doc(id)
+            .collection(churchId)
+            .doc(kingsCordId).set({
+              'communityName': mentionedInfo[id]['communityName'],
+              'username' : mentionedInfo[id]['username'],
+              'token' : mentionedInfo[id]['token'],
+              'messageBody' : txtMsgBody,
+            });
       }
     }
 
-    if (txtMsgBody.length > 1 && txtMsgBody.length < 250) {
-      for (String mentioned in mentionIdsMap.keys) {
-        
-        log("the mentioned id here is $mentioned");
-      }
-    }
     // the creation of the message
     final message = Message(
         text: txtMsgBody,

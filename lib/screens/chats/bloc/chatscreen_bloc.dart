@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
@@ -58,12 +60,26 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
+      final Map<String, bool> mentionedMap = {};
+      final List<Church> allChs = [];
       _churchStreamSubscription?.cancel();
       _churchStreamSubscription = _churchRepository
           .getCmsStream(currId: _authBloc.state.user!.uid)
           .listen((churchs) async {
-        final allChs = await Future.wait(churchs);
+        //final allChs = await Future.wait(churchs);
+        for (var ch in churchs) {
+          var church = await ch;
+          if(church != null)
+            allChs.add(church);
+          var hasSnap = await FirebaseFirestore.instance.collection(Paths.mention).doc(_authBloc.state.user!.uid).collection(church!.id!).limit(1).get();
+          var snaps = hasSnap.docs;
+          if (snaps.length > 0)
+            mentionedMap[church.id!] = true;
+          else 
+            mentionedMap[church.id!] = false;
+        }
         emit(state.copyWith(chs: allChs));
+        emit(state.copyWith(mentionedMap: mentionedMap));
       });
       yield state.copyWith(status: ChatStatus.sccuess);
     } catch (e) {}

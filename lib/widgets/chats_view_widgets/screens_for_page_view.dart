@@ -1,9 +1,11 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
@@ -22,6 +24,7 @@ class ScreensForPageView {
         // TODO: implement listener
       },
       builder: (context, state) {
+        var currId = context.read<AuthBloc>().state.user!.uid;
         return Scaffold(
           persistentFooterButtons: [
             state.chs.length > 0
@@ -80,21 +83,28 @@ class ScreensForPageView {
                                 flex: 1,
                                 child: ListView.builder(
                                   itemCount: state.chs.length,
-                                  itemBuilder: (context, index) {
+                                  itemBuilder: (context, index)  {
+                                    // check if the path userid, church, kc ezist if so flag with a @ symbole
+                                    
                                     Church? commuinity = state.chs[index];
+                                    bool isMentioned = false;
+                                    FirebaseFirestore.instance.collection(Paths.mention).doc(currId).collection(commuinity!.id!).snapshots().isEmpty;
+                                    
                                     return GestureDetector(
                                       onLongPress: () => leaveCommuinity(
-                                          commuinity: commuinity!,
+                                          commuinity: commuinity,
                                           context: context),
                                       onTap: () => Navigator.of(context)
                                           .pushNamed(CommuinityScreen.routeName,
                                               arguments: CommuinityScreenArgs(
-                                                commuinity: commuinity!,
+                                                commuinity: commuinity,
                                               )),
                                       child: Padding(
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 10.0),
+  // see child of list view here below.
                                           child: FancyListTile(
+                                            isMentioned: state.mentionedMap[commuinity.id],
                                               location:
                                                   commuinity!.location.length >
                                                           1

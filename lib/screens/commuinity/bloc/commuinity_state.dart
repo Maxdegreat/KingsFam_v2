@@ -8,6 +8,7 @@ class CommuinityState extends Equatable {
   final List<CallModel> calls;
   final CommuintyStatus status;
   final Failure failure;
+  final Map<String, bool> mentionedMap;
 
   const CommuinityState({
     required this.isMember,
@@ -16,13 +17,14 @@ class CommuinityState extends Equatable {
     required this.calls,
     required this.status,
     required this.failure,
+    required this.mentionedMap,
 });
   
   @override
-  List<Object> get props => [calls, kingCords, postDisplay, isMember, status, failure];
+  List<Object> get props => [mentionedMap, calls, kingCords, postDisplay, isMember, status, failure];
   
   factory CommuinityState.inital() {
-    return CommuinityState(isMember: false, postDisplay: [], kingCords: [], calls: [], status: CommuintyStatus.inital, failure: Failure());
+    return CommuinityState(mentionedMap: {}, isMember: false, postDisplay: [], kingCords: [], calls: [], status: CommuintyStatus.inital, failure: Failure());
   }
   CommuinityState copyWith({
     bool? isMember,
@@ -31,6 +33,7 @@ class CommuinityState extends Equatable {
     List<CallModel>? calls,
     CommuintyStatus? status,
     Failure? failure,
+    Map<String, bool>? mentionedMap,
   }) {
     return CommuinityState(
       isMember: isMember ?? this.isMember,
@@ -39,6 +42,7 @@ class CommuinityState extends Equatable {
       calls: calls ?? this.calls, 
       failure: failure ?? this.failure, 
       status: status ?? this.status,
+      mentionedMap: mentionedMap ?? this.mentionedMap,
     );
   }
 }

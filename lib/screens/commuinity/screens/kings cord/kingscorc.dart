@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -24,11 +23,12 @@ class KingsCordArgs {
 }
 
 class KingsCordScreen extends StatefulWidget {
-
   //class data
   final Church commuinity;
   final KingsCord kingsCord;
-  const KingsCordScreen({Key? key, required this.commuinity, required this.kingsCord}) : super(key: key);
+  const KingsCordScreen(
+      {Key? key, required this.commuinity, required this.kingsCord})
+      : super(key: key);
 
   // will need a static const string route name
   static const String routeName = '/kingsCord';
@@ -42,9 +42,9 @@ class KingsCordScreen extends StatefulWidget {
               create: (context) => KingscordCubit(
                   storageRepository: context.read<StorageRepository>(),
                   authBloc: context.read<AuthBloc>(),
-                  kingsCordRepository: context.read<
-                      KingsCordRepository>(), 
-                  churchRepository: context.read<ChurchRepository>() // may need to report to main reposityory collection
+                  kingsCordRepository: context.read<KingsCordRepository>(),
+                  churchRepository: context.read<
+                      ChurchRepository>() // may need to report to main reposityory collection
                   ),
               child: KingsCordScreen(
                 commuinity: args.commuinity,
@@ -57,31 +57,36 @@ class KingsCordScreen extends StatefulWidget {
   _KingsCordScreenState createState() => _KingsCordScreenState();
 }
 
-  
 class _KingsCordScreenState extends State<KingsCordScreen> {
   final TextEditingController _messageController = TextEditingController();
   String? _mentionedController = null;
   int idxWhereStartWithat = 0;
   bool containsAt = false;
-  Map<String, dynamic> mentionIdsMap = {};
+  Set<String> memIds = {};
+  Map<String, dynamic> mems = {};
   HexColor hexColor = HexColor();
   @override
   void dispose() {
     _messageController.dispose();
     super.dispose();
   }
+
   double textHeight = 25;
-  _buildMessageStream({required Church commuinity, required KingsCord kingsCord, required List<Message?> msgs }) {
-    Set<String> memIds = {};
-    Map<String, dynamic> mems = {};
+  _buildMessageStream(
+      {required Church commuinity,
+      required KingsCord kingsCord,
+      required List<Message?> msgs}) {
     for (var user in widget.commuinity.members) {
       memIds.add(user.id);
-      mems[user.username] = user.id;
+      mems[user.username] = {
+        'id' : user.id,
+        'token' : user.token,
+      };
     }
 
     return Expanded(
-          flex: 1,
-          child: ListView(
+        flex: 1,
+        child: ListView(
           padding: EdgeInsets.symmetric(horizontal: 7.0),
           physics: AlwaysScrollableScrollPhysics(),
           reverse: true,
@@ -89,15 +94,16 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         ));
   }
 
-//==========================================================================S 
+//==========================================================================S
   List<MessageLines> _buildMessageLines(List<Message?> message) {
     List<MessageLines> messageLines = [];
 
     message.forEach((sms) {
       if (sms != null) {
         MessageLines messageLine = MessageLines(
-        message: sms,);
-      messageLines.add(messageLine);
+          message: sms,
+        );
+        messageLines.add(messageLine);
       }
     });
 
@@ -130,17 +136,14 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
               child: Container(
                 height: textHeight,
                 decoration: BoxDecoration(
-                    color: Colors.grey[900],                                                                                        
+                    color: Colors.grey[900],
                     borderRadius: BorderRadius.circular(5.0)),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 3.0),
                   child: Align(
                     alignment: Alignment.center,
                     child: TextFormField(
-                      validator: (value) {
-                          
-  
-                      },
+                      validator: (value) {},
                       textAlignVertical: TextAlignVertical.center,
                       style: TextStyle(fontSize: 18),
                       autocorrect: true,
@@ -154,24 +157,26 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                           _mentionedController = null;
                           containsAt = false;
                         }
-                        if (messageText[messageText.length-1] == '@') {
+                        if (messageText[messageText.length - 1] == '@') {
                           containsAt = true;
-                          idxWhereStartWithat = messageText.length-1;
+                          idxWhereStartWithat = messageText.length - 1;
                           log("here you can add the @ container");
                         }
                         if (containsAt)
-                          setState(() => _mentionedController = messageText.substring(idxWhereStartWithat+1, messageText.length));
+                          setState(() => _mentionedController =
+                              messageText.substring(
+                                  idxWhereStartWithat + 1, messageText.length));
                         if (messageText.endsWith(' ')) {
                           containsAt = false;
                           idxWhereStartWithat = 0;
                           _mentionedController = null;
                         }
-                        if (messageText.length >= 25) 
+                        if (messageText.length >= 25)
                           setState(() => textHeight = 50.0);
                         else if (messageText.length >= 50)
                           setState(() => textHeight = 65.0);
-                        else 
-                          setState(() => textHeight = 30.0 );
+                        else
+                          setState(() => textHeight = 30.0);
                         ctx.onIsTyping(messageText.length >= 1);
                       },
                       decoration:
@@ -190,25 +195,31 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   ),
                   onPressed: state.isTyping
                       ? () {
-                          Set<String> mentionedUserNames = {};
+                          // map of mentioned info that will be added to the kc cubit
+                          Map<String, dynamic> mentionedInfo = {};
                           var msgAsLst = _messageController.text.split(' ');
                           for (String msg in msgAsLst) {
                             if (msg.length >= 2 && msg[0] == '@') {
+                              // gives the names of who is mentioned
                               var mentionedUserName = msg.substring(1, msg.length);
-                              if (!mentionedUserNames.contains(mentionedUserName)) {
-
-                                mentionedUserNames.add(mentionedUserName);
-                                if (mems)
+                              if (mems.containsKey(mentionedUserName)) {
+                                mentionedInfo[mems[mentionedUserName]['id']] = {
+                                  'username': mentionedUserName,
+                                  'token' : mems[mentionedUserName]['token'],
+                                  'communityName' : widget.commuinity.name,
+                                  'kingsCordName': widget.kingsCord.cordName,
+                                };
                               }
+                              
+                              log("the mentioned username in for loop on line 200: $mentionedUserName");
                             }
                           }
                           ctx.onSendTxtMsg(
                               churchId: widget.commuinity.id!,
                               kingsCordId: widget.kingsCord.id!,
                               txtMsgBody: _messageController.text,
-                              mentionIdsMap: mentionIdsMap,
-                              cmTitle: widget.commuinity.name
-                            );
+                              mentionedInfo: mentionedInfo,
+                              cmTitle: widget.commuinity.name);
                           ctx.onIsTyping(false);
                           _messageController.clear();
                         }
@@ -222,12 +233,14 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   Widget _mentionUserContainer({required String? username}) {
     int? _containerHeight;
     List<Userr> potentialMentions = [];
-    if (username != null) {for (Userr member in widget.commuinity.members) {
-      if (member.username.startsWith(username)) {
-        potentialMentions.add(member);
+    if (username != null) {
+      for (Userr member in widget.commuinity.members) {
+        if (member.username.startsWith(username)) {
+          potentialMentions.add(member);
+        }
       }
-    }}
-    if (potentialMentions.length == 0) 
+    }
+    if (potentialMentions.length == 0)
       _containerHeight = 0;
     else if (potentialMentions.length == 1)
       _containerHeight = 50;
@@ -235,47 +248,54 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       _containerHeight = 100;
     else if (potentialMentions.length == 3)
       _containerHeight = 125;
-    else if (potentialMentions.length >= 4)
-      _containerHeight = 150;
+    else if (potentialMentions.length >= 4) _containerHeight = 150;
 
-    return username != null ? Container(
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(15)
-      ),
-      height: _containerHeight!.toDouble(),
-      width: double.infinity,
-      child: ListView.builder(
-        itemCount: potentialMentions.length,
-        itemBuilder: (BuildContext context, int index) {
-          Userr _mentioned = potentialMentions[index];
-          return ListTile(
-            leading: ProfileImage(radius: 24, pfpUrl: _mentioned.profileImageUrl),
-            title: Text(_mentioned.username, style: TextStyle(color: Color(hexColor.hexcolorCode(_mentioned.colorPref))), overflow: TextOverflow.fade,),
-            onTap: () {
-              var oldMessageControllerBody = _messageController.text.substring(0, idxWhereStartWithat);
-              _messageController.text = oldMessageControllerBody += '@${_mentioned.username} ';
-               _messageController.selection = TextSelection.fromPosition(TextPosition(offset:  _messageController.text.length));
-               mentionIdsMap[_mentioned.id] = {
-                'token': _mentioned.token,
-                'username': _mentioned.username,
-               };
-              _mentionedController = null;
-            },
-          );
-        }
-      ),
-    ) : SizedBox.shrink();
+    return username != null
+        ? Container(
+            decoration: BoxDecoration(
+                color: Colors.grey[900],
+                borderRadius: BorderRadius.circular(15)),
+            height: _containerHeight!.toDouble(),
+            width: double.infinity,
+            child: ListView.builder(
+                itemCount: potentialMentions.length,
+                itemBuilder: (BuildContext context, int index) {
+                  Userr _mentioned = potentialMentions[index];
+                  return ListTile(
+                    leading: ProfileImage(
+                        radius: 24, pfpUrl: _mentioned.profileImageUrl),
+                    title: Text(
+                      _mentioned.username,
+                      style: TextStyle(
+                          color: Color(
+                              hexColor.hexcolorCode(_mentioned.colorPref))),
+                      overflow: TextOverflow.fade,
+                    ),
+                    onTap: () {
+                      var oldMessageControllerBody = _messageController.text
+                          .substring(0, idxWhereStartWithat);
+                      _messageController.text = oldMessageControllerBody +=
+                          '@${_mentioned.username} ';
+                      _messageController.selection = TextSelection.fromPosition(
+                          TextPosition(offset: _messageController.text.length));
+                    },
+                  );
+                }),
+          )
+        : SizedBox.shrink();
   }
 
-
   Widget _permissionDenied({required String messasge}) {
-
     return Padding(
       padding: const EdgeInsets.all(7.0),
       child: Container(
-        width: double.infinity, height: 30,
-        child: Center(child: Text(messasge, style: Theme.of(context).textTheme.bodyText1,)),
+        width: double.infinity,
+        height: 30,
+        child: Center(
+            child: Text(
+          messasge,
+          style: Theme.of(context).textTheme.bodyText1,
+        )),
         decoration: BoxDecoration(
           color: Colors.grey[900],
           borderRadius: BorderRadius.circular(7),
@@ -285,18 +305,14 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   }
 
 //============================================================================
-    @override
-    void initState() {
-      super.initState();
-        // isUserUpToDate(context, context.read<AuthBloc>().state.user!.uid, widget.kingsCord.memberInfo);
-    }
+  @override
+  void initState() {
+    super.initState();
+    // isUserUpToDate(context, context.read<AuthBloc>().state.user!.uid, widget.kingsCord.memberInfo);
+  }
 
   @override
   Widget build(BuildContext context) {
-
-
-
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -312,25 +328,29 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         },
         builder: (context, state) {
           context.read<KingscordCubit>().onLoadInit(
-            cmId: widget.commuinity.id!,
-            kcId: widget.kingsCord.id!,
-            limit: 30,
-          );
+                cmId: widget.commuinity.id!,
+                kcId: widget.kingsCord.id!,
+                limit: 30,
+              );
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // bulid message stream
-              _buildMessageStream( commuinity: widget.commuinity, kingsCord: widget.kingsCord, msgs: state.msgs),
+              _buildMessageStream(
+                  commuinity: widget.commuinity,
+                  kingsCord: widget.kingsCord,
+                  msgs: state.msgs),
               //divider of a height 1
               Divider(height: 1.0),
 
               _mentionUserContainer(username: _mentionedController),
 
-              memIds.contains(context.read<AuthBloc>().state.user!.uid) ?
-              //bottom sheet
-              _buildBottomTF(state, context) :
-
-            _permissionDenied(messasge: "Join Commuinity To say whats up")
+              memIds.contains(context.read<AuthBloc>().state.user!.uid)
+                  ?
+                  //bottom sheet
+                  _buildBottomTF(state, context)
+                  : _permissionDenied(
+                      messasge: "Join Commuinity To say whats up")
             ],
           );
         },
@@ -338,5 +358,3 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     );
   }
 }
-
-
