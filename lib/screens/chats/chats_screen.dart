@@ -7,9 +7,12 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
+import 'package:kingsfam/models/church_kingscord_model.dart';
+import 'package:kingsfam/models/church_model.dart';
 //import 'package:firebase_messaging/firebase_messaging.dart';
 //import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
+import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscorcd.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/chats_view_widgets/screens_for_page_view.dart';
 import 'package:kingsfam/widgets/kf_crown_v2.dart';
@@ -41,22 +44,39 @@ class _ChatsScreenState extends State<ChatsScreen>
 
     // If the message also contains a data property with a "type" of "chat",
     // navigate to a chat screen
+    log(initialMessage.toString());
+    log('that was the inital message');
     if (initialMessage != null) {
       _handleMessage(initialMessage);
     }
 
     // Also handle any interaction when the app is in the background via a
     // Stream listener
-    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      log("This is data on a onMessageOpenedApp notification");
+      log('---------------------------');
+      log("The notif: ${message.notification}");
+      log('---------------------------');
+      log("The data: ${message.data}");
+      log('---------------------------');
+      log('the message: $message');
+      final dynamic data = message.data;
+      log(data.toString());
+    });
 
     //FirebaseMessaging.instance.requestPermission()
   }
 
   void _handleMessage(RemoteMessage message) {
-    if (2 == 2) {
-      print('The message is $message');
+    if (message.data['type'] == 'kc_type') {
+      log('The message is $message');
+        var kc = KingsCord(tag: message.data['tag'], cordName: message.data['cordName'], recentMessage: message.data['recentMessage'], recentSender: message.data['recentSender'], members: message.data['members'], id: message.data['id']);
+        Navigator.pushNamed(context, KingsCordScreen.routeName, arguments: KingsCordArgs(commuinity: Church(id: message.data['communityId'], searchPram: [], name: message.data['communityName'], location: '...', imageUrl: '...', members: message.data['members'], events: [], about: '...'), kingsCord: kc));
+      } else {
+        log("we were not able to track the remote message to ur wanted screeen");
+      }
     }
-  }
+  
 
   late BannerAd _bottomBannerAd;
   late BannerAd _inLineBannerAd;
@@ -165,7 +185,7 @@ class _ChatsScreenState extends State<ChatsScreen>
               title: Row(
                 children: [
                   Text(
-                    'K I N G S F A M',
+                    'K I N G S F A M (alpha)',
                     style: TextStyle(
                         color: Color(hexcolor.hexcolorCode('#FFC050'))),
                   ),

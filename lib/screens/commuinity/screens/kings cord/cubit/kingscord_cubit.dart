@@ -65,6 +65,7 @@ class KingscordCubit extends Cubit<KingscordState> {
     required String txtMsgBody,
     required Map<String, dynamic> mentionedInfo,
     required String cmTitle,
+    required KingsCord kingsCordData,
   }) {
     // This should tell the cloud that the mentioned id was mentioned through the cloud
     // I have added the function to send a noti to the users phone. the update for this to happen is in the
@@ -76,12 +77,20 @@ class KingscordCubit extends Cubit<KingscordState> {
             .collection(Paths.mention)
             .doc(id)
             .collection(churchId)
-            .doc(kingsCordId).set({
-              'communityName': mentionedInfo[id]['communityName'],
-              'username' : mentionedInfo[id]['username'],
-              'token' : mentionedInfo[id]['token'],
-              'messageBody' : txtMsgBody,
-            });
+            .doc(kingsCordId)
+            .set({
+          'communityName': mentionedInfo[id]['communityName'],
+          'username': mentionedInfo[id]['username'],
+          'token': mentionedInfo[id]['token'],
+          'messageBody': txtMsgBody,
+          'type': 'kc_type',
+          'type_id': kingsCordData.id!,
+          'type_tag': kingsCordData.tag,
+          'type_cordName': kingsCordData.cordName,
+          'type_recentSender': kingsCordData.recentSender,
+          'type_recentMessage': kingsCordData.recentMessage,
+          'type_members': kingsCordData.members,
+        });
       }
     }
 
@@ -103,8 +112,7 @@ class KingscordCubit extends Cubit<KingscordState> {
     emit(state.copyWith(txtImgUrl: imageFile, status: KingsCordStatus.initial));
   }
 
-  void onSendTxtImg(
-      {required String churchId, required String kingsCordId}) async {
+  Future<bool> onSendTxtImg({required String churchId, required String kingsCordId}) async {
     //set to load bc we wait for image to be sent.
     emit(state.copyWith(status: KingsCordStatus.loading));
     final chatImageUrl = await _storageRepository.uploadKingsCordImage(
@@ -123,5 +131,6 @@ class KingscordCubit extends Cubit<KingscordState> {
         senderId: _authBloc.state.user!.uid);
 
     emit(state.copyWith(status: KingsCordStatus.initial));
+    
   }
 }

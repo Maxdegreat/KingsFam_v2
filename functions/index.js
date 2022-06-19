@@ -163,20 +163,69 @@ exports.onFollowUserr = functions.firestore.document("/followers/{userrId}/userF
       // curr data of what was written to firestore
       const snap = snapshot.data(); // can access any val of snap as i would any js obj
       const mentionedId = context.params.mentionedId;
+      const communityId = context.params.churchId;
       
       // make the FCM
-      const payload = {
-        notification: {
-          title: 'Hey Fam! you\'re mentioned in ' + snap.communityName,
-          body: snap.messageBody, 
-        },
-    };
+      const message = {
+        
+          'notification': {
+            'title': 'Hey Fam! you\'re mentioned in ' + snap.communityName,
+            'body': snap.messageBody,
+          },
+          'data': {
+            'type': String(snap.type),
+            'id': String(snap.type_id),
+            'tag': String(snap.type_tag),
+            'cordName': String(snap.type_cordName),
+            'recentSender': String(snap.type_recentSender),
+            'recentMessage': String(snap.type_recentMessage),
+            'members': String(snap.type_members),
+            'communityName': String(snap.communityName),
+            'communityId': String(communityId)
+          }
+
+      };
 
     const options = {
       priority: 'high',
       timeToLive: 60 * 60 * 24,
     };
-    admin.messaging().sendToDevice(snap.token, payload, options)
+    admin.messaging().sendToDevice(snap.token, message, options)
+    })
+
+    exports.onMentionedUserUpdate = functions.firestore.document("/mention/{mentionedId}/{churchId}/{kingsCordId}")
+    .onUpdate((snapshot, context) => {
+      // curr data of what was written to firestore
+      const snap = snapshot.data(); // can access any val of snap as i would any js obj
+      const mentionedId = context.params.mentionedId;
+      const communityId = context.params.churchId;
+      
+      // make the FCM
+      const message = {
+        
+          'notification': {
+            'title': 'Hey Fam! you\'re mentioned in ' + snap.communityName,
+            'body': snap.messageBody,
+          },
+          'data': {
+            'type': String(snap.type),
+            'id': String(snap.type_id),
+            'tag': String(snap.type_tag),
+            'cordName': String(snap.type_cordName),
+            'recentSender': String(snap.type_recentSender),
+            'recentMessage': String(snap.type_recentMessage),
+            'members': String(snap.type_members),
+            'communityName': String(snap.communityName),
+            'communityId': String(communityId)
+          }
+
+      };
+
+    const options = {
+      priority: 'high',
+      timeToLive: 60 * 60 * 24,
+    };
+    admin.messaging().sendToDevice(snap.token, message, options)
     })
 
   //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

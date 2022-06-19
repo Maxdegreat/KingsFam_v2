@@ -55,6 +55,17 @@ class   ChurchRepository extends BaseChurchRepository {
 
   delCord({required KingsCord cord, required Church cmmuinity}) {
     fb.doc(cmmuinity.id).collection(Paths.kingsCord).doc(cord.id).delete();
+    var messagesToBeDeleated = fb.doc(cmmuinity.id).collection(Paths.kingsCord).doc(cord.id).collection(Paths.messages);
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    var messages = messagesToBeDeleated.get().then((value) {
+      value.docs.forEach((doc) {
+        messagesToBeDeleated.doc(doc.id).delete();
+        //batch.delete(messagesToBeDeleated.doc(doc.id));
+       });
+    });
+    
+    //batch.commit();
+
   }
 
   @override

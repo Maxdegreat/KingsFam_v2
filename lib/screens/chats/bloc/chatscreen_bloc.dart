@@ -66,11 +66,11 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
       _churchStreamSubscription = _churchRepository
           .getCmsStream(currId: _authBloc.state.user!.uid)
           .listen((churchs) async {
-        //final allChs = await Future.wait(churchs);
+        final allChs = await Future.wait(churchs);
         for (var ch in churchs) {
           var church = await ch;
-          if(church != null)
-            allChs.add(church);
+          // if(church != null)
+          //   allChs.add(church);
           var hasSnap = await FirebaseFirestore.instance.collection(Paths.mention).doc(_authBloc.state.user!.uid).collection(church!.id!).limit(1).get();
           var snaps = hasSnap.docs;
           if (snaps.length > 0)

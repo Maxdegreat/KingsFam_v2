@@ -76,26 +76,25 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       _streamSubscriptionKingsCord = _churchRepository
           .getCommuinityCordsStream(commuinity: event.commuinity, limit: 7)
           .listen((kcords) async {
-        //final allCords = await Future.wait(kcords);
-          for (var kcAwait in kcords) {
-            final kc = await kcAwait;
-            if (kc!=null) {
-              allCords.add(kc);
-
-              var docRef = await FirebaseFirestore.instance.collection(Paths.mention).doc(_authBloc.state.user!.uid).collection(event.commuinity.id!).doc(kc.id);
-              docRef.get().then((value) => {
-                if (value.exists) {
-                  mentionedMap[kc.id!] = true,
-                }
-                else {
-                  mentionedMap[kc.id!] = false
-                },
-                //print(mentionedMap[kc.id!]),
-                //log("That is the value above"),
-                emit(state.copyWith(mentionedMap: mentionedMap))
-              });
-            }
-          }
+          final allCords = await Future.wait(kcords);
+           for (var kcAwait in kcords) {
+             final kc = await kcAwait;
+             if (kc!=null) {
+               //allCords.add(kc);
+               var docRef = await FirebaseFirestore.instance.collection(Paths.mention).doc(_authBloc.state.user!.uid).collection(event.commuinity.id!).doc(kc.id);
+               docRef.get().then((value) => {
+                 if (value.exists) {
+                   mentionedMap[kc.id!] = true,
+                 }
+                 else {
+                   mentionedMap[kc.id!] = false
+                 },
+                 //print(mentionedMap[kc.id!]),
+                 //log("That is the value above"),
+                 emit(state.copyWith(mentionedMap: mentionedMap))
+               });
+             }
+           }
           
         add(ComuinityLoadingCords(
             commuinity: event.commuinity, cords: allCords));

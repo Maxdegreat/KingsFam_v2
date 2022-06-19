@@ -219,7 +219,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                               kingsCordId: widget.kingsCord.id!,
                               txtMsgBody: _messageController.text,
                               mentionedInfo: mentionedInfo,
-                              cmTitle: widget.commuinity.name);
+                              cmTitle: widget.commuinity.name,
+                              kingsCordData: widget.kingsCord
+                          );
                           ctx.onIsTyping(false);
                           _messageController.clear();
                         }
