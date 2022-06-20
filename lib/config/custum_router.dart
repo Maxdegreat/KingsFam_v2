@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscorcd.dart';
+import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
 import 'package:kingsfam/screens/screens.dart';
 

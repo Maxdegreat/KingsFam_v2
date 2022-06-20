@@ -106,7 +106,7 @@ class ScreensForPageView {
                                           child: FancyListTile(
                                             isMentioned: state.mentionedMap[commuinity.id],
                                               location:
-                                                  commuinity!.location.length >
+                                                  commuinity.location.length >
                                                           1
                                                       ? commuinity.location
                                                       : null,

@@ -22,7 +22,7 @@ import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 // import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/calls_home.dart';
 // import 'package:kingsfam/screens/commuinity/screens/feed/commuinity_feed.dart';
 // import 'package:kingsfam/screens/commuinity/screens/sounds/sounds.dart';
-import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscorcd.dart';
+import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 // import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/widgets.dart';

@@ -59,12 +59,19 @@ class KingsCordScreen extends StatefulWidget {
 
 class _KingsCordScreenState extends State<KingsCordScreen> {
   final TextEditingController _messageController = TextEditingController();
-  String? _mentionedController = null;
+  // this controller is used to know when a user is mentioned
+  String? _mentionedController;
+
   int idxWhereStartWithat = 0;
+
   bool containsAt = false;
+
   Set<String> memIds = {};
+
   Map<String, dynamic> mems = {};
+
   HexColor hexColor = HexColor();
+
   @override
   void dispose() {
     _messageController.dispose();
@@ -96,7 +103,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
 //==========================================================================S
   List<MessageLines> _buildMessageLines(List<Message?> message) {
-    List<MessageLines> messageLines = [];
+  List<MessageLines> messageLines = [];
 
     message.forEach((sms) {
       if (sms != null) {
@@ -128,7 +135,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                     ctx.onUploadImage(pickedFile);
                     ctx.onSendTxtImg(
                         churchId: widget.commuinity.id!,
-                        kingsCordId: widget.kingsCord.id!);
+                        kingsCordId: widget.kingsCord.id!
+                    );
                   }
                 },
                 icon: Icon(Icons.add_box_outlined)),
@@ -347,12 +355,24 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
               _mentionUserContainer(username: _mentionedController),
 
+              
+              // this is can only ocour if the user is apart of the commuinity. in this case they can share
+              // content
+              state.fileShareStatus != FileShareStatus.inital ?
+              Container(
+                height: 57,
+                width: double.infinity,
+                color: Colors.green,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: state.filesToBePosted.map((file) => ProfileImage(radius: 20, pfpUrl: '', pfpImage: file,)).toList()
+                  ,
+                ),
+              ) : SizedBox.shrink(),
               memIds.contains(context.read<AuthBloc>().state.user!.uid)
-                  ?
-                  //bottom sheet
-                  _buildBottomTF(state, context)
-                  : _permissionDenied(
-                      messasge: "Join Commuinity To say whats up")
+                  ? _buildBottomTF(state, context)
+                  : _permissionDenied(messasge: "Join Commuinity To say whats up")
             ],
           );
         },

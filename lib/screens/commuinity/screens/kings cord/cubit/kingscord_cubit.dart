@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:developer';
 import 'dart:io';
 
@@ -109,20 +110,25 @@ class KingscordCubit extends Cubit<KingscordState> {
 
   //getter for image
   void onUploadImage(File imageFile) {
+    state.filesToBePosted.addFirst(imageFile);
     emit(state.copyWith(txtImgUrl: imageFile, status: KingsCordStatus.initial));
   }
 
-  Future<bool> onSendTxtImg({required String churchId, required String kingsCordId}) async {
+
+
+  onSendTxtImg({required String churchId, required String kingsCordId}) async {
     //set to load bc we wait for image to be sent.
-    emit(state.copyWith(status: KingsCordStatus.loading));
-    final chatImageUrl = await _storageRepository.uploadKingsCordImage(
-        imageFile: state.txtImgUrl!);
+    emit(state.copyWith(status: KingsCordStatus.loading, fileShareStatus: FileShareStatus.imgSharing));
+
+    final chatImageUrl = await _storageRepository.uploadKingsCordImage(imageFile: state.txtImgUrl!);
+    
     //make the message
     final message = Message(
       date: Timestamp.now(),
       imageUrl: chatImageUrl,
       text: null,
     );
+
     //upload message to the cloud
     _kingsCordRepository.sendMsgTxt(
         churchId: churchId,
@@ -130,7 +136,8 @@ class KingscordCubit extends Cubit<KingscordState> {
         message: message,
         senderId: _authBloc.state.user!.uid);
 
-    emit(state.copyWith(status: KingsCordStatus.initial));
-    
+    // if you look in this.onUploadImage you will see where we add the file. now we remove it
+    state.filesToBePosted.removeLast();
+    emit(state.copyWith(status: KingsCordStatus.initial, fileShareStatus: FileShareStatus.inital, filesToBePosted: state.filesToBePosted));
   }
 }

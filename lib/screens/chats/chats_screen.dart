@@ -12,7 +12,7 @@ import 'package:kingsfam/models/church_model.dart';
 //import 'package:firebase_messaging/firebase_messaging.dart';
 //import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
-import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscorcd.dart';
+import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/chats_view_widgets/screens_for_page_view.dart';
 import 'package:kingsfam/widgets/kf_crown_v2.dart';
