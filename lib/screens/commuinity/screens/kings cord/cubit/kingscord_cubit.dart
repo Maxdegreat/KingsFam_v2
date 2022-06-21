@@ -11,6 +11,8 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 part 'kingscord_state.dart';
 
@@ -108,7 +110,38 @@ class KingscordCubit extends Cubit<KingscordState> {
         senderId: _authBloc.state.user!.uid);
   }
 
-  //getter for image
+  
+  void onUploadVideo({required File videoFile, required String kcId, required String cmId}) async {
+    emit(state.copyWith(status: KingsCordStatus.loading, fileShareStatus: FileShareStatus.imgSharing));
+    // make the thumbnail
+    final thumbnail = await VideoThumbnail.thumbnailFile(
+          video: videoFile.path,
+          thumbnailPath: (await getTemporaryDirectory()).path,
+          imageFormat: ImageFormat.PNG,
+          //maxHeight: 64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
+          quality: 100,
+        );
+    if (thumbnail == null)
+    return
+    // add thumbnail to queue
+    state.filesToBePosted.addFirst(File(thumbnail!));
+    // store the thumbnail
+    final  thumbnailUrl = await _storageRepository.uploadThumbnailVideo(thumbnail: File(thumbnail));
+    // pass vid to storage
+    final videoUrl = await _storageRepository.uploadchatVideo(video: videoFile);
+    // make message
+    final message = Message(date: Timestamp.now(), thumbnailUrl: thumbnailUrl, videoUrl: videoUrl,);
+    // send the message to the cloud:::::
+    //upload message to the cloud
+    _kingsCordRepository.sendMsgTxt(
+        churchId: cmId,
+        kingsCordId: kcId,
+        message: message,
+        senderId: _authBloc.state.user!.uid);
+  state.filesToBePosted.removeLast();
+  emit(state.copyWith(status: KingsCordStatus.loading, fileShareStatus: FileShareStatus.inital, filesToBePosted:  state.filesToBePosted));
+  }
+
   void onUploadImage(File imageFile) {
     state.filesToBePosted.addFirst(imageFile);
     emit(state.copyWith(txtImgUrl: imageFile, status: KingsCordStatus.initial));
@@ -138,6 +171,10 @@ class KingscordCubit extends Cubit<KingscordState> {
 
     // if you look in this.onUploadImage you will see where we add the file. now we remove it
     state.filesToBePosted.removeLast();
-    emit(state.copyWith(status: KingsCordStatus.initial, fileShareStatus: FileShareStatus.inital, filesToBePosted: state.filesToBePosted));
+    var fileShareStatus = FileShareStatus.inital;
+    if (state.filesToBePosted.length != 0)
+      fileShareStatus = FileShareStatus.imgSharing;
+
+    emit(state.copyWith(status: KingsCordStatus.initial, fileShareStatus: fileShareStatus, filesToBePosted: state.filesToBePosted));
   }
 }

@@ -98,6 +98,12 @@ class StorageRepository extends BaseStorageRepository {
     return downloadUrl;
   }
 
+  Future<String> uploadchatVideo({required File video}) async {
+    var videoId = Uuid().v4();
+    final downloadUrl = await _uploadImage(image: video, ref: 'videos/chats/chatVideo_$videoId.jpg');
+    return downloadUrl;
+  }
+
   @override
   Future<String> uploadPostVideo({required File video}) async {
     final imageId = Uuid().v4();

@@ -1,0 +1,4 @@
+this is just a place where i wana keep code i think is cool:
+
+Navigator.popUntil(
+        context, ModalRoute.withName(Navigator.defaultRouteName));

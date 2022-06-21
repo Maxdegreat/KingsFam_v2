@@ -9,9 +9,10 @@ import 'package:kingsfam/helpers/helpers.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
+import 'package:kingsfam/screens/commuinity/screens/kings%20cord/widgets/media_bottom_sheet.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
 
-import 'message_lines.dart';
+import 'widgets/message_lines.dart';
 
 //will probably need args to pass all members from the commuinity into main room
 class KingsCordArgs {
@@ -86,8 +87,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     for (var user in widget.commuinity.members) {
       memIds.add(user.id);
       mems[user.username] = {
-        'id' : user.id,
-        'token' : user.token,
+        'id': user.id,
+        'token': user.token,
       };
     }
 
@@ -103,7 +104,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
 //==========================================================================S
   List<MessageLines> _buildMessageLines(List<Message?> message) {
-  List<MessageLines> messageLines = [];
+    List<MessageLines> messageLines = [];
 
     message.forEach((sms) {
       if (sms != null) {
@@ -126,19 +127,11 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         child: Row(
           children: [
             IconButton(
-                onPressed: () async {
-                  final pickedFile = await ImageHelper.pickImageFromGallery(
-                      context: context,
-                      cropStyle: CropStyle.rectangle,
-                      title: 'send');
-                  if (pickedFile != null) {
-                    ctx.onUploadImage(pickedFile);
-                    ctx.onSendTxtImg(
-                        churchId: widget.commuinity.id!,
-                        kingsCordId: widget.kingsCord.id!
-                    );
-                  }
-                },
+                onPressed: () async => mediaBottomSheet(
+                    kingscordCubit: ctx,
+                    context: context,
+                    cmId: widget.commuinity.id!,
+                    kcId: widget.kingsCord.id!),
                 icon: Icon(Icons.add_box_outlined)),
             Expanded(
               child: Container(
@@ -209,16 +202,17 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                           for (String msg in msgAsLst) {
                             if (msg.length >= 2 && msg[0] == '@') {
                               // gives the names of who is mentioned
-                              var mentionedUserName = msg.substring(1, msg.length);
+                              var mentionedUserName =
+                                  msg.substring(1, msg.length);
                               if (mems.containsKey(mentionedUserName)) {
                                 mentionedInfo[mems[mentionedUserName]['id']] = {
                                   'username': mentionedUserName,
-                                  'token' : mems[mentionedUserName]['token'],
-                                  'communityName' : widget.commuinity.name,
+                                  'token': mems[mentionedUserName]['token'],
+                                  'communityName': widget.commuinity.name,
                                   'kingsCordName': widget.kingsCord.cordName,
                                 };
                               }
-                              
+
                               log("the mentioned username in for loop on line 200: $mentionedUserName");
                             }
                           }
@@ -228,8 +222,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                               txtMsgBody: _messageController.text,
                               mentionedInfo: mentionedInfo,
                               cmTitle: widget.commuinity.name,
-                              kingsCordData: widget.kingsCord
-                          );
+                              kingsCordData: widget.kingsCord);
                           ctx.onIsTyping(false);
                           _messageController.clear();
                         }
@@ -355,24 +348,39 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
               _mentionUserContainer(username: _mentionedController),
 
-              
               // this is can only ocour if the user is apart of the commuinity. in this case they can share
               // content
-              state.fileShareStatus != FileShareStatus.inital ?
-              Container(
-                height: 57,
-                width: double.infinity,
-                color: Colors.green,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: state.filesToBePosted.map((file) => ProfileImage(radius: 20, pfpUrl: '', pfpImage: file,)).toList()
-                  ,
-                ),
-              ) : SizedBox.shrink(),
+              state.fileShareStatus != FileShareStatus.inital
+                  ? Container(
+                      height: 90,
+                      width: double.infinity,
+                      color: Colors.transparent,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Sharing Files Fam, Sit Tight...",
+                            overflow: TextOverflow.fade,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
+                            children: state.filesToBePosted
+                                .map((file) => ProfileImage(
+                                      radius: 27,
+                                      pfpUrl: '',
+                                      pfpImage: file,
+                                    ))
+                                .toList(),
+                          ),
+                        ],
+                      ),
+                    )
+                  : SizedBox.shrink(),
               memIds.contains(context.read<AuthBloc>().state.user!.uid)
                   ? _buildBottomTF(state, context)
-                  : _permissionDenied(messasge: "Join Commuinity To say whats up")
+                  : _permissionDenied(
+                      messasge: "Join Commuinity To say whats up")
             ],
           );
         },

@@ -7,6 +7,7 @@ class Message {
   final String? id;
   final String? text;
   final String? imageUrl;
+  final String? thumbnailUrl;
   final String? videoUrl;
   final Timestamp date;
   final Userr? sender;
@@ -18,6 +19,7 @@ class Message {
     this.sender, // do not call this in the to doc bc 
     this.text,
     this.imageUrl,
+    this.thumbnailUrl,
     this.videoUrl,
     this.mentionedIds,
     required this.date
@@ -29,6 +31,7 @@ class Message {
         sender,
         text,
         imageUrl,
+        thumbnailUrl,
         videoUrl,
         date,
         mentionedIds,
@@ -40,6 +43,7 @@ class Message {
     Userr? sender,
     String? text,
     String? imageUrl,
+    String? thumbnailUrl,
     String? videoUrl,
     Timestamp? date,
     List<String>? mentionedIds,
@@ -49,6 +53,7 @@ class Message {
       sender: sender ?? this.sender,
       text: text ?? this.text,
       imageUrl: imageUrl ?? this.imageUrl,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
       videoUrl: videoUrl ?? this.videoUrl,
       date: date ?? this.date,
       mentionedIds: mentionedIds ?? this.mentionedIds,
@@ -65,6 +70,7 @@ class Message {
       'sender': FirebaseFirestore.instance.collection(Paths.users).doc(senderId),
       'text': text,
       'imageUrl': imageUrl,
+      'thumbnailUrl': thumbnailUrl,
       'videoUrl': videoUrl,
       'date': date, 
       'mentionedIds' : mentionedIds
@@ -84,6 +90,7 @@ class Message {
       sender: user,
       text: data['text'] ?? null,
       imageUrl: data['imageUrl'] ?? null,
+      thumbnailUrl: data['thumbnailUrl'] ?? null,
       videoUrl: data['videoUrl'] ?? null,
       date: (data['date']),
       mentionedIds:  List<String>.from(data['mentionedIds'] ?? [])
