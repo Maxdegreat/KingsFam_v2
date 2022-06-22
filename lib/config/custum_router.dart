@@ -114,6 +114,9 @@ class CustomRoute {
 
       case CommentScreen.routeName:
         return CommentScreen.route(args: settings.arguments as CommentScreenArgs);
+      
+      case UrlViewScreen.routeName:
+        return UrlViewScreen.route(args: settings.arguments as UrlViewArgs);
 
       default:
         return _errorRoute();

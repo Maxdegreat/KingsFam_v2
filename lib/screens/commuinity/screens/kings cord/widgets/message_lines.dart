@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/extensions/extensions.dart';
+import 'package:kingsfam/screens/screens.dart';
 
 class MessageLines extends StatelessWidget {
   //class data
@@ -57,7 +58,7 @@ class MessageLines extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           GestureDetector(
-            onTap: () => ,
+            onTap: () => Navigator.of(context).pushNamed(UrlViewScreen.routeName, arguments: UrlViewArgs(urlMain: message.videoUrl!, urlSub: message.thumbnailUrl!, heroTag: 'Message/${message.videoUrl}/${message.thumbnailUrl}')),
             child: Container(
               child: Icon(Icons.play_arrow, size: 35,),
               decoration: BoxDecoration(
