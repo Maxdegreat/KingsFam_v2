@@ -24,11 +24,14 @@ class   ChurchRepository extends BaseChurchRepository {
   }
   
   Stream<List<Future<Church?>>> getCmsStream({required String currId}) {
+    log("we are now in the getCmsStream");
     final userRef = FirebaseFirestore.instance.collection(Paths.users).doc(currId);
-    return FirebaseFirestore.instance.collection(Paths.church).limit(10).where('members',arrayContains: userRef)
+    return FirebaseFirestore.instance.collection(Paths.church).limit(10).where('members.$currId.userReference', isEqualTo: userRef)
     .snapshots().map((snap) {
+    log("in the snnap map");
       List<Future<Church?>> chs = [];
       snap.docs.forEach((doc) async{ 
+        log("got a doc");
         Future<Church> ch = Church.fromDoc(doc);
         chs.add(ch);
       });
@@ -70,7 +73,9 @@ class   ChurchRepository extends BaseChurchRepository {
 
   @override
   Future<void> newChurch({required Church church, required Userr recentSender}) async {
-    fb.add(church.toDoc()).then((value) async {
+    log("hoping in newchurch func");
+    try {
+        fb.add(church.toDoc()).then((value) async {
       final doc = await value.get(); 
       final kingsCord = KingsCord(
         tag: doc.id,
@@ -81,6 +86,10 @@ class   ChurchRepository extends BaseChurchRepository {
       //send off the repo
     fb.doc(doc.id).collection(Paths.kingsCord).add(kingsCord.toDoc());
     });
+    } catch (e) {
+      log("The newchurch in repo failed e code: $e");
+    }
+    log("hoping out of newchurch func");
   }
 
   Future<List<Post?>> getCommuinityPosts({required Church cm}) async {
@@ -260,15 +269,10 @@ class   ChurchRepository extends BaseChurchRepository {
     
     final doc = await fb.doc(cm.id).get(); 
     
-    Set<String> memIds = await Church.getCommunityMemberIds(doc);
+    Set<String> memIds =  Church.getCommunityMemberIds(doc);
     
     return Stream<bool>.value(memIds.contains(authorId));
-    // var ids = cm.members.map((e) => e.id).toSet();
-    // if (ids.contains(authorId)) {
-    //    return Stream<bool>.value(true);
-    // } else {
-    //   return Stream<bool>.value(false);
-    // }
+    
   }
   Future<bool> isCommuinityMember({required Church commuinity, required String authorId}) async {
     final DocumentReference userRef = FirebaseFirestore.instance.collection(Paths.users).doc(authorId);

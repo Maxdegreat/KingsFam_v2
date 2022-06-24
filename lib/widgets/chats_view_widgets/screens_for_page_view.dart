@@ -83,13 +83,18 @@ class ScreensForPageView {
                                 flex: 1,
                                 child: ListView.builder(
                                   itemCount: state.chs.length,
-                                  itemBuilder: (context, index)  {
+                                  itemBuilder: (context, index) {
                                     // check if the path userid, church, kc ezist if so flag with a @ symbole
-                                    
+
                                     Church? commuinity = state.chs[index];
                                     bool isMentioned = false;
-                                    FirebaseFirestore.instance.collection(Paths.mention).doc(currId).collection(commuinity!.id!).snapshots().isEmpty;
-                                    
+                                    FirebaseFirestore.instance
+                                        .collection(Paths.mention)
+                                        .doc(currId)
+                                        .collection(commuinity!.id!)
+                                        .snapshots()
+                                        .isEmpty;
+
                                     return GestureDetector(
                                       onLongPress: () => leaveCommuinity(
                                           commuinity: commuinity,
@@ -102,12 +107,12 @@ class ScreensForPageView {
                                       child: Padding(
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 10.0),
-  // see child of list view here below.
+                                          // see child of list view here below.
                                           child: FancyListTile(
-                                            isMentioned: state.mentionedMap[commuinity.id],
+                                              isMentioned: state
+                                                  .mentionedMap[commuinity.id],
                                               location:
-                                                  commuinity.location.length >
-                                                          1
+                                                  commuinity.location.length > 1
                                                       ? commuinity.location
                                                       : null,
                                               username: commuinity.name,
@@ -136,52 +141,35 @@ class ScreensForPageView {
   }
 
   // ignore: non_constant_identifier_names
-  StreamBuilder<QuerySnapshot<Map<String, dynamic>>> chats_view(String userId) {
-    return StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection(Paths.chats)
-            .where('memberIds', arrayContains: userId)
-            .snapshots(),
-        builder:
-            (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot1) {
-          if (!snapshot1.hasData) {
-            return Center(child: Text('waiting for simpels img'));
-          } else if (snapshot1.data!.docs.length <= 0) {
-            return Center(child: Text('Join some chats!'));
-          } else {
-            return Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 20),
-                    Expanded(
-                      flex: 1,
-                      child: GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          mainAxisSpacing: 20.0,
-                          crossAxisSpacing: 20.0,
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.85,
-                        ),
-                        itemBuilder: (context, index) {
-                          Chat chat = Chat.fromDoc(snapshot1.data!.docs[index]);
-                          return GestureDetector(
-                            onTap: () => Navigator.of(context).pushNamed(
-                                ChatRoom.routeName,
-                                arguments: ChatRoomArgs(chat: chat)),
-                            child: buildChat(
-                                chat: chat, context: context, userId: userId),
-                          );
-                        },
-                        itemCount: snapshot1.data!.docs.length,
-                      ),
-                    )
-                  ],
-                ));
-          }
-        });
+  Widget chats_view(String userId, ChatscreenState state) {
+    return Scaffold(
+      body: Expanded(
+        flex: 1,
+        child: GridView.builder(
+          itemCount: state.chat.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            mainAxisSpacing: 20.0,
+            crossAxisSpacing: 20.0,
+            crossAxisCount: 2,
+            childAspectRatio: 0.85,
+          ),
+          itemBuilder: (context, index) {
+            //TODO
+            Chat? chat = state.chat[index];
+            // ignore: unnecessary_null_comparison
+            if (chat != null) {
+            return GestureDetector(
+              onTap: () => Navigator.of(context).pushNamed(ChatRoom.routeName,
+                  arguments: ChatRoomArgs(chat: chat)),
+              child: buildChat(chat: chat, context: context, userId: userId),
+            );
+            } else {
+              return SizedBox.shrink();
+            }
+          },
+        ),
+      ),
+    );
   }
 
   Widget feed(context) => FeedScreenWidget();

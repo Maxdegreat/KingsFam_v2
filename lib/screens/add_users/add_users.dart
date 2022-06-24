@@ -38,17 +38,15 @@ class AddUsers extends StatefulWidget {
   _AddUsersState createState() => _AddUsersState();
 }
 
-
-
-
-
 class _AddUsersState extends State<AddUsers> {
   final TextEditingController _textEditingController = TextEditingController();
-    @override
-    void dispose() {
-      context.read<SearchBloc>().clearSearchBlocAll();
-      super.dispose();
-    }
+  @override
+  void dispose() {
+    context.read<SearchBloc>().clearSearchBlocAll();
+    _textEditingController.clear();
+    _textEditingController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +66,10 @@ class _AddUsersState extends State<AddUsers> {
         return Scaffold(
           appBar: AppBar(
             title: widget.typeOf == 'Virtural Church'
-                ? Text('Add Fam To The Commuinity?', overflow: TextOverflow.fade,)
+                ? Text(
+                    'Add Fam To The Commuinity?',
+                    overflow: TextOverflow.fade,
+                  )
                 : widget.typeOf == typeOf.inviteTheFam
                     ? Text("Invite Members")
                     : Text("New Group"),
@@ -90,14 +91,17 @@ class _AddUsersState extends State<AddUsers> {
                           filled: true,
                           hintText: 'search for the fam that ur following',
                           suffixIcon: IconButton(
-                            onPressed: () { context.read<SearchBloc>().clearSearch(); _textEditingController.clear();},
-                            icon: Icon(Icons.clear)
-                            )
-                          ),
+                              onPressed: () {
+                                context.read<SearchBloc>().clearSearch();
+                                _textEditingController.clear();
+                              },
+                              icon: Icon(Icons.clear))),
                       textInputAction: TextInputAction.search,
                       textAlignVertical: TextAlignVertical.center,
                       onChanged: (value) {
-                        context.read<SearchBloc>().searchUserAdvancedAddToCommuinity(value.trim());
+                        context
+                            .read<SearchBloc>()
+                            .searchUserAdvancedAddToCommuinity(value.trim());
                       },
                     ),
                     SizedBox(height: 10.0),
@@ -105,70 +109,103 @@ class _AddUsersState extends State<AddUsers> {
                       Container(
                         height: MediaQuery.of(context).size.height / 1.38,
                         width: double.infinity,
-                        child: state.status == SearchStatus.initial 
-
-                          ? state.users.length == 0 ? 
-
-                                    Center(
-                                      child: Text("You have to follow some fam before you can create a community!"),
-                                    ) :
-
-                             ListView.builder(
-                              itemCount: state.followingUsers.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                Userr user = state.followingUsers[index];
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 13),
-                                  child: ListTile(
-                                    onTap: () {
-                                      if (!state.selectedUsers.contains(user)) {
-                                        context.read<SearchBloc>()..add(AddMember(member: user)); 
-                                        setState(() {});
-                                      } else {
-                                        context.read<SearchBloc>()..add(RemoveMember(member: user));
-                                        setState(() {});
-                                      }
-                                    },
-                                    leading: ProfileImage(pfpUrl: user.profileImageUrl, radius: 37,),
-                                    title: Text(user.username, overflow: TextOverflow.fade, style: TextStyle(color: state.selectedUsers.contains(user) ? Colors.green : Colors.white, fontSize: 25, fontWeight: FontWeight.w500 ),),
-                                  ),
-                                );
-                              })
+                        child: state.status == SearchStatus.initial
+                            ? state.followingUsers.length == 0
+                                ? Center(
+                                    child: Text(
+                                      "You have to follow some fam before you can create a community!",
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    itemCount: state.followingUsers.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      Userr user = state.followingUsers[index];
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 13),
+                                        child: ListTile(
+                                          onTap: () {
+                                            if (!state.selectedUsers
+                                                .contains(user)) {
+                                              context.read<SearchBloc>()
+                                                ..add(AddMember(member: user));
+                                              setState(() {});
+                                            } else {
+                                              context.read<SearchBloc>()
+                                                ..add(
+                                                    RemoveMember(member: user));
+                                              setState(() {});
+                                            }
+                                          },
+                                          leading: ProfileImage(
+                                            pfpUrl: user.profileImageUrl,
+                                            radius: 37,
+                                          ),
+                                          title: Text(
+                                            user.username,
+                                            overflow: TextOverflow.fade,
+                                            style: TextStyle(
+                                                color: state.selectedUsers
+                                                        .contains(user)
+                                                    ? Colors.green
+                                                    : Colors.white,
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.w500),
+                                          ),
+                                        ),
+                                      );
+                                    })
                             : state.status == SearchStatus.loading
                                 ? Center(
                                     child: CircularProgressIndicator(),
                                   )
                                 // once listview is a sucess
                                 : state.status == SearchStatus.success
-                       
-                                    ?
-                                    
-                                    ListView.builder(
+                                    ? ListView.builder(
                                         itemCount: state.users.length,
-                                        itemBuilder: (BuildContext context, int index) {
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
                                           log("The len of users is ${state.users.length}");
                                           Userr user = state.users[index];
-                                          return Padding(padding: EdgeInsets.symmetric(vertical: 13 ),
+                                          return Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 13),
                                             child: ListTile(
                                               onTap: () {
-                                                if (!state.selectedUsers.contains(user)) {
-                                                  context.read<SearchBloc>()..add(AddMember(member: user)); 
+                                                if (!state.selectedUsers
+                                                    .contains(user)) {
+                                                  context.read<SearchBloc>()
+                                                    ..add(AddMember(
+                                                        member: user));
                                                   setState(() {});
                                                 } else {
-                                                  context.read<SearchBloc>()..add(RemoveMember(member: user));
+                                                  context.read<SearchBloc>()
+                                                    ..add(RemoveMember(
+                                                        member: user));
                                                   setState(() {});
                                                 }
                                               },
-                                              leading: ProfileImage(pfpUrl: user.profileImageUrl, radius: 37,),
-                                              title: Text(user.username, overflow: TextOverflow.fade, style: TextStyle(
-                                                fontSize: 25,
-                                                fontWeight: FontWeight.w500,
-                                                color: state.selectedUsers.contains(user) ? Colors.green : Colors.white,
-                                               ),),
-                                            ) ,
+                                              leading: ProfileImage(
+                                                pfpUrl: user.profileImageUrl,
+                                                radius: 37,
+                                              ),
+                                              title: Text(
+                                                user.username,
+                                                overflow: TextOverflow.fade,
+                                                style: TextStyle(
+                                                  fontSize: 25,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: state.selectedUsers
+                                                          .contains(user)
+                                                      ? Colors.green
+                                                      : Colors.white,
+                                                ),
+                                              ),
+                                            ),
                                           );
-                                        }
-                                      )
+                                        })
                                     : Center(child: Text('fam not found')),
                       ),
                       Positioned(
@@ -182,8 +219,9 @@ class _AddUsersState extends State<AddUsers> {
                                         Navigator.of(context).pushNamed(
                                             BuildChurch.routeName,
                                             arguments: BuildChurchArgs(
-                                                selectedMembers:
-                                                    state.selectedUsers.toList()));
+                                                selectedMembers: state
+                                                    .selectedUsers
+                                                    .toList()));
 
                                         break;
                                       case typeOf.inviteTheFam:
@@ -195,8 +233,9 @@ class _AddUsersState extends State<AddUsers> {
                                         Navigator.of(context).pushNamed(
                                             CreateChatScreen.routeName,
                                             arguments: CreateChatArgs(
-                                                selectedMembers:
-                                                    state.selectedUsers.toList()));
+                                                selectedMembers: state
+                                                    .selectedUsers
+                                                    .toList()));
                                     }
 
                                     // print(state.selectedUsers.map((member) => member.username));
@@ -221,6 +260,3 @@ class _AddUsersState extends State<AddUsers> {
     );
   }
 }
-
-
-

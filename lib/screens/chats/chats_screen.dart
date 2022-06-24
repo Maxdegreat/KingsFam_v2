@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -71,7 +72,7 @@ class _ChatsScreenState extends State<ChatsScreen>
     if (message.data['type'] == 'kc_type') {
       log('The message is $message');
         var kc = KingsCord(tag: message.data['tag'], cordName: message.data['cordName'], recentMessage: message.data['recentMessage'], recentSender: message.data['recentSender'], members: message.data['members'], id: message.data['id']);
-        Navigator.pushNamed(context, KingsCordScreen.routeName, arguments: KingsCordArgs(commuinity: Church(id: message.data['communityId'], searchPram: [], name: message.data['communityName'], location: '...', imageUrl: '...', members: message.data['members'], events: [], about: '...'), kingsCord: kc));
+        Navigator.pushNamed(context, KingsCordScreen.routeName, arguments: KingsCordArgs(commuinity: Church(id: message.data['communityId'], searchPram: [], name: message.data['communityName'], location: '...', imageUrl: '...', members: message.data['members'], events: [], about: '...', recentMsgTime: Timestamp(0,0)), kingsCord: kc));
       } else {
         log("we were not able to track the remote message to ur wanted screeen");
       }
@@ -242,7 +243,7 @@ class _ChatsScreenState extends State<ChatsScreen>
                       ScreensForPageView().feed(context),
                       ScreensForPageView().commuinity_view(userId, context,
                           _bottomBannerAd, _isBottomBannerAdLoaded),
-                      ScreensForPageView().chats_view(userId)
+                      ScreensForPageView().chats_view(userId, state)
                     ],
                   ));
             })));

@@ -55,23 +55,27 @@ class _FileViewScreenState extends State<UrlViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Hero(tag: widget.heroTag, child: _viewPort()),
+    return Scaffold(
+      appBar: AppBar(title: Text("Vid view"),),
+      body: Hero(tag: widget.heroTag, child: _viewPort()),
     );
   }
 
-  Widget _viewPort() => Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: widget.subUrl.isNotEmpty ? _videoPortFromMessage() : null,
-        // ignore: unnecessary_null_comparison
-        decoration: widget.subUrl.isEmpty || widget.subUrl == null
-            ? null
-            : BoxDecoration(
-                image: DecorationImage(
-                    image: CachedNetworkImageProvider(widget.url),
-                    fit: BoxFit.fitWidth)),
-      );
+  Widget _viewPort() => Expanded(
+    child: AspectRatio(
+      aspectRatio: 16 / 9,
+      child: Container(
+            child: widget.subUrl.isNotEmpty ? _videoPortFromMessage() : null,
+            // ignore: unnecessary_null_comparison
+            decoration: widget.subUrl.isEmpty || widget.subUrl == null
+                ? BoxDecoration(
+                    image: DecorationImage(
+                        image: CachedNetworkImageProvider(widget.url),
+                        fit: BoxFit.fitWidth))
+                : null,
+          ),
+    ),
+  );
 
   Widget _videoPortFromMessage() => Padding(
         padding: EdgeInsets.symmetric(vertical: 5.0),

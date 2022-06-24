@@ -36,18 +36,21 @@ class MessageLines extends StatelessWidget {
   //for an image
   _buildImage(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Container(
-      height: size.height * 0.2,
-      width: size.width * 0.6,
-      decoration: BoxDecoration(
-          border: Border.all(
-              width: 2.0,
-              color: const Color(
-                  0xFFFFFFFF)), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
-          borderRadius: BorderRadius.circular(20.0),
-          image: DecorationImage(
-              fit: BoxFit.cover,
-              image: CachedNetworkImageProvider(message.imageUrl!))),
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pushNamed(UrlViewScreen.routeName, arguments: UrlViewArgs(urlMain: message.imageUrl!, urlSub: '', heroTag: 'Message/${message.imageUrl}/')),
+      child: Container(
+        height: size.height * 0.2,
+        width: size.width * 0.6,
+        decoration: BoxDecoration(
+            border: Border.all(
+                width: 2.0,
+                color: const Color(
+                    0xFFFFFFFF)), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
+            borderRadius: BorderRadius.circular(20.0),
+            image: DecorationImage(
+                fit: BoxFit.cover,
+                image: CachedNetworkImageProvider(message.imageUrl!))),
+      ),
     );
   }
 

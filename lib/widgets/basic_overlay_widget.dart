@@ -11,7 +11,6 @@ class BasicOverlayWidget extends StatelessWidget {
   Widget build(BuildContext context) => GestureDetector(
     behavior: HitTestBehavior.opaque,
     onTap: () {
-      print("Basic overlay widget activated");
       controller.value.isPlaying ?  controller.pause() : controller.play();
     },
     child: Stack(

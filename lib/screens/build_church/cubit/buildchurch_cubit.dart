@@ -1,4 +1,5 @@
 
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
@@ -154,11 +155,13 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
 
       //============================================================
       //populate the member info
-      List<Userr> mems = [];
+
+      Map<Userr, Timestamp> mems = {};
       for (int i = 0; i < state.memberIds.length; i++) {
         final user = await _userrRepository.getUserrWithId(userrId: state.memberIds[i]);
-        mems.add(user); // may not work so maybe make a list then emit list o
+        mems[user]=Timestamp(0, 0); // may not work so maybe make a list then emit list o
       }
+
 
       emit(state.copyWith(members: mems));
       //-----------------------------------
@@ -176,9 +179,10 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
           events: [],
           about: state.about,
           size: state.memberIds.length,
+          recentMsgTime: Timestamp(1,0),
         );
         // build the church mem 
-        final ChurchMembers churchMemberIds = ChurchMembers(ids: state.memberIds);
+        //final ChurchMembers churchMemberIds = ChurchMembers(ids: state.memberIds);
 
 
       // make a kings cord on the init of making the church, this is the default room
@@ -257,7 +261,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
   }
 
   bool isAdmin({required Church commuinity}) {
-    var ids = commuinity.members.map((e) => e.id).toList();
+    var ids = commuinity.members.keys.map((e) => e.id).toList();
     return ids.contains(_authBloc.state.user!.uid);
   }
 

@@ -1,0 +1,28 @@
+  static Future<Set<String>> getCommunityMemberIds(DocumentSnapshot doc) async {
+    final data = doc.data() as Map<String, dynamic>;
+    Set<String> memberIds  = {};
+    final memRefs = data['members'];
+    if (memRefs == null) return {}; 
+    for (DocumentReference doc in memRefs.keys()) {
+      var snap = await doc.get();
+      if (snap.exists && snap.data() != null) {
+        memberIds.add(snap.id);
+      }
+    }
+    return memberIds;
+  }
+
+
+
+      final data = doc.data() as Map<String, dynamic>;
+    return Chat(
+        id: doc.id,
+        searchPram: List<String>.from(data['searchPram'] ?? []),
+        name: data['name'] ?? '',
+        imageUrl: data['imageUrl'] ?? '',
+        recentSender: data['recentSender'] ?? '',
+        recentMessage: data['recentMessage'] ?? '',
+        date: (data['date'] as Timestamp).toDate(),
+        memberIds: List<String>.from(data['memberIds'] ?? []),
+        memberInfo: Map<String, dynamic>.from(data['memberInfo'] ?? {}),
+        readStatus: Map<String, dynamic>.from(data['readStatus'] ?? {})

@@ -33,9 +33,9 @@ class ChatRepository extends BaseChatRepository {
   Stream<List<Future<Chat?>>> getUserChats({required String userId}) {
     return _firebaseFirestore
         .collection(Paths.chats)
-        .where('memberIds', arrayContains: userId)
+        .where('memRefs', arrayContains: FirebaseFirestore.instance.collection(Paths.users).doc(userId))
         .snapshots()
-        .map((snap) => snap.docs.map((doc) => Chat.fromDocAsync(doc)).toList());
+        .map((snap) => snap.docs.map((doc) => Chat.fromDoc(doc)).toList());
   }
 
   @override
@@ -48,10 +48,12 @@ class ChatRepository extends BaseChatRepository {
   }
 
   @override
-  Future<Chat> getChatWithId({required String chatId}) async {
+  Future<Chat?> getChatWithId({required String chatId}) async {
     final doc =
         await _firebaseFirestore.collection(Paths.chats).doc(chatId).get();
-    return doc.exists ? Chat.fromDoc(doc) : Chat.empty;
+    if (doc.exists)
+      return Chat.fromDoc(doc);
+    return null;
   }
 
   @override
@@ -60,5 +62,10 @@ class ChatRepository extends BaseChatRepository {
         .collection(Paths.chats)
         .doc(chat.id)
         .update(chat.toDoc());
+  }
+
+  Future<void> grabChatWithUserIds(String user1Id, String user2Id) async {
+    //_firebaseFirestore.collection(Paths.chats).where(field)
+    //TODO MAKE THIS WORK. FIRST I WANT TO ADD SOME THINGS TO THE CM CHAT AS EX
   }
 }

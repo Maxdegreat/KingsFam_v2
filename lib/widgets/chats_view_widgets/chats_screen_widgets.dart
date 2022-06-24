@@ -72,11 +72,11 @@ Future<dynamic> leaveCommuinity(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ChatImage(chatUrl: chat!.imageUrl),
+            chat!.imageUrl != null ? ChatImage(chatUrl: chat.imageUrl!) : Icon(Icons.cabin),
             SizedBox(height: 5),
             Center(
               child: Text(
-                chat.name,
+                chat.chatName,
                 style: Theme.of(context!).textTheme.bodyText1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -84,7 +84,7 @@ Future<dynamic> leaveCommuinity(
             SizedBox(height: 15),
             Center(
                 child:
-                    Text('${chat.memberInfo[chat.recentSender]['username']}')),
+                    Text('${chat.recentMessage['recentSenderUsername']}')),
             Center(
                 child: //Text("${chat.date.timeAgo()}"),
                     Text("chats screen"))
@@ -92,53 +92,4 @@ Future<dynamic> leaveCommuinity(
         ),
       ),
     );
-  }
-
-  // ignore: non_constant_identifier_names
-  StreamBuilder<QuerySnapshot<Map<String, dynamic>>> chats_view(String userId) {
-    return StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection(Paths.chats)
-            .where('memberIds', arrayContains: userId)
-            .snapshots(),
-        builder:
-            (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot1) {
-          if (!snapshot1.hasData) {
-            return Center(child: Text('waiting for simpels img'));
-          } else if (snapshot1.data!.docs.length <= 0) {
-            return Center(child: Text('Join some chats!'));
-          } else {
-            return Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 20),
-                    Expanded(
-                      flex: 1,
-                      child: GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          mainAxisSpacing: 20.0,
-                          crossAxisSpacing: 20.0,
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.85,
-                        ),
-                        itemBuilder: (context, index) {
-                          Chat chat = Chat.fromDoc(snapshot1.data!.docs[index]);
-                          return GestureDetector(
-                            onTap: () => Navigator.of(context).pushNamed(
-                                ChatRoom.routeName,
-                                arguments: ChatRoomArgs(chat: chat)),
-                            child: buildChat(
-                                chat: chat, context: context, userId: userId),
-                          );
-                        },
-                        itemCount: snapshot1.data!.docs.length,
-                      ),
-                    )
-                  ],
-                ));
-          }
-        });
   }

@@ -89,8 +89,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
                  else {
                    mentionedMap[kc.id!] = false
                  },
-                 //print(mentionedMap[kc.id!]),
-                 //log("That is the value above"),
+          
                  emit(state.copyWith(mentionedMap: mentionedMap))
                });
              }
@@ -135,7 +134,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   Stream<CommuinityState> _mapCommuinityLoadedToState(
       CommuinityLoadedEvent event) async* {
     try {
-      var cmIds = event.commuinity.members.map((e) => e.id).toList();
+      //var cmIds = event.commuinity.members.keys.map((e) => e.id).toList();
       late bool isMem;
   
       var ism = await _churchRepository

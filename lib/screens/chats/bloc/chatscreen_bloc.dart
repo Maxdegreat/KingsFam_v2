@@ -60,6 +60,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
+      log("we are in the map load users to state");
       final Map<String, bool> mentionedMap = {};
       final List<Church> allChs = [];
       _churchStreamSubscription?.cancel();

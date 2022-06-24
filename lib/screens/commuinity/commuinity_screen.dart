@@ -116,7 +116,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   }
 
   Scaffold _loadedDisplay(BuildContext context, CommuinityState state) {
-    var cmMemSet = widget.commuinity.members.map((e) => e.id).toSet();
+    var cmMemSet = widget.commuinity.members.keys.map((e) => e.id).toSet();
     var currId = context.read<AuthBloc>().state.user!.uid;
     return Scaffold(
         body: SafeArea(
@@ -716,7 +716,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                         //height: MediaQuery.of(context).size.height / 2.3,
                         child:
                             TabBarView(controller: _tabController, children: [
-                          _participantsView(widget.commuinity.members),
+                          _participantsView(widget.commuinity.members.keys.toList()),
                           _editView(commuinity: widget.commuinity)
                         ]),
                       )

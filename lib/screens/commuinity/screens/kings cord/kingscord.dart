@@ -84,7 +84,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       {required Church commuinity,
       required KingsCord kingsCord,
       required List<Message?> msgs}) {
-    for (var user in widget.commuinity.members) {
+    for (var user in widget.commuinity.members.keys) {
       memIds.add(user.id);
       mems[user.username] = {
         'id': user.id,
@@ -237,7 +237,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     int? _containerHeight;
     List<Userr> potentialMentions = [];
     if (username != null) {
-      for (Userr member in widget.commuinity.members) {
+      for (Userr member in widget.commuinity.members.keys) {
         if (member.username.startsWith(username)) {
           potentialMentions.add(member);
         }

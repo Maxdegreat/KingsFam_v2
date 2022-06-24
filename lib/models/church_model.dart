@@ -16,9 +16,10 @@ class Church extends Equatable {
   final String imageUrl;
   final String about;
   final List<String> searchPram;
-  final List<Userr> members;
+  final Map<Userr, Timestamp> members;
   final List<String> events;
   final int? size;
+  final Timestamp recentMsgTime;
   // 2 gen the constructor
   Church({
     required this.searchPram,
@@ -30,6 +31,7 @@ class Church extends Equatable {
     required this.members,
     required this.events,
     required this.about,
+    required this.recentMsgTime,
     this.size,
   });
   // 3 make the props
@@ -44,6 +46,7 @@ class Church extends Equatable {
         about,
         members,
         events,
+        recentMsgTime,
         size,
       ];
   //generate the copy with
@@ -55,12 +58,14 @@ class Church extends Equatable {
     String? location,
     String? imageUrl,
     String? about,
-    List<Userr>? members,
+    Timestamp? recentMsgTime,
+    Map<Userr, Timestamp>? members,
     List<String>? events,
     int? size,
   }) {
     return Church(
       id: id ?? this.id,
+      recentMsgTime: recentMsgTime ?? this.recentMsgTime,
       searchPram: searchPram ?? this.searchPram,
       hashTags: hashTags ?? this.hashTags,
       name: name ?? this.name,
@@ -75,13 +80,19 @@ class Church extends Equatable {
 
   //5 make the to doc
   Map<String, dynamic> toDoc() {
-    List<String> ids = members.map((x) => x.id).toList();
-    List<DocumentReference<Map<String, dynamic>>> memRefs = [];
+  
+    List<String> ids = members.keys.map((u) => u.id).toList();
+    
+    //DocumentReference<Map<String, dynamic>>
+    Map< String, dynamic > memRefs = {};
+
     for (String id in ids) {
-      DocumentReference<Map<String, dynamic>> ref = 
-        FirebaseFirestore.instance.collection(Paths.users).doc(id);
-      memRefs.add(ref);
+      memRefs[id] = {
+        'userReference': FirebaseFirestore.instance.collection(Paths.users).doc(id),
+        'timestamp': Timestamp.now()
+      } ;
     }
+
     return {
       'name': name,
       'location': location,
@@ -92,35 +103,38 @@ class Church extends Equatable {
       'members' : memRefs,
       'events': events,
       'size' : size,
+      'recentMsgTime': Timestamp.now(),
     };
   }
 
-  static Future<Set<String>> getCommunityMemberIds(DocumentSnapshot doc) async {
+  static Set<String> getCommunityMemberIds(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    Set<String> memberIds  = {};
-    final memRefs = data['members'];
+    final memRefs = Map<String, dynamic>.from(data['members']);
+    // ignore: unnecessary_null_comparison
     if (memRefs == null) return {}; 
-    for (DocumentReference doc in memRefs) {
-      var snap = await doc.get();
-      if (snap.exists && snap.data() != null) {
-        memberIds.add(snap.id);
-      }
-    }
-    return memberIds;
+    return memRefs.keys.toSet();
   }
 
   //6 from doc
   static Future<Church> fromDoc(DocumentSnapshot doc) async {
     final data = doc.data() as Map<String, dynamic>;
-    List<Userr> members = [];
-    final memRefs = data['members'];
+    Map< Userr, Timestamp > members = {};
+    final memRefs = Map<String, dynamic>.from(data['members']);//data['members'];
+    
+    // log("about to show you data in the mems ref");
+    // for (var id in memRefs.keys) {
+    //   log("id: $id, userRef: ${memRefs[id]['userReference']}, timeStamp: ${memRefs[id]['timestamp']}");
+    // }
   
     if (memRefs == null) return Church.empty;
-    for (DocumentReference doc in memRefs) {
-      var snap = await doc.get();
-      if (snap.exists && snap.data() != null) {
+    for (String idFromDoc in memRefs.keys) {
+      // ignore: unnecessary_null_comparison
+      if (idFromDoc.isNotEmpty && idFromDoc != null) {
+        var docRef = memRefs[idFromDoc]['userReference'] as DocumentReference;
+        var snap = await docRef.get();
         Userr user = Userr.fromDoc(snap);
-        members.add(user);
+        //end goal is to have <user, time>
+        members[user] = memRefs[idFromDoc]['timestamp'];
       }
     }
 
@@ -134,7 +148,9 @@ class Church extends Equatable {
         location: data['location'] ?? 'Heaven',
         about: data['about'] ?? 'bio',
         imageUrl: data['imageUrl'] ?? '',
-        events: List<String>.from(data['events'] ?? []), 
+        recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0),
+        events: List<String>.from(data['events'] ?? [],
+      ), 
         
       );
   }
@@ -145,9 +161,10 @@ class Church extends Equatable {
       name: '...',
       location: '... ',
       imageUrl: '...',
-      members: [],
+      members: {},
       events: [],
       about: '...',
+      recentMsgTime: Timestamp(0, 0),
       hashTags: [],
       size: 0,
     );

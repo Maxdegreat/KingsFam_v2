@@ -16,7 +16,7 @@ class BuildchurchState extends Equatable {
   final String location;
   final List<String> memberIds;
   final Set<String> adminIds; // this will work by adding the certin ids into this list. when making user map if the key (an id) is found in the adminIds then pass isAdmin True in the map. i think this is better because it writes less.
-  final List<Userr> members;
+  final Map<Userr, Timestamp> members;
   final bool isSubmiting;
   final bool isMember;
   final BuildChurchStatus status;
@@ -84,7 +84,7 @@ class BuildchurchState extends Equatable {
       String? about,
       String? location,
       List<String>? memberIds,
-      List<Userr>? members,
+      Map<Userr, Timestamp>? members,
       Set<String>? adminIds,
       bool? isAdmin,
       bool? isMember,
@@ -136,7 +136,7 @@ class BuildchurchState extends Equatable {
         about: '',
         location: '',
         memberIds: [],
-        members: [],
+        members: {},
         isMember: false,
         status: BuildChurchStatus.initial,
         failure: Failure(),

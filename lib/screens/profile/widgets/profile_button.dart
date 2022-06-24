@@ -36,7 +36,9 @@ class ProfileButton extends StatelessWidget {
                     }
                    ),
             SizedBox(width: 7.0),
-            _btnRow(label: 'Message', style: style, onP: () {}, icon_: null,),
+            _btnRow(label: 'Message', style: style, onP: () {
+              
+            }, icon_: null,),
           ],
         );
   }
