@@ -9,8 +9,7 @@ class CreatechatState extends Equatable {
   final String name;
   final String recentSender;
   final List<String> memberIds;
-  final Map<String, dynamic> memberInfo;
-  final Map<String, dynamic> readStatus;
+  final Map<String, bool> readStatus;
   final List<String> usersList;
   final List<String> caseSearch;
   final CreateChatStatus status;
@@ -25,7 +24,6 @@ class CreatechatState extends Equatable {
         caseSearch: [],
         memberIds: [],
         recentSender: '',
-        memberInfo: {},
         readStatus: {},
         usersList: [],
         
@@ -40,7 +38,6 @@ class CreatechatState extends Equatable {
     required this.recentSender,
     required this.name,
     required this.memberIds,
-    required this.memberInfo,
     required this.readStatus,
     required this.usersList,
     required this.caseSearch,
@@ -55,7 +52,6 @@ class CreatechatState extends Equatable {
         name,
         recentSender,
         memberIds,
-        memberInfo,
         readStatus,
         usersList,
         caseSearch,
@@ -71,8 +67,7 @@ class CreatechatState extends Equatable {
     String? name,
     String? recentSender,
     List<String>? memberIds,
-    Map<String, dynamic>? memberInfo,
-    Map<String, dynamic>? readStatus,
+    Map<String, bool>? readStatus,
     List<String>? usersList,
     List<String>? caseSearch,
     CreateChatStatus? status,
@@ -83,7 +78,6 @@ class CreatechatState extends Equatable {
       chatAvatar: chatAvatar ?? this.chatAvatar,
       name: name ?? this.name,
       memberIds: memberIds ?? this.memberIds,
-      memberInfo: memberInfo ?? this.memberInfo,
       recentSender: recentSender ?? this.recentSender,
       readStatus: readStatus ?? this.readStatus,
       usersList: usersList ?? this.usersList,

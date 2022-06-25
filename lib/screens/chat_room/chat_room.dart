@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -155,16 +154,17 @@ class _ChatRoomState extends State<ChatRoom> {
   @override
   void initState() {
     super.initState();
-    context.read<ChatroomCubit>().onLoadInit(chatId: widget.chat.id!, limit: 45);
+    context
+        .read<ChatroomCubit>()
+        .onLoadInit(chatId: widget.chat.id!, limit: 45);
   }
   // WIDGET BUILD
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.chat.name, overflow: TextOverflow.ellipsis),
+          title: Text(widget.chat.chatName, overflow: TextOverflow.ellipsis),
           actions: [
             IconButton(
                 onPressed: () {

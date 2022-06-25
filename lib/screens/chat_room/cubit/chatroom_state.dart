@@ -29,7 +29,7 @@ class ChatroomState extends Equatable {
   }
 //3 the props
   @override
-  List<Object?> get props => [isTyping, textMesage, chatImage, status];
+  List<Object?> get props => [isTyping, textMesage, chatImage, status, msgs];
 
   //4 the copy with
   ChatroomState copyWith(

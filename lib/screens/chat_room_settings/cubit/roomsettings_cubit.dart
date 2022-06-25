@@ -31,22 +31,23 @@ class RoomsettingsCubit extends Cubit<RoomsettingsState> {
   void submit(String chatId) async {
     emit(state.copyWith(status: RoomSettingStatus.loading));
     try {
-      final Chat chat = await _chatRepository.getChatWithId(chatId: chatId);
+      final Chat? chat = await _chatRepository.getChatWithId(chatId: chatId);
 
-      String avatarUrl = chat.imageUrl;
-      if (state.chatAvatar != null) {
-        avatarUrl = await _storageRepository.uploadChatAvatar(
-            image: state.chatAvatar!, url: chat.imageUrl);
+      if (chat != null) {
+        String? avatarUrl = chat.imageUrl;
+        if (state.chatAvatar != null && chat.imageUrl != null) {
+          avatarUrl = await _storageRepository.uploadChatAvatar(image: state.chatAvatar!, url: chat.imageUrl!);
+        }
+        var chatName = chat.chatName;
+        if (state.name.isNotEmpty) {
+          chatName = state.name;
+        }
+
+        Chat updatedChat = chat.copyWith(chatName: chatName, imageUrl: avatarUrl);
+
+        await _chatRepository.updateChat(chat: updatedChat);
+        emit(state.copyWith(status: RoomSettingStatus.success));
       }
-      var chatName = chat.name;
-      if (state.name.isNotEmpty) {
-        chatName = state.name;
-      }
-
-      Chat updatedChat = chat.copyWith(name: chatName, imageUrl: avatarUrl);
-
-      await _chatRepository.updateChat(chat: updatedChat);
-      emit(state.copyWith(status: RoomSettingStatus.success));
     } catch (err) {
       emit(state.copyWith(
           failure: Failure(

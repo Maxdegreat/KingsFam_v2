@@ -15,6 +15,7 @@ import 'package:kingsfam/widgets/kf_crown_v2.dart';
 import 'package:kingsfam/widgets/chats_view_widgets/chats_screen_widgets.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
+
 class ScreensForPageView {
   // ignore: non_constant_identifier_names
   Widget commuinity_view(String userId, BuildContext context, BannerAd bannerAd,
@@ -143,31 +144,29 @@ class ScreensForPageView {
   // ignore: non_constant_identifier_names
   Widget chats_view(String userId, ChatscreenState state) {
     return Scaffold(
-      body: Expanded(
-        flex: 1,
-        child: GridView.builder(
-          itemCount: state.chat.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            mainAxisSpacing: 20.0,
-            crossAxisSpacing: 20.0,
-            crossAxisCount: 2,
-            childAspectRatio: 0.85,
-          ),
-          itemBuilder: (context, index) {
-            //TODO
-            Chat? chat = state.chat[index];
-            // ignore: unnecessary_null_comparison
-            if (chat != null) {
-            return GestureDetector(
-              onTap: () => Navigator.of(context).pushNamed(ChatRoom.routeName,
-                  arguments: ChatRoomArgs(chat: chat)),
-              child: buildChat(chat: chat, context: context, userId: userId),
-            );
-            } else {
-              return SizedBox.shrink();
-            }
-          },
+      body: GridView.builder(
+        itemCount: state.chat.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          mainAxisSpacing: 20.0,
+          crossAxisSpacing: 20.0,
+          crossAxisCount: 2,
+          childAspectRatio: 0.85,
         ),
+        itemBuilder: (context, index) {
+          //TODO
+          Chat? chat = state.chat[index];
+          // ignore: unnecessary_null_comparison
+          if (chat != null) {
+          
+          return GestureDetector(
+            onTap: () => Navigator.of(context).pushNamed(ChatRoom.routeName,
+                arguments: ChatRoomArgs(chat: chat)),
+            child: buildChat(chat: chat, context: context, userId: userId),
+          );
+          } else {
+            return SizedBox.shrink();
+          }
+        },
       ),
     );
   }

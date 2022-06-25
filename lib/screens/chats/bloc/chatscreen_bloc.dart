@@ -60,7 +60,6 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
-      log("we are in the map load users to state");
       final Map<String, bool> mentionedMap = {};
       final List<Church> allChs = [];
       _churchStreamSubscription?.cancel();
@@ -100,7 +99,8 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
           .getUserChats(userId: _authBloc.state.user!.uid)
           .listen((chat) async {
         final allChats = await Future.wait(chat);
-        state.copyWith(chat: allChats);
+        log("the len of all chats: ${allChats.length}");
+        emit(state.copyWith(chat: allChats));
       });
       add(LoadCms());
       // state.copyWith(status: ChatStatus.sccuess);

@@ -4,7 +4,9 @@
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/chat_model.dart';
 import 'package:kingsfam/models/failure_model.dart';
 import 'package:kingsfam/repositories/repositories.dart';
@@ -28,8 +30,14 @@ class CreatechatCubit extends Cubit<CreatechatState> {
         super(CreatechatState.initial()); //1 fix the initial
 
   // 4 add the onchanged
-  void chatAvatarOnChanged(File avatar) {
-    emit(state.copyWith(chatAvatar: avatar, status: CreateChatStatus.initial));
+
+  void activateLoadingStatus() {
+    emit(state.copyWith(status: CreateChatStatus.loading));
+  }
+
+  void chatAvatarOnChanged(File? avatar) {
+    if (avatar != null)
+      emit(state.copyWith(chatAvatar: avatar, status: CreateChatStatus.initial));
   } //ontap avatar state.av will then have a value of avatar on create use repository and write it to doc as the image
 
   void nameOnChanged(String name) {
@@ -49,35 +57,27 @@ class CreatechatCubit extends Cubit<CreatechatState> {
     print('submit fired \n');
     emit(state.copyWith(status: CreateChatStatus.loading));
     try {
-      final avatarImageUrl = await _storageRepository.uploadChatAvatar(
-          image: state.chatAvatar!, url: '');
+      String? avatarImageUrl;
+      List<DocumentReference> memRefs = [];
+      if (state.chatAvatar != null)
+        avatarImageUrl = await _storageRepository.uploadChatAvatar(image: state.chatAvatar!, url: '');
       // the maping of user ids 
       for (String userId in state.usersList) {
-        //set selected users = to state.userlist
-        state.memberIds.add(userId);
-
-        final user = await _userrRepository.getUserrWithId(userrId: userId);
-        Map<String, dynamic> userMap = {
-          'username': user.username,
-          'email': user.email,
-          'token': user.token,
-          //'token' : user.token need to add token to user model
-        };
-        state.memberInfo[userId] = userMap;
+        memRefs.add(FirebaseFirestore.instance.collection(Paths.users).doc(userId));
         state.readStatus[userId] = false;
       }
       
       final chat = Chat(
-          name: state.name,
-          imageUrl: avatarImageUrl,
-          recentSender: state.recentSender,
-          recentMessage: 'made a chat with you',
+          chatName: state.name,
+          imageUrl: avatarImageUrl ?? null,
+          recentMessage: {'timestamp': Timestamp.now(), 'recentMessage': "a chat has been birthed...", 'recentSender': state.recentSender},
           searchPram: state.caseSearch,
-          date: DateTime.now(),
-          memberIds: state
-              .memberIds, //within ui code set state.memberid's = to args.members
-          memberInfo: state.memberInfo, //
-          readStatus: state.readStatus);
+          timestamp: Timestamp.now(),
+          memRefs: memRefs, //within ui code set state.memberid's = to args.members
+          activeMems: [],
+          readStatus: state.readStatus,
+          // not adding: id, members
+        );
       await _chatRepository.createChat(chat: chat);
       emit(state.copyWith(status: CreateChatStatus.success));
     } catch (e) {

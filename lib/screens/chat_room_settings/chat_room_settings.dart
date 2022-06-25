@@ -56,7 +56,7 @@ class ChatRoomSettings extends StatelessWidget {
         builder: (context, state) {
           context
               .read<RoomsettingsCubit>()
-              .memberList(chat.memberIds, chat.memberIds.length);
+              .memberList(chat.readStatus.keys.toList(), chat.readStatus.keys.length);
           return SafeArea(
             child: CustomScrollView(
               slivers: <Widget>[
@@ -83,7 +83,7 @@ class ChatRoomSettings extends StatelessWidget {
                       ),
                     ),
                     title: Text(
-                      '${chat.name}\'s room',
+                      '${chat.chatName}\'s room',
                       overflow: TextOverflow.fade,
                       style: Theme.of(context).textTheme.bodyText1,
                     ),
@@ -98,7 +98,7 @@ class ChatRoomSettings extends StatelessWidget {
                         Form(
                           key: _key,
                           child: TextFormField(
-                            initialValue: chat.name,
+                            initialValue: chat.chatName,
                             decoration:
                                 InputDecoration(hintText: 'update room name'),
                             onChanged: (value) => context
@@ -123,7 +123,7 @@ class ChatRoomSettings extends StatelessWidget {
                             height: MediaQuery.of(context).size.height / 3,
                             width: double.infinity,
                             child: ListView.builder(
-                              itemCount: chat.memberIds.length,
+                              itemCount: chat.readStatus.keys.length,
                               itemBuilder: (BuildContext context, int index) {
                                 Userr user = state.members.length > 0
                                     ? state.members[index]
@@ -168,7 +168,7 @@ class ChatRoomSettings extends StatelessWidget {
                           child: TextButton(
                             onPressed: () {},
                             child: Text(
-                              'Leave ${chat.name}\'s room?',
+                              'Leave ${chat.chatName}\'s room?',
                               overflow: TextOverflow.fade,
                             ),
                             style: TextButton.styleFrom(primary: Colors.white),
@@ -178,7 +178,7 @@ class ChatRoomSettings extends StatelessWidget {
                           height: 10.0,
                         ),
                       ],
-                    ),
+                    ),  
                   ),
                 )
               ],

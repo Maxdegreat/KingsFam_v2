@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:kingsfam/config/paths.dart';
 
+import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 
 class Chat extends Equatable {
@@ -80,7 +80,7 @@ class Chat extends Equatable {
     final data = doc.data() as Map<String, dynamic>;
     // grab the members
     final List<Userr> members =[];
-    List<DocumentReference> memRefs = data['memRefs'];
+    List<DocumentReference> memRefs = List<DocumentReference>.from(data['memRefs']);
     for (var docRef in memRefs) {
       var snap = await docRef.get();
       if (snap != null && snap.exists) {
@@ -89,7 +89,8 @@ class Chat extends Equatable {
       }
     }
     return Chat(
-    activeMems: data['activeMems'],
+    id: doc.id,
+    activeMems: List<String>.from(data['activeMems']),
     imageUrl: data['imageUrl'] ?? null, 
     members: members,
     chatName: data['chatName'] ?? 'not named?', 
@@ -117,4 +118,30 @@ class Chat extends Equatable {
   // }
 
 
+
+  Chat copyWith({
+    String? id,
+    String? chatName,
+    String? imageUrl,
+    Map<String, dynamic>? recentMessage,
+    List<String>? activeMems,
+    Timestamp? timestamp,
+    List<Userr>? members,
+    List<DocumentReference>? memRefs,
+    Map<String, bool>? readStatus,
+    List<String>? searchPram,
+  }) {
+    return Chat(
+      id: id ?? this.id,
+      chatName: chatName ?? this.chatName,
+      imageUrl: imageUrl ?? this.imageUrl,
+      recentMessage: recentMessage ?? this.recentMessage,
+      activeMems: activeMems ?? this.activeMems,
+      timestamp: timestamp ?? this.timestamp,
+      members: members ?? this.members,
+      memRefs: memRefs ?? this.memRefs,
+      readStatus: readStatus ?? this.readStatus,
+      searchPram: searchPram ?? this.searchPram,
+    );
+  }
 }

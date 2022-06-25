@@ -12,8 +12,6 @@ import 'package:kingsfam/screens/create_chat/cubit/createchat_cubit.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 
-bool _NOSUBMIT = false;
-
 class CreateChatArgs {
   final List<Userr> selectedMembers;
 
@@ -75,7 +73,7 @@ class CreateChatScreen extends StatelessWidget {
                   const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   if (state.status == CreateChatStatus.loading)
                     LinearProgressIndicator(
@@ -84,12 +82,9 @@ class CreateChatScreen extends StatelessWidget {
                   SizedBox(height: 50),
                   GestureDetector(
                     onTap: () => _pickChatAvatar(context),
-                    child: ProfileImage(
-                      radius: 50,
-                      pfpUrl: state.chat.imageUrl,
-                      pfpImage: state.chatAvatar,
+                    child: Container(child: state.chatAvatar != null ? ProfileImage(radius: 35, pfpUrl: '', pfpImage: state.chatAvatar,) : Icon(Icons.home)),
                     ),
-                  ),
+                  
                   SizedBox(height: 50),
                   Padding(
                     padding: const EdgeInsets.only(right: 100),
@@ -101,8 +96,8 @@ class CreateChatScreen extends StatelessWidget {
                         validator: (value) {
                           if (value!.trim().isEmpty) {
                             return 'Sorry fam, must add a name';
-                          } else if (value.length > 25) {
-                            return 'The name must be less than 25 characters';
+                          } else if (value.length > 20) {
+                            return 'The name must be less than 20 characters';
                           } else
                             return null;
                         },
@@ -170,12 +165,11 @@ class CreateChatScreen extends StatelessWidget {
     );
   }
 // th esubmit function
-  void _submit(BuildContext context, List<String> userIds, bool loading,
-      File? avatar) async {
+  void _submit(BuildContext context, List<String> userIds, bool loading, File? avatar) async {
     final state = context.read<CreatechatCubit>();
 
-    if (_NOSUBMIT == false && _formKey.currentState!.validate() && !loading && avatar != null) {
-      _NOSUBMIT = true;
+    if ( _formKey.currentState!.validate() && !loading) {
+      state.activateLoadingStatus();
       _formKey.currentState!.save();
 
       //updates the states member list
@@ -185,6 +179,7 @@ class CreateChatScreen extends StatelessWidget {
       final user = await context
           .read<UserrRepository>()
           .getUserrWithId(userrId: context.read<AuthBloc>().state.user!.uid);
+      
       state.populateRecentSender(user.id);
 
       context.read<CreatechatCubit>().submit();
@@ -192,7 +187,7 @@ class CreateChatScreen extends StatelessWidget {
       showDialog(
           context: context,
           builder: (context) =>
-              ErrorDialog(content: 'Make sure you added a avatar image'));
+              ErrorDialog(content: 'hold up, we are working on your request famz, thanks'));
     }
   }
 }
