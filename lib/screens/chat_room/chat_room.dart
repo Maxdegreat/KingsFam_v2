@@ -8,6 +8,7 @@ import 'package:kingsfam/helpers/helpers.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/chat_room/cubit/chatroom_cubit.dart';
+import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/widgets/message_bubbles.dart';
 
 import '../screens.dart';
@@ -140,6 +141,7 @@ class _ChatRoomState extends State<ChatRoom> {
                       ? () {
                           //ctx.onTextMessage(_messageController.text);
                           ctx.sendTextMesage(
+                              senderUsername: context.read<ProfileBloc>().state.userr.username,
                               chatId: widget.chat,
                               textMessage: _messageController.text);
                           ctx.onIsTyping(false);

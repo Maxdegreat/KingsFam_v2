@@ -72,7 +72,7 @@ class CreatechatCubit extends Cubit<CreatechatState> {
           imageUrl: avatarImageUrl ?? null,
           recentMessage: {'timestamp': Timestamp.now(), 'recentMessage': "a chat has been birthed...", 'recentSender': state.recentSender},
           searchPram: state.caseSearch,
-          timestamp: Timestamp.now(),
+          //timestamp: Timestamp.now(),
           memRefs: memRefs, //within ui code set state.memberid's = to args.members
           activeMems: [],
           readStatus: state.readStatus,

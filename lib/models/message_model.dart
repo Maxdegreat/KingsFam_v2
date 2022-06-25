@@ -11,12 +11,14 @@ class Message {
   final String? videoUrl;
   final Timestamp date;
   final Userr? sender;
+  final String? senderUsername;
   final List<String>? mentionedIds;
 
 //2 gen the constructor
   Message({
     this.id,
     this.sender, // do not call this in the to doc bc 
+    this.senderUsername,
     this.text,
     this.imageUrl,
     this.thumbnailUrl,
@@ -29,6 +31,7 @@ class Message {
   List<Object?> get props => [
         id, //3 make the props
         sender,
+        senderUsername,
         text,
         imageUrl,
         thumbnailUrl,
@@ -41,6 +44,7 @@ class Message {
   Message copyWith({
     String? id,
     Userr? sender,
+    String? senderUsername,
     String? text,
     String? imageUrl,
     String? thumbnailUrl,
@@ -51,6 +55,7 @@ class Message {
     return Message(
       id: id ?? this.id,
       sender: sender ?? this.sender,
+      senderUsername: senderUsername ?? this.senderUsername,
       text: text ?? this.text,
       imageUrl: imageUrl ?? this.imageUrl,
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
@@ -68,6 +73,7 @@ class Message {
   Map<String, dynamic> ToDoc({required String senderId}) {
     return {
       'sender': FirebaseFirestore.instance.collection(Paths.users).doc(senderId),
+      'senderUsername': senderUsername,
       'text': text,
       'imageUrl': imageUrl,
       'thumbnailUrl': thumbnailUrl,
@@ -88,6 +94,7 @@ class Message {
     return Message(
       id: doc.id,
       sender: user,
+      senderUsername: data['senderUsername'] ?? null,
       text: data['text'] ?? null,
       imageUrl: data['imageUrl'] ?? null,
       thumbnailUrl: data['thumbnailUrl'] ?? null,

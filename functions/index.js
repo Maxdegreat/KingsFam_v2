@@ -238,62 +238,75 @@ exports.addChatMessage = functions.firestore
     const chatRef = admin.firestore().collection("chats").doc(chatId);
     const chatDoc = await chatRef.get();
     const chatData = chatDoc.data();
+    functions.logger.log("value of chatData:",chatData );
     if (chatDoc.exists) {
       const readStatus = chatData.readStatus;
+      const activeMembers = chatData.activeMems;
       var senderId = messageData.sender.path.split('/')[1]
       functions.logger.log("value of senderId:", senderId);
-      for (let userId in readStatus) {
-        if (readStatus.hasOwnProperty(userId) && userId !== senderId) 
-        {
+      // for each user in readstatus.keys i want them to = false
+      // however if they are in the active mem list or they are the sender then set to true.
+      functions.logger.log("value of readStat.keys(): ", readStatus);
+      //functions.logger.log("the value of actmem.includes(): ", activeMembers.includes(userId))
+      for (let userId in readStatus ) {
+        if (activeMembers.includes(userId) || userId == senderId) {
+          readStatus[userId] = true;
+        } else if (readStatus.hasOwnProperty(userId) && userId !== senderId) {
           readStatus[userId] = false;
         } else {
-          readStatus[userId] = true;
+          readStatus[userId] = false;
         }
       }
-      chatRef.update({
-        recentMessage: messageData.text,
-        recentSender: messageData.sender,
-        date: messageData.date,
-        readStatus: readStatus,
-      });
-      
-      
-      
-      //notifications
-      const memberInfo = chatData.memberInfo;
-      //const senderId = messageData.senderId;
-      let body = memberInfo[senderId].username;
-      if(messageData.text !== null ) {
-          body += `: ${messageData.text}`;
-      } else  {
-          body += ' sent an image';
-      }
 
-      const payload = {
-          notification: {
-            title: chatData['name'],
-            body: body,
-          },
-      };
+           // for (let userId in readStatus) {
+      //   if (readStatus.hasOwnProperty(userId) && userId !== senderId) 
+      //   {
+      //     readStatus[userId] = false;
+      //   } else {
+      //     readStatus[userId] = true;
+      //   }
+      // }
+
+      chatData.recentMessage = {'timestamp': messageData.date, 'recentMessage': messageData.text, 'recentSender': messageData.sender}
+
+       chatRef.update({
+         recentMessage: chatData.recentMessage,
+         readStatus: readStatus,
+       });
+ 
+      //notifications =========
+    // with user ref and sender ID
+    //   if(messageData.text !== null ) {
+    //       body += `: ${messageData.text}`;
+    //   } else  {
+    //       body += ' sent an image';
+    //   }
+
+    //   const payload = {
+    //       notification: {
+    //         title: chatData['name'],
+    //         body: body,
+    //       },
+    //   };
 
 
 
-      const options = {
-          priority: 'high',
-          timeToLive: 60 * 60 * 24,
-      };
+    //   const options = {
+    //       priority: 'high',
+    //       timeToLive: 60 * 60 * 24,
+    //   };
 
-      for (const userId in memberInfo) {
-          if (userId !== senderId) {
-              const tokens = memberInfo[userId].token;
-              for (var token in tokens) {
-                if ( token !== '') {
-                  admin.messaging().sendToDevice(token, payload, options);
-              }
-            }
-          }
-      }
-    }
+    //   for (const userId in memberInfo) {
+    //       if (userId !== senderId) {
+    //           const tokens = memberInfo[userId].token;
+    //           for (var token in tokens) {
+    //             if ( token !== '') {
+    //               admin.messaging().sendToDevice(token, payload, options);
+    //           }
+    //         }
+    //       }
+    //   }
+     }
   });
 
 // exports.onUpdatePost = functions.firestore

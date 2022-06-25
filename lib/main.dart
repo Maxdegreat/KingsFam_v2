@@ -19,6 +19,7 @@ import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/cubit/calls_home_cubit.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
+import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 
 import 'screens/build_church/cubit/buildchurch_cubit.dart';
 import 'screens/screens.dart';
@@ -42,17 +43,14 @@ class MyApp extends StatelessWidget {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<ChurchRepository>(create: (_) => ChurchRepository()),
-        RepositoryProvider<KingsCordRepository>(
-            create: (_) => KingsCordRepository()),
+        RepositoryProvider<KingsCordRepository>(create: (_) => KingsCordRepository()),
         RepositoryProvider<ChatRepository>(create: (_) => ChatRepository()),
         RepositoryProvider<AuthRepository>(create: (_) => AuthRepository()),
         RepositoryProvider<UserrRepository>(create: (_) => UserrRepository()),
-        RepositoryProvider<StorageRepository>(
-            create: (_) => StorageRepository()),
+        RepositoryProvider<StorageRepository>(create: (_) => StorageRepository()),
         RepositoryProvider<PostsRepository>(create: (_) => PostsRepository()),
         RepositoryProvider<CallRepository>(create: (_) => CallRepository()),
-        RepositoryProvider<NotificationRepository>(
-            create: (_) => NotificationRepository()),
+        RepositoryProvider<NotificationRepository>(create: (_) => NotificationRepository()),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -97,14 +95,14 @@ class MyApp extends StatelessWidget {
                   storageRepository: context.read<StorageRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   userrRepository: context.read<UserrRepository>())),
-          // BlocProvider<ProfileBloc>(
-          //   create: (context) => ProfileBloc(
-          //       userrRepository: context.read<UserrRepository>(),
-          //       authBloc: context.read<AuthBloc>(),
-          //       postRepository: context.read<PostsRepository>(),
-          //       likedPostCubit: context.read<LikedPostCubit>(),
-          //       churchRepository: context.read<ChurchRepository>()),
-          // ),
+           BlocProvider<ProfileBloc>(
+             create: (context) => ProfileBloc(
+                 userrRepository: context.read<UserrRepository>(),
+                 authBloc: context.read<AuthBloc>(),
+                 postRepository: context.read<PostsRepository>(),
+                 likedPostCubit: context.read<LikedPostCubit>(),
+                 churchRepository: context.read<ChurchRepository>()),
+           ),
           // BlocProvider<CommentBloc>(
           //   create: (context) => CommentBloc(
           //     postsRepository: context.read<PostsRepository>(),

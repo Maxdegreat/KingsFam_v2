@@ -13,7 +13,7 @@ class Chat extends Equatable {
   //final List<content> shared; learn shared pref and store on phones
   final Map<String, dynamic> recentMessage; // msg, sendername, time
   final List<String> activeMems;
-  final Timestamp timestamp;
+  //final Timestamp timestamp;
   final List<Userr>? members; // ui use
   final List<DocumentReference>? memRefs; // db use
   final Map<String, bool> readStatus;
@@ -29,7 +29,7 @@ class Chat extends Equatable {
     required this.readStatus,
     required this.recentMessage,
     required this.searchPram,
-    required this.timestamp,
+    //required this.timestamp,
 
   });
 
@@ -40,7 +40,7 @@ class Chat extends Equatable {
       readStatus: {},
       recentMessage: {},
       searchPram: [],
-      timestamp: Timestamp(0,0)
+      //timestamp: Timestamp(0,0)
   );
 
 
@@ -55,7 +55,7 @@ class Chat extends Equatable {
         readStatus,
         recentMessage,
         searchPram,
-        timestamp,
+      //  timestamp,
       ];
 
 
@@ -70,7 +70,7 @@ class Chat extends Equatable {
       'readStatus': readStatus,
       'recentMessage': recentMessage,
       'searchPram': searchPram,
-      'timestamp': timestamp,
+      //'timestamp': timestamp just use the time stamp from recent message
 
     };
   }
@@ -97,25 +97,9 @@ class Chat extends Equatable {
     readStatus: Map<String, bool>.from(data['readStatus'] ?? {}), 
     recentMessage: Map<String, dynamic>.from(data['recentMessage']),  
     searchPram: List<String>.from(data['searchPram']), 
-    timestamp: data['timestamp'] ?? Timestamp(0, 0),
+   // timestamp: data['timestamp'] ?? Timestamp(0, 0),
   );
   }
-
-  // //extra from doc for cgat repository
-  // static Future<Chat> fromDocAsync(DocumentSnapshot doc) async {
-  //   final data = doc.data() as Map<String, dynamic>;
-  //   return Chat(
-  //       id: doc.id,
-  //       name: data['name'] ?? '',
-  //       searchPram: List<String>.from(data['searchPram'] ?? []),
-  //       imageUrl: data['imageUrl'] ?? '',
-  //       recentSender: data['recentSender'] ?? '',
-  //       recentMessage: data['recentMessage'] ?? '',
-  //       date: (data['date'] as Timestamp).toDate(),
-  //       memberIds: List<String>.from(data['memberIds'] ?? []),
-  //       memberInfo: Map<String, dynamic>.from(data['memberInfo'] ?? {}),
-  //       readStatus: Map<String, dynamic>.from(data['readStatus'] ?? {}));
-  // }
 
 
 
@@ -125,7 +109,7 @@ class Chat extends Equatable {
     String? imageUrl,
     Map<String, dynamic>? recentMessage,
     List<String>? activeMems,
-    Timestamp? timestamp,
+    //Timestamp? timestamp,
     List<Userr>? members,
     List<DocumentReference>? memRefs,
     Map<String, bool>? readStatus,
@@ -137,7 +121,7 @@ class Chat extends Equatable {
       imageUrl: imageUrl ?? this.imageUrl,
       recentMessage: recentMessage ?? this.recentMessage,
       activeMems: activeMems ?? this.activeMems,
-      timestamp: timestamp ?? this.timestamp,
+   //   timestamp: timestamp ?? this.timestamp,
       members: members ?? this.members,
       memRefs: memRefs ?? this.memRefs,
       readStatus: readStatus ?? this.readStatus,

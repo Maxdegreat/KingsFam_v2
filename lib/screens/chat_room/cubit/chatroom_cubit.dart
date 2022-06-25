@@ -71,11 +71,12 @@ class ChatroomCubit extends Cubit<ChatroomState> {
         chat: chatId, message: message, senderId: _authBloc.state.user!.uid);
   }
 
-  void sendTextMesage({required Chat chatId, required String textMessage}) {
+  void sendTextMesage({required Chat chatId, required String textMessage, required String senderUsername}) {
     final message = Message(
       text: textMessage,
       imageUrl: null,
       date: Timestamp.now(),
+      senderUsername: senderUsername,
     );
     _chatRepository.sendChatMessage(
         chat: chatId, message: message, senderId: _authBloc.state.user!.uid);

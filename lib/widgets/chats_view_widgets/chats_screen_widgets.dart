@@ -67,6 +67,7 @@ Widget buildChat({BuildContext? context, Chat? chat, String? userId}) {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        SizedBox(height: 10),
         ProfileImage(
             radius: 37, pfpUrl: chat.imageUrl != null ? chat.imageUrl! : ''),
         SizedBox(
