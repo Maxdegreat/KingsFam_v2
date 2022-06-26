@@ -17,6 +17,7 @@ class Chat extends Equatable {
   final List<Userr>? members; // ui use
   final List<DocumentReference>? memRefs; // db use
   final Map<String, bool> readStatus;
+  final Map<String, List<dynamic>> memberTokens;
   final List<String> searchPram;
 
   Chat({
@@ -26,6 +27,7 @@ class Chat extends Equatable {
     required this.chatName,
     this.members,
     this.memRefs,
+    required this.memberTokens,
     required this.readStatus,
     required this.recentMessage,
     required this.searchPram,
@@ -40,6 +42,7 @@ class Chat extends Equatable {
       readStatus: {},
       recentMessage: {},
       searchPram: [],
+      memberTokens: {}
       //timestamp: Timestamp(0,0)
   );
 
@@ -55,6 +58,7 @@ class Chat extends Equatable {
         readStatus,
         recentMessage,
         searchPram,
+        memberTokens,
       //  timestamp,
       ];
 
@@ -70,6 +74,7 @@ class Chat extends Equatable {
       'readStatus': readStatus,
       'recentMessage': recentMessage,
       'searchPram': searchPram,
+      'memberTokens': memberTokens
       //'timestamp': timestamp just use the time stamp from recent message
 
     };
@@ -97,6 +102,7 @@ class Chat extends Equatable {
     readStatus: Map<String, bool>.from(data['readStatus'] ?? {}), 
     recentMessage: Map<String, dynamic>.from(data['recentMessage']),  
     searchPram: List<String>.from(data['searchPram']), 
+    memberTokens: Map<String,List<dynamic>>.from(data['memberTokens'])
    // timestamp: data['timestamp'] ?? Timestamp(0, 0),
   );
   }
@@ -113,6 +119,7 @@ class Chat extends Equatable {
     List<Userr>? members,
     List<DocumentReference>? memRefs,
     Map<String, bool>? readStatus,
+    Map<String, List<dynamic>>? memberTokens,
     List<String>? searchPram,
   }) {
     return Chat(
@@ -124,6 +131,7 @@ class Chat extends Equatable {
    //   timestamp: timestamp ?? this.timestamp,
       members: members ?? this.members,
       memRefs: memRefs ?? this.memRefs,
+      memberTokens: memberTokens ?? this.memberTokens,
       readStatus: readStatus ?? this.readStatus,
       searchPram: searchPram ?? this.searchPram,
     );

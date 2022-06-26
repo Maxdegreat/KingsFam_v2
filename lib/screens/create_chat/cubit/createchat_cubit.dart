@@ -52,6 +52,8 @@ class CreatechatCubit extends Cubit<CreatechatState> {
     emit(state.copyWith(recentSender: sender));
   }
 
+  void memberTokensToState(Map<String, List<String>> memberTokens) => emit(state.copyWith(memberTokens: memberTokens));
+
   //5 add the submit
   void submit() async {
     print('submit fired \n');
@@ -76,6 +78,7 @@ class CreatechatCubit extends Cubit<CreatechatState> {
           memRefs: memRefs, //within ui code set state.memberid's = to args.members
           activeMems: [],
           readStatus: state.readStatus,
+          memberTokens: state.memberTokens,
           // not adding: id, members
         );
       await _chatRepository.createChat(chat: chat);

@@ -241,8 +241,7 @@ class _ChatsScreenState extends State<ChatsScreen>
                     controller: _tabController,
                     children: [
                       ScreensForPageView().feed(context),
-                      ScreensForPageView().commuinity_view(userId, context,
-                          _bottomBannerAd, _isBottomBannerAdLoaded),
+                      ScreensForPageView().commuinity_view(userId, context, _bottomBannerAd, _isBottomBannerAdLoaded),
                       ScreensForPageView().chats_view(userId, state)
                     ],
                   ));

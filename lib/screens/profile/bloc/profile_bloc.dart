@@ -110,11 +110,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   }
 
   Stream<ProfileState> _mapProfileLoadUserToState(ProfileLoadUserr event) async* {
-    log("LLLLLLLLLLLLLLLLOOOOOOOOOOOOOOOOOOAAAAAAAAAAAAAAAAADDDDDDDDDDDDEEEEEEEEEEEEEEDDDDDDDDDDDDDD");
     
     yield state.copyWith(status: ProfileStatus.loading);
     try {
       final userr = await _userrRepository.getUserrWithId(userrId: event.userId);
+      yield state.copyWith(userr: userr);
+    log("LLLLLLLLLLLLLLLLOOOOOOOOOOOOOOOOOOAAAAAAAAAAAAAAAAADDDDDDDDDDDDEEEEEEEEEEEEEEDDDDDDDDDDDDDD");
       
       final isCurrentUser = _authBloc.state.user!.uid == event.userId;
 

@@ -62,10 +62,14 @@ class CreateChatScreen extends StatelessWidget {
           }
         },
         builder: (context, state) {
+          Map<String, List<String>> memberTokens = {};
           List<String> userIds =
-              selectedMembers.map((user) => user.id).toList();
+              selectedMembers.map((user) {
+                memberTokens[user.id] = user.token;
+                return user.id;
+              }).toList();
           userIds.add(context.read<AuthBloc>().state.user!.uid);
-
+          context.read<CreatechatCubit>().memberTokensToState(memberTokens);
           //selectedMembers.add(context.read<AuthBloc>().state.user);
           return SingleChildScrollView(
             child: Padding(

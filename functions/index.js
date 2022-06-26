@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const { user } = require("firebase-functions/v1/auth");
 //var serviceAccount = require("./kingsfam-9b1f8-firebase-adminsdk-dgh0u-38f8d6850d.json");
 
 admin.initializeApp();
@@ -275,26 +276,38 @@ exports.addChatMessage = functions.firestore
        });
  
       //notifications =========
-    // with user ref and sender ID
-    //   if(messageData.text !== null ) {
-    //       body += `: ${messageData.text}`;
-    //   } else  {
-    //       body += ' sent an image';
-    //   }
+       
+       let body = messageData.senderUsername;
+       if(messageData.text !== null ) {
+           body += `: ${messageData.text}`;
+       } else  {
+           body += ' sent an image';
+       }
 
-    //   const payload = {
-    //       notification: {
-    //         title: chatData['name'],
-    //         body: body,
-    //       },
-    //   };
+       const payload = {
+           notification: {
+             title: chatData['chatName'],
+             body: body,
+           },
+       };
 
 
+       const options = {
+           priority: 'high',
+           timeToLive: 60 * 60 * 24,
+       };
 
-    //   const options = {
-    //       priority: 'high',
-    //       timeToLive: 60 * 60 * 24,
-    //   };
+  
+
+       for (var userId in readStatus) {
+        if (activeMembers.includes(userId) || userId == senderId) {
+          continue;
+        } else {
+          if (chatData.memberTokens[userId] !== '') {
+            admin.messaging().sendToDevice(chatData.memberTokens[userId], payload, options)
+          }
+        }
+       }
 
     //   for (const userId in memberInfo) {
     //       if (userId !== senderId) {

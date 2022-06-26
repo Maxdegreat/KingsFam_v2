@@ -13,6 +13,7 @@ class CreatechatState extends Equatable {
   final List<String> usersList;
   final List<String> caseSearch;
   final CreateChatStatus status;
+  final Map<String, List<String>> memberTokens;
   final Failure failure;
 
   //5 make the init
@@ -26,7 +27,7 @@ class CreatechatState extends Equatable {
         recentSender: '',
         readStatus: {},
         usersList: [],
-        
+        memberTokens: {},
         failure: Failure(),
         status: CreateChatStatus.initial);
   }
@@ -41,6 +42,7 @@ class CreatechatState extends Equatable {
     required this.readStatus,
     required this.usersList,
     required this.caseSearch,
+    required this.memberTokens,
     required this.status,
     required this.failure,
   });
@@ -54,6 +56,7 @@ class CreatechatState extends Equatable {
         memberIds,
         readStatus,
         usersList,
+        memberTokens,
         caseSearch,
         status,
         failure
@@ -70,6 +73,7 @@ class CreatechatState extends Equatable {
     Map<String, bool>? readStatus,
     List<String>? usersList,
     List<String>? caseSearch,
+    Map<String, List<String>>? memberTokens,
     CreateChatStatus? status,
     Failure? failure,
   }) {
@@ -82,6 +86,7 @@ class CreatechatState extends Equatable {
       readStatus: readStatus ?? this.readStatus,
       usersList: usersList ?? this.usersList,
       caseSearch: caseSearch ?? this.caseSearch,
+      memberTokens: memberTokens ?? this.memberTokens,
       status: status ?? this.status,
       failure: failure ?? this.failure,
     );

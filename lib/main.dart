@@ -101,7 +101,7 @@ class MyApp extends StatelessWidget {
                  authBloc: context.read<AuthBloc>(),
                  postRepository: context.read<PostsRepository>(),
                  likedPostCubit: context.read<LikedPostCubit>(),
-                 churchRepository: context.read<ChurchRepository>()),
+                 churchRepository: context.read<ChurchRepository>())..add(ProfileLoadUserr(userId: context.read<AuthBloc>().state.user!.uid)),
            ),
           // BlocProvider<CommentBloc>(
           //   create: (context) => CommentBloc(
