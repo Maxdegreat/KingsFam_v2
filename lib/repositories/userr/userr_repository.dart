@@ -73,12 +73,7 @@ class UserrRepository extends BaseUserrRepository {
 
   @override
   void followerUserr({required String userrId, required String followersId}) {
-    // This function handels both cases for both followed and following
-    // ex: currID follows GabbyCallwood. 
-    // Followers -> GabbysID -> userFollowers -> docs (containing the currID)
-    // Following -> currID -> userFollowing -> docs (containing GabbysID)
 
-    //add follow user to the current user's userr following
     _firebaseFirestore
         .collection(Paths.following)
         .doc(userrId)
@@ -196,6 +191,29 @@ class UserrRepository extends BaseUserrRepository {
       }
       return bucket;   
     }
+  
+  Future<List<Userr>> followerList({required String currUserId, required String? lastStringId}) async {
+    List<Userr> bucket = [];
+    if (lastStringId == null) {
+      final userSnap = await _firebaseFirestore.collection(Paths.followers).doc(currUserId).collection(Paths.userFollowers).limit(15).get();
+      for (var v in userSnap.docs) {
+        if (v.exists) {
+          Userr user = await getUserrWithId(userrId: v.id);
+          bucket.add(user);
+        }
+      }
+    } else {
+      var startAfterDoc = await _firebaseFirestore.collection(Paths.users).doc(lastStringId).get();
+      var userSnap = await _firebaseFirestore.collection(Paths.followers).doc(currUserId).collection(Paths.userFollowers).startAfterDocument(startAfterDoc).limit(15).get();
+      for (var v in userSnap.docs) {
+        if (v.exists) {
+          Userr user = await getUserrWithId(userrId: v.id);
+          bucket.add(user);
+        }
+      }
+    }
+    return bucket;
+  }
   
   @override
   Future<void> snedFriendRequest({required String senderId, required String currUserId}) async {

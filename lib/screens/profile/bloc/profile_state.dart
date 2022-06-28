@@ -14,6 +14,9 @@ class ProfileState extends Equatable {
   final ProfileStatus status;
   final Failure failure;
   final List<Church?> cms;
+  final Chat chatFromDm;
+  final List<Userr> followersUserList;
+  final List<Userr> followingUserList;
   // step 2 make the constructor
   ProfileState({
     required this.post,
@@ -25,7 +28,10 @@ class ProfileState extends Equatable {
     required this.isFollowing,
     required this.status,
     required this.failure,
-    required this.cms
+    required this.cms,
+    required this.chatFromDm,
+    required this.followersUserList,
+    required this.followingUserList,
   });
 
   //step 5 make the initial state
@@ -41,12 +47,15 @@ class ProfileState extends Equatable {
         likedPostIds: {},
         failure: Failure(),
         cms: [],
+        chatFromDm: Chat.empty,
+        followersUserList: [],
+        followingUserList: [],
       );
   }
   // step 3 make the props
   @override
   List<Object?> get props =>
-      [post, userr, isCurrentUserr, seen, isFollowing, status, failure, showPost, cms];
+      [post, userr, isCurrentUserr,chatFromDm, followersUserList, followingUserList, seen, isFollowing, status, failure, showPost, cms];
 
   // step 4 make the copy with
   ProfileState copyWith({
@@ -55,19 +64,25 @@ class ProfileState extends Equatable {
     Userr? userr,
     bool? isCurrentUserr,
     bool? isFollowing,
+    List<Userr>? followersUserList,
+    List<Userr>? followingUserList,
     Set<String>? seen,
     ProfileStatus? status,
     Set<String?>? likedPostIds,
     Failure? failure,
+    Chat? chatFromDm,
     List<Church?>? cms,
   }) {
     return ProfileState(
       post: post ?? this.post,
+      chatFromDm: chatFromDm ?? this.chatFromDm,
       showPost: showPost ?? this.showPost,
       userr: userr ?? this.userr,
       seen: seen ?? this.seen,
       isCurrentUserr: isCurrentUserr ?? this.isCurrentUserr,
       isFollowing: isFollowing ?? this.isFollowing,
+      followersUserList: followersUserList ?? this.followersUserList,
+      followingUserList: followingUserList ?? this.followingUserList,
       status: status ?? this.status,
       likedPostIds: likedPostIds ?? this.likedPostIds,
       failure: failure ?? this.failure,

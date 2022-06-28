@@ -127,7 +127,7 @@ class _ChatsScreenState extends State<ChatsScreen>
   @override
   void initState() {
     super.initState();
-    fcmpermissions();
+    //fcmpermissions();
     setupInteractedMessage();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
     // _tabController.addListener(tabControllerListener);
@@ -135,28 +135,28 @@ class _ChatsScreenState extends State<ChatsScreen>
     //super.build(context);
   }
 
-  void fcmpermissions() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
+  // void fcmpermissions() async {
+  //   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
+  //   NotificationSettings settings = await messaging.requestPermission(
+  //     alert: true,
+  //     announcement: false,
+  //     badge: true,
+  //     carPlay: false,
+  //     criticalAlert: false,
+  //     provisional: false,
+  //     sound: true,
+  //   );
 
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('User granted permission');
-    } else if (settings.authorizationStatus ==
-        AuthorizationStatus.provisional) {
-      print('User granted provisional permission');
-    } else {
-      print('User declined or has not accepted permission');
-    }
-  }
+  //   if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+  //     print('User granted permission');
+  //   } else if (settings.authorizationStatus ==
+  //       AuthorizationStatus.provisional) {
+  //     print('User granted provisional permission');
+  //   } else {
+  //     print('User declined or has not accepted permission');
+  //   }
+  // }
 
   // bool feedBeenLoaded = false;
   // void tabControllerListener() {

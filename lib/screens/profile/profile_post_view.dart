@@ -38,7 +38,6 @@ class ProfilePostView extends StatefulWidget {
   // final VoidCallback onLike;
 
   ProfilePostView({Key? key, required this.posts, required this.startingIndex});
-      
 
   static const String routeName = '/profilePostView';
 
@@ -47,6 +46,7 @@ class ProfilePostView extends StatefulWidget {
         settings: const RouteSettings(name: routeName),
         builder: (context) => BlocProvider<ProfileBloc>(
               create: (_) => ProfileBloc(
+                chatRepository: context.read<ChatRepository>(),
                 churchRepository: context.read<ChurchRepository>(),
                 authBloc: context.read<AuthBloc>(),
                 likedPostCubit: context.read<LikedPostCubit>(),
@@ -65,10 +65,7 @@ class ProfilePostView extends StatefulWidget {
 }
 
 class _ProfilePostViewState extends State<ProfilePostView> {
-  
   ItemScrollController itemController = ItemScrollController();
-
-
 
   @override
   void initState() {
@@ -79,38 +76,37 @@ class _ProfilePostViewState extends State<ProfilePostView> {
   @override
   void dispose() {
     super.dispose();
-
   }
 
-  
-
-
-  scrollToItem()  {
-    itemController.scrollTo(index: widget.startingIndex!, duration: Duration(milliseconds: 1 ));
+  scrollToItem() {
+    itemController.scrollTo(
+        index: widget.startingIndex!, duration: Duration(milliseconds: 1));
   }
 
-  Future scrollToHelper() async => await Future.delayed(const Duration(milliseconds: 20)).then((_) => scrollToItem());
+  Future scrollToHelper() async =>
+      await Future.delayed(const Duration(milliseconds: 20))
+          .then((_) => scrollToItem());
 
- 
   bool loaded = false;
   bool showPost = false;
   @override
   Widget build(BuildContext context) {
-  Set<String?> seenIds = {};
-  String? lastPostId = context.read<ProfileBloc>().state.post.length > 0 ? context.read<ProfileBloc>().state.post.last!.id : null;
-  final String userId = context.read<AuthBloc>().state.user!.uid;
-  void paginatePosts() => context.read<ProfileBloc>()..add(ProfilePaginatePosts(userId: userId));
-  updateSeenIds() {
-    var p = context.read<ProfileBloc>().state.post;
-    var subList = p.sublist(p.length - 8, p.length);
-    for (var sp in subList) {
-      if (sp != null)
-        seenIds.add(sp.id);
-      lastPostId = p.last!.id;
-      
+    Set<String?> seenIds = {};
+    String? lastPostId = context.read<ProfileBloc>().state.post.length > 0
+        ? context.read<ProfileBloc>().state.post.last!.id
+        : null;
+    final String userId = context.read<AuthBloc>().state.user!.uid;
+    void paginatePosts() =>
+        context.read<ProfileBloc>()..add(ProfilePaginatePosts(userId: userId));
+    updateSeenIds() {
+      var p = context.read<ProfileBloc>().state.post;
+      var subList = p.sublist(p.length - 8, p.length);
+      for (var sp in subList) {
+        if (sp != null) seenIds.add(sp.id);
+        lastPostId = p.last!.id;
+      }
     }
-    
-  }
+
     print("in the build");
     return BlocConsumer<ProfileBloc, ProfileState>(
       listener: (context, state) {
@@ -121,48 +117,59 @@ class _ProfilePostViewState extends State<ProfilePostView> {
       },
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: loaded ? Text("${state.post[0]!.author.username}\'s posts") : Text("posts"),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.ac_unit), 
-              onPressed: () => scrollToHelper(),
-            )],
+          appBar: AppBar(
+            title: loaded
+                ? Text("${state.post[0]!.author.username}\'s posts")
+                : Text("posts"),
+            actions: [
+              IconButton(
+                icon: Icon(Icons.ac_unit),
+                onPressed: () => scrollToHelper(),
+              )
+            ],
           ),
-          body: loaded ?  ScrollablePositionedList.builder(
-              itemScrollController: itemController,
-              itemCount: state.post.length,
-              itemBuilder: (BuildContext context, int index) {
-               
-
-                print("we are at index: $index ()()()()()()()()()())()()()()()()()()()()()()()()");
-                if (index >= (state.post.length) -1  && !seenIds.contains(lastPostId)) {
-                  paginatePosts();
-                  seenIds.add(lastPostId);
-                  updateSeenIds();
-                }
-                
-                final Post? post = state.post[index];
-                if (post != null) {
-                    final LikedPostState = context.watch<LikedPostCubit>().state;
-                    final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
-                    final recentlyLiked = LikedPostState.recentlyLikedPostIds.contains(post.id!);
-                  return PostSingleView(
-                    isLiked: isLiked,
-                    post: post,
-                    recentlyLiked: recentlyLiked,
-                    onLike: () {
-                      if (isLiked) {
-                       context.read<LikedPostCubit>().unLikePost(post: post);
-                     } else {
-                       context.read<LikedPostCubit>().likePost(post: post);
-                     }
-                    },
-                  );
+          body: loaded
+              ? ScrollablePositionedList.builder(
+                  itemScrollController: itemController,
+                  itemCount: state.post.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    print(
+                        "we are at index: $index ()()()()()()()()()())()()()()()()()()()()()()()()");
+                    if (index >= (state.post.length) - 1 &&
+                        !seenIds.contains(lastPostId)) {
+                      paginatePosts();
+                      seenIds.add(lastPostId);
+                      updateSeenIds();
                     }
-                print(post);
-                return Text("post is null");
-              },
-            ) : Center(child: CircularProgressIndicator()),
+
+                    final Post? post = state.post[index];
+                    if (post != null) {
+                      final LikedPostState =
+                          context.watch<LikedPostCubit>().state;
+                      final isLiked =
+                          LikedPostState.likedPostsIds.contains(post.id!);
+                      final recentlyLiked = LikedPostState.recentlyLikedPostIds
+                          .contains(post.id!);
+                      return PostSingleView(
+                        isLiked: isLiked,
+                        post: post,
+                        recentlyLiked: recentlyLiked,
+                        onLike: () {
+                          if (isLiked) {
+                            context
+                                .read<LikedPostCubit>()
+                                .unLikePost(post: post);
+                          } else {
+                            context.read<LikedPostCubit>().likePost(post: post);
+                          }
+                        },
+                      );
+                    }
+                    print(post);
+                    return Text("post is null");
+                  },
+                )
+              : Center(child: CircularProgressIndicator()),
         );
       },
     );

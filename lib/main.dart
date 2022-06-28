@@ -97,6 +97,7 @@ class MyApp extends StatelessWidget {
                   userrRepository: context.read<UserrRepository>())),
            BlocProvider<ProfileBloc>(
              create: (context) => ProfileBloc(
+              chatRepository: context.read<ChatRepository>(),
                  userrRepository: context.read<UserrRepository>(),
                  authBloc: context.read<AuthBloc>(),
                  postRepository: context.read<PostsRepository>(),

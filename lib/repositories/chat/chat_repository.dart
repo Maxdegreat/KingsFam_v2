@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/chat_model.dart';
 import 'package:kingsfam/models/message_model.dart';
-
+import 'package:flutter/material.dart';
 import 'package:kingsfam/repositories/chat/base_chat_repository.dart';
+import 'package:kingsfam/screens/chat_room/chat_room.dart';
 
 class ChatRepository extends BaseChatRepository {
   final FirebaseFirestore _firebaseFirestore;
@@ -11,9 +14,22 @@ class ChatRepository extends BaseChatRepository {
   ChatRepository({FirebaseFirestore? firebaseFirestore})
       : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance;
 
+
   @override
-  Future<void> createChat({required Chat chat}) async {
-    _firebaseFirestore.collection(Paths.chats).add(chat.toDoc());
+  Future<Chat?> createChat({required Chat chat, bool? shouldPassBackChat, BuildContext? ctx}) async {
+  
+    if (shouldPassBackChat == true) {
+      log("77777777777777777777777777777");
+      _firebaseFirestore.collection(Paths.chats).add(chat.toDoc()).then((value) async {
+        final chatdoc = await value.get();
+        var newChat = await Chat.fromDoc(chatdoc);
+        Navigator.pushNamed(ctx!, ChatRoom.routeName, arguments: ChatRoomArgs(chat: newChat));
+        return ;
+      });
+    } else {
+      _firebaseFirestore.collection(Paths.chats).add(chat.toDoc());
+    }
+    return null;
   }
 
   Stream<List<Future<Message?>>> getChatMessages({required String chatId, required int limit}) {
