@@ -55,6 +55,20 @@ class MessageLines extends StatelessWidget {
         .update({'reactions': reactions});
   }
 
+  Container reactionContainer({required String reaction, required int num}) {
+    return Container(
+      height: 30,
+      child: Center(
+          child: RichText(
+        text: TextSpan(text: reaction, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold), children: [TextSpan(text: '\t$num', style: TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.bold))]),
+      )),
+      decoration: BoxDecoration(
+          color: Colors.white24,
+          border: Border.all(color: Colors.red[800]!, width: 2),
+          borderRadius: BorderRadius.circular(5)),
+    );
+  }
+
   _showReactionsBar(String messageId, Map<String, int> messageReactions,
       BuildContext context) {
     return showModalBottomSheet(
@@ -78,15 +92,30 @@ class MessageLines extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('😁', style: TextStyle(fontSize: 27)),
+                  child: GestureDetector(
+                      onTap: () {
+                        uploadReaction('😁', messageId, messageReactions);
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('😁', style: TextStyle(fontSize: 27))),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('😭', style: TextStyle(fontSize: 27)),
+                  child: GestureDetector(
+                      onTap: () {
+                        uploadReaction('😭', messageId, messageReactions);
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('😭', style: TextStyle(fontSize: 27))),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('👀', style: TextStyle(fontSize: 27)),
+                  child: GestureDetector(
+                      onTap: () {
+                        uploadReaction('👀', messageId, messageReactions);
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('👀', style: TextStyle(fontSize: 27))),
                 ),
               ],
             ),
@@ -97,7 +126,7 @@ class MessageLines extends StatelessWidget {
   // if i send the message.
   _buildText(BuildContext context) {
     if (message.reactions == {}) {
-     message.reactions![''] = 0;
+      message.reactions![''] = 0;
     }
     List<String> links = [];
     var msgAsList = message.text!.split(' ').forEach((element) {
@@ -115,23 +144,28 @@ class MessageLines extends StatelessWidget {
       onLongPress: () =>
           _showReactionsBar(message.id!, message.reactions!, context),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(message.text!,
-              style: TextStyle(
-                  color: Colors.amber[100],
-                  fontSize: 17.0,
-                  fontWeight: FontWeight.w800)),
-          message.reactions == {} || message.reactions == {'':0}
+          Padding(
+            padding: const EdgeInsets.only(left: 7),
+            child: Text(message.text!,
+                style: TextStyle(
+                    color: Colors.amber[100],
+                    fontSize: 17.0,
+                    fontWeight: FontWeight.w800)),
+          ),
+          message.reactions == {} || message.reactions == {'': 0}
               ? SizedBox.shrink()
               : Container(
-                  height: 17,
+                  height: 30,
                   child: Row(
-                    children: message.reactions!.keys.map((e) {
-                      return Row(
-                        children: [Text(e), Text('${message.reactions![e]}')],
-                      );
-                    }).toList() 
-                  ),
+                      children: message.reactions!.keys.map((e) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 7.0),
+                      child: reactionContainer(
+                          reaction: e, num: message.reactions![e]!),
+                    );
+                  }).toList()),
                 )
         ],
       ),
