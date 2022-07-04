@@ -13,3 +13,4 @@ export 'column_of_posts.dart';
 export 'help_dialog_widget.dart';
 export 'commuinity_pf_image.dart';
 export 'post_single_view.dart';
+export 'text_spans.dart';

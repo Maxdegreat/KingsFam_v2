@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
@@ -5,16 +7,17 @@ import 'package:kingsfam/screens/screens.dart';
 
 class CustomRoute {
   static Route onGenerateRoute(RouteSettings settings) {
-    print('Route: ${settings.name}');
+    log('Route: ${settings.name}');
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
           settings: const RouteSettings(name: '/'),
-          builder: (_) => const Scaffold(),
+          builder: (_) =>  Scaffold(),
         );
 
       case SplashScreen.routeName:
         return SplashScreen.route();
+        
 
       case LoginScreen.routeName:
         return LoginScreen.route();
@@ -39,7 +42,7 @@ class CustomRoute {
       case '/':
         return MaterialPageRoute(
           settings: const RouteSettings(name: '/'),
-          builder: (_) => const Scaffold(),
+          builder: (_) =>  Scaffold(body: Container(height: double.infinity, width: double.infinity, color:  Colors.purple,),),
         );
 
       case EditProfileScreen.routeName:

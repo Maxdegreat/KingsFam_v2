@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/config/type_of.dart';
 import 'package:kingsfam/helpers/helpers.dart';
-
 import 'package:kingsfam/models/models.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/repositories/repositories.dart';

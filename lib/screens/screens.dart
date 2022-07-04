@@ -1,4 +1,4 @@
-export 'splash/splash_screen.dart';
+export 'splash/splash_screen_logic.dart';
 export 'nav/nav_screen.dart';
 export 'login/login_screen.dart';
 export 'signupForm/signup_form_screen.dart';

@@ -68,8 +68,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   bool containsAt = false;
 
   Set<String> memIds = {};
+  // in the _buildMessageStream membersMapWithUsernameAsKey is used to populate the map with member info
+  Map<String, dynamic> membersMapWithUsernameAsKey = {};
 
-  Map<String, dynamic> mems = {};
+  List<String> UrlBucket = [];
 
   HexColor hexColor = HexColor();
 
@@ -86,7 +88,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       required List<Message?> msgs}) {
     for (var user in widget.commuinity.members.keys) {
       memIds.add(user.id);
-      mems[user.username] = {
+      membersMapWithUsernameAsKey[user.username] = {
         'id': user.id,
         'token': user.token,
       };
@@ -109,6 +111,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     message.forEach((sms) {
       if (sms != null) {
         MessageLines messageLine = MessageLines(
+          cmId: widget.commuinity.id!,
+          kcId: widget.kingsCord.id!,
           message: sms,
         );
         messageLines.add(messageLine);
@@ -196,30 +200,38 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   ),
                   onPressed: state.isTyping
                       ? () {
+                        // this will be passed to the cubit then to the db. upon a get msg lines will psrse for a good look
+                          String messageWithsSmbolesForParsing = "";
                           // map of mentioned info that will be added to the kc cubit
                           Map<String, dynamic> mentionedInfo = {};
                           var msgAsLst = _messageController.text.split(' ');
                           for (String msg in msgAsLst) {
-                            if (msg.length >= 2 && msg[0] == '@') {
-                              // gives the names of who is mentioned
-                              var mentionedUserName =
-                                  msg.substring(1, msg.length);
-                              if (mems.containsKey(mentionedUserName)) {
-                                mentionedInfo[mems[mentionedUserName]['id']] = {
-                                  'username': mentionedUserName,
-                                  'token': mems[mentionedUserName]['token'],
-                                  'communityName': widget.commuinity.name,
-                                  'kingsCordName': widget.kingsCord.cordName,
-                                };
+                            // handels if a shares a link
+                           
+                              if (msg.length > 8 && msg.substring(0, 8) == 'https://') {
+                                messageWithsSmbolesForParsing += '{{a-$msg}} ';
+                              } else if (msg.length > 1 && msg[0] == '@' ) {
+                                var mentionedUserName = msg.substring(1, msg.length);
+                                if (membersMapWithUsernameAsKey.containsKey(mentionedUserName)) {
+                                  messageWithsSmbolesForParsing += '{{b-$msg}} ';
+                                  // mentioned info will be passed to cubit. info will be used in notification 
+                                  mentionedInfo[membersMapWithUsernameAsKey[mentionedUserName]['id']] = {
+                                    'username': mentionedUserName,
+                                    'token': membersMapWithUsernameAsKey[mentionedUserName]['token'],
+                                    'communityName': widget.commuinity.name,
+                                    'kingsCordName': widget.kingsCord.cordName,
+                                  };
+                                } 
+                              } else {
+                                  messageWithsSmbolesForParsing += '$msg ';
                               }
-
-                              log("the mentioned username in for loop on line 200: $mentionedUserName");
-                            }
+                            
                           }
                           ctx.onSendTxtMsg(
                               churchId: widget.commuinity.id!,
                               kingsCordId: widget.kingsCord.id!,
-                              txtMsgBody: _messageController.text,
+                              txtMsgBodyWithSymbolsForParcing: _messageController.text,    //messageWithsSmbolesForParsing,
+                              txtMsgWithOutSymbolesForParcing: _messageController.text,
                               mentionedInfo: mentionedInfo,
                               cmTitle: widget.commuinity.name,
                               kingsCordData: widget.kingsCord);

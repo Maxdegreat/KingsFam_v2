@@ -1,43 +1,161 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/extensions/extensions.dart';
 import 'package:kingsfam/screens/screens.dart';
+import 'package:kingsfam/widgets/widgets.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MessageLines extends StatelessWidget {
   //class data
   final Message message;
+  final String kcId;
+  final String cmId;
 
-  const MessageLines({required this.message});
+  MessageLines({required this.message, required this.cmId, required this.kcId});
+
+  showLinkPicker(List<String> links, BuildContext context) {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            child: Column(
+              children: links
+                  .map((e) => ListTile(
+                        leading: Text(
+                          e,
+                          style: TextStyle(fontSize: 17, color: Colors.white),
+                        ),
+                        onTap: () async => await launch(e),
+                      ))
+                  .toList(),
+            ),
+          );
+        });
+  }
+
+  uploadReaction(String reaction, String msgId, Map<String, int> reactions) {
+    int? incrementedReaction = reactions[reaction];
+    if (incrementedReaction == null) {
+      incrementedReaction = 1;
+    } else {
+      incrementedReaction += 1;
+    }
+    reactions[reaction] = incrementedReaction;
+    FirebaseFirestore.instance
+        .collection(Paths.church)
+        .doc(cmId)
+        .collection(Paths.kingsCord)
+        .doc(kcId)
+        .collection(Paths.messages)
+        .doc(msgId)
+        .update({'reactions': reactions});
+  }
+
+  _showReactionsBar(String messageId, Map<String, int> messageReactions,
+      BuildContext context) {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                      onTap: () {
+                        uploadReaction('💖', messageId, messageReactions);
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        '💖',
+                        style: TextStyle(fontSize: 27),
+                      )),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('😁', style: TextStyle(fontSize: 27)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('😭', style: TextStyle(fontSize: 27)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('👀', style: TextStyle(fontSize: 27)),
+                ),
+              ],
+            ),
+          );
+        });
+  }
 
   // if i send the message.
-  _buildText() {
-    return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
-        child: RichText(
-            text: TextSpan(
-                style: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 17.0,
-                    fontWeight: FontWeight.w800),
-                children: [
-              message.text!.contains('@')
-                  ? TextSpan(
-                      text: message.text!,
-                      style: TextStyle(
-                          color: Colors.blueGrey,
-                          fontSize: 17.0,
-                          fontWeight: FontWeight.w800))
-                  : TextSpan(text: message.text!)
-            ])));
+  _buildText(BuildContext context) {
+    if (message.reactions == {}) {
+     message.reactions![''] = 0;
+    }
+    List<String> links = [];
+    var msgAsList = message.text!.split(' ').forEach((element) {
+      if (element.startsWith('https://') || element.startsWith('Https://')) {
+        links.add(element);
+      }
+    });
+
+    return GestureDetector(
+      onTap: () {
+        if (links.isNotEmpty) {
+          return showLinkPicker(links, context);
+        }
+      },
+      onLongPress: () =>
+          _showReactionsBar(message.id!, message.reactions!, context),
+      child: Column(
+        children: [
+          Text(message.text!,
+              style: TextStyle(
+                  color: Colors.amber[100],
+                  fontSize: 17.0,
+                  fontWeight: FontWeight.w800)),
+          message.reactions == {} || message.reactions == {'':0}
+              ? SizedBox.shrink()
+              : Container(
+                  height: 17,
+                  child: Row(
+                    children: message.reactions!.keys.map((e) {
+                      return Row(
+                        children: [Text(e), Text('${message.reactions![e]}')],
+                      );
+                    }).toList() 
+                  ),
+                )
+        ],
+      ),
+    );
+
+    //lineGen.parsedStringToFormatedForMessageGenerator(fuleAsString: message.text);
+    //  return Padding(
+    //  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+    //  child: RichText(
+    //  textAlign: TextAlign.start,
+    //  text: TextSpan(
+    //  children: lineGen.children
+    //  )));
   }
 
   //for an image
   _buildImage(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return GestureDetector(
-      onTap: () => Navigator.of(context).pushNamed(UrlViewScreen.routeName, arguments: UrlViewArgs(urlMain: message.imageUrl!, urlSub: '', heroTag: 'Message/${message.imageUrl}/')),
+      onTap: () => Navigator.of(context).pushNamed(UrlViewScreen.routeName,
+          arguments: UrlViewArgs(
+              urlMain: message.imageUrl!,
+              urlSub: '',
+              heroTag: 'Message/${message.imageUrl}/')),
       child: Container(
         height: size.height * 0.2,
         width: size.width * 0.6,
@@ -61,9 +179,18 @@ class MessageLines extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           GestureDetector(
-            onTap: () => Navigator.of(context).pushNamed(UrlViewScreen.routeName, arguments: UrlViewArgs(urlMain: message.videoUrl!, urlSub: message.thumbnailUrl!, heroTag: 'Message/${message.videoUrl}/${message.thumbnailUrl}')),
+            onTap: () => Navigator.of(context).pushNamed(
+                UrlViewScreen.routeName,
+                arguments: UrlViewArgs(
+                    urlMain: message.videoUrl!,
+                    urlSub: message.thumbnailUrl!,
+                    heroTag:
+                        'Message/${message.videoUrl}/${message.thumbnailUrl}')),
             child: Container(
-              child: Icon(Icons.play_arrow, size: 35,),
+              child: Icon(
+                Icons.play_arrow,
+                size: 35,
+              ),
               decoration: BoxDecoration(
                 color: Colors.black45,
                 borderRadius: BorderRadius.circular(20.0),
@@ -139,7 +266,7 @@ class MessageLines extends StatelessWidget {
                   maxWidth: MediaQuery.of(context).size.width,
                 ),
                 child: message.text != null
-                    ? _buildText()
+                    ? _buildText(context)
                     : message.videoUrl != null && message.thumbnailUrl != null
                         ? _buildVideo(context)
                         : _buildImage(context)),

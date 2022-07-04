@@ -21,11 +21,13 @@ import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/cubit/calls
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 
+
 import 'screens/build_church/cubit/buildchurch_cubit.dart';
 import 'screens/screens.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // lets keep the splash till app is one initializing
   MobileAds.instance.initialize();
   await Firebase.initializeApp();
 

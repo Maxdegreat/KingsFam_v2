@@ -65,7 +65,8 @@ class KingscordCubit extends Cubit<KingscordState> {
   void onSendTxtMsg({
     required String churchId,
     required String kingsCordId,
-    required String txtMsgBody,
+    required String txtMsgBodyWithSymbolsForParcing,
+    required String txtMsgWithOutSymbolesForParcing,
     required Map<String, dynamic> mentionedInfo,
     required String cmTitle,
     required KingsCord kingsCordData,
@@ -75,7 +76,7 @@ class KingscordCubit extends Cubit<KingscordState> {
     // functions index.js file
 
     for (var id in mentionedInfo.keys) {
-      if (txtMsgBody.length > 1 && txtMsgBody.length < 250) {
+      if (txtMsgBodyWithSymbolsForParcing.length > 1 && txtMsgBodyWithSymbolsForParcing.length < 250) {
         FirebaseFirestore.instance
             .collection(Paths.mention)
             .doc(id)
@@ -85,7 +86,7 @@ class KingscordCubit extends Cubit<KingscordState> {
           'communityName': mentionedInfo[id]['communityName'],
           'username': mentionedInfo[id]['username'],
           'token': mentionedInfo[id]['token'],
-          'messageBody': txtMsgBody,
+          'messageBody': txtMsgWithOutSymbolesForParcing,
           'type': 'kc_type',
           'type_id': kingsCordData.id!,
           'type_tag': kingsCordData.tag,
@@ -99,7 +100,7 @@ class KingscordCubit extends Cubit<KingscordState> {
 
     // the creation of the message
     final message = Message(
-        text: txtMsgBody,
+        text: txtMsgBodyWithSymbolsForParcing,
         date: Timestamp.fromDate(DateTime.now()),
         imageUrl: null);
     //uploading the message to cloud

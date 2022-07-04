@@ -30,9 +30,7 @@ class SplashScreen extends StatelessWidget {
         } 
       },
       child: Scaffold(
-        body: Container(
-          child: Text("KINGSFAM", style: Theme.of(context).textTheme.bodyText1,),
-        )),
-    );
+        body: Container(height: double.infinity, width: double.infinity, color:  Colors.red,)
+    ));
   }
 }

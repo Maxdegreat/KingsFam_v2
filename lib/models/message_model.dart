@@ -13,6 +13,7 @@ class Message {
   final Userr? sender;
   final String? senderUsername;
   final List<String>? mentionedIds;
+  final Map<String, int>? reactions;
 
 //2 gen the constructor
   Message({
@@ -24,7 +25,8 @@ class Message {
     this.thumbnailUrl,
     this.videoUrl,
     this.mentionedIds,
-    required this.date
+    required this.date,
+    this.reactions,
   });
 
   //3  make the props
@@ -38,6 +40,7 @@ class Message {
         videoUrl,
         date,
         mentionedIds,
+        reactions,
       ];
 
   // 4 make the copy with
@@ -51,6 +54,7 @@ class Message {
     String? videoUrl,
     Timestamp? date,
     List<String>? mentionedIds,
+    Map<String, int>? reactions,
   }) {
     return Message(
       id: id ?? this.id,
@@ -79,7 +83,8 @@ class Message {
       'thumbnailUrl': thumbnailUrl,
       'videoUrl': videoUrl,
       'date': date, 
-      'mentionedIds' : mentionedIds
+      'mentionedIds' : mentionedIds,
+      'reactions' : {}
     };
   }
 
@@ -100,7 +105,8 @@ class Message {
       thumbnailUrl: data['thumbnailUrl'] ?? null,
       videoUrl: data['videoUrl'] ?? null,
       date: (data['date']),
-      mentionedIds:  List<String>.from(data['mentionedIds'] ?? [])
+      reactions: Map<String, int>.from(data['reactions'] ?? {}),
+      mentionedIds:  List<String>.from(data['mentionedIds'] ?? []),
       
     );
   }
