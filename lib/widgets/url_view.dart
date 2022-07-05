@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:kingsfam/page_routes/custom_page_route.dart';
+
 import 'package:kingsfam/widgets/basic_overlay_widget.dart';
-import 'package:kingsfam/widgets/video_player.dart';
+
 import 'package:video_player/video_player.dart';
 
 class UrlViewArgs {
@@ -63,17 +63,19 @@ class _FileViewScreenState extends State<UrlViewScreen> {
 
   Widget _viewPort() => Expanded(
     child: AspectRatio(
-      aspectRatio: 16 / 9,
-      child: Container(
-            child: widget.subUrl.isNotEmpty ? _videoPortFromMessage() : null,
-            // ignore: unnecessary_null_comparison
-            decoration: widget.subUrl.isEmpty || widget.subUrl == null
-                ? BoxDecoration(
-                    image: DecorationImage(
-                        image: CachedNetworkImageProvider(widget.url),
-                        fit: BoxFit.fitWidth))
-                : null,
-          ),
+      aspectRatio: 9 / 16,
+      child: Center(
+        child: Container(
+              child: widget.subUrl.isNotEmpty ? _videoPortFromMessage() : null,
+              // ignore: unnecessary_null_comparison
+              decoration: widget.subUrl.isEmpty || widget.subUrl == null
+                  ? BoxDecoration(
+                      image: DecorationImage(
+                          image: CachedNetworkImageProvider(widget.url),
+                          fit: BoxFit.fitWidth))
+                  : null,
+            ),
+      ),
     ),
   );
 
@@ -89,7 +91,7 @@ class _FileViewScreenState extends State<UrlViewScreen> {
           constraints: BoxConstraints(
               maxWidth: double.infinity,
               minHeight: 900), //size of video player in app
-          child: _BuildVideo())
+          child: _buildVideo())
       : Container(
           height: 250,
           child: Center(
@@ -97,7 +99,7 @@ class _FileViewScreenState extends State<UrlViewScreen> {
             color: Colors.red[400],
           )));
 
-    Widget _BuildVideo()  => Stack(
+    Widget _buildVideo()  => Stack(
         children: [
           buildVideoPlayer(),
           Positioned.fill(child: BasicOverlayWidget(controller: vidController))

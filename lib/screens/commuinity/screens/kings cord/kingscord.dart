@@ -2,10 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_cropper/image_cropper.dart';
+
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
-import 'package:kingsfam/helpers/helpers.dart';
+
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
@@ -391,8 +391,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   : SizedBox.shrink(),
               memIds.contains(context.read<AuthBloc>().state.user!.uid)
                   ? _buildBottomTF(state, context)
-                  : _permissionDenied(
-                      messasge: "Join Commuinity To say whats up")
+                  : _permissionDenied(messasge: "Join Commuinity To say whats up")
             ],
           );
         },

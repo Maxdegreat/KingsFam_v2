@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:developer';
+
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:equatable/equatable.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
+import 'package:equatable/equatable.dart';                                                                                                    
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
@@ -113,7 +113,7 @@ class KingscordCubit extends Cubit<KingscordState> {
 
   
   void onUploadVideo({required File videoFile, required String kcId, required String cmId}) async {
-    emit(state.copyWith(status: KingsCordStatus.loading, fileShareStatus: FileShareStatus.imgSharing));
+    emit(state.copyWith(status: KingsCordStatus.loading, ));
     // make the thumbnail
     final thumbnail = await VideoThumbnail.thumbnailFile(
           video: videoFile.path,
@@ -123,9 +123,13 @@ class KingscordCubit extends Cubit<KingscordState> {
           quality: 100,
         );
     if (thumbnail == null)
-    return
+      return
     // add thumbnail to queue
-    state.filesToBePosted.addFirst(File(thumbnail!));
+    log("abt to add $thumbnail into the queue");
+    state.filesToBePosted.addFirst(File(thumbnail));
+    log("added $thumbnail in the queue");
+    FileShareStatus fileShareStatus = FileShareStatus.imgSharing;
+    emit(state.copyWith(fileShareStatus: fileShareStatus, filesToBePosted: state.filesToBePosted));
     // store the thumbnail
     final  thumbnailUrl = await _storageRepository.uploadThumbnailVideo(thumbnail: File(thumbnail));
     // pass vid to storage
@@ -139,8 +143,20 @@ class KingscordCubit extends Cubit<KingscordState> {
         kingsCordId: kcId,
         message: message,
         senderId: _authBloc.state.user!.uid);
-  state.filesToBePosted.removeLast();
-  emit(state.copyWith(status: KingsCordStatus.loading, fileShareStatus: FileShareStatus.inital, filesToBePosted:  state.filesToBePosted));
+      if (state.filesToBePosted.isEmpty){
+        fileShareStatus = FileShareStatus.inital;
+        emit(state.copyWith(status: KingsCordStatus.loading, fileShareStatus: fileShareStatus, filesToBePosted:  state.filesToBePosted));
+        return ;
+      }
+      else {
+        fileShareStatus = FileShareStatus.imgSharing;
+        state.filesToBePosted.removeLast();
+        if (state.filesToBePosted.isEmpty) {
+          emit(state.copyWith(filesToBePosted: state.filesToBePosted, fileShareStatus: FileShareStatus.inital));
+          return ;
+        } else emit(state.copyWith(filesToBePosted: state.filesToBePosted, fileShareStatus: fileShareStatus));
+        log("did an else queue best not be empty");
+      }
   }
 
   void onUploadImage(File imageFile) {

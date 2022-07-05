@@ -10,6 +10,7 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/extraTools.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:kingsfam/screens/build_church/roles_definition.dart';
 
 part 'buildchurch_state.dart';
 
@@ -123,7 +124,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
   }
 
   void onSubmiting() {
-    emit(state.copyWith(isSubmiting: false));
+    emit(state.copyWith(isSubmiting: true));
   }
 
   //void functoion to invite users A.K.A populate list
@@ -160,6 +161,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       for (int i = 0; i < state.memberIds.length; i++) {
         final user = await _userrRepository.getUserrWithId(userrId: state.memberIds[i]);
         mems[user]=Timestamp(0, 0); // may not work so maybe make a list then emit list o
+      
       }
 
 

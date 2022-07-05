@@ -3,6 +3,7 @@
 // check the bottom of the file.
 // after all navs back to prev pages but the church is now made :)
 
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,7 +38,7 @@ class BuildChurch extends StatefulWidget {
         settings: const RouteSettings(name: routeName),
         builder: (context) => BlocProvider<BuildchurchCubit>(
               create: (_) => (BuildchurchCubit(
-                callRepository: context.read<CallRepository>(),
+                  callRepository: context.read<CallRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   userrRepository: context.read<UserrRepository>(),
                   storageRepository: context.read<StorageRepository>(),
@@ -54,7 +55,7 @@ class _BuildChurchState extends State<BuildChurch> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    bool emitProgressIndicator = false;
+    // bool emitProgressIndicator = false;
     // == done i think just remove self from add users screen thats confusing...
 
     //widget.selectedMembers.insert(0, ) do this in cubit, inset urself at 0 and do via
@@ -64,22 +65,24 @@ class _BuildChurchState extends State<BuildChurch> {
 
     return BlocConsumer<BuildchurchCubit, BuildchurchState>(
       listener: (context, state) {
-        if (state.status == BuildChurchStatus.loading) {
-          emitProgressIndicator = true;
-        }
-        else if (state.status == BuildChurchStatus.error) {
+        // if (state.status == BuildChurchStatus.loading) {
+        //   emitProgressIndicator = true;
+        // }
+        // else
+        if (state.status == BuildChurchStatus.error) {
           ErrorDialog(
-            content: 'hmm, something went worong. check your connection --- build_church e-code: ${state.failure.message} ',
+            content:
+                'hmm, something went worong. check your connection --- build_church e-code: ${state.failure.message} ',
           );
         } else if (state.status == BuildChurchStatus.success) {
-          Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
+          Navigator.popUntil(
+              context, ModalRoute.withName(Navigator.defaultRouteName));
           //Navigator.of(context).popAndPushNamed(ChatsScreen.routeName);
-         // Navigator.of(context).popUntil((_) => popScreens++ >= 3);
+          // Navigator.of(context).popUntil((_) => popScreens++ >= 3);
         }
       },
       builder: (context, state) {
         return Scaffold(
-
           body: CustomScrollView(slivers: [
             SliverAppBar(
               expandedHeight: MediaQuery.of(context).size.height / 3,
@@ -117,7 +120,8 @@ class _BuildChurchState extends State<BuildChurch> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            if (state.status == BuildChurchStatus.loading || emitProgressIndicator)
+                            if (state.isSubmiting ==
+                                true) //state.status == BuildChurchStatus.loading || emitProgressIndicator)
                               LinearProgressIndicator(
                                 color: Colors.red[400],
                               ),
@@ -139,7 +143,8 @@ class _BuildChurchState extends State<BuildChurch> {
                               style: const TextStyle(color: Colors.white),
                               underline: Container(
                                 height: 1,
-                                color: Colors.white,                                                 alignment: Alignment.centerRight,
+                                color: Colors.white,
+                                alignment: Alignment.centerRight,
                               ),
                               onChanged: (String? newValue) {
                                 setState(() {
@@ -159,7 +164,8 @@ class _BuildChurchState extends State<BuildChurch> {
                             ),
                             TextFormField(
                               decoration: InputDecoration(
-                                  hintText: "hashTags example: #Jesus #KingsFam"),
+                                  hintText:
+                                      "hashTags example: #Jesus #KingsFam"),
                               onChanged: (value) => context
                                   .read<BuildchurchCubit>()
                                   .onHashTag(value.trim()),
@@ -189,26 +195,44 @@ class _BuildChurchState extends State<BuildChurch> {
                                             BorderRadius.circular(10.0)),
                                     child: ListView.builder(
                                       itemCount: widget.selectedMembers.length,
-                                      itemBuilder: (BuildContext context, int index) {
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
                                         Userr user =
                                             widget.selectedMembers[index];
                                         return Padding(
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 8.0),
                                           child: ListTile(
-                                            leading: ProfileImage(pfpUrl: user.profileImageUrl,radius: 35),
-                                            title: Text(user.username, style: state.adminIds.contains(user.id) ? TextStyle(color: Colors.blue, fontWeight: FontWeight.w700) : null,),
-                                            trailing: state.adminIds.contains(user.id) ? Text("Admin") : SizedBox.shrink(),
-                                            onTap: () {
-                                              if (state.adminIds.contains(user.id)) {
-                                                context.read<BuildchurchCubit>().onAdminRemoved(user.id);
-                                              } else {
-                                                context.read<BuildchurchCubit>().onAdminAdded(user.id);
-                                              }
-                                              setState(() {});
-                                            } 
-                                            
-                                          ),
+                                              leading: ProfileImage(
+                                                  pfpUrl: user.profileImageUrl,
+                                                  radius: 35),
+                                              title: Text(
+                                                user.username,
+                                                style: state.adminIds
+                                                        .contains(user.id)
+                                                    ? TextStyle(
+                                                        color: Colors.blue,
+                                                        fontWeight:
+                                                            FontWeight.w700)
+                                                    : null,
+                                              ),
+                                              trailing: state.adminIds
+                                                      .contains(user.id)
+                                                  ? Text("Admin")
+                                                  : SizedBox.shrink(),
+                                              onTap: () {
+                                                if (state.adminIds
+                                                    .contains(user.id)) {
+                                                  context
+                                                      .read<BuildchurchCubit>()
+                                                      .onAdminRemoved(user.id);
+                                                } else {
+                                                  context
+                                                      .read<BuildchurchCubit>()
+                                                      .onAdminAdded(user.id);
+                                                }
+                                                setState(() {});
+                                              }),
                                         );
                                       },
                                     ),
@@ -218,24 +242,27 @@ class _BuildChurchState extends State<BuildChurch> {
                               clipBehavior: Clip.none,
                             ),
                             SizedBox(height: 10.0),
-                            state.status != BuildChurchStatus.loading ?
-                            ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    primary: Colors.red[400]),
-                                onPressed: () {
-                                  
-                                  submitChurch(context: context,submitStatus: state.isSubmiting, isImage: state.imageFile == null);
-                                  context.read<BuildchurchCubit>().onSubmiting();
-                                  setState(() {});
-                                },
-                                child: Text(
-                                  'CREATE',
-                                  style: TextStyle(letterSpacing: 1.5),
-                                )) : 
-                            ElevatedButton(onPressed: () {}, child: Text(
-                                  'CREATING...',
-                                  style: TextStyle(letterSpacing: 1.5),
-                                ))
+                            state.isSubmiting == false
+                                ? ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.red[400]),
+                                    onPressed: () {
+                                      submitChurch(
+                                          context: context,
+                                          submitStatus: state.isSubmiting,
+                                          isImage: state.imageFile == null);
+                                      
+                                    },
+                                    child: Text(
+                                      'CREATE',
+                                      style: TextStyle(letterSpacing: 1.5),
+                                    ))
+                                : ElevatedButton(
+                                    onPressed: () {},
+                                    child: Text(
+                                      'CREATING...',
+                                      style: TextStyle(letterSpacing: 1.5),
+                                    ))
                           ],
                         ))
                   ],
@@ -257,9 +284,22 @@ class _BuildChurchState extends State<BuildChurch> {
       context.read<BuildchurchCubit>().onImageChanged(pickedFile);
   }
 
-  void submitChurch({required BuildContext context,required bool submitStatus, required bool isImage}) {
-    if (!isImage) { // if image not null
-      if ( submitStatus == false && _formKey.currentState!.validate()) {
+  void submitChurch(
+      {required BuildContext context,
+      required bool submitStatus,
+      required bool isImage}) {
+    if (!isImage) {
+      // if image not null
+      if (submitStatus == false && _formKey.currentState!.validate()) {
+        context
+                                          .read<BuildchurchCubit>()
+                                          .onSubmiting();
+                                      setState(() {});
+        log("Now extracting member id's");
+        _extractMemberId(context, widget.selectedMembers);
+        log("Now extractiong admin ids");
+        _makeAdminIds(context);
+        log("Now calling submit function");
         context.read<BuildchurchCubit>().submit();
       } else {
         return;
@@ -270,21 +310,18 @@ class _BuildChurchState extends State<BuildChurch> {
           builder: (context) =>
               ErrorDialog(content: "make sure you added a image"));
     }
-    _extractMemberId(context, widget.selectedMembers);
-    _makeAdminIds(context);
   }
 
   void _extractMemberId(BuildContext context, List<Userr> users) {
     List<String> ids = users.map((e) => e.id).toList();
-    
     ids.insert(0, context.read<AuthBloc>().state.user!.uid);
     context.read<BuildchurchCubit>().onMemberIdsAdded(ids);
   }
 
   void _makeAdminIds(BuildContext context) {
     final currId = context.read<AuthBloc>().state.user!.uid;
-    
-    final Set<String> adminIds = context.read<BuildchurchCubit>().state.adminIds;
+    final Set<String> adminIds =
+        context.read<BuildchurchCubit>().state.adminIds;
     adminIds.add(currId);
     context.read<BuildchurchCubit>().onAdminsAdded(adminIds);
   }

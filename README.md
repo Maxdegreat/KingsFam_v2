@@ -4,6 +4,8 @@ A new Flutter project.
 
 ## Getting Started
 
+https://docs.google.com/document/d/1kw35Ke_dBsJCsACv5YL5EYxB1ffBMyFRno7P0um4FG0/edit?usp=sharing
+
 This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:

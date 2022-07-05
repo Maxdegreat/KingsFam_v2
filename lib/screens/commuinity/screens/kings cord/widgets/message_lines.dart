@@ -69,8 +69,27 @@ class MessageLines extends StatelessWidget {
     );
   }
 
-  _showReactionsBar(String messageId, Map<String, int> messageReactions,
+  _showReactionBarUi({required Map<String, int>? messageReactions}) {
+    return message.reactions == {} || messageReactions == {'': 0}
+              ? SizedBox.shrink()
+              : Container(
+                  height: 30,
+                  child: Row(
+                      children: messageReactions!.keys.map((e) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 7.0),
+                      child: reactionContainer(
+                          reaction: e, num: message.reactions![e]!),
+                    );
+                  }).toList()),
+                );
+  }
+
+  _showReactionsBar(String messageId, Map<String, int>? messageReactions,
       BuildContext context) {
+        if (messageReactions == null) {
+          messageReactions = {};
+        }
     return showModalBottomSheet(
         context: context,
         builder: (context) {
@@ -82,7 +101,7 @@ class MessageLines extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(
                       onTap: () {
-                        uploadReaction('💖', messageId, messageReactions);
+                        uploadReaction('💖', messageId, messageReactions!);
                         Navigator.of(context).pop();
                       },
                       child: Text(
@@ -94,7 +113,7 @@ class MessageLines extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(
                       onTap: () {
-                        uploadReaction('😁', messageId, messageReactions);
+                        uploadReaction('😁', messageId, messageReactions!);
                         Navigator.of(context).pop();
                       },
                       child: Text('😁', style: TextStyle(fontSize: 27))),
@@ -103,7 +122,7 @@ class MessageLines extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(
                       onTap: () {
-                        uploadReaction('😭', messageId, messageReactions);
+                        uploadReaction('😭', messageId, messageReactions!);
                         Navigator.of(context).pop();
                       },
                       child: Text('😭', style: TextStyle(fontSize: 27))),
@@ -112,7 +131,7 @@ class MessageLines extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(
                       onTap: () {
-                        uploadReaction('👀', messageId, messageReactions);
+                        uploadReaction('👀', messageId, messageReactions!);
                         Navigator.of(context).pop();
                       },
                       child: Text('👀', style: TextStyle(fontSize: 27))),
@@ -154,19 +173,7 @@ class MessageLines extends StatelessWidget {
                     fontSize: 17.0,
                     fontWeight: FontWeight.w800)),
           ),
-          message.reactions == {} || message.reactions == {'': 0}
-              ? SizedBox.shrink()
-              : Container(
-                  height: 30,
-                  child: Row(
-                      children: message.reactions!.keys.map((e) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 7.0),
-                      child: reactionContainer(
-                          reaction: e, num: message.reactions![e]!),
-                    );
-                  }).toList()),
-                )
+          _showReactionBarUi(messageReactions: message.reactions)
         ],
       ),
     );
@@ -184,66 +191,82 @@ class MessageLines extends StatelessWidget {
   //for an image
   _buildImage(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return GestureDetector(
-      onTap: () => Navigator.of(context).pushNamed(UrlViewScreen.routeName,
-          arguments: UrlViewArgs(
-              urlMain: message.imageUrl!,
-              urlSub: '',
-              heroTag: 'Message/${message.imageUrl}/')),
-      child: Container(
-        height: size.height * 0.2,
-        width: size.width * 0.6,
-        decoration: BoxDecoration(
-            border: Border.all(
-                width: 2.0,
-                color: const Color(
-                    0xFFFFFFFF)), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
-            borderRadius: BorderRadius.circular(20.0),
-            image: DecorationImage(
-                fit: BoxFit.cover,
-                image: CachedNetworkImageProvider(message.imageUrl!))),
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onLongPress: () => _showReactionsBar(message.id!, message.reactions, context),
+          onTap: () => Navigator.of(context).pushNamed(UrlViewScreen.routeName,
+              arguments: UrlViewArgs(
+                  urlMain: message.imageUrl!,
+                  urlSub: '',
+                  heroTag: 'Message/${message.imageUrl}/')),
+          child: Container(
+            height: size.height * 0.2,
+            width: size.width * 0.6,
+            decoration: BoxDecoration(
+                border: Border.all(
+                    width: 2.0,
+                    color: const Color(
+                        0xFFFFFFFF)), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
+                borderRadius: BorderRadius.circular(20.0),
+                image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: CachedNetworkImageProvider(message.imageUrl!))),
+          ),
+        ),
+        _showReactionBarUi(messageReactions: message.reactions)
+      ],
     );
   }
 
   _buildVideo(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Container(
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.of(context).pushNamed(
-                UrlViewScreen.routeName,
-                arguments: UrlViewArgs(
-                    urlMain: message.videoUrl!,
-                    urlSub: message.thumbnailUrl!,
-                    heroTag:
-                        'Message/${message.videoUrl}/${message.thumbnailUrl}')),
-            child: Container(
-              child: Icon(
-                Icons.play_arrow,
-                size: 35,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              GestureDetector(
+                onLongPress: () =>_showReactionsBar(message.id!, message.reactions, context),
+                onTap: () => Navigator.of(context).pushNamed(
+                    UrlViewScreen.routeName,
+                    arguments: UrlViewArgs(
+                        urlMain: message.videoUrl!,
+                        urlSub: message.thumbnailUrl!,
+                        heroTag:
+                            'Message/${message.videoUrl}/${message.thumbnailUrl}')),
+                child: Container(
+                  child: Icon(
+                    Icons.play_arrow,
+                    size: 35,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black45,
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                ),
               ),
-              decoration: BoxDecoration(
-                color: Colors.black45,
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-            ),
-          )
-        ],
-      ),
-      height: size.height * 0.2,
-      width: size.width * 0.6,
-      decoration: BoxDecoration(
-          border: Border.all(
-              width: 2.0,
-              color: const Color(
-                  0xFFFFFFFF)), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
-          borderRadius: BorderRadius.circular(20.0),
-          image: DecorationImage(
-              fit: BoxFit.cover,
-              image: CachedNetworkImageProvider(message.thumbnailUrl!))),
+            ],
+          ),
+          height: size.height * 0.2,
+          width: size.width * 0.6,
+          decoration: BoxDecoration(
+              border: Border.all(
+                  width: 2.0,
+                  color: const Color(
+                      0xFFFFFFFF)), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
+              borderRadius: BorderRadius.circular(20.0),
+              image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: CachedNetworkImageProvider(message.thumbnailUrl!))),
+        ),
+                _showReactionBarUi(messageReactions: message.reactions)
+      ],
     );
   }
 

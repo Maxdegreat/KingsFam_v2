@@ -73,7 +73,7 @@ class   ChurchRepository extends BaseChurchRepository {
 
   @override
   Future<void> newChurch({required Church church, required Userr recentSender}) async {
-    log("hoping in newchurch func");
+
     try {
         fb.add(church.toDoc()).then((value) async {
       final doc = await value.get(); 
@@ -89,7 +89,7 @@ class   ChurchRepository extends BaseChurchRepository {
     } catch (e) {
       log("The newchurch in repo failed e code: $e");
     }
-    log("hoping out of newchurch func");
+   
   }
 
   Future<List<Post?>> getCommuinityPosts({required Church cm}) async {
