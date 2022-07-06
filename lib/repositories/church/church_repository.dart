@@ -72,10 +72,10 @@ class   ChurchRepository extends BaseChurchRepository {
   }
 
   @override
-  Future<void> newChurch({required Church church, required Userr recentSender}) async {
+  Future<void> newChurch({required Church church, required Userr recentSender, required Map<String, String> roles}) async {
 
     try {
-        fb.add(church.toDoc()).then((value) async {
+        fb.add(church.toDoc(roles: roles)).then((value) async {
       final doc = await value.get(); 
       final kingsCord = KingsCord(
         tag: doc.id,
@@ -221,7 +221,7 @@ class   ChurchRepository extends BaseChurchRepository {
     // return churchSnap.docs.map((doc) => Church.fromDoc(doc)).toList();
   }
 
-  Future <void> updateCommuinity({required Church commuinity}) async => FirebaseFirestore.instance.collection(Paths.church).doc(commuinity.id).update(commuinity.toDoc());
+  Future <void> updateCommuinity({required Church commuinity, required Map<String, String> roles}) async => FirebaseFirestore.instance.collection(Paths.church).doc(commuinity.id).update(commuinity.toDocUpdate(roles: roles));
 
   Future<void> leaveCommuinity({required Church commuinity, required currId}) async {
     

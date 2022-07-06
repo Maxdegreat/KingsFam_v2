@@ -17,6 +17,7 @@ import 'package:kingsfam/helpers/helpers.dart';
 // import 'package:kingsfam/models/church_kingscord_model.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:kingsfam/roles/roles_definition.dart';
 import 'package:kingsfam/screens/build_church/cubit/buildchurch_cubit.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 // import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/calls_home.dart';
@@ -235,21 +236,26 @@ class _CommuinityScreenState extends State<CommuinityScreen>
             Column(
               children: state.kingCords.map((cord) {
                 if (cord != null) {
-
                   return GestureDetector(
                       onTap: () {
-                        // handels the navigation to the kingscord screen and also handels the 
+                        // handels the navigation to the kingscord screen and also handels the
                         // deletion of a noti if it eist. we check if noty eist by through a function insde the bloc.
                         Navigator.of(context).pushNamed(
                             KingsCordScreen.routeName,
                             arguments: KingsCordArgs(
                                 commuinity: widget.commuinity,
                                 kingsCord: cord));
-                      
+
                         if (state.mentionedMap[cord.id] != false) {
                           // del the @ notification (del the mention)
-                          String currId = context.read<AuthBloc>().state.user!.uid;
-                          FirebaseFirestore.instance.collection(Paths.mention).doc(currId).collection(widget.commuinity.id!).doc(cord.id).delete();
+                          String currId =
+                              context.read<AuthBloc>().state.user!.uid;
+                          FirebaseFirestore.instance
+                              .collection(Paths.mention)
+                              .doc(currId)
+                              .collection(widget.commuinity.id!)
+                              .doc(cord.id)
+                              .delete();
                         }
                       },
                       onLongPress: () => _delKcDialog(
@@ -693,6 +699,13 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     return IconButton(
         onPressed: () async {
           // final usersInCommuiinity = await context.read<BuildchurchCubit>().commuinityParcticipatents(ids: widget.commuinity.memberIds);
+          Userr? currUserr;
+          List<Userr> users = widget.commuinity.members.keys.toList();
+          for (int i = 0; i < users.length; i++) {
+            if (users[i].id == context.read<AuthBloc>().state.user!.uid) {
+              currUserr = users[i];
+            }
+          }
           showModalBottomSheet(
               context: context,
               builder: (context) {
@@ -716,7 +729,12 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                         //height: MediaQuery.of(context).size.height / 2.3,
                         child:
                             TabBarView(controller: _tabController, children: [
-                          _participantsView(widget.commuinity.members.keys.toList()),
+                          currUserr != null
+                              ? _participantsView(
+                                  widget.commuinity.members.keys.toList(),
+                                  widget.commuinity.members,
+                                  currUserr)
+                              : SizedBox.shrink(),
                           _editView(commuinity: widget.commuinity)
                         ]),
                       )
@@ -739,11 +757,17 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   }
 
   //TODO ADMIN WHERE 2==2
-  Widget _participantsView(List<Userr> users) {
+  Widget _participantsView(
+      List<Userr> users, Map<Userr, dynamic> memberInfo, Userr currUserr) {
     return ListView.builder(
       itemCount: widget.commuinity.members.length,
       itemBuilder: (BuildContext context, int index) {
         final participant = users[index];
+        // Userr? currUserr;
+        // if (participant.id == context.read<AuthBloc>().state.user!.uid) {
+        //   log("curr user has been updated to match the par id");
+        //   currUserr = participant;
+        // }
         if (!participant.id.startsWith('del_')) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 5.0),
@@ -758,15 +782,25 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                     ),
                     title: Text(
                       participant.username,
-                      style: 2 == 2
+                      style: memberInfo[participant]['role'] ==
+                              RoleDefinitions.Owner
                           ? TextStyle(
-                              color: Colors.blue,
+                              color: Colors.amber,
                               fontWeight: FontWeight.w700,
                             )
-                          : null,
+                          : memberInfo[participant]['role'] ==
+                                  RoleDefinitions.Admin
+                              ? TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.w700,
+                                )
+                              : null,
                       overflow: TextOverflow.fade,
                     ),
-                    trailing: _moreOptinos(user: participant))),
+                    trailing: _moreOptinos(
+                        participant: participant,
+                        memberInfo: memberInfo,
+                        currUserr: currUserr))),
           );
         } else {
           return SizedBox.shrink();
@@ -776,34 +810,44 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   }
 
   //TODO THE ADMIN
-  Widget _moreOptinos({required Userr user}) {
+  Widget _moreOptinos(
+      {required Userr participant,
+      required Map<Userr, dynamic> memberInfo,
+      required Userr currUserr}) {
     //check to see if the curr id is a admin or not
     //final isAdmin = context.read<BuildchurchCubit>().isAdmin(commuinity: widget.commuinity);
-    final isAdmin = true;
     //widget.commuinity.memberInfo[context.read<AuthBloc>().state.user!.uid]['isAdmin']
+    String role = memberInfo[currUserr]['role'];
+    log("message");
+    log("The role at start is $role");
     return IconButton(
       icon: Icon(Icons.more_vert),
       onPressed: () async {
-        if (isAdmin) if (context.read<AuthBloc>().state.user!.uid == user.id)
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("You are the admin alredy...")));
-        else
-          return _adminsOptions(
-              commuinity: widget.commuinity, participatant: user);
-        else
-          return _nonAdminOptions();
+        if (role == RoleDefinitions.Admin) {
+          if (context.read<AuthBloc>().state.user!.uid == participant.id) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text("your role is $role")));
+          } else {
+            return _adminsOptions(
+                commuinity: widget.commuinity,
+                participatant: participant,
+                role: role);
+          }
+        } else
+          return _nonAdminOptions(role);
       },
     );
   }
 
   // TODO ADMIN
   Future<dynamic> _adminsOptions(
-      {required Church commuinity, required Userr participatant}) {
-    bool isParticipatantAdmin = true;
+      {required Church commuinity,
+      required Userr participatant,
+      required String role}) {
     return showDialog(
         context: context,
         builder: (context) {
-          if (!isParticipatantAdmin) {
+          if (role == RoleDefinitions.Admin) {
             return AlertDialog(
               content: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -846,12 +890,12 @@ class _CommuinityScreenState extends State<CommuinityScreen>
         });
   }
 
-  Future<dynamic> _nonAdminOptions() {
+  Future<dynamic> _nonAdminOptions(String role) {
     return showDialog(
         context: context,
         builder: (context) => AlertDialog(
                 content: Text(
-              "You not the admin",
+              "your role is $role so you can not access these options",
               style: Theme.of(context).textTheme.bodyText1,
             )));
   }
@@ -1143,10 +1187,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     context
         .read<CommuinityBloc>()
         .onLeaveCommuinity(commuinity: widget.commuinity);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-                "left! you may need to refresh home screen")));
-
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("left! you may need to refresh home screen")));
   }
 
   showLeaveCommuinity() => showModalBottomSheet(

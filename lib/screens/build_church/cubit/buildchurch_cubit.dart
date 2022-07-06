@@ -10,7 +10,7 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/extraTools.dart';
 import 'package:kingsfam/repositories/repositories.dart';
-import 'package:kingsfam/screens/build_church/roles_definition.dart';
+import 'package:kingsfam/roles/roles_definition.dart';
 
 part 'buildchurch_state.dart';
 
@@ -161,7 +161,13 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       for (int i = 0; i < state.memberIds.length; i++) {
         final user = await _userrRepository.getUserrWithId(userrId: state.memberIds[i]);
         mems[user]=Timestamp(0, 0); // may not work so maybe make a list then emit list o
-      
+      }
+
+      //============================================================
+      // populate the roles list (only features Admins atm)
+      Map<String, String> roles = {};
+      for (var id in state.adminIds) {
+        roles[id] = RoleDefinitions.Admin;
       }
 
 
@@ -194,7 +200,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
 
       
       //call my church repo and use the upload method to launch commuinity to firestore
-      await _churchRepository.newChurch(church: commuinity, recentSender: recentSender);
+      await _churchRepository.newChurch(church: commuinity, recentSender: recentSender, roles: roles);
       
       //-------------------------------------------------------
       print("The church is made my boi");
@@ -299,12 +305,12 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
         commuinityName = state.name;
 
       Church updatedCommuinity = commuinity.copyWith(name: commuinityName, imageUrl: imageUrl);
-      await _churchRepository.updateCommuinity(commuinity: updatedCommuinity);
+      await _churchRepository.updateCommuinity(commuinity: updatedCommuinity, roles: {});
       
     } catch (e) {
       print("error: $e");
     }
-    FirebaseFirestore.instance.collection(Paths.church).doc(commuinity.id).update(commuinity.copyWith(name: name).toDoc());
+    //FirebaseFirestore.instance.collection(Paths.church).doc(commuinity.id).update(commuinity.copyWith(name: name).toDoc());
   }
 
   Future < List<Userr> >grabCurrFollowing () async {

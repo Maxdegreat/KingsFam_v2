@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
+import 'package:kingsfam/roles/roles_definition.dart';
 
 class Church extends Equatable {
   //1 make the church class data
@@ -16,7 +17,7 @@ class Church extends Equatable {
   final String imageUrl;
   final String about;
   final List<String> searchPram;
-  final Map<Userr, Timestamp> members;
+  final Map<Userr, dynamic> members;
   final List<String> events;
   final int? size;
   final Timestamp recentMsgTime;
@@ -59,7 +60,7 @@ class Church extends Equatable {
     String? imageUrl,
     String? about,
     Timestamp? recentMsgTime,
-    Map<Userr, Timestamp>? members,
+    Map<Userr, dynamic>? members,
     List<String>? events,
     int? size,
   }) {
@@ -79,7 +80,7 @@ class Church extends Equatable {
   }
 
   //5 make the to doc
-  Map<String, dynamic> toDoc() {
+  Map<String, dynamic> toDoc({required Map<String, String> roles}) {
   
     List<String> ids = members.keys.map((u) => u.id).toList();
     
@@ -87,10 +88,53 @@ class Church extends Equatable {
     Map< String, dynamic > memRefs = {};
 
     for (String id in ids) {
-      memRefs[id] = {
+      if (roles.containsKey(id)) {
+        memRefs[id] = {
         'userReference': FirebaseFirestore.instance.collection(Paths.users).doc(id),
-        'timestamp': Timestamp.now()
+        'timestamp': Timestamp.now(),
+        'role' : roles[id] == '' || roles[id] == null ? RoleDefinitions.Member : roles[id],
       } ;
+      } else {
+        memRefs[id] = {
+        'userReference': FirebaseFirestore.instance.collection(Paths.users).doc(id),
+        'timestamp': Timestamp.now(),
+        'role' : RoleDefinitions.Member,
+      } ;
+      }
+    }
+
+    return {
+      'name': name,
+      'location': location,
+      'searchPram': searchPram,
+      'hashTags': hashTags,
+      'about': about,
+      'imageUrl': imageUrl,
+      'members' : memRefs,
+      'events': events,
+      'size' : size,
+      'recentMsgTime': Timestamp.now(),
+    };
+  }
+
+
+  Map<String, dynamic> toDocUpdate({required Map<String, String> roles}) {
+  
+    List<String> ids = members.keys.map((u) => u.id).toList();
+    
+    //DocumentReference<Map<String, dynamic>>
+    Map< String, dynamic > memRefs = {};
+
+    //! We only update the users who have a new role. otherwise the user would not have been updated.
+    //! if you want to remove a user or add a user this is done through a different method
+    for (String id in ids) {
+      if (roles.containsKey(id)) {
+        memRefs[id] = {
+        'userReference': FirebaseFirestore.instance.collection(Paths.users).doc(id),
+        'timestamp': Timestamp.now(),
+        'role' : roles[id] == '' || roles[id] == null ? RoleDefinitions.Member : roles[id],
+      } ;
+      } 
     }
 
     return {
@@ -118,7 +162,7 @@ class Church extends Equatable {
   //6 from doc
   static Future<Church> fromDoc(DocumentSnapshot doc) async {
     final data = doc.data() as Map<String, dynamic>;
-    Map< Userr, Timestamp > members = {};
+    Map< Userr, dynamic > members = {};
     final memRefs = Map<String, dynamic>.from(data['members']);//data['members'];
     
     // log("about to show you data in the mems ref");
@@ -134,7 +178,10 @@ class Church extends Equatable {
         var snap = await docRef.get();
         Userr user = Userr.fromDoc(snap);
         //end goal is to have <user, time>
-        members[user] = memRefs[idFromDoc]['timestamp'];
+        members[user] = {
+          'timestamp' : memRefs[idFromDoc]['timestamp'],
+          'role' : memRefs[idFromDoc]['role'],
+        };
       }
     }
 
