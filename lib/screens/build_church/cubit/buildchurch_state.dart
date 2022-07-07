@@ -15,7 +15,14 @@ class BuildchurchState extends Equatable {
   final String about;
   final String location;
   final List<String> memberIds;
-  final Set<String> adminIds; // this will work by adding the certin ids into this list. when making user map if the key (an id) is found in the adminIds then pass isAdmin True in the map. i think this is better because it writes less.
+  
+  final String creatorId;
+  final Set<String> adminIds;
+  final Set<String> elderIds;
+
+  final bool updatingRoleView;
+  final Userr? userWhosRoleIsBeingUpdated;
+
   final Map<Userr, Timestamp> members;
   final bool isSubmiting;
   final bool isMember;
@@ -35,7 +42,14 @@ class BuildchurchState extends Equatable {
     this.hashTags,
     required this.name,
     required this.about,
+
+    required this.creatorId,
     required this.adminIds,
+    required this.elderIds,
+
+    required this.updatingRoleView,
+    this.userWhosRoleIsBeingUpdated,
+
     required this.location,
     required this.memberIds,
     required this.members,
@@ -59,7 +73,14 @@ class BuildchurchState extends Equatable {
         initHashTag,
         hashTags,
         about,
+
+        creatorId,
         adminIds,
+        elderIds,
+
+        updatingRoleView,
+        userWhosRoleIsBeingUpdated,
+
         location,
         memberIds,
         members,
@@ -73,8 +94,7 @@ class BuildchurchState extends Equatable {
       ];
 
   //4 copy with
-  BuildchurchState copyWith(
-      {List<String>? caseSearchList,
+  BuildchurchState copyWith({List<String>? caseSearchList,
       List<Post?>? posts,
       bool? isSubmiting,
       String? initHashTag,
@@ -85,7 +105,14 @@ class BuildchurchState extends Equatable {
       String? location,
       List<String>? memberIds,
       Map<Userr, Timestamp>? members,
+
+      String? creatorId,
       Set<String>? adminIds,
+      Set<String>? elderIds,
+
+      bool? updatingRoleView, 
+      Userr? userWhosRoleIsBeingUpdated,
+
       bool? isAdmin,
       bool? isMember,
       BuildChurchStatus? status,
@@ -105,7 +132,14 @@ class BuildchurchState extends Equatable {
         initHashTag: initHashTag ?? this.initHashTag,
         hashTags: hashTags ?? this.hashTags,
         imageFile: imageFile ?? this.imageFile,
+
+        creatorId: creatorId ?? this.creatorId,
         adminIds: adminIds ?? this.adminIds,
+        elderIds: elderIds ?? this.elderIds,
+
+        updatingRoleView: updatingRoleView ?? this.updatingRoleView,
+        userWhosRoleIsBeingUpdated: userWhosRoleIsBeingUpdated ?? this.userWhosRoleIsBeingUpdated,
+
         name: name ?? this.name,
         about: about ?? this.about,
         location: location ?? this.location,
@@ -132,7 +166,15 @@ class BuildchurchState extends Equatable {
         hashTags: null,
         imageFile: null,
         name: '',
+
+        creatorId: '',
         adminIds: {},
+        elderIds: {},
+
+        updatingRoleView: false,
+        userWhosRoleIsBeingUpdated: null,
+
+
         about: '',
         location: '',
         memberIds: [],

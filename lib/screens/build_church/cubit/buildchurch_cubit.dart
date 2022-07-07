@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get_connect/http/src/interceptors/get_modifiers.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
@@ -101,20 +103,56 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
   void onLocationChanged(String location) {
     emit(state.copyWith(location: location, status: BuildChurchStatus.initial));
   }
+  // ===============  ENTERING ROLE MAKING  ============================
+  void onUpdatingRoleView(Userr? userWhosRoleIsBeingUpdated) {
+    if (state.updatingRoleView == true) {
+      emit(state.copyWith(updatingRoleView: false));
+      emit(state.copyWith(userWhosRoleIsBeingUpdated: null));
+    } else {
+      emit(state.copyWith(updatingRoleView: true));
+      emit(state.copyWith(userWhosRoleIsBeingUpdated: userWhosRoleIsBeingUpdated));
+    }
+  }
+
+  void onRemoveUserIdFromRoles(String userToBeRemovedId) {
+    if (state.adminIds.contains(userToBeRemovedId)) {
+      onAdminRemoved(userToBeRemovedId);
+    }
+
+    if (state.elderIds.contains(userToBeRemovedId)) {
+      onElderIdAdded(userToBeRemovedId);
+    }
+  }
+
+  // void function to update the creator id
+  void onCreatorIdAdded({required String creatorId}) => emit(state.copyWith(creatorId: creatorId));
 
   //void function to update the admin and on create the admin should init be the maker maybe do that outside cubit
-  void onAdminsAdded(Set<String> ids) => emit(state.copyWith(adminIds: ids));
+  //void onAdminsAdded(Set<String> ids) => emit(state.copyWith(adminIds: ids));
   
   void onAdminAdded(String id) {
-    var lst = state.adminIds;
-    lst.add(id);
-    emit(state.copyWith(adminIds: lst));
+    //var lst = state.adminIds;
+    //lst.add(id);
+    state.adminIds.add(id);
+    onElderIdRemoved(id);
+    emit(state.copyWith(adminIds: state.adminIds)); // used to be lst
   }
   
   void onAdminRemoved(String id) {
     var lst = state.adminIds;
     lst.remove(id);
     emit(state.copyWith(adminIds: lst));
+  }
+
+  void onElderIdAdded(String id) {
+    state.elderIds.add(id);
+    onAdminRemoved(id);
+    emit(state.copyWith(elderIds: state.elderIds));
+  }
+
+  void onElderIdRemoved(String id) {
+    state.elderIds.remove(id);
+    emit(state.copyWith(elderIds: state.elderIds));
   }
 
   //void function to add the users to the members list
@@ -164,10 +202,20 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       }
 
       //============================================================
-      // populate the roles list (only features Admins atm)
+      // populate the roles list roles will be passed when calling the create. it is used in the toDoc
+      // it is not a pram of the cm
       Map<String, String> roles = {};
-      for (var id in state.adminIds) {
-        roles[id] = RoleDefinitions.Admin;
+      Set<String> idsWithRoles = {};
+      idsWithRoles.addAll(state.adminIds);
+      idsWithRoles.add(state.creatorId);
+      for (var id in idsWithRoles) {
+        if (state.creatorId == id) {
+          roles[id] = RoleDefinitions.Owner;
+        } else if (state.elderIds.contains(id)) {
+          roles[id] = RoleDefinitions.Elder;
+        } else if (state.adminIds.contains(id)) {
+          roles[id] = RoleDefinitions.Admin;
+        }
       }
 
 
