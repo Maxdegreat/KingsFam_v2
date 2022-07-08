@@ -28,6 +28,7 @@ import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart'
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:rive/rive.dart';
+import 'package:flutter/src/painting/gradient.dart' as paint;
 
 class CommuinityScreenArgs {
   final Church commuinity;
@@ -139,9 +140,31 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                     height: MediaQuery.of(context).size.height / 2,
                     padding: EdgeInsets.symmetric(horizontal: 5.0),
                     alignment: Alignment.bottomCenter,
-                    decoration: BoxDecoration(
-                        // gradient: Gradient.linear(Alignment.bottomCenter, Alignment.topCenter, colors)
-                        ))
+                    decoration: const BoxDecoration(
+                      gradient: paint.LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: <Color>[
+                          Colors.black,
+                          Colors.black87,
+                          Colors.black54,
+                          Colors.black26,
+                          Colors.black12,
+                          Colors.transparent,
+                          Colors.transparent,
+                          Colors.black87,
+                          // Color(0xff1f005c),
+                          // Color(0xff5b0060),
+                          // Color(0xff870160),
+                          // Color(0xffac255e),
+                          // Color(0xffca485c),
+                          // Color(0xffe16b5c),
+                          // Color(0xfff39060),
+                          // Color(0xffffb56b),
+                        ], // Gradient from https://learnui.design/tools/gradient-generator.html
+                        tileMode: TileMode.mirror,
+                      ),
+                    ))
               ],
             ),
           ),
@@ -735,7 +758,10 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                   widget.commuinity.members,
                                   currUserr)
                               : SizedBox.shrink(),
-                          _editView(commuinity: widget.commuinity)
+                          _editView(
+                              commuinity: widget.commuinity,
+                              buildchurchCubit:
+                                  context.read<BuildchurchCubit>())
                         ]),
                       )
                     ],
@@ -900,38 +926,37 @@ class _CommuinityScreenState extends State<CommuinityScreen>
             )));
   }
 
-  Widget _editView({required Church commuinity}) {
-    return BlocProvider<BuildchurchCubit>(
-        create: (context) => BuildchurchCubit(
-            callRepository: context.read<CallRepository>(),
-            churchRepository: context.read<ChurchRepository>(),
-            storageRepository: context.read<StorageRepository>(),
-            authBloc: context.read<AuthBloc>(),
-            userrRepository: context.read<UserrRepository>()),
-        child: Column(children: [
-          ListTile(
-              title: Text("Update Commuinity name",
-                  style: Theme.of(context).textTheme.bodyText1),
-              onTap: () async => _updateCommuinityName(
-                  commuinity: commuinity, context: context)),
-          ListTile(
-            title: Text("Update Commuinity ImageUrl",
-                style: Theme.of(context).textTheme.bodyText1),
-            trailing: ProfileImage(radius: 25, pfpUrl: commuinity.imageUrl),
-            onTap: () => _updateCommuinityImage(
+  Widget _editView(
+      {required Church commuinity,
+      required BuildchurchCubit buildchurchCubit}) {
+    return Column(children: [
+      ListTile(
+          title: Text("Update Commuinity name",
+              style: Theme.of(context).textTheme.bodyText1),
+          onTap: () async => _updateCommuinityName(
               commuinity: commuinity,
-            ),
-          ),
-          ListTile(
-            title: Text("Update The About",
-                style: Theme.of(context).textTheme.bodyText1),
-            onTap: () async => _updateTheAbout(commuinity: commuinity),
-          ),
-          ElevatedButton(
-              child:
-                  Text('Update!', style: Theme.of(context).textTheme.bodyText1),
-              onPressed: () => _updateEditView(context, commuinity))
-        ]));
+              buildchurchCubit: context.read<BuildchurchCubit>())),
+      ListTile(
+        title: Text("Update Commuinity ImageUrl",
+            overflow: TextOverflow.fade,
+            style: Theme.of(context).textTheme.bodyText1),
+        trailing: ProfileImage(radius: 25, pfpUrl: commuinity.imageUrl),
+        onTap: () => _updateCommuinityImage(
+            commuinity: commuinity, buildchurchCubit: buildchurchCubit),
+      ),
+      ListTile(
+        title: Text("Update The About",
+            style: Theme.of(context).textTheme.bodyText1, overflow: TextOverflow.fade,),
+        onTap: () async => _updateTheAbout(commuinity: commuinity, buildchurchCubit: context.read<BuildchurchCubit>()),
+      ),
+    ListTile(
+      title: Text("Manage & Update Roles",
+      style: Theme.of(context).textTheme.bodyText1,
+      overflow: TextOverflow.fade,
+      ),
+      onTap: () {},
+    )
+ ]);
   }
 
   void _updateEditView(BuildContext context, Church commuinity) {
@@ -944,101 +969,89 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   }
 
   Future<dynamic> _updateCommuinityName(
-          {required Church commuinity, required BuildContext context}) async =>
+          {required Church commuinity,
+          required BuildchurchCubit buildchurchCubit}) async =>
       showModalBottomSheet(
-          context: context,
-          builder: (context) => BlocProvider<BuildchurchCubit>(
-                create: (context) => BuildchurchCubit(
-                    callRepository: context.read<CallRepository>(),
-                    churchRepository: context.read<ChurchRepository>(),
-                    storageRepository: context.read<StorageRepository>(),
-                    authBloc: context.read<AuthBloc>(),
-                    userrRepository: context.read<UserrRepository>()),
+        context: context,
+        builder: (context) => Container(
+          width: double.infinity,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(height: 8.0),
+              Center(
+                  child: Text(
+                "New Name For Community",
+                style: TextStyle(color: Colors.white),
+              )),
+              SizedBox(height: 8.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: TextField(
+                    decoration: InputDecoration(hintText: "Enter a name"),
+                    onChanged: (value) => _txtController.text = value),
+              ),
+              SizedBox(height: 8.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Container(
-                  width: double.infinity,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(height: 8.0),
-                      Center(
-                          child: Text(
-                        "New Name For Commuinity",
-                        style: TextStyle(color: Colors.white),
-                      )),
-                      SizedBox(height: 8.0),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: TextField(
-                            decoration:
-                                InputDecoration(hintText: "Enter a name"),
-                            onChanged: (value) => _txtController.text = value),
-                      ),
-                      SizedBox(height: 8.0),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Container(
-                            width: (double.infinity * .70),
-                            child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    primary: Colors.white),
-                                onPressed: () {
-                                  var state =
-                                      context.read<BuildchurchCubit>().state;
-                                  if (_txtController.value.text.length != 0) {
-                                    context
-                                        .read<BuildchurchCubit>()
-                                        .onNameChanged(_txtController.text);
-                                    context
-                                        .read<BuildchurchCubit>()
-                                        .lightUpdate(commuinity.id);
-                                    Navigator.of(context).pop();
-                                    this.setState(() {});
-                                    _txtController.clear();
-                                  } else {
-                                    print(state.name);
-                                    //  showDialog(
-                                    //      context: context,
-                                    //      builder: (BuildContext context) =>
-                                    //          AlertDialog(
-                                    //            //title
-                                    //            title: const Text("mmm, err my boi"),
-                                    //            //content
-                                    //            content: const Text("be sure you add a name for the commuinity you are updating"),
-                                    //            //actions
-                                    //            actions: [
-                                    //              TextButton(
-                                    //                child: Text("Ok",style: TextStyle(color: Colors.green[400]),),
-                                    //                onPressed: () =>Navigator.of(context).pop(),
-                                    //              )
-                                    //            ],
-                                    //          ));
-                                  }
-                                },
-                                child: Text(
-                                  "Done, Upadate The Name!",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ))),
-                      )
-                    ],
-                  ),
-                ),
-              ));
+                    width: (double.infinity * .70),
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(primary: Colors.white),
+                        onPressed: () {
+                          var state = buildchurchCubit.state;
+                          if (_txtController.value.text.length != 0) {
+                            buildchurchCubit.onNameChanged(_txtController.text);
+                            buildchurchCubit.lightUpdate(commuinity.id!,
+                                1); // ----------- The method that calls thr update
+                            Navigator.of(context).pop();
+                            this.setState(() {});
+                            _txtController.clear();
+                          } else {
+                            print(state.name);
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                      //title
+                                      title: const Text("mmm, err my boi"),
+                                      //content
+                                      content: const Text(
+                                          "be sure you add a name for the commuinity you are updating"),
+                                      //actions
+                                      actions: [
+                                        TextButton(
+                                          child: Text(
+                                            "Ok",
+                                            style: TextStyle(
+                                                color: Colors.green[400]),
+                                          ),
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
+                                        )
+                                      ],
+                                    ));
+                          }
+                        },
+                        child: Text(
+                          "Done, Upadate The Name!",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        ))),
+              )
+            ],
+          ),
+        ),
+      );
 
-  Future<dynamic> _updateCommuinityImage({required Church commuinity}) async =>
+  Future<dynamic> _updateCommuinityImage(
+          {required Church commuinity,
+          required BuildchurchCubit buildchurchCubit}) async =>
       showModalBottomSheet(
           context: context,
-          builder: (context) => BlocProvider<BuildchurchCubit>(
-              create: (context) => BuildchurchCubit(
-                  callRepository: context.read<CallRepository>(),
-                  churchRepository: context.read<ChurchRepository>(),
-                  storageRepository: context.read<StorageRepository>(),
-                  authBloc: context.read<AuthBloc>(),
-                  userrRepository: context.read<UserrRepository>()),
-              child: StatefulBuilder(
+          builder: (context) => StatefulBuilder(
                 builder: (BuildContext context, setState) {
                   return Container(
                     child: Column(
@@ -1050,55 +1063,138 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                 await ImageHelper.pickImageFromGallery(
                                     context: context,
                                     cropStyle: CropStyle.rectangle,
-                                    title: 'New Commuinity Avatar');
+                                    title: 'New Commuinity wrap');
                             if (pickedFile != null)
-                              context
-                                  .read<BuildchurchCubit>()
+                              buildchurchCubit
                                   .onImageChanged(File(pickedFile.path));
+                            buildchurchCubit.lightUpdate(commuinity.id!, 2);
+                            snackBar(
+                                snackMessage:
+                                    '${commuinity.name}\'s avatar is updated. leave and join back to see changes',
+                                context: context);
+
                             setState(() {});
                           },
                           child: Container(
-                            height: MediaQuery.of(context).size.height / 3.5,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                                image: context
-                                            .read<BuildchurchCubit>()
-                                            .state
-                                            .imageFile ==
-                                        null
-                                    ? DecorationImage(
-                                        image: CachedNetworkImageProvider(
-                                            commuinity.imageUrl),
-                                        fit: BoxFit.fitWidth)
-                                    : DecorationImage(
-                                        image: FileImage(context
-                                            .read<BuildchurchCubit>()
-                                            .state
-                                            .imageFile!),
-                                        fit: BoxFit.fitWidth)),
-                          ),
+                              //height: MediaQuery.of(context).size.height / 3.5,
+                              width: double.infinity,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    child: Text(
+                                        "Hey 👋🏾, Once you pick a Wrap or image ${commuinity.name} will be updated",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1,
+                                        overflow: TextOverflow.fade),
+                                  ),
+                                  Container(
+                                    height: MediaQuery.of(context).size.height /
+                                        3.5,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                        image: buildchurchCubit
+                                                    .state.imageFile ==
+                                                null
+                                            ? DecorationImage(
+                                                image:
+                                                    CachedNetworkImageProvider(
+                                                        commuinity.imageUrl),
+                                                fit: BoxFit.fitWidth)
+                                            : DecorationImage(
+                                                image: FileImage(
+                                                    buildchurchCubit
+                                                        .state.imageFile!),
+                                                fit: BoxFit.fitWidth)),
+                                  )
+                                ],
+                              )),
                         )
                       ],
                     ),
                   );
                 },
-              )));
-
-  Future<dynamic> _updateTheAbout({required Church commuinity}) async =>
-      showBottomSheet(
-          context: context,
-          builder: (context) => BlocProvider<BuildchurchCubit>(
-                create: (context) => BuildchurchCubit(
-                    callRepository: context.read<CallRepository>(),
-                    churchRepository: context.read<ChurchRepository>(),
-                    storageRepository: context.read<StorageRepository>(),
-                    authBloc: context.read<AuthBloc>(),
-                    userrRepository: context.read<UserrRepository>()),
-                child: Container(
-                  child:
-                      Text("come back and add an expandable text form field"),
-                ),
               ));
+
+  Future<dynamic> _updateTheAbout({required Church commuinity, required BuildchurchCubit buildchurchCubit}) async =>
+      showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            double textHeight = 35;
+            return Container(
+              width: double.infinity,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 8.0),
+                  Center(
+                      child: Text(
+                    "Let others know what ${commuinity.name} is about!",
+                    style: TextStyle(color: Colors.white),
+                  )),
+                  SizedBox(height: 8.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: TextField(
+                        decoration: InputDecoration(hintText: "Tell ${commuinity.name}'s story "),
+                        onChanged: (value) => _txtController.text = value),
+                  ),
+                  SizedBox(height: 8.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Container(
+                        width: (double.infinity * .70),
+                        child: ElevatedButton(
+                            style:
+                                ElevatedButton.styleFrom(primary: Colors.white),
+                            onPressed: () {
+                              var state = buildchurchCubit.state;
+                              if (_txtController.value.text.length != 0) {
+                                buildchurchCubit.onAboutChanged(_txtController.text);
+                                buildchurchCubit.lightUpdate(commuinity.id!, 3); // ----------- The method that calls thr update
+                                Navigator.of(context).pop();
+                                this.setState(() {});
+                                _txtController.clear();
+                              } else {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        AlertDialog(
+                                          //title
+                                          title: const Text("mmm, err my boi"),
+                                          //content
+                                          content: const Text(
+                                              "be sure you add a an about for the community you are updating"),
+                                          //actions
+                                          actions: [
+                                            TextButton(
+                                              child: Text(
+                                                "Ok",
+                                                style: TextStyle(
+                                                    color: Colors.green[400]),
+                                              ),
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
+                                            )
+                                          ],
+                                        ));
+                              }
+                            },
+                            child: Text(
+                              "Done, Upadate The About!",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
+                            ))),
+                  )
+                ],
+              ),
+            );
+          });
 
   Future<dynamic> _inviteBottomSheet(List<Userr> following) async =>
       showModalBottomSheet(

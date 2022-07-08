@@ -106,31 +106,38 @@ class _CreatePostScreenState extends State<CreatePostScreen>
   }
 
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
-      Navigator.of(context).pop();
-    } 
-  }
-
-
   // @override
   // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   // App state changed before we got the chance to initialize.
   //   if (controller == null || !controller!.value.isInitialized) {
-  //     return;
-  //   }
-
-  //   if (state == AppLifecycleState.inactive) {
-  //     log("we have closed the life cycle of the app");
+  //      return;
+  //    }
+  //   if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
   //     if (controller != null)
-  //       controller!.dispose();
+  //        controller!.dispose(); 
+  //     //Navigator.of(context).pop();
   //   } else if (state == AppLifecycleState.resumed) {
-  //     log("we have resumed the life cycle of the app");
-      
   //     loadCameras();
   //   }
   // }
+
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // App state changed before we got the chance to initialize.
+    if (controller == null || !controller!.value.isInitialized) {
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive) {
+      log("we have closed the life cycle of the app");
+      if (controller != null)
+        controller!.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      log("we have resumed the life cycle of the app");
+      
+      loadCameras();
+    }
+  }
 
   void showInSnackBar(String message) {
     // ignore: deprecated_member_use
@@ -302,13 +309,14 @@ class _CreatePostScreenState extends State<CreatePostScreen>
                       cropStyle: CropStyle.rectangle,
                       title: 'Create Post');
                   if (pickedFile != null)
+                  log("The picked file is not equal to null");
                     context
                         .read<CreatePostCubit>()
                         .postImageOnChanged(pickedFile);
                   setState(() {
                     contextPrePost = context;
                   });
-                },
+                } ,
                 child: Container(
                   height: 25,
                   width: 75,

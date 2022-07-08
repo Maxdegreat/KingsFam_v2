@@ -181,6 +181,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
     print("We are in the submit function");
     emit(state.copyWith(status: BuildChurchStatus.loading));
     try {
+      
       final imageUrl = await _storageRepository.uploadChurchImage(url: '', image: state.imageFile!);
       //handels casing for search prams
       List<String> caseList = AdvancedQuerry().advancedSearch(query: state.name);
@@ -259,13 +260,19 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
     
   }
 
-  Future <void> lightUpdate(commuinityId) async {
-
+  Future <void> lightUpdate(String commuinityId, int updateType ) async {
+    // 1 = update name, 2 = update image, 3 = update about, 4 = update roles 
     emit(state.copyWith(status: BuildChurchStatus.loading));
+    if (updateType == 1){
+      FirebaseFirestore.instance.collection(Paths.church).doc(commuinityId).update({'name': state.name});
+      emit(state.copyWith(status: BuildChurchStatus.success));
+    } else if (updateType == 2) {
+      final imageUrl = await _storageRepository.uploadChurchImage(url: '', image: state.imageFile!);
+      FirebaseFirestore.instance.collection(Paths.church).doc(commuinityId).update({'imageUrl' : imageUrl});
+    } else if (updateType == 3) {
+      FirebaseFirestore.instance.collection(Paths.church).doc(commuinityId).update({'about' : state.about});
+    }
 
-    FirebaseFirestore.instance.collection(Paths.church).doc(commuinityId).update({'name': state.name});
-
-    emit(state.copyWith(status: BuildChurchStatus.success));
   }
 
 
