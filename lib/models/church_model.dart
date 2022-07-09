@@ -92,13 +92,13 @@ class Church extends Equatable {
         memRefs[id] = {
         'userReference': FirebaseFirestore.instance.collection(Paths.users).doc(id),
         'timestamp': Timestamp.now(),
-        'role' : roles[id] == '' || roles[id] == null ? RoleDefinitions.Member : roles[id],
+        'role' : roles[id] == '' || roles[id] == null ? Roles.Member : roles[id],
       } ;
       } else {
         memRefs[id] = {
         'userReference': FirebaseFirestore.instance.collection(Paths.users).doc(id),
         'timestamp': Timestamp.now(),
-        'role' : RoleDefinitions.Member,
+        'role' : Roles.Member,
       } ;
       }
     }
@@ -132,7 +132,7 @@ class Church extends Equatable {
         memRefs[id] = {
         'userReference': FirebaseFirestore.instance.collection(Paths.users).doc(id),
         'timestamp': Timestamp.now(),
-        'role' : roles[id] == '' || roles[id] == null ? RoleDefinitions.Member : roles[id],
+        'role' : roles[id] == '' || roles[id] == null ? Roles.Member : roles[id],
       } ;
       } 
     }

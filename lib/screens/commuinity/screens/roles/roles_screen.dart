@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/roles/roles_definition.dart';
+import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
 class RoleScreenArgs {
   RoleScreenArgs({required Church this.community});
   final Church community;
@@ -27,8 +28,7 @@ class RolesScreen extends StatelessWidget {
           style: Theme.of(context).textTheme.bodyText1,
         ),
       ),
-      body: Expanded(
-        flex: 1,
+      body: Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,37 +43,37 @@ class RolesScreen extends StatelessWidget {
 
         Text("Hey Fam! Just a quick heads up on how roles work. You can assign different members of ${community.name} differet roles to help you manage the community!"),
         SizedBox(height: 7),
-        Text("Be click on a role to give it certian permissions. Be carful anf only give roles to prople you think are good fits"),
+        Text("Click on a role to give it certian permissions. Be carful and only give roles to people you think are good fits"),
 
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 5.0),
           child: ListTile(
-            leading: Text(RoleDefinitions.Owner, style: Theme.of(context).textTheme.bodyText1,),
-            onTap: () {},
+            leading: Text(Roles.Owner, style: Theme.of(context).textTheme.bodyText1,),
+            onTap: () => Navigator.of(context).pushNamed(CommunityUpdateRoleScreen.routeName, arguments: CommunityUpdateRoleArgsScreen(role: Roles.Owner, cm: this.community)),
           ),
         ),
 
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 5.0),
           child: ListTile(
-            leading: Text(RoleDefinitions.Admin, style: Theme.of(context).textTheme.bodyText1,),
-            onTap: () {},
+            leading: Text(Roles.Admin, style: Theme.of(context).textTheme.bodyText1,),
+            onTap: () => Navigator.of(context).pushNamed(CommunityUpdateRoleScreen.routeName, arguments: CommunityUpdateRoleArgsScreen(role: Roles.Admin, cm: this.community)),
           ),
         ),
 
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 5.0),
           child: ListTile(
-            leading: Text(RoleDefinitions.Elder, style: Theme.of(context).textTheme.bodyText1,),
-            onTap: () {},
+            leading: Text(Roles.Elder, style: Theme.of(context).textTheme.bodyText1,),
+            onTap: () => Navigator.of(context).pushNamed(CommunityUpdateRoleScreen.routeName, arguments: CommunityUpdateRoleArgsScreen(role: Roles.Elder, cm: this.community)),
           ),
         ),
 
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 5.0),
           child: ListTile(
-            leading: Text(RoleDefinitions.Member, style: Theme.of(context).textTheme.bodyText1,),
-            onTap: () {},
+            leading: Text(Roles.Member, style: Theme.of(context).textTheme.bodyText1,),
+            onTap: () => Navigator.of(context).pushNamed(CommunityUpdateRoleScreen.routeName, arguments: CommunityUpdateRoleArgsScreen(role: Roles.Member, cm: this.community)),
           ),
         )
       ];

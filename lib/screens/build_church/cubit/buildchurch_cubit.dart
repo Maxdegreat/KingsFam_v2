@@ -211,11 +211,11 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       idsWithRoles.add(state.creatorId);
       for (var id in idsWithRoles) {
         if (state.creatorId == id) {
-          roles[id] = RoleDefinitions.Owner;
+          roles[id] = Roles.Owner;
         } else if (state.elderIds.contains(id)) {
-          roles[id] = RoleDefinitions.Elder;
+          roles[id] = Roles.Elder;
         } else if (state.adminIds.contains(id)) {
-          roles[id] = RoleDefinitions.Admin;
+          roles[id] = Roles.Admin;
         }
       }
 

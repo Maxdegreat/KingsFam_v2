@@ -24,6 +24,7 @@ import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 // import 'package:kingsfam/screens/commuinity/screens/feed/commuinity_feed.dart';
 // import 'package:kingsfam/screens/commuinity/screens/sounds/sounds.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
+import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 // import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/widgets.dart';
@@ -809,13 +810,13 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                     title: Text(
                       participant.username,
                       style: memberInfo[participant]['role'] ==
-                              RoleDefinitions.Owner
+                              Roles.Owner
                           ? TextStyle(
                               color: Colors.amber,
                               fontWeight: FontWeight.w700,
                             )
                           : memberInfo[participant]['role'] ==
-                                  RoleDefinitions.Admin
+                                  Roles.Admin
                               ? TextStyle(
                                   color: Colors.blue,
                                   fontWeight: FontWeight.w700,
@@ -849,7 +850,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     return IconButton(
       icon: Icon(Icons.more_vert),
       onPressed: () async {
-        if (role == RoleDefinitions.Admin) {
+        if (role == Roles.Admin) {
           if (context.read<AuthBloc>().state.user!.uid == participant.id) {
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text("your role is $role")));
@@ -873,7 +874,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     return showDialog(
         context: context,
         builder: (context) {
-          if (role == RoleDefinitions.Admin) {
+          if (role == Roles.Admin) {
             return AlertDialog(
               content: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -954,7 +955,10 @@ class _CommuinityScreenState extends State<CommuinityScreen>
       style: Theme.of(context).textTheme.bodyText1,
       overflow: TextOverflow.fade,
       ),
-      onTap: () {},
+      onTap: () {
+        Church ch = Church.empty;
+        Navigator.of(context).pushNamed(RolesScreen.routeName, arguments: RoleScreenArgs(community: ch.copyWith(id: commuinity.id, members: commuinity.members, name: commuinity.name,) ));
+      } 
     )
  ]);
   }

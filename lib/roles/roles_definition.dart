@@ -1,4 +1,4 @@
-class RoleDefinitions {
+class Roles {
   // owns the cm
   static const String Owner = 'Owner';
   // has equal rights to admin but can not kick admin or affect admin

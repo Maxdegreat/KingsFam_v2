@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
+import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
+import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
 import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
 import 'package:kingsfam/screens/screens.dart';
 
@@ -120,6 +122,12 @@ class CustomRoute {
       
       case UrlViewScreen.routeName:
         return UrlViewScreen.route(args: settings.arguments as UrlViewArgs);
+
+      case RolesScreen.routeName:
+        return RolesScreen.route(args: settings.arguments as RoleScreenArgs);
+
+      case CommunityUpdateRoleScreen.routeName:
+        return CommunityUpdateRoleScreen.route(args: settings.arguments as CommunityUpdateRoleArgsScreen);
 
       default:
         return _errorRoute();
