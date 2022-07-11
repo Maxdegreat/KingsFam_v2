@@ -12,7 +12,7 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/extraTools.dart';
 import 'package:kingsfam/repositories/repositories.dart';
-import 'package:kingsfam/roles/roles_definition.dart';
+import 'package:kingsfam/roles/role_types.dart';
 
 part 'buildchurch_state.dart';
 
@@ -328,20 +328,14 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
     return ids.contains(_authBloc.state.user!.uid);
   }
 
-  void makeAdmin({required Userr user, required Church commuinity}) async  {
-    //TODO just make admin set and add the user id to the admin set.
-    // Map<String, dynamic> usermap = {
-    //   'isAdmin' : true,
-    //   'username': user.username,
-    //   'pfpImageUrl': user.profileImageUrl,
-    //   'colorPref' : user.colorPref,
-    //   'email': user.email,
-    //   'token': user.token,
-    // };
-    // //memberInfo[userrId] = userMap;  //prob best to actually check that the id exist in the map...
-    // commuinity.memberInfo[user.id] = usermap;
-    // final Church updatedCommuinity = commuinity.copyWith(memberInfo: state.memberInfo[_authBloc.state.user!.uid]);
-    // _churchRepository.updateCommuinity(commuinity: updatedCommuinity);
+  void makeAdmin({required Userr user, required Church commuinity, required String role}) async  {
+    // commuinity.members[FirebaseFirestore.instance.collection(Paths.users).doc(user.id)]['role'] = Roles.Admin;
+    var cm = await  FirebaseFirestore.instance.collection(Paths.church).doc(commuinity.id).get();
+    var memRefs =  Church.fromDocMemRefs(cm);
+    var memRefsMap = memRefs['memRefs'];
+    memRefsMap[user.id]['role'] = role;
+    
+    _churchRepository.updateCommuinityMember(memInfo: memRefsMap, cmId: commuinity.id!);
   }
 
  

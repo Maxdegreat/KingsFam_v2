@@ -5,6 +5,8 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/base_church_repository.dart';
+import 'package:kingsfam/roles/role_types.dart';
+import 'package:kingsfam/screens/commuinity/actions.dart';
 
 class   ChurchRepository extends BaseChurchRepository {
 
@@ -75,14 +77,15 @@ class   ChurchRepository extends BaseChurchRepository {
   Future<void> newChurch({required Church church, required Userr recentSender, required Map<String, String> roles}) async {
 
     try {
-        fb.add(church.toDoc(roles: roles)).then((value) async {
+        fb.add(church.toDoc(roles: roles, )).then((value) async {
       final doc = await value.get(); 
       final kingsCord = KingsCord(
         tag: doc.id,
         cordName: "Welcome To ${church.name}!",
         recentMessage: "whats good Gods People!",
-        recentSender: recentSender.username,
-      );
+        recentSender: recentSender.username, );
+      
+
       //send off the repo
     fb.doc(doc.id).collection(Paths.kingsCord).add(kingsCord.toDoc());
     });
@@ -222,6 +225,8 @@ class   ChurchRepository extends BaseChurchRepository {
   }
 
   Future <void> updateCommuinity({required Church commuinity, required Map<String, String> roles}) async => FirebaseFirestore.instance.collection(Paths.church).doc(commuinity.id).update(commuinity.toDocUpdate(roles: roles));
+
+  Future <void> updateCommuinityMember({required Map memInfo, required String cmId}) async => FirebaseFirestore.instance.collection(Paths.church).doc(cmId).update({'members' : memInfo});
 
   Future<void> leaveCommuinity({required Church commuinity, required currId}) async {
     

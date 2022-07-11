@@ -57,7 +57,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
       }
       
-      yield state.copyWith(userExploreList: updatedUsers, status: SearchStatus.initial,);
+      yield state.copyWith(userExploreList: updatedUsers, status: SearchStatus.initial);
 
     } catch (e) {
     }

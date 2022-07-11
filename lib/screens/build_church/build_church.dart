@@ -187,93 +187,137 @@ class _BuildChurchState extends State<BuildChurch> {
                               children: [
                                 GestureDetector(
                                   child: Container(
-                                    height: state.updatingRoleView ?
-                                    MediaQuery.of(context).size.height /
-                                        3.2 :
-                                     MediaQuery.of(context).size.height /
-                                        3.5,
+                                    height: state.updatingRoleView
+                                        ? MediaQuery.of(context).size.height /
+                                            3.2
+                                        : MediaQuery.of(context).size.height /
+                                            3.5,
                                     decoration: BoxDecoration(
                                         color: Colors.grey[900],
                                         borderRadius:
                                             BorderRadius.circular(10.0)),
-                                    child: state.updatingRoleView ?
-                                    // show updatingRoleView when state.updatingRoleView is true
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              IconButton(
-                                                onPressed: () {
-                                                  context.read<BuildchurchCubit>().onUpdatingRoleView(null);
-                                                }, 
-                                                icon: Icon(Icons.arrow_back_sharp)
-                                              ), 
-                                              Text(state.userWhosRoleIsBeingUpdated!.username, style: Theme.of(context).textTheme.bodyText1,),
-                                            
-                                            ],
-                                          ), 
-                                            SizedBox(height: 12,),
-                                            _updateToAdmin(context, state),
-                                            SizedBox(height: 12,),
-                                            _updateToElder(context, state),
-                                            SizedBox(height: 12,),
-                                            _updateToMember(context, state),
-                                            SizedBox(height: 7),
-                                            Text("Hey Fam! Please note these roles will not have any special permissions untill you activate them. you can do this in the settings once the community is made :)")
-                                        ],
-                                      ),
-                                    ):
-                                    // show listview when the state.updatingRoleView is false
-                                     ListView.builder(
-                                      itemCount: widget.selectedMembers.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        Userr user =
-                                            widget.selectedMembers[index];
-                                        return Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 8.0),
-                                          child: ListTile(
-                                              leading: ProfileImage(
-                                                  pfpUrl: user.profileImageUrl,
-                                                  radius: 35),
-                                              title: Text(
-                                                user.username,
-                                                style: state.adminIds
-                                                        .contains(user.id)
-                                                    ? TextStyle(
-                                                        color: Colors.blue,
-                                                        fontWeight:
-                                                            FontWeight.w700)
-                                                    : state.elderIds.contains(user.id) ? TextStyle(
-                                                        color: Colors.green,
-                                                        fontWeight:
-                                                            FontWeight.w700)  : null,
-                                              ),
-                                              trailing: GestureDetector(
-                                                onTap: () {
-                                                  context.read<BuildchurchCubit>().onUpdatingRoleView(user);
-                                                },
-                                                child: Column(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                    child: state.updatingRoleView
+                                        ?
+                                        // show updatingRoleView when state.updatingRoleView is true
+                                        Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
                                                   children: [
-                                                    Text('Update Role'),
-
-                                                     state.adminIds.contains(user.id) ? 
-                                                     Text("Admin") : state.elderIds.contains(user.id) ?
-                                                     Text('Elder') : 
-                                                     Text('Member')
+                                                    IconButton(
+                                                        onPressed: () {
+                                                          context
+                                                              .read<
+                                                                  BuildchurchCubit>()
+                                                              .onUpdatingRoleView(
+                                                                  null);
+                                                        },
+                                                        icon: Icon(Icons
+                                                            .arrow_back_sharp)),
+                                                    Text(
+                                                      state
+                                                          .userWhosRoleIsBeingUpdated!
+                                                          .username,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyText1,
+                                                    ),
                                                   ],
                                                 ),
-                                              )
-                                              ),
-                                        );
-                                      },
-                                    ),
+                                                SizedBox(
+                                                  height: 12,
+                                                ),
+                                                _updateToAdmin(context, state),
+                                                SizedBox(
+                                                  height: 12,
+                                                ),
+                                                _updateToElder(context, state),
+                                                SizedBox(
+                                                  height: 12,
+                                                ),
+                                                _updateToMember(context, state),
+                                                SizedBox(height: 7),
+                                                Text(
+                                                    "Hey Fam! Please note these roles will not have any special permissions untill you activate them. you can do this in the settings once the community is made :)")
+                                              ],
+                                            ),
+                                          )
+                                        :
+                                        // show listview when the state.updatingRoleView is false
+                                        ListView.builder(
+                                            itemCount:
+                                                widget.selectedMembers.length,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              Userr user =
+                                                  widget.selectedMembers[index];
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 8.0),
+                                                child: ListTile(
+                                                    leading: ProfileImage(
+                                                        pfpUrl: user
+                                                            .profileImageUrl,
+                                                        radius: 35),
+                                                    title: Text(
+                                                      user.username,
+                                                      style: state.adminIds
+                                                              .contains(user.id)
+                                                          ? TextStyle(
+                                                              color:
+                                                                  Colors.blue,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700)
+                                                          : state.elderIds
+                                                                  .contains(
+                                                                      user.id)
+                                                              ? TextStyle(
+                                                                  color: Colors
+                                                                      .green,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700)
+                                                              : null,
+                                                    ),
+                                                    trailing: GestureDetector(
+                                                      onTap: () {
+                                                        context
+                                                            .read<
+                                                                BuildchurchCubit>()
+                                                            .onUpdatingRoleView(
+                                                                user);
+                                                      },
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Text('Update Role'),
+                                                          state.adminIds
+                                                                  .contains(
+                                                                      user.id)
+                                                              ? Text("Admin")
+                                                              : state.elderIds
+                                                                      .contains(
+                                                                          user
+                                                                              .id)
+                                                                  ? Text(
+                                                                      'Elder')
+                                                                  : Text(
+                                                                      'Member')
+                                                        ],
+                                                      ),
+                                                    )),
+                                              );
+                                            },
+                                          ),
                                   ),
                                 ),
                               ],
@@ -289,7 +333,6 @@ class _BuildChurchState extends State<BuildChurch> {
                                           context: context,
                                           submitStatus: state.isSubmiting,
                                           isImage: state.imageFile == null);
-                                      
                                     },
                                     child: Text(
                                       'CREATE',
@@ -313,50 +356,50 @@ class _BuildChurchState extends State<BuildChurch> {
     );
   }
 
-  GestureDetector _updateToMember(BuildContext context, BuildchurchState state) {
+  GestureDetector _updateToMember(
+      BuildContext context, BuildchurchState state) {
     return GestureDetector(
-                                          onTap: () {
-                                            context.read<BuildchurchCubit>().onRemoveUserIdFromRoles(state.userWhosRoleIsBeingUpdated!.id);
-                                            context.read<BuildchurchCubit>().onUpdatingRoleView(null);
-                                          },
-                                          child: RichText(text: TextSpan(
-                                                text: "Update Role To ",
-                                                children: [
-                                                  TextSpan(text: 'Member', style: Theme.of(context).textTheme.bodyText1)
-
-                                                ]
-                                              )),
-                                        );
+      onTap: () {
+        context
+            .read<BuildchurchCubit>()
+            .onRemoveUserIdFromRoles(state.userWhosRoleIsBeingUpdated!.id);
+        context.read<BuildchurchCubit>().onUpdatingRoleView(null);
+      },
+      child: RichText(
+          text: TextSpan(text: "Update Role To ", children: [
+        TextSpan(text: 'Member', style: Theme.of(context).textTheme.bodyText1)
+      ])),
+    );
   }
 
   GestureDetector _updateToElder(BuildContext context, BuildchurchState state) {
     return GestureDetector(
-                                          onTap: () {
-                                            context.read<BuildchurchCubit>().onElderIdAdded(state.userWhosRoleIsBeingUpdated!.id);
-                                            context.read<BuildchurchCubit>().onUpdatingRoleView(null);
-                                          },
-                                          child: RichText(text: TextSpan(
-                                                text: "Update Role To ",
-                                                children: [
-                                                  TextSpan(text: 'Elder', style: Theme.of(context).textTheme.bodyText1)
-                                                ]
-                                              )),
-                                        );
+      onTap: () {
+        context
+            .read<BuildchurchCubit>()
+            .onElderIdAdded(state.userWhosRoleIsBeingUpdated!.id);
+        context.read<BuildchurchCubit>().onUpdatingRoleView(null);
+      },
+      child: RichText(
+          text: TextSpan(text: "Update Role To ", children: [
+        TextSpan(text: 'Elder', style: Theme.of(context).textTheme.bodyText1)
+      ])),
+    );
   }
 
   GestureDetector _updateToAdmin(BuildContext context, BuildchurchState state) {
     return GestureDetector(
-                                          onTap: () {
-                                            context.read<BuildchurchCubit>().onAdminAdded(state.userWhosRoleIsBeingUpdated!.id);
-                                            context.read<BuildchurchCubit>().onUpdatingRoleView(null);
-                                          },
-                                          child: RichText(text: TextSpan(
-                                                text: "Update Role To ",
-                                                children: [
-                                                  TextSpan(text: 'Admin', style: Theme.of(context).textTheme.bodyText1)
-                                                ]
-                                              )),
-                                        );
+      onTap: () {
+        context
+            .read<BuildchurchCubit>()
+            .onAdminAdded(state.userWhosRoleIsBeingUpdated!.id);
+        context.read<BuildchurchCubit>().onUpdatingRoleView(null);
+      },
+      child: RichText(
+          text: TextSpan(text: "Update Role To ", children: [
+        TextSpan(text: 'Admin', style: Theme.of(context).textTheme.bodyText1)
+      ])),
+    );
   }
 
   void _onChurchImageChanged(BuildContext context) async {
@@ -375,10 +418,8 @@ class _BuildChurchState extends State<BuildChurch> {
     if (!isImage) {
       // if image not null
       if (submitStatus == false && _formKey.currentState!.validate()) {
-        context
-                                          .read<BuildchurchCubit>()
-                                          .onSubmiting();
-                                      setState(() {});
+        context.read<BuildchurchCubit>().onSubmiting();
+        setState(() {});
 
         _extractMemberId(context, widget.selectedMembers);
         //_makeAdminIds(context);

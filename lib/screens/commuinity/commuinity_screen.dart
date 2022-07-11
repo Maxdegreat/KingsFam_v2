@@ -17,7 +17,7 @@ import 'package:kingsfam/helpers/helpers.dart';
 // import 'package:kingsfam/models/church_kingscord_model.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
-import 'package:kingsfam/roles/roles_definition.dart';
+import 'package:kingsfam/roles/role_types.dart';
 import 'package:kingsfam/screens/build_church/cubit/buildchurch_cubit.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 // import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/calls_home.dart';
@@ -850,7 +850,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     return IconButton(
       icon: Icon(Icons.more_vert),
       onPressed: () async {
-        if (role == Roles.Admin) {
+        if (role == Roles.Admin || role == Roles.Owner) {
           if (context.read<AuthBloc>().state.user!.uid == participant.id) {
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text("your role is $role")));
@@ -874,7 +874,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     return showDialog(
         context: context,
         builder: (context) {
-          if (role == Roles.Admin) {
+          if (role == Roles.Admin || role == Roles.Owner) {
             return AlertDialog(
               content: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -882,7 +882,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                   TextButton(
                       onPressed: () {
                         context.read<BuildchurchCubit>().makeAdmin(
-                            user: participatant, commuinity: commuinity);
+                            user: participatant, commuinity: commuinity, role: Roles.Admin);
                         Navigator.of(context).pop();
                         setState(() {});
                       },

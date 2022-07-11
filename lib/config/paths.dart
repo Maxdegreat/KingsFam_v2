@@ -23,6 +23,7 @@ class Paths {
   static const String activeInCall = 'activeInCall';
   static const String event = 'evnt';
   static const String mention = 'mention';
+  static const String permissions = 'permissions';
 
   //sub collections
   static const String postsComments = 'postComments';

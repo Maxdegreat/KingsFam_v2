@@ -5,6 +5,7 @@ class CommuinityState extends Equatable {
   final bool isMember;
   final List<Post?> postDisplay;
   final List<KingsCord?> kingCords;
+  final Map<String, List<String>> permissions;
   final List<CallModel> calls;
   final CommuintyStatus status;
   final Failure failure;
@@ -17,14 +18,15 @@ class CommuinityState extends Equatable {
     required this.calls,
     required this.status,
     required this.failure,
+    required this.permissions,
     required this.mentionedMap,
 });
   
   @override
-  List<Object> get props => [mentionedMap, calls, kingCords, postDisplay, isMember, status, failure];
+  List<Object> get props => [mentionedMap, permissions, calls, kingCords, postDisplay, isMember, status, failure];
   
   factory CommuinityState.inital() {
-    return CommuinityState(mentionedMap: {}, isMember: false, postDisplay: [], kingCords: [], calls: [], status: CommuintyStatus.inital, failure: Failure());
+    return CommuinityState(mentionedMap: {}, permissions: {}, isMember: false, postDisplay: [], kingCords: [], calls: [], status: CommuintyStatus.inital, failure: Failure());
   }
   CommuinityState copyWith({
     bool? isMember,
@@ -34,8 +36,10 @@ class CommuinityState extends Equatable {
     CommuintyStatus? status,
     Failure? failure,
     Map<String, bool>? mentionedMap,
+    Map<String, List<String>>? permissions,
   }) {
     return CommuinityState(
+      permissions: permissions ?? this.permissions,
       isMember: isMember ?? this.isMember,
       postDisplay: postDisplay ?? this.postDisplay,
       kingCords: kingCords ?? this.kingCords,

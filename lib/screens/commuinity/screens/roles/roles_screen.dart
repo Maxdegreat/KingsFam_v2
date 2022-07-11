@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/roles/roles_definition.dart';
+import 'package:kingsfam/roles/role_types.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
 class RoleScreenArgs {
   RoleScreenArgs({required Church this.community});
@@ -41,9 +41,9 @@ class RolesScreen extends StatelessWidget {
 
       return [
 
-        Text("Hey Fam! Just a quick heads up on how roles work. You can assign different members of ${community.name} differet roles to help you manage the community!"),
+        Text("Hey Fam! Just a quick heads up the ability to update roles is currently not available. Atm you can view the power of each role"),
         SizedBox(height: 7),
-        Text("Click on a role to give it certian permissions. Be carful and only give roles to people you think are good fits"),
+        Text("To promote or demote a member go to the participants view and click the 3 dots. you must be a admin or owner"),
 
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 5.0),
