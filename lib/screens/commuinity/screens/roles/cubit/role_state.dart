@@ -8,30 +8,30 @@ class RoleState extends Equatable {
   final Church community;
   const RoleState({
     required this.isChecked,
+    required this.permissionsMap,
     required this.isSaved,
     required this.role,
-    required this.permissionsMap,
     required this.community
   });
   factory RoleState.inital() {
     return RoleState(community: Church.empty, isChecked: {}, isSaved: true, role: '', permissionsMap: {});
   }
   @override
-  List<Object?> get props => [isChecked, community, isSaved, role, permissionsMap];
+  List<Object> get props => [isChecked, permissionsMap,  isSaved,  role, community, ];
 
   RoleState copyWith({
     Map<String, bool>? isChecked,
+    Map<String, List<String>>? permissionsMap,
     bool? isSaved,
     String? role,
     Church? community,
-    Map<String, List<String>>? permissionsMap,
   }) {
     return RoleState(
+      isChecked: isChecked ?? this.isChecked,
+      permissionsMap: permissionsMap ?? this.permissionsMap,
+      isSaved: isSaved ?? this.isSaved,
       role: role ?? this.role,
       community: community ?? this.community,
-      isChecked: isChecked ?? this.isChecked,
-      isSaved: isSaved ?? this.isSaved,
-      permissionsMap: permissionsMap ?? this.permissionsMap,
     );
   }
 }

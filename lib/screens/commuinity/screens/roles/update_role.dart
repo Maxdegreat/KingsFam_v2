@@ -35,10 +35,13 @@ class CommunityUpdateRoleScreen extends StatefulWidget {
 class _CommunityUpdateRoleStateScreen extends State<CommunityUpdateRoleScreen> {
   @override
   void initState() {
-    context.read<RoleCubit>().onSetCommunity(community: widget.cm);
-    context.read<RoleCubit>().getPermissions(doc: widget.cm.id!);
-    context.read<RoleCubit>().onPopulateIsChecked(widget.role);
+    _initRoleCubit();
     super.initState();
+  }
+
+  _initRoleCubit() async {
+    await context.read<RoleCubit>().getPermissions(doc: widget.cm.id!);
+    context.read<RoleCubit>().onSetCommunity(community: widget.cm);
   }
 
   @override
@@ -71,19 +74,21 @@ class _CommunityUpdateRoleStateScreen extends State<CommunityUpdateRoleScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: 
-                
                 cmActions.Actions.communityActions.map((a) {
-                  bool isChecked =
-                      context.read<RoleCubit>().state.isChecked[a]!;
+                  context.read<RoleCubit>().onPopulateIsChecked(widget.role);
+                  bool isChecked = widget.role == Roles.Owner ? true :  state.isChecked.length > 0 ?
+                      context.read<RoleCubit>().state.isChecked[a]! : false;
+                    
                   return ListTile(
                     title: Text(
                       a,
                       style: Theme.of(context).textTheme.bodyText1,
                     ),
                     trailing: isChecked ? Icon(Icons.check_box_outlined) : Icon(Icons.check_box_outline_blank_sharp),
-                    onTap: () => context.read<RoleCubit>().onChanged(widget.role, a),
+                    onTap: () {}//=> context.read<RoleCubit>().onChanged(widget.role, a),
                   );
-                }).toList()),
+                }).toList()
+                ),
           ),
         );
       },

@@ -20,17 +20,16 @@ class RoleCubit extends Cubit<RoleState> {
   }
   
   // go look for permissions and grab what is needed
-  void getPermissions({required String doc}) async {
+  Future<void> getPermissions({required String doc}) async {
     var documentSnap = await FirebaseFirestore.instance.collection(Paths.church).doc(doc).get();
     if (documentSnap.exists) {
       var permissions = Church.fromDocPermissions(documentSnap);
-      log(permissions['permissions'].toString());
-      if (permissions.containsKey(Roles.Admin)) {
-        log("The form permissions works as expectre");
+      Map<String, List<String>> pMap = {};
+      for (var key in permissions.keys) {
+        pMap[key] = List<String>.from(permissions[key]);
       }
-      permissions[Roles.Member] = ['_'];
-      final data = documentSnap.data() as Map<String, dynamic>;
-      emit( state.copyWith(permissionsMap: permissions['permissions']));
+      log("The permissions is $pMap"); 
+      emit(state.copyWith(permissionsMap: pMap));
   } else {
     log("THE DOC DOES NOT EXITST");
 
@@ -40,7 +39,10 @@ class RoleCubit extends Cubit<RoleState> {
 
   // populat the isChecked
   void onPopulateIsChecked(String role) {
-    for (String a in Actions.communityActions) {
+    log(state.permissionsMap.toString());
+    log("that was the pemissions map that was updated with dummy data");
+    if (state.permissionsMap[role] != null) {
+      for (String a in Actions.communityActions) {
       // check if state.permissions contains this role. rtn a bool
       if (state.permissionsMap[role]!.contains(a)) {
         state.isChecked[a] = true;
@@ -48,7 +50,10 @@ class RoleCubit extends Cubit<RoleState> {
         state.isChecked[a] = false;
       }
     }
-  }
+    } else {
+      log("!!!!!!!!!!!!!! The state.permissionsMap does not contain $role");
+    }
+   }
   // update state based on what permissions are needed
 
   // emit states

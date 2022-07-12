@@ -109,7 +109,7 @@ class ScreensForPageView {
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 10.0),
                                           // see child of list view here below.
-                                          child: FancyListTile(
+                                          child: FancyListTile( // ------------------------- update hee
                                               isMentioned: state
                                                   .mentionedMap[commuinity.id],
                                               location:

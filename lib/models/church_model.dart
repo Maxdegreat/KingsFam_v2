@@ -225,9 +225,9 @@ class Church extends Equatable {
 
 static Map<String, dynamic> fromDocPermissions(DocumentSnapshot doc)  {
   final data = doc.data() as Map<String, dynamic>;
-  return {
-    'permissions' : Map<String, dynamic>.from(data['permissions'])
-  };
+  return 
+    Map<String, dynamic>.from(data['permissions']);
+  
 }
 
   //7 church. empty

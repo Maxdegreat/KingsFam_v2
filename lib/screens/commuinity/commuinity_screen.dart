@@ -821,7 +821,11 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                   color: Colors.blue,
                                   fontWeight: FontWeight.w700,
                                 )
-                              : null,
+                              : memberInfo[participant]['role'] ==
+                                Roles.Elder ? TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.w700,
+                                ) : null,
                       overflow: TextOverflow.fade,
                     ),
                     trailing: _moreOptinos(
