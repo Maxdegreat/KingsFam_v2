@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/roles/role_types.dart';
 import 'package:kingsfam/screens/commuinity/actions.dart';
 
@@ -13,19 +14,23 @@ part 'role_state.dart';
 class RoleCubit extends Cubit<RoleState> {
   RoleCubit() : super(RoleState.inital());
 
+  // This does not need a whole cm just the id, and permissions, 
+  void onSetCommunity({required Church community}) {
+    emit(state.copyWith(community: community));
+  }
+  
   // go look for permissions and grab what is needed
   void getPermissions({required String doc}) async {
-    var documentSnap = await FirebaseFirestore.instance.collection(Paths.church).doc(doc).collection(Paths.permissions).doc(doc).get();
+    var documentSnap = await FirebaseFirestore.instance.collection(Paths.church).doc(doc).get();
     if (documentSnap.exists) {
-      log("THE DOC ECISTSSSSSSSSSSSSSSSS");
+      var permissions = Church.fromDocPermissions(documentSnap);
+      log(permissions['permissions'].toString());
+      if (permissions.containsKey(Roles.Admin)) {
+        log("The form permissions works as expectre");
+      }
+      permissions[Roles.Member] = ['_'];
       final data = documentSnap.data() as Map<String, dynamic>;
-      final map =  {
-        Roles.Owner : ['*'],
-        Roles.Admin : List<String>.from(data[Roles.Admin]),
-        Roles.Elder : List<String>.from(data[Roles.Elder]),
-        // Roles.Member : Set<int>.from(data[Roles.Member]),
-      };
-      emit( state.copyWith(permissionsMap: map));
+      emit( state.copyWith(permissionsMap: permissions['permissions']));
   } else {
     log("THE DOC DOES NOT EXITST");
 

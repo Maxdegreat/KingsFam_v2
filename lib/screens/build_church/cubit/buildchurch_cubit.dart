@@ -328,14 +328,14 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
     return ids.contains(_authBloc.state.user!.uid);
   }
 
-  void makeAdmin({required Userr user, required Church commuinity, required String role}) async  {
+  void changeRole({required Userr user, required String commuinityId, required String role}) async  {
     // commuinity.members[FirebaseFirestore.instance.collection(Paths.users).doc(user.id)]['role'] = Roles.Admin;
-    var cm = await  FirebaseFirestore.instance.collection(Paths.church).doc(commuinity.id).get();
-    var memRefs =  Church.fromDocMemRefs(cm);
+    var cmSnap = await  FirebaseFirestore.instance.collection(Paths.church).doc(commuinityId).get();
+    var memRefs =  Church.fromDocMemRefs(cmSnap);
     var memRefsMap = memRefs['memRefs'];
     memRefsMap[user.id]['role'] = role;
     
-    _churchRepository.updateCommuinityMember(memInfo: memRefsMap, cmId: commuinity.id!);
+    _churchRepository.updateCommuinityMember(memInfo: memRefsMap, cmId: commuinityId);
   }
 
  
@@ -394,6 +394,6 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
 
   Future<void> onLeaveCommuinity( {required Church commuinity}) async {
     final userrId = _authBloc.state.user!.uid;
-    _churchRepository.leaveCommuinity(commuinity: commuinity, currId: userrId);
+    _churchRepository.leaveCommuinity(commuinity: commuinity, leavingUserId: userrId);
   }
 }

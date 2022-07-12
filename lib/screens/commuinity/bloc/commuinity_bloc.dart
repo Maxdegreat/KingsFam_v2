@@ -159,7 +159,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   Future<void> onLeaveCommuinity({required Church commuinity}) async {
     final userrId = _authBloc.state.user!.uid;
-    _churchRepository.leaveCommuinity(commuinity: commuinity, currId: userrId);
+    _churchRepository.leaveCommuinity(commuinity: commuinity, leavingUserId: userrId);
     emit(state.copyWith(isMember: false));
   }
 

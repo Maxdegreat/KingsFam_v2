@@ -218,12 +218,17 @@ class Church extends Equatable {
 
   static Map<String, dynamic> fromDocMemRefs(DocumentSnapshot doc)  {
     final data = doc.data() as Map<String, dynamic>;
-   
-  
     return {
       'memRefs' : Map<String, dynamic>.from(data['members'])
     };
   }
+
+static Map<String, dynamic> fromDocPermissions(DocumentSnapshot doc)  {
+  final data = doc.data() as Map<String, dynamic>;
+  return {
+    'permissions' : Map<String, dynamic>.from(data['permissions'])
+  };
+}
 
   //7 church. empty
   static Church empty = Church(

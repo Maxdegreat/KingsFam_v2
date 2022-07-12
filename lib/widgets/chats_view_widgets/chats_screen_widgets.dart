@@ -25,7 +25,7 @@ Future<dynamic> leaveCommuinity(
                     //to get out of a commuinity you will have to update the commuinity orrr delete certian criteria
                     await context.read<ChurchRepository>().leaveCommuinity(
                         commuinity: commuinity,
-                        currId: context.read<AuthBloc>().state.user!.uid);
+                        leavingUserId: context.read<AuthBloc>().state.user!.uid);
                     Navigator.of(context).pop();
                   },
                   child: Text(

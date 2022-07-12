@@ -228,18 +228,22 @@ class   ChurchRepository extends BaseChurchRepository {
 
   Future <void> updateCommuinityMember({required Map memInfo, required String cmId}) async => FirebaseFirestore.instance.collection(Paths.church).doc(cmId).update({'members' : memInfo});
 
-  Future<void> leaveCommuinity({required Church commuinity, required currId}) async {
+  Future<void> leaveCommuinity({required Church commuinity, required String leavingUserId}) async {
     
     final docRef = fb.doc(commuinity.id);
     final docSnap = await docRef.get();
-    var cmIds = await Church.getCommunityMemberIds(docSnap);
-    if (!cmIds.contains(currId)) return;
+    var cmIds = Church.getCommunityMemberIds(docSnap);
+    if (!cmIds.contains(leavingUserId)) return;
 
-
+    var cmSnap = await  FirebaseFirestore.instance.collection(Paths.church).doc(commuinity.id).get();
+    var memRefs =  Church.fromDocMemRefs(cmSnap);
+    var memRefsMap = memRefs['memRefs'] as Map<String, dynamic>;
+    memRefsMap.remove(leavingUserId);
       
       // to update the size
       docRef.update({'size' : commuinity.members.length - 1});
-      docRef.update({'members': FieldValue.arrayRemove([FirebaseFirestore.instance.collection(Paths.users).doc(currId)])});
+      docRef.update({'members': memRefsMap});
+
     }
     
   void inviteUserToCommuinity({required Userr fromUser, required String toUserId, required Church commuinity}) {
@@ -267,7 +271,15 @@ class   ChurchRepository extends BaseChurchRepository {
     
     // update the commuinity size
     docRef.update({'size': commuinity.members.length + 1});
-    docRef.update({'members': FieldValue.arrayUnion([FirebaseFirestore.instance.collection(Paths.users).doc(user.id)])});
+    var cmSnap = await  FirebaseFirestore.instance.collection(Paths.church).doc(commuinity.id).get();
+    var memRefs =  Church.fromDocMemRefs(cmSnap);
+    var memRefsMap = memRefs['memRefs'] as Map<String, dynamic>;
+    memRefsMap[user.id] = {
+      'role' : Roles.Member,
+      'timestamp' : Timestamp(0,0),
+      'userReference' : FirebaseFirestore.instance.collection(Paths.users).doc(user.id)
+    };
+    docRef.update({'members': memRefsMap});
     return;
   }
   Future<Stream<bool>> streamIsCmMember({required Church cm, required String authorId}) async {

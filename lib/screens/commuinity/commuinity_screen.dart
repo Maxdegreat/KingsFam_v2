@@ -876,36 +876,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
         builder: (context) {
           if (role == Roles.Admin || role == Roles.Owner) {
             return AlertDialog(
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextButton(
-                      onPressed: () {
-                        context.read<BuildchurchCubit>().makeAdmin(
-                            user: participatant, commuinity: commuinity, role: Roles.Admin);
-                        Navigator.of(context).pop();
-                        setState(() {});
-                      },
-                      child: FittedBox(
-                          child: Text(
-                        "Promote ${participatant.username} to an admin",
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ))),
-                  TextButton(
-                      onPressed: () {
-                        context.read<ChurchRepository>().leaveCommuinity(
-                            commuinity: commuinity, currId: participatant.id);
-                        Navigator.of(context).pop();
-                        setState(() {});
-                      },
-                      child: FittedBox(
-                          child: Text(
-                              "Remove ${participatant.username} from ${widget.commuinity.name}",
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodyText1))),
-                ],
-              ),
+              content: changRolePopUp(context, participatant, commuinity),
             );
           } else {
             return AlertDialog(
@@ -915,6 +886,65 @@ class _CommuinityScreenState extends State<CommuinityScreen>
             ));
           }
         });
+  }
+
+  Column changRolePopUp(BuildContext context, Userr participatant, Church commuinity) {
+    return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      context.read<BuildchurchCubit>().changeRole(
+                          user: participatant, commuinityId: commuinity.id!, role: Roles.Admin);
+                      Navigator.of(context).pop();
+                      setState(() {});
+                    },
+                    child: FittedBox(
+                        child: Text(
+                      "Promote ${participatant.username} to an admin",
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ))),
+                TextButton(
+                    onPressed: () {
+                      context.read<BuildchurchCubit>().changeRole(
+                          user: participatant, commuinityId: commuinity.id!, role: Roles.Elder);
+                      Navigator.of(context).pop();
+                      setState(() {});
+                    },
+                    child: FittedBox(
+                        child: Text(
+                      "Make ${participatant.username} an Elder",
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ))),
+                    TextButton(
+                    onPressed: () {
+                      context.read<BuildchurchCubit>().changeRole(
+                          user: participatant, commuinityId: commuinity.id!, role: Roles.Member);
+                      Navigator.of(context).pop();
+                      setState(() {});
+                    },
+                    child: FittedBox(
+                        child: Text(
+                      "Make ${participatant.username} a Member",
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ))),
+                TextButton(
+                    onPressed: () {
+                      context.read<ChurchRepository>().leaveCommuinity(
+                          commuinity: commuinity, leavingUserId: participatant.id);
+                      Navigator.of(context).pop();
+                      setState(() {});
+                    },
+                    child: FittedBox(
+                        child: Text(
+                            "Remove ${participatant.username} from ${widget.commuinity.name}",
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodyText1))),
+              ],
+            );
   }
 
   Future<dynamic> _nonAdminOptions(String role) {

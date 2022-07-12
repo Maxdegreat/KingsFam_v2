@@ -35,7 +35,7 @@ class CommunityUpdateRoleScreen extends StatefulWidget {
 class _CommunityUpdateRoleStateScreen extends State<CommunityUpdateRoleScreen> {
   @override
   void initState() {
-    log("we are in the init of th update role");
+    context.read<RoleCubit>().onSetCommunity(community: widget.cm);
     context.read<RoleCubit>().getPermissions(doc: widget.cm.id!);
     context.read<RoleCubit>().onPopulateIsChecked(widget.role);
     super.initState();
