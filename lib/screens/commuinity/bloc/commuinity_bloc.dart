@@ -70,6 +70,9 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
     emit(state.copyWith(status: CommuintyStatus.loading));
     try {
+      // update the usr timestamp for the cm when they open the cm
+      Church cm = Church.empty.copyWith(id: event.commuinity.id, members: event.commuinity.members, );
+      _churchRepository.updateUserTimestampOnOpenCm(cm, _authBloc.state.user!.uid);
       final List<KingsCord> allCords = [];
       final Map<String, bool> mentionedMap = {};
       _streamSubscriptionKingsCord?.cancel();

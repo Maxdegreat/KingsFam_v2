@@ -44,8 +44,7 @@ class KingsCordScreen extends StatefulWidget {
                   storageRepository: context.read<StorageRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   kingsCordRepository: context.read<KingsCordRepository>(),
-                  churchRepository: context.read<
-                      ChurchRepository>() // may need to report to main reposityory collection
+                  churchRepository: context.read<ChurchRepository>() // may need to report to main reposityory collection
                   ),
               child: KingsCordScreen(
                 commuinity: args.commuinity,

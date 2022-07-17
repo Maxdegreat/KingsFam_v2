@@ -19,6 +19,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   final PostsRepository _postsRepository;
   final LikedPostCubit _likedPostCubit;
   final ChurchRepository _churchRepository;
+  final UserrRepository _userrRepository;
 
   StreamSubscription<List<Future<Chat?>>>? _chatsStreamSubscription;
   StreamSubscription<List<Future<Church?>>>? _churchStreamSubscription;
@@ -30,7 +31,9 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
     required LikedPostCubit likedPostCubit,
     required PostsRepository postsRepository,
     required ChurchRepository churchRepository,
+    required UserrRepository userrRepository,
   })  : _chatRepository = chatRepository,
+        _userrRepository = userrRepository,
         _authBloc = authBloc,
         _likedPostCubit = likedPostCubit,
         _postsRepository = postsRepository,
@@ -60,6 +63,8 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
+      // geting the currUserr for later use
+      final Userr currUserr = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
       final Map<String, bool> mentionedMap = {};
       final List<Church> allChs = [];
       _churchStreamSubscription?.cancel();
@@ -81,7 +86,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
         emit(state.copyWith(chs: allChs));
         emit(state.copyWith(mentionedMap: mentionedMap));
       });
-      yield state.copyWith(status: ChatStatus.sccuess);
+      yield state.copyWith(status: ChatStatus.sccuess, currUserr: currUserr);
     } catch (e) {}
   }
 

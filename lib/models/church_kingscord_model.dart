@@ -7,7 +7,8 @@ class KingsCord extends Equatable {
   final String? id;
   final String tag;
   final String cordName;
-  final String recentSender;
+  final Timestamp recentTimestamp;
+  final List<String> recentSender;
   final String recentMessage;
   final List<Userr>? members; // call this when opening the screen, get info from parent commuinity
   // final Map<String, dynamic> memberInfo;
@@ -18,21 +19,22 @@ class KingsCord extends Equatable {
     this.id,
     required this.tag,
     required this.cordName,
-    // required this.memberInfo,
+    required this.recentTimestamp,
     required this.recentMessage,
     required this.recentSender,
     this.members,
   });
   //gen the props
   @override
-  List<Object?> get props => [id, tag, cordName, recentMessage, members];
+  List<Object?> get props => [id, recentTimestamp, tag, cordName, recentMessage, members];
 
   //gen the copy with
   KingsCord copyWith(
       {String? id,
       String? tag,
       String? cordName,
-      String? recentSender,
+      List<String>? recentSender,
+      Timestamp? recentTimestamp,
       String? recentMessage,
       List<Userr>? members,
       // Map<String, dynamic>? memberInfo
@@ -42,6 +44,7 @@ class KingsCord extends Equatable {
       tag: tag ?? this.tag,
       cordName: cordName ?? this.cordName,
       recentSender: recentSender ?? this.recentSender,
+      recentTimestamp: recentTimestamp ?? this.recentTimestamp,
       recentMessage: recentMessage ?? this.recentMessage,
       members: members ?? this.members,
       // memberInfo: memberInfo ?? this.memberInfo,
@@ -55,6 +58,7 @@ class KingsCord extends Equatable {
       'cordName' :  cordName,
       'recentSender': recentSender,
       'recentMessage': recentMessage,
+      'recentTimestamp' : recentTimestamp
       // members, get members from parent commuinity, this is if a user sends msg store only then that way 
       // on leave it does not cause a null err on their msg
       // 'members': so null for now, I will add a func to do this.
@@ -69,7 +73,8 @@ class KingsCord extends Equatable {
         tag: data['tag'],
         cordName: data['cordName'] ?? 'MainRoom',
         recentMessage: data['recentMessage'],
-        recentSender: data['recentSender'],
+        recentSender: List<String>.from(data['recentSender']), 
+        recentTimestamp: data['recentTimestamp'],
       );
   }
 
@@ -81,7 +86,8 @@ class KingsCord extends Equatable {
         tag: data['tag'],
         cordName: data['cordName'] ?? 'MainRoom',
         recentMessage: data['recentMessage'],
-        recentSender: data['recentSender'], 
+        recentSender: List<String>.from(data['recentSender']), 
+        recentTimestamp: data['recentTimestamp']
       );
   }
 

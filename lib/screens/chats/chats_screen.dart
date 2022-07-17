@@ -71,8 +71,8 @@ class _ChatsScreenState extends State<ChatsScreen>
   void _handleMessage(RemoteMessage message) {
     if (message.data['type'] == 'kc_type') {
       log('The message is $message');
-        var kc = KingsCord(tag: message.data['tag'], cordName: message.data['cordName'], recentMessage: message.data['recentMessage'], recentSender: message.data['recentSender'], members: message.data['members'], id: message.data['id']);
-        Navigator.pushNamed(context, KingsCordScreen.routeName, arguments: KingsCordArgs(commuinity: Church(id: message.data['communityId'], searchPram: [], name: message.data['communityName'], location: '...', imageUrl: '...', members: message.data['members'], events: [], about: '...', recentMsgTime: Timestamp(0,0)), kingsCord: kc));
+        // var kc = KingsCord(tag: message.data['tag'], cordName: message.data['cordName'], recentMessage: message.data['recentMessage'], recentSender: message.data['recentSender'], members: message.data['members'], id: message.data['id']);
+        // Navigator.pushNamed(context, KingsCordScreen.routeName, arguments: KingsCordArgs(commuinity: Church(id: message.data['communityId'], searchPram: [], name: message.data['communityName'], location: '...', imageUrl: '...', members: message.data['members'], events: [], about: '...', recentMsgTime: Timestamp(0,0)), kingsCord: kc));
       } else {
         log("we were not able to track the remote message to ur wanted screeen");
       }

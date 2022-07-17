@@ -25,6 +25,7 @@ import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 // import 'package:kingsfam/screens/commuinity/screens/sounds/sounds.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
+import 'package:kingsfam/extensions/date_time_extension.dart';
 // import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/widgets.dart';
@@ -282,15 +283,14 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                               .delete();
                         }
                       },
-                      onLongPress: () => _delKcDialog(
-                          cord: cord, commuinity: widget.commuinity),
+                      onLongPress: () => _delKcDialog(cord: cord, commuinity: widget.commuinity),
                       child: Padding(
                         padding: EdgeInsets.only(
                             top: 7,
                             bottom: 7,
                             left: MediaQuery.of(context).size.width / 7),
                         child: Container(
-                          height: 35,
+                          height: 55,
                           width: double.infinity,
                           decoration: BoxDecoration(
                               color: Colors.grey[900],
@@ -298,17 +298,33 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                   topLeft: Radius.circular(5),
                                   bottomLeft: Radius.circular(5))),
                           child: Center(
-                              child: Text(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 7),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
                             cord.cordName,
                             overflow: TextOverflow.fade,
                             style: TextStyle(
-                                color: state.mentionedMap[cord.id] == true
-                                    ? Colors.amber
-                                    : Colors.white,
-                                fontWeight: state.mentionedMap[cord.id] == true
-                                    ? FontWeight.w900
-                                    : FontWeight.w700),
-                          )),
+                                      color: state.mentionedMap[cord.id] == true
+                                          ? Colors.amber
+                                          : Colors.white,
+                                      fontWeight: state.mentionedMap[cord.id] == true
+                                          ? FontWeight.w900
+                                          : FontWeight.w700),
+                          ),
+                          Row(
+                            children: [
+                                Text(cord.recentSender[1], style: TextStyle(color: Colors.white, fontSize: 17), overflow: TextOverflow.fade, ),
+                                SizedBox(width: 7,),
+                                Text(cord.recentTimestamp.timeAgo(), style: TextStyle(color: Colors.grey[300], fontSize: 20, fontWeight: FontWeight.bold), overflow: TextOverflow.fade,),
+                            ],
+                          )
+                                  ],
+                                ),
+                              )),
                         ),
                       ));
                 } else {

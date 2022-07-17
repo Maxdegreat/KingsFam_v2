@@ -7,6 +7,7 @@ enum FeedStatus_chats {inital, loading, success, paginating, error}
 class ChatscreenState extends Equatable {
   //1 make class data
   final List<Chat?> chat;
+  final Userr currUserr;
   final List<Church?> chs;
   final Map<String, dynamic> mentionedMap;
   final bool inAChat;
@@ -24,6 +25,7 @@ class ChatscreenState extends Equatable {
   //2 make the constructor
   const ChatscreenState({
     required this.chat,
+    required this.currUserr,
     required this.chs,
     required this.inAChat,
     required this.isToggle,
@@ -44,6 +46,7 @@ class ChatscreenState extends Equatable {
         inAChat: false,
         isToggle: true,
         mentionedMap: {},
+        currUserr: Userr.empty,
         status: ChatStatus.initial,
         failure: Failure(),
         posts: [], 
@@ -55,13 +58,14 @@ class ChatscreenState extends Equatable {
 
   //3 make the props
   @override
-  List<Object?> get props => [posts, likedPostIds, mentionedMap, fstatus, isToggle, chat, chs, inAChat, status, failure];
+  List<Object?> get props => [posts, currUserr, likedPostIds, mentionedMap, fstatus, isToggle, chat, chs, inAChat, status, failure];
 
   //4 gen the copy with
   ChatscreenState copyWith({
     List<Chat?>? chat,
     bool? inAChat,
     bool? isToggle,
+    Userr? currUserr,
     List<Church?>? chs,
     ChatStatus? status,
     List<Post?>? posts,
@@ -73,6 +77,7 @@ class ChatscreenState extends Equatable {
   }) {
     return ChatscreenState(
       posts: posts ?? this.posts,
+      currUserr: currUserr ?? this.currUserr,
       chs: chs ?? this.chs,
       fstatus: fstatus ?? this.fstatus,
       likedPostIds: likedPostIds ?? this.likedPostIds,

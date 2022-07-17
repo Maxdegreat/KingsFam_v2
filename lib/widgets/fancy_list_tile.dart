@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class FancyListTile extends StatelessWidget {
   final String username;
+  final bool? newNotification;
   final String imageUrl;
   final GestureTapCallback? onTap;
   final bool isBtn;
@@ -14,6 +15,7 @@ class FancyListTile extends StatelessWidget {
   const FancyListTile(
       {Key? key,
       required this.username,
+      this.newNotification = false,
       required this.imageUrl,
       required this.onTap,
       required this.isBtn,
@@ -48,7 +50,7 @@ class FancyListTile extends StatelessWidget {
             children: [
               Text('$username.',
                   overflow: TextOverflow.fade,
-                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.white)),
+                  style: newNotification == null  || newNotification == false ? TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.white) :  TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.amber[200])),
               location != null || location == "" ? Text('$location.', overflow: TextOverflow.fade,
                   style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w600, color: Colors.grey[700])) : Text('Remote.', overflow: TextOverflow.fade,
                   style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w600, color: Colors.grey[700])),

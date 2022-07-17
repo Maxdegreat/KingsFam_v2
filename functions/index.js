@@ -322,6 +322,36 @@ exports.addChatMessage = functions.firestore
      }
   });
 
+exports.onKingsCordMessageSent = functions.firestore
+  .document("/church/{churchId}/kingsCord/{kingsCordId}")
+  .onCreate(async (snapshot, context) => {
+    const cmId = context.params.churchId;
+    const kcId = context.params.kingsCordId;
+    const kcRef = admin.firestore().collection("church").doc(cmId).collection(kingsCord).doc(kcId);
+    const cmRef = admin.firestore().collection("church").doc(cmId);
+    var kcMsgData = snapshot.data();
+    var senderId = kcMsgData.sender.path.split('/')[1];
+    var senderUsername = kcMsgData.senderUsername;
+    var timestamp = kcMsgData.timestamp;
+    var recentMessage;
+    if (kcMsgData.imageUrl !== undefined) {
+      recentMessage = "An image was shared";
+    } else if (kcMsgData.videoUrl !== undefined) {
+      recentMessage = "A video was shared";
+    } else {
+      recentMessage = kcMsgData.text;
+    }
+
+    cmRef.update({
+      'recentMsgTime' : timestamp
+    });
+    kcRef.update({
+      'recentSender' : [senderId, senderUsername],
+      'timestamp' : timestamp,
+      'recentMessage' : recentMessage,
+    })
+  })
+
 // exports.onUpdatePost = functions.firestore
 //   .document('/posts/{postId}')
 //   .onUpdate(async (snapshot, context) => {

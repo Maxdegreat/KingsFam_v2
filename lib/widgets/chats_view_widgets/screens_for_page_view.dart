@@ -10,6 +10,7 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/feed_main/feed.dart';
+import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/kf_crown_v2.dart';
 import 'package:kingsfam/widgets/chats_view_widgets/chats_screen_widgets.dart';
@@ -96,6 +97,12 @@ class ScreensForPageView {
                                         .snapshots()
                                         .isEmpty;
 
+                                    var usersrecentTime = commuinity.members[state.currUserr];
+                                    log(usersrecentTime.toString());
+                                    var compraeTimes = commuinity.recentMsgTime.compareTo(usersrecentTime['timestamp']);
+                                    bool cmHasNotif = compraeTimes > 0 ;
+                                    
+
                                     return GestureDetector(
                                       onLongPress: () => leaveCommuinity(
                                           commuinity: commuinity,
@@ -112,6 +119,7 @@ class ScreensForPageView {
                                           child: FancyListTile( // ------------------------- update hee
                                               isMentioned: state
                                                   .mentionedMap[commuinity.id],
+                                                  newNotification: cmHasNotif,
                                               location:
                                                   commuinity.location.length > 1
                                                       ? commuinity.location

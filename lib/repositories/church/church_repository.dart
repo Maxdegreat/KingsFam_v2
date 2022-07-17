@@ -83,7 +83,9 @@ class   ChurchRepository extends BaseChurchRepository {
         tag: doc.id,
         cordName: "Welcome To ${church.name}!",
         recentMessage: "whats good Gods People!",
-        recentSender: recentSender.username, );
+        recentSender: [recentSender.id, recentSender.username],
+        recentTimestamp: Timestamp.now()
+         );
       
 
       //send off the repo
@@ -127,7 +129,7 @@ class   ChurchRepository extends BaseChurchRepository {
   }
 
   Future<KingsCord?> newKingsCord2({required Church ch, required String cordName}) async{
-    KingsCord kc = KingsCord(tag: ch.id!, recentMessage: "Welcome To $cordName!", recentSender: '', cordName: cordName);
+    KingsCord kc = KingsCord(tag: ch.id!, recentMessage: "Welcome To $cordName!", recentSender: [], cordName: cordName, recentTimestamp: Timestamp.now());
     var kcPath = await FirebaseFirestore.instance
         .collection(Paths.church)
         .doc(ch.id)
@@ -306,6 +308,27 @@ class   ChurchRepository extends BaseChurchRepository {
     print("The docs length is of commuinities member of: ${docs.length}" );
     return docs.length == 1;
       
+  }
+
+  void updateUserTimestampOnOpenCm(Church cm, String usrId) {
+    Map<String, dynamic> memsMap = {};
+    var memListFromCm = cm.members.keys.toList();
+
+    for (int i = 0; i < cm.members.keys.length; i++) {
+      if (memListFromCm[i].id == usrId) {
+      memsMap[memListFromCm[i].id] = {
+        'timestamp': Timestamp.now(),
+        'role' : cm.members[memListFromCm[i]]['role'],
+        'userReference' : FirebaseFirestore.instance.collection(Paths.users).doc(memListFromCm[i].id),
+      };
+      } 
+      memsMap[memListFromCm[i].id] = {
+        'timestamp': cm.members[memListFromCm[i]]['timestamp'],
+        'role' : cm.members[memListFromCm[i]]['role'],
+        'userReference' : FirebaseFirestore.instance.collection(Paths.users).doc(memListFromCm[i].id),
+      };
+    }
+    fb.doc(cm.id).update({'members' : memsMap});
   }
 
   // Future<List<Userr>> searchForUsersInCommuinity(
