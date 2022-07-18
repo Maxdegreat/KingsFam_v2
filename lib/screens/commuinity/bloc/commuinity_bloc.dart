@@ -55,6 +55,8 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       yield* _mapCommuinityLoadingCordsToState(event);
     } else if (event is CommuinityLoadedEvent) {
       yield* _mapCommuinityLoadedToState(event);
+    } else if (event is CommunityCollapseCordEvent) {
+      yield* _mapCommunityCollapseCo
     }
   }
 

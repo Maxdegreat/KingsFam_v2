@@ -311,23 +311,27 @@ class   ChurchRepository extends BaseChurchRepository {
   }
 
   void updateUserTimestampOnOpenCm(Church cm, String usrId) {
+    log("in updateUserTimestampOnOpenCm: usrId = $usrId");
     Map<String, dynamic> memsMap = {};
     var memListFromCm = cm.members.keys.toList();
 
     for (int i = 0; i < cm.members.keys.length; i++) {
+      log("currId in loop = ${memListFromCm[i].id}");
       if (memListFromCm[i].id == usrId) {
-      memsMap[memListFromCm[i].id] = {
-        'timestamp': Timestamp.now(),
-        'role' : cm.members[memListFromCm[i]]['role'],
-        'userReference' : FirebaseFirestore.instance.collection(Paths.users).doc(memListFromCm[i].id),
-      };
+        memsMap[memListFromCm[i].id] = {
+          'timestamp': Timestamp.now(),
+          'role' : cm.members[memListFromCm[i]]['role'],
+          'userReference' : FirebaseFirestore.instance.collection(Paths.users).doc(memListFromCm[i].id),
+        };
       } 
-      memsMap[memListFromCm[i].id] = {
-        'timestamp': cm.members[memListFromCm[i]]['timestamp'],
-        'role' : cm.members[memListFromCm[i]]['role'],
-        'userReference' : FirebaseFirestore.instance.collection(Paths.users).doc(memListFromCm[i].id),
-      };
+        if (memListFromCm[i].id != usrId) {
+          memsMap[memListFromCm[i].id] = {
+          'timestamp': cm.members[memListFromCm[i]]['timestamp'],
+          'role' : cm.members[memListFromCm[i]]['role'],
+          'userReference' : FirebaseFirestore.instance.collection(Paths.users).doc(memListFromCm[i].id),
+        };
     }
+        }
     fb.doc(cm.id).update({'members' : memsMap});
   }
 

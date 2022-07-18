@@ -3,6 +3,8 @@ enum CommuintyStatus {inital, loading, loaded, error}
 
 class CommuinityState extends Equatable {
   final bool isMember;
+  final bool collapseCordColumn;
+  final bool collapseVvrColumn;
   final List<Post?> postDisplay;
   final List<KingsCord?> kingCords;
   final Map<String, List<String>> permissions;
@@ -13,6 +15,8 @@ class CommuinityState extends Equatable {
 
   const CommuinityState({
     required this.isMember,
+    required this.collapseCordColumn,
+    required this.collapseVvrColumn,
     required this.postDisplay,
     required this.kingCords,
     required this.calls,
@@ -23,10 +27,10 @@ class CommuinityState extends Equatable {
 });
   
   @override
-  List<Object> get props => [mentionedMap, permissions, calls, kingCords, postDisplay, isMember, status, failure];
+  List<Object> get props => [mentionedMap, collapseCordColumn, collapseVvrColumn, permissions, calls, kingCords, postDisplay, isMember, status, failure];
   
   factory CommuinityState.inital() {
-    return CommuinityState(mentionedMap: {}, permissions: {}, isMember: false, postDisplay: [], kingCords: [], calls: [], status: CommuintyStatus.inital, failure: Failure());
+    return CommuinityState(mentionedMap: {}, collapseCordColumn: false, collapseVvrColumn: false, permissions: {}, isMember: false, postDisplay: [], kingCords: [], calls: [], status: CommuintyStatus.inital, failure: Failure());
   }
   CommuinityState copyWith({
     bool? isMember,
@@ -37,6 +41,8 @@ class CommuinityState extends Equatable {
     Failure? failure,
     Map<String, bool>? mentionedMap,
     Map<String, List<String>>? permissions,
+    bool? collapseCordColumn,  
+    bool? collapseVvrColumn  ,
   }) {
     return CommuinityState(
       permissions: permissions ?? this.permissions,
@@ -46,7 +52,9 @@ class CommuinityState extends Equatable {
       calls: calls ?? this.calls, 
       failure: failure ?? this.failure, 
       status: status ?? this.status,
-      mentionedMap: mentionedMap ?? this.mentionedMap,
+      mentionedMap: mentionedMap ?? this.mentionedMap, 
+      collapseCordColumn: collapseCordColumn ?? this.collapseCordColumn,
+      collapseVvrColumn: collapseVvrColumn ?? this.collapseVvrColumn,
     );
   }
 }

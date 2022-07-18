@@ -253,7 +253,9 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                   ),
                   overflow: TextOverflow.fade,
                 ),
-                //TODO check btn
+
+                collapseOrExpand()
+                
                 new_kingscord(),
               ],
             ),
