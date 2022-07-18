@@ -39,8 +39,4 @@ class CommuinityLoadedEvent extends CommuinityEvent {
   List<Object> get props => [kcs, calls, posts, commuinity];
 }
 
-class CommunityCollapseCordEvent extends CommuinityEvent {}
-
-class CommunityCollapseVvrEvent extends CommuinityEvent {}
-
 

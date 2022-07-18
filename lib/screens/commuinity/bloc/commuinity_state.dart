@@ -12,6 +12,7 @@ class CommuinityState extends Equatable {
   final CommuintyStatus status;
   final Failure failure;
   final Map<String, bool> mentionedMap;
+  final Userr currUserr;
 
   const CommuinityState({
     required this.isMember,
@@ -24,13 +25,14 @@ class CommuinityState extends Equatable {
     required this.failure,
     required this.permissions,
     required this.mentionedMap,
+    required this.currUserr,
 });
   
   @override
-  List<Object> get props => [mentionedMap, collapseCordColumn, collapseVvrColumn, permissions, calls, kingCords, postDisplay, isMember, status, failure];
+  List<Object> get props => [currUserr, mentionedMap, collapseCordColumn, collapseVvrColumn, permissions, calls, kingCords, postDisplay, isMember, status, failure];
   
   factory CommuinityState.inital() {
-    return CommuinityState(mentionedMap: {}, collapseCordColumn: false, collapseVvrColumn: false, permissions: {}, isMember: false, postDisplay: [], kingCords: [], calls: [], status: CommuintyStatus.inital, failure: Failure());
+    return CommuinityState(currUserr: Userr.empty, mentionedMap: {}, collapseCordColumn: false, collapseVvrColumn: false, permissions: {}, isMember: false, postDisplay: [], kingCords: [], calls: [], status: CommuintyStatus.inital, failure: Failure());
   }
   CommuinityState copyWith({
     bool? isMember,
@@ -43,6 +45,7 @@ class CommuinityState extends Equatable {
     Map<String, List<String>>? permissions,
     bool? collapseCordColumn,  
     bool? collapseVvrColumn  ,
+    Userr? currUserr,
   }) {
     return CommuinityState(
       permissions: permissions ?? this.permissions,
@@ -55,6 +58,7 @@ class CommuinityState extends Equatable {
       mentionedMap: mentionedMap ?? this.mentionedMap, 
       collapseCordColumn: collapseCordColumn ?? this.collapseCordColumn,
       collapseVvrColumn: collapseVvrColumn ?? this.collapseVvrColumn,
+      currUserr: currUserr ?? this.currUserr,
     );
   }
 }

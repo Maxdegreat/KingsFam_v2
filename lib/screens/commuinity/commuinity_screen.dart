@@ -26,6 +26,7 @@ import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 import 'package:kingsfam/extensions/date_time_extension.dart';
+import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 // import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/widgets.dart';
@@ -253,86 +254,108 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                   ),
                   overflow: TextOverflow.fade,
                 ),
-
-                collapseOrExpand()
-                
+                collapseOrExpand(context.read<CommuinityBloc>(), 'cord'),
                 new_kingscord(),
               ],
             ),
             //TODO below should work if change name else use lib?
             Column(
-              children: state.kingCords.map((cord) {
-                if (cord != null) {
-                  return GestureDetector(
-                      onTap: () {
-                        // handels the navigation to the kingscord screen and also handels the
-                        // deletion of a noti if it eist. we check if noty eist by through a function insde the bloc.
-                        Navigator.of(context).pushNamed(
-                            KingsCordScreen.routeName,
-                            arguments: KingsCordArgs(
-                                commuinity: widget.commuinity,
-                                kingsCord: cord));
+              children: state.collapseCordColumn
+                  ? [SizedBox.shrink()]
+                  : state.kingCords.map((cord) {
+                      if (cord != null) {
+                        return GestureDetector(
+                            onTap: () {
+                              // handels the navigation to the kingscord screen and also handels the
+                              // deletion of a noti if it eist. we check if noty eist by through a function insde the bloc.
+                              Navigator.of(context).pushNamed(
+                                  KingsCordScreen.routeName,
+                                  arguments: KingsCordArgs(
+                                      commuinity: widget.commuinity,
+                                      kingsCord: cord));
 
-                        if (state.mentionedMap[cord.id] != false) {
-                          // del the @ notification (del the mention)
-                          String currId =
-                              context.read<AuthBloc>().state.user!.uid;
-                          FirebaseFirestore.instance
-                              .collection(Paths.mention)
-                              .doc(currId)
-                              .collection(widget.commuinity.id!)
-                              .doc(cord.id)
-                              .delete();
-                        }
-                      },
-                      onLongPress: () => _delKcDialog(cord: cord, commuinity: widget.commuinity),
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                            top: 7,
-                            bottom: 7,
-                            left: MediaQuery.of(context).size.width / 7),
-                        child: Container(
-                          height: 55,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                              color: Colors.grey[900],
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(5),
-                                  bottomLeft: Radius.circular(5))),
-                          child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 7),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                            cord.cordName,
-                            overflow: TextOverflow.fade,
-                            style: TextStyle(
-                                      color: state.mentionedMap[cord.id] == true
-                                          ? Colors.amber
-                                          : Colors.white,
-                                      fontWeight: state.mentionedMap[cord.id] == true
-                                          ? FontWeight.w900
-                                          : FontWeight.w700),
-                          ),
-                          Row(
-                            children: [
-                                Text(cord.recentSender[1], style: TextStyle(color: Colors.white, fontSize: 17), overflow: TextOverflow.fade, ),
-                                SizedBox(width: 7,),
-                                Text(cord.recentTimestamp.timeAgo(), style: TextStyle(color: Colors.grey[300], fontSize: 20, fontWeight: FontWeight.bold), overflow: TextOverflow.fade,),
-                            ],
-                          )
-                                  ],
-                                ),
-                              )),
-                        ),
-                      ));
-                } else {
-                  return SizedBox.shrink();
-                }
-              }).toList(),
+                              if (state.mentionedMap[cord.id] != false) {
+                                // del the @ notification (del the mention)
+                                String currId =
+                                    context.read<AuthBloc>().state.user!.uid;
+                                FirebaseFirestore.instance
+                                    .collection(Paths.mention)
+                                    .doc(currId)
+                                    .collection(widget.commuinity.id!)
+                                    .doc(cord.id)
+                                    .delete();
+                              }
+                            },
+                            onLongPress: () => _delKcDialog(
+                                cord: cord, commuinity: widget.commuinity),
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                  top: 7,
+                                  bottom: 7,
+                                  left: MediaQuery.of(context).size.width / 7),
+                              child: Container(
+                                height: 55,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                    color: Colors.grey[900],
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(5),
+                                        bottomLeft: Radius.circular(5))),
+                                child: Center(
+                                    child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 7),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        cord.cordName,
+                                        overflow: TextOverflow.fade,
+                                        style: TextStyle(
+                                            color:
+                                                state.mentionedMap[cord.id] ==
+                                                        true
+                                                    ? Colors.amber
+                                                    : Colors.white,
+                                            fontWeight:
+                                                state.mentionedMap[cord.id] ==
+                                                        true
+                                                    ? FontWeight.w900
+                                                    : FontWeight.w700),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            cord.recentSender[1],
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 17),
+                                            overflow: TextOverflow.fade,
+                                          ),
+                                          SizedBox(
+                                            width: 7,
+                                          ),
+                                          Text(
+                                            cord.recentTimestamp.timeAgo(),
+                                            style: TextStyle(
+                                                color: Colors.grey[300],
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                            overflow: TextOverflow.fade,
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                )),
+                              ),
+                            ));
+                      } else {
+                        return SizedBox.shrink();
+                      }
+                    }).toList(),
             ),
             SizedBox(height: 15),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -345,6 +368,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                 ),
                 overflow: TextOverflow.fade,
               ),
+              collapseOrExpand(context.read<CommuinityBloc>(), 'vvr'),
               _new_call(),
             ]),
             Column(
@@ -560,19 +584,29 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     );
   }
 
-  GestureDetector _new_call() {
-    return GestureDetector(
-        onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-                "VVR will be added shortly in an update"))), //_new_call_sheet(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25),
-          child: Container(
-            height: 25,
-            width: 25,
-            child: RiveAnimation.asset('assets/icons/add_icon.riv'),
-          ),
-        ));
+  Widget _new_call() {
+    if (widget.commuinity.members.containsKey(context.read<CommuinityBloc>().state.currUserr)) {
+      if (widget.commuinity.members[context.read<CommuinityBloc>().state.currUserr]
+                ['role'] !=
+            Roles.Member ||
+        widget.commuinity.members[context.read<CommuinityBloc>().state.currUserr]
+                ['role'] !=
+            Roles.Elder) {
+              return GestureDetector(
+          onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(
+                  "VVR will be added shortly in an update"))), //_new_call_sheet(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Container(
+              height: 25,
+              width: 25,
+              child: RiveAnimation.asset('assets/icons/add_icon.riv'),
+            ),
+          ));
+            }
+    }
+      return SizedBox.shrink();
   }
 
   _new_call_sheet() => showModalBottomSheet(
@@ -650,8 +684,10 @@ class _CommuinityScreenState extends State<CommuinityScreen>
             ),
           )));
 
-  GestureDetector new_kingscord() {
-    return GestureDetector(
+  Widget new_kingscord() {
+    if (widget.commuinity.members.containsKey(context.read<CommuinityBloc>().state.currUserr)) {
+      if (widget.commuinity.members[context.read<CommuinityBloc>().state.currUserr]['role'] != Roles.Member || widget.commuinity.members[context.read<CommuinityBloc>().state.currUserr]['role'] != Roles.Elder) {
+        return GestureDetector(
         onTap: () => new_kingsCord_sheet(),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -661,6 +697,9 @@ class _CommuinityScreenState extends State<CommuinityScreen>
             child: RiveAnimation.asset('assets/icons/add_icon.riv'),
           ),
         ));
+      }
+    }
+    return SizedBox.shrink();
   }
 
   new_kingsCord_sheet() => showModalBottomSheet(
@@ -827,23 +866,22 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                     ),
                     title: Text(
                       participant.username,
-                      style: memberInfo[participant]['role'] ==
-                              Roles.Owner
+                      style: memberInfo[participant]['role'] == Roles.Owner
                           ? TextStyle(
                               color: Colors.amber,
                               fontWeight: FontWeight.w700,
                             )
-                          : memberInfo[participant]['role'] ==
-                                  Roles.Admin
+                          : memberInfo[participant]['role'] == Roles.Admin
                               ? TextStyle(
                                   color: Colors.blue,
                                   fontWeight: FontWeight.w700,
                                 )
-                              : memberInfo[participant]['role'] ==
-                                Roles.Elder ? TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.w700,
-                                ) : null,
+                              : memberInfo[participant]['role'] == Roles.Elder
+                                  ? TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.w700,
+                                    )
+                                  : null,
                       overflow: TextOverflow.fade,
                     ),
                     trailing: _moreOptinos(
@@ -910,63 +948,70 @@ class _CommuinityScreenState extends State<CommuinityScreen>
         });
   }
 
-  Column changRolePopUp(BuildContext context, Userr participatant, Church commuinity) {
+  Column changRolePopUp(
+      BuildContext context, Userr participatant, Church commuinity) {
     return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextButton(
-                    onPressed: () {
-                      context.read<BuildchurchCubit>().changeRole(
-                          user: participatant, commuinityId: commuinity.id!, role: Roles.Admin);
-                      Navigator.of(context).pop();
-                      setState(() {});
-                    },
-                    child: FittedBox(
-                        child: Text(
-                      "Promote ${participatant.username} to an admin",
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ))),
-                TextButton(
-                    onPressed: () {
-                      context.read<BuildchurchCubit>().changeRole(
-                          user: participatant, commuinityId: commuinity.id!, role: Roles.Elder);
-                      Navigator.of(context).pop();
-                      setState(() {});
-                    },
-                    child: FittedBox(
-                        child: Text(
-                      "Make ${participatant.username} an Elder",
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ))),
-                    TextButton(
-                    onPressed: () {
-                      context.read<BuildchurchCubit>().changeRole(
-                          user: participatant, commuinityId: commuinity.id!, role: Roles.Member);
-                      Navigator.of(context).pop();
-                      setState(() {});
-                    },
-                    child: FittedBox(
-                        child: Text(
-                      "Make ${participatant.username} a Member",
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ))),
-                TextButton(
-                    onPressed: () {
-                      context.read<ChurchRepository>().leaveCommuinity(
-                          commuinity: commuinity, leavingUserId: participatant.id);
-                      Navigator.of(context).pop();
-                      setState(() {});
-                    },
-                    child: FittedBox(
-                        child: Text(
-                            "Remove ${participatant.username} from ${widget.commuinity.name}",
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.bodyText1))),
-              ],
-            );
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        TextButton(
+            onPressed: () {
+              context.read<BuildchurchCubit>().changeRole(
+                  user: participatant,
+                  commuinityId: commuinity.id!,
+                  role: Roles.Admin);
+              Navigator.of(context).pop();
+              setState(() {});
+            },
+            child: FittedBox(
+                child: Text(
+              "Promote ${participatant.username} to an admin",
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyText1,
+            ))),
+        TextButton(
+            onPressed: () {
+              context.read<BuildchurchCubit>().changeRole(
+                  user: participatant,
+                  commuinityId: commuinity.id!,
+                  role: Roles.Elder);
+              Navigator.of(context).pop();
+              setState(() {});
+            },
+            child: FittedBox(
+                child: Text(
+              "Make ${participatant.username} an Elder",
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyText1,
+            ))),
+        TextButton(
+            onPressed: () {
+              context.read<BuildchurchCubit>().changeRole(
+                  user: participatant,
+                  commuinityId: commuinity.id!,
+                  role: Roles.Member);
+              Navigator.of(context).pop();
+              setState(() {});
+            },
+            child: FittedBox(
+                child: Text(
+              "Make ${participatant.username} a Member",
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyText1,
+            ))),
+        TextButton(
+            onPressed: () {
+              context.read<ChurchRepository>().leaveCommuinity(
+                  commuinity: commuinity, leavingUserId: participatant.id);
+              Navigator.of(context).pop();
+              setState(() {});
+            },
+            child: FittedBox(
+                child: Text(
+                    "Remove ${participatant.username} from ${widget.commuinity.name}",
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyText1))),
+      ],
+    );
   }
 
   Future<dynamic> _nonAdminOptions(String role) {
@@ -998,21 +1043,32 @@ class _CommuinityScreenState extends State<CommuinityScreen>
             commuinity: commuinity, buildchurchCubit: buildchurchCubit),
       ),
       ListTile(
-        title: Text("Update The About",
-            style: Theme.of(context).textTheme.bodyText1, overflow: TextOverflow.fade,),
-        onTap: () async => _updateTheAbout(commuinity: commuinity, buildchurchCubit: context.read<BuildchurchCubit>()),
+        title: Text(
+          "Update The About",
+          style: Theme.of(context).textTheme.bodyText1,
+          overflow: TextOverflow.fade,
+        ),
+        onTap: () async => _updateTheAbout(
+            commuinity: commuinity,
+            buildchurchCubit: context.read<BuildchurchCubit>()),
       ),
-    ListTile(
-      title: Text("Manage & Update Roles",
-      style: Theme.of(context).textTheme.bodyText1,
-      overflow: TextOverflow.fade,
-      ),
-      onTap: () {
-        Church ch = Church.empty;
-        Navigator.of(context).pushNamed(RolesScreen.routeName, arguments: RoleScreenArgs(community: ch.copyWith(id: commuinity.id, members: commuinity.members, name: commuinity.name,) ));
-      } 
-    )
- ]);
+      ListTile(
+          title: Text(
+            "Manage & Update Roles",
+            style: Theme.of(context).textTheme.bodyText1,
+            overflow: TextOverflow.fade,
+          ),
+          onTap: () {
+            Church ch = Church.empty;
+            Navigator.of(context).pushNamed(RolesScreen.routeName,
+                arguments: RoleScreenArgs(
+                    community: ch.copyWith(
+                  id: commuinity.id,
+                  members: commuinity.members,
+                  name: commuinity.name,
+                )));
+          })
+    ]);
   }
 
   void _updateEditView(BuildContext context, Church commuinity) {
@@ -1174,7 +1230,9 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                 },
               ));
 
-  Future<dynamic> _updateTheAbout({required Church commuinity, required BuildchurchCubit buildchurchCubit}) async =>
+  Future<dynamic> _updateTheAbout(
+          {required Church commuinity,
+          required BuildchurchCubit buildchurchCubit}) async =>
       showModalBottomSheet(
           context: context,
           builder: (context) {
@@ -1195,7 +1253,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: TextField(
-                        decoration: InputDecoration(hintText: "Tell ${commuinity.name}'s story "),
+                        decoration: InputDecoration(
+                            hintText: "Tell ${commuinity.name}'s story "),
                         onChanged: (value) => _txtController.text = value),
                   ),
                   SizedBox(height: 8.0),
@@ -1209,8 +1268,10 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                             onPressed: () {
                               var state = buildchurchCubit.state;
                               if (_txtController.value.text.length != 0) {
-                                buildchurchCubit.onAboutChanged(_txtController.text);
-                                buildchurchCubit.lightUpdate(commuinity.id!, 3); // ----------- The method that calls thr update
+                                buildchurchCubit
+                                    .onAboutChanged(_txtController.text);
+                                buildchurchCubit.lightUpdate(commuinity.id!,
+                                    3); // ----------- The method that calls thr update
                                 Navigator.of(context).pop();
                                 this.setState(() {});
                                 _txtController.clear();
@@ -1371,4 +1432,32 @@ class _CommuinityScreenState extends State<CommuinityScreen>
               ],
             ),
           ));
+}
+
+collapseOrExpand(CommuinityBloc cmBloc, String type) {
+  if (type == "cord") {
+    return IconButton(
+        onPressed: () => cmBloc.onCollapsedCord(),
+        icon: !cmBloc.state.collapseCordColumn
+            ? Icon(
+                Icons.minimize,
+                size: 35,
+              )
+            : Icon(
+                Icons.expand_more_outlined,
+                size: 35,
+              ));
+  } else {
+    return IconButton(
+        onPressed: () => cmBloc.onCollapsedVvrColumn(),
+        icon: !cmBloc.state.collapseVvrColumn
+            ? Icon(
+                Icons.minimize,
+                size: 35,
+              )
+            : Icon(
+                Icons.expand_more_outlined,
+                size: 35,
+              ));
+  }
 }

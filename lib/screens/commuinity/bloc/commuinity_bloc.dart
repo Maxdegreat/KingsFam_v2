@@ -55,8 +55,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       yield* _mapCommuinityLoadingCordsToState(event);
     } else if (event is CommuinityLoadedEvent) {
       yield* _mapCommuinityLoadedToState(event);
-    } else if (event is CommunityCollapseCordEvent) {
-      yield* _mapCommunityCollapseCo
     }
   }
 
@@ -72,6 +70,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
     emit(state.copyWith(status: CommuintyStatus.loading));
     try {
+      final Userr userr = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
       // update the usr timestamp for the cm when they open the cm
       Church cm = Church.empty.copyWith(id: event.commuinity.id, members: event.commuinity.members, );
       _churchRepository.updateUserTimestampOnOpenCm(cm, _authBloc.state.user!.uid);
@@ -95,7 +94,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
                    mentionedMap[kc.id!] = false
                  },
           
-                 emit(state.copyWith(mentionedMap: mentionedMap))
+                 emit(state.copyWith(mentionedMap: mentionedMap, currUserr: userr))
                });
              }
            }
@@ -182,5 +181,19 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   dispose() {
     state.copyWith(calls: [], failure: Failure(), isMember: false, kingCords: [], postDisplay: [], status: CommuintyStatus.inital);
+  }
+
+  void onCollapsedCord() {
+    if (state.collapseCordColumn)
+      emit(state.copyWith(collapseCordColumn: false));
+    else
+      emit(state.copyWith(collapseCordColumn: true));
+  }
+
+  void onCollapsedVvrColumn() {
+    if (state.collapseVvrColumn)
+      emit(state.copyWith(collapseVvrColumn: false));
+    else 
+      emit(state.copyWith(collapseVvrColumn: true));
   }
 }
