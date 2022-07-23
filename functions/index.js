@@ -323,16 +323,18 @@ exports.addChatMessage = functions.firestore
   });
 
 exports.onKingsCordMessageSent = functions.firestore
-  .document("/church/{churchId}/kingsCord/{kingsCordId}")
+  .document("/church/{churchId}/kingsCord/{kingsCordId}/messages/{messageId}")
   .onCreate(async (snapshot, context) => {
+
     const cmId = context.params.churchId;
     const kcId = context.params.kingsCordId;
-    const kcRef = admin.firestore().collection("church").doc(cmId).collection(kingsCord).doc(kcId);
+    const kcRef = admin.firestore().collection("church").doc(cmId).collection("kingsCord").doc(kcId);
     const cmRef = admin.firestore().collection("church").doc(cmId);
+    
     var kcMsgData = snapshot.data();
     var senderId = kcMsgData.sender.path.split('/')[1];
     var senderUsername = kcMsgData.senderUsername;
-    var timestamp = kcMsgData.timestamp;
+    
     var recentMessage;
     if (kcMsgData.imageUrl !== undefined) {
       recentMessage = "An image was shared";
@@ -342,12 +344,14 @@ exports.onKingsCordMessageSent = functions.firestore
       recentMessage = kcMsgData.text;
     }
 
+    functions.logger.log("KINGSCORDMSGDATA: ", recentMessage);
+
     cmRef.update({
-      'recentMsgTime' : timestamp
+      'recentMsgTime' : kcMsgData.date
     });
     kcRef.update({
       'recentSender' : [senderId, senderUsername],
-      'timestamp' : timestamp,
+      'timestamp' : kcMsgData.date,
       'recentMessage' : recentMessage,
     })
   })

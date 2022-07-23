@@ -83,8 +83,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   void dispose() {
     _tabController.dispose();
     _txtController.dispose();
-    context.read<CommuinityBloc>().close();
-    context.read<CommuinityBloc>().dispose();
+    //context.read<CommuinityBloc>().close();
+    //context.read<CommuinityBloc>().dispose();
     super.dispose();
   }
 
