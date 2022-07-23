@@ -83,8 +83,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   void dispose() {
     _tabController.dispose();
     _txtController.dispose();
-    //context.read<CommuinityBloc>().close();
-    //context.read<CommuinityBloc>().dispose();
+    // context.read<CommuinityBloc>().close();
+    // context.read<CommuinityBloc>().dispose();
     super.dispose();
   }
 
@@ -328,7 +328,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                       Row(
                                         children: [
                                           Text(
-                                            cord.recentSender[1],
+                                            cord.recentSender[1], 
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 17),

@@ -70,6 +70,7 @@ class KingscordCubit extends Cubit<KingscordState> {
     required Map<String, dynamic> mentionedInfo,
     required String cmTitle,
     required KingsCord kingsCordData,
+    required String currUserName,
   }) {
     // This should tell the cloud that the mentioned id was mentioned through the cloud
     // I have added the function to send a noti to the users phone. the update for this to happen is in the
@@ -102,8 +103,11 @@ class KingscordCubit extends Cubit<KingscordState> {
     final message = Message(
         text: txtMsgBodyWithSymbolsForParcing,
         date: Timestamp.fromDate(DateTime.now()),
-        imageUrl: null);
-    //uploading the message to cloud
+        imageUrl: null,
+        senderUsername: currUserName,
+      );
+    
+    // uploading the message to cloud
     _kingsCordRepository.sendMsgTxt(
         churchId: churchId,
         kingsCordId: kingsCordId,
@@ -166,7 +170,7 @@ class KingscordCubit extends Cubit<KingscordState> {
 
 
 
-  onSendTxtImg({required String churchId, required String kingsCordId}) async {
+  onSendTxtImg({required String churchId, required String kingsCordId, required String senderUsername}) async {
     //set to load bc we wait for image to be sent.
     emit(state.copyWith(status: KingsCordStatus.loading, fileShareStatus: FileShareStatus.imgSharing));
 
@@ -177,6 +181,7 @@ class KingscordCubit extends Cubit<KingscordState> {
       date: Timestamp.now(),
       imageUrl: chatImageUrl,
       text: null,
+      senderUsername: senderUsername,
     );
 
     //upload message to the cloud

@@ -44,7 +44,8 @@ class KingsCordScreen extends StatefulWidget {
                   storageRepository: context.read<StorageRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   kingsCordRepository: context.read<KingsCordRepository>(),
-                  churchRepository: context.read<ChurchRepository>() // may need to report to main reposityory collection
+                  churchRepository: context.read<
+                      ChurchRepository>() // may need to report to main reposityory collection
                   ),
               child: KingsCordScreen(
                 commuinity: args.commuinity,
@@ -66,6 +67,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
   bool containsAt = false;
 
+  String currUsersName = "";
+
   Set<String> memIds = {};
   // in the _buildMessageStream membersMapWithUsernameAsKey is used to populate the map with member info
   Map<String, dynamic> membersMapWithUsernameAsKey = {};
@@ -86,6 +89,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       required KingsCord kingsCord,
       required List<Message?> msgs}) {
     for (var user in widget.commuinity.members.keys) {
+      if (user.id == context.read<AuthBloc>().state.user!.uid) {
+        currUsersName = user.username;
+      }
       memIds.add(user.id);
       membersMapWithUsernameAsKey[user.username] = {
         'id': user.id,
@@ -134,7 +140,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                     kingscordCubit: ctx,
                     context: context,
                     cmId: widget.commuinity.id!,
-                    kcId: widget.kingsCord.id!),
+                    kcId: widget.kingsCord.id!,
+                    seenderUsername: currUsersName),
                 icon: Icon(Icons.add_box_outlined)),
             Expanded(
               child: Container(
@@ -199,41 +206,50 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   ),
                   onPressed: state.isTyping
                       ? () {
-                        // this will be passed to the cubit then to the db. upon a get msg lines will psrse for a good look
+                          // this will be passed to the cubit then to the db. upon a get msg lines will psrse for a good look
                           String messageWithsSmbolesForParsing = "";
                           // map of mentioned info that will be added to the kc cubit
                           Map<String, dynamic> mentionedInfo = {};
                           var msgAsLst = _messageController.text.split(' ');
                           for (String msg in msgAsLst) {
                             // handels if a shares a link
-                           
-                              if (msg.length > 8 && msg.substring(0, 8) == 'https://') {
-                                messageWithsSmbolesForParsing += '{{a-$msg}} ';
-                              } else if (msg.length > 1 && msg[0] == '@' ) {
-                                var mentionedUserName = msg.substring(1, msg.length);
-                                if (membersMapWithUsernameAsKey.containsKey(mentionedUserName)) {
-                                  messageWithsSmbolesForParsing += '{{b-$msg}} ';
-                                  // mentioned info will be passed to cubit. info will be used in notification 
-                                  mentionedInfo[membersMapWithUsernameAsKey[mentionedUserName]['id']] = {
-                                    'username': mentionedUserName,
-                                    'token': membersMapWithUsernameAsKey[mentionedUserName]['token'],
-                                    'communityName': widget.commuinity.name,
-                                    'kingsCordName': widget.kingsCord.cordName,
-                                  };
-                                } 
-                              } else {
-                                  messageWithsSmbolesForParsing += '$msg ';
+
+                            if (msg.length > 8 &&
+                                msg.substring(0, 8) == 'https://') {
+                              messageWithsSmbolesForParsing += '{{a-$msg}} ';
+                            } else if (msg.length > 1 && msg[0] == '@') {
+                              var mentionedUserName =
+                                  msg.substring(1, msg.length);
+                              if (membersMapWithUsernameAsKey
+                                  .containsKey(mentionedUserName)) {
+                                messageWithsSmbolesForParsing += '{{b-$msg}} ';
+                                // mentioned info will be passed to cubit. info will be used in notification
+                                mentionedInfo[membersMapWithUsernameAsKey[
+                                    mentionedUserName]['id']] = {
+                                  'username': mentionedUserName,
+                                  'token': membersMapWithUsernameAsKey[
+                                      mentionedUserName]['token'],
+                                  'communityName': widget.commuinity.name,
+                                  'kingsCordName': widget.kingsCord.cordName,
+                                };
                               }
-                            
+                            } else {
+                              messageWithsSmbolesForParsing += '$msg ';
+                            }
                           }
                           ctx.onSendTxtMsg(
                               churchId: widget.commuinity.id!,
                               kingsCordId: widget.kingsCord.id!,
-                              txtMsgBodyWithSymbolsForParcing: _messageController.text,    //messageWithsSmbolesForParsing,
-                              txtMsgWithOutSymbolesForParcing: _messageController.text,
+                              txtMsgBodyWithSymbolsForParcing:
+                                  _messageController
+                                      .text, //messageWithsSmbolesForParsing,
+                              txtMsgWithOutSymbolesForParcing:
+                                  _messageController.text,
                               mentionedInfo: mentionedInfo,
                               cmTitle: widget.commuinity.name,
-                              kingsCordData: widget.kingsCord);
+                              kingsCordData: widget.kingsCord,
+                              currUserName: currUsersName,
+                              );
                           ctx.onIsTyping(false);
                           _messageController.clear();
                         }
@@ -390,7 +406,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   : SizedBox.shrink(),
               memIds.contains(context.read<AuthBloc>().state.user!.uid)
                   ? _buildBottomTF(state, context)
-                  : _permissionDenied(messasge: "Join Commuinity To say whats up")
+                  : _permissionDenied(
+                      messasge: "Join Commuinity To say whats up")
             ],
           );
         },

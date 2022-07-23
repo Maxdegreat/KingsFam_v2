@@ -336,22 +336,21 @@ exports.onKingsCordMessageSent = functions.firestore
     var senderUsername = kcMsgData.senderUsername;
     
     var recentMessage;
-    if (kcMsgData.imageUrl !== undefined) {
+    if (kcMsgData.imageUrl !== null) {
       recentMessage = "An image was shared";
-    } else if (kcMsgData.videoUrl !== undefined) {
+    } else if (kcMsgData.videoUrl !== null) {
       recentMessage = "A video was shared";
     } else {
       recentMessage = kcMsgData.text;
     }
 
-    functions.logger.log("KINGSCORDMSGDATA: ", recentMessage);
 
     cmRef.update({
       'recentMsgTime' : kcMsgData.date
     });
     kcRef.update({
-      'recentSender' : [senderId, senderUsername],
-      'timestamp' : kcMsgData.date,
+      'recentSender' : [senderId, kcMsgData.senderUsername ],
+      'recentTimestamp' : kcMsgData.date,
       'recentMessage' : recentMessage,
     })
   })
