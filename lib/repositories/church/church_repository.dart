@@ -128,8 +128,14 @@ class   ChurchRepository extends BaseChurchRepository {
     return firebaseCommuinites.docs.map((e) => KingsCord.fromDoc(e)).toList();
   }
 
-  Future<KingsCord?> newKingsCord2({required Church ch, required String cordName}) async{
-    KingsCord kc = KingsCord(tag: ch.id!, recentMessage: "Welcome To $cordName!", recentSender: [], cordName: cordName, recentTimestamp: Timestamp.now());
+  Future<KingsCord?> newKingsCord2({required Church ch, required String cordName, Userr? currUser}) async{
+    KingsCord kc = KingsCord(
+      tag: ch.id!, 
+      cordName: cordName, 
+      recentMessage: "Welcome To $cordName!", 
+      recentSender: [currUser != null ? currUser.id : '', currUser != null ? currUser.username.substring(0,5) : ''], 
+      recentTimestamp: Timestamp.now()
+    );
     var kcPath = await FirebaseFirestore.instance
         .collection(Paths.church)
         .doc(ch.id)
