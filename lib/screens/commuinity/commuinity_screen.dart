@@ -83,8 +83,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   void dispose() {
     _tabController.dispose();
     _txtController.dispose();
-    context.read<CommuinityBloc>().close();
-    context.read<CommuinityBloc>().dispose();
+    // context.read<CommuinityBloc>().close();
+    // context.read<CommuinityBloc>().dispose();
     super.dispose();
   }
 
@@ -254,7 +254,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                   ),
                   overflow: TextOverflow.fade,
                 ),
-                collapseOrExpand(context.read<CommuinityBloc>(), 'cord'),
+                // collapseOrExpand(context.read<CommuinityBloc>(), 'cord'),
                 new_kingscord(),
               ],
             ),
@@ -528,7 +528,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     );
   }
 
-  Padding ContentContaner(BuildContext context) {
+  Padding contentContaner(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       child: GestureDetector(
@@ -585,28 +585,31 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   }
 
   Widget _new_call() {
-    if (widget.commuinity.members.containsKey(context.read<CommuinityBloc>().state.currUserr)) {
-      if (widget.commuinity.members[context.read<CommuinityBloc>().state.currUserr]
-                ['role'] !=
-            Roles.Member ||
-        widget.commuinity.members[context.read<CommuinityBloc>().state.currUserr]
-                ['role'] !=
-            Roles.Elder) {
-              return GestureDetector(
-          onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(
-                  "VVR will be added shortly in an update"))), //_new_call_sheet(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25),
-            child: Container(
-              height: 25,
-              width: 25,
-              child: RiveAnimation.asset('assets/icons/add_icon.riv'),
-            ),
-          ));
-            }
+    if (widget.commuinity.members
+        .containsKey(context.read<CommuinityBloc>().state.currUserr)) {
+      if (widget.commuinity
+                      .members[context.read<CommuinityBloc>().state.currUserr]
+                  ['role'] !=
+              Roles.Member ||
+          widget.commuinity
+                      .members[context.read<CommuinityBloc>().state.currUserr]
+                  ['role'] !=
+              Roles.Elder) {
+        return GestureDetector(
+            onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(
+                    "VVR will be added shortly in an update"))), //_new_call_sheet(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25),
+              child: Container(
+                height: 25,
+                width: 25,
+                child: RiveAnimation.asset('assets/icons/add_icon.riv'),
+              ),
+            ));
+      }
     }
-      return SizedBox.shrink();
+    return SizedBox.shrink();
   }
 
   _new_call_sheet() => showModalBottomSheet(
@@ -685,18 +688,26 @@ class _CommuinityScreenState extends State<CommuinityScreen>
           )));
 
   Widget new_kingscord() {
-    if (widget.commuinity.members.containsKey(context.read<CommuinityBloc>().state.currUserr)) {
-      if (widget.commuinity.members[context.read<CommuinityBloc>().state.currUserr]['role'] != Roles.Member || widget.commuinity.members[context.read<CommuinityBloc>().state.currUserr]['role'] != Roles.Elder) {
+    if (widget.commuinity.members
+        .containsKey(context.read<CommuinityBloc>().state.currUserr)) {
+      if (widget.commuinity
+                      .members[context.read<CommuinityBloc>().state.currUserr]
+                  ['role'] !=
+              Roles.Member ||
+          widget.commuinity
+                      .members[context.read<CommuinityBloc>().state.currUserr]
+                  ['role'] !=
+              Roles.Elder) {
         return GestureDetector(
-        onTap: () => new_kingsCord_sheet(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          child: Container(
-            height: 25,
-            width: 25,
-            child: RiveAnimation.asset('assets/icons/add_icon.riv'),
-          ),
-        ));
+            onTap: () => new_kingsCord_sheet(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: Container(
+                height: 25,
+                width: 25,
+                child: RiveAnimation.asset('assets/icons/add_icon.riv'),
+              ),
+            ));
       }
     }
     return SizedBox.shrink();
@@ -1394,6 +1405,9 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     context
         .read<CommuinityBloc>()
         .onJoinCommuinity(commuinity: widget.commuinity);
+    snackBar(
+        snackMessage: "JOINED, to have full access refresh your homescreen",
+        context: context);
   }
 
   _onLeaveCommuinity() {

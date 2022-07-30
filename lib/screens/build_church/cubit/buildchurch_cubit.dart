@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 import 'dart:io';
 
@@ -39,7 +38,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
         _userrRepository = userrRepository,
         _callRepository = callRepository,
         super(BuildchurchState.initial());
-  
+
   final _fb = FirebaseFirestore.instance;
 
   // void getKingsCords({required String commuinityId}) async {
@@ -52,29 +51,33 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
   //   emit(state.copyWith(calls: lst));
   // }
 
-  Future<void> makeKingsCord({required Church commuinity, required String cordName}) async {
+  Future<void> makeKingsCord(
+      {required Church commuinity, required String cordName}) async {
     if (state.kingsCords.length < 7) {
-      KingsCord? kc = await  _churchRepository.newKingsCord2(ch: commuinity, cordName: cordName);
+      Userr currUser = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
+      KingsCord? kc = await _churchRepository.newKingsCord2(
+          ch: commuinity, cordName: cordName, currUser: currUser);
       var lst = state.kingsCords;
       lst.add(kc);
-      emit(state.copyWith(kingsCords: lst ));
+      emit(state.copyWith(kingsCords: lst));
     }
   }
 
-  Future<void> makeCallModel({required Church commuinity, required String callName}) async {
+  Future<void> makeCallModel(
+      {required Church commuinity, required String callName}) async {
     if (state.calls.length < 7) {
-      CallModel call = await _callRepository.createCall2(commuinity: commuinity , callName: callName);
+      CallModel call = await _callRepository.createCall2(
+          commuinity: commuinity, callName: callName);
       var lst = state.calls;
       lst.add(call);
-      emit(state.copyWith(calls: lst ));
+      emit(state.copyWith(calls: lst));
     }
   }
 
   // get commuinity posts
   Future<void> getCommuinityPosts(Church cm) async {
-
     List<Post?> posts = await _churchRepository.getCommuinityPosts(cm: cm);
-    
+
     emit(state.copyWith(posts: posts));
   }
 
@@ -103,6 +106,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
   void onLocationChanged(String location) {
     emit(state.copyWith(location: location, status: BuildChurchStatus.initial));
   }
+
   // ===============  ENTERING ROLE MAKING  ============================
   void onUpdatingRoleView(Userr? userWhosRoleIsBeingUpdated) {
     if (state.updatingRoleView == true) {
@@ -110,7 +114,8 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       emit(state.copyWith(userWhosRoleIsBeingUpdated: null));
     } else {
       emit(state.copyWith(updatingRoleView: true));
-      emit(state.copyWith(userWhosRoleIsBeingUpdated: userWhosRoleIsBeingUpdated));
+      emit(state.copyWith(
+          userWhosRoleIsBeingUpdated: userWhosRoleIsBeingUpdated));
     }
   }
 
@@ -125,11 +130,12 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
   }
 
   // void function to update the creator id
-  void onCreatorIdAdded({required String creatorId}) => emit(state.copyWith(creatorId: creatorId));
+  void onCreatorIdAdded({required String creatorId}) =>
+      emit(state.copyWith(creatorId: creatorId));
 
   //void function to update the admin and on create the admin should init be the maker maybe do that outside cubit
   //void onAdminsAdded(Set<String> ids) => emit(state.copyWith(adminIds: ids));
-  
+
   void onAdminAdded(String id) {
     //var lst = state.adminIds;
     //lst.add(id);
@@ -137,7 +143,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
     onElderIdRemoved(id);
     emit(state.copyWith(adminIds: state.adminIds)); // used to be lst
   }
-  
+
   void onAdminRemoved(String id) {
     var lst = state.adminIds;
     lst.remove(id);
@@ -158,7 +164,8 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
   //void function to add the users to the members list
   //TODO
   void onMemberIdsAdded(List<String> userrIds) {
-    emit(state.copyWith(memberIds: userrIds, status: BuildChurchStatus.initial));
+    emit(
+        state.copyWith(memberIds: userrIds, status: BuildChurchStatus.initial));
   }
 
   void onSubmiting() {
@@ -167,30 +174,34 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
 
   //void functoion to invite users A.K.A populate list
   // future bool to see if a user is in commuinity or not
-   isCommuinityMember (Church commuinity) async {
-     final userId = _authBloc.state.user!.uid;
-     bool isMember = await  _churchRepository.isCommuinityMember(commuinity: commuinity, authorId: userId);
-     print("Member status :$isMember for checking if commuinity member");
-     emit(state.copyWith( isMember: isMember ));
-     print("state member status: ${state.isMember}");
-   }
-
+  isCommuinityMember(Church commuinity) async {
+    final userId = _authBloc.state.user!.uid;
+    bool isMember = await _churchRepository.isCommuinityMember(
+        commuinity: commuinity, authorId: userId);
+    print("Member status :$isMember for checking if commuinity member");
+    emit(state.copyWith(isMember: isMember));
+    print("state member status: ${state.isMember}");
+  }
 
   //void function to upload church
   void submit() async {
     print("We are in the submit function");
     emit(state.copyWith(status: BuildChurchStatus.loading));
     try {
-      
-      final imageUrl = await _storageRepository.uploadChurchImage(url: '', image: state.imageFile!);
+      final imageUrl = await _storageRepository.uploadChurchImage(
+          url: '', image: state.imageFile!);
       //handels casing for search prams
-      List<String> caseList = AdvancedQuerry().advancedSearch(query: state.name);
-      emit(state.copyWith(caseSearchList: caseList, status: BuildChurchStatus.loading));
+      List<String> caseList =
+          AdvancedQuerry().advancedSearch(query: state.name);
+      emit(state.copyWith(
+          caseSearchList: caseList, status: BuildChurchStatus.loading));
 
       //handel the making of hash tags
       if (state.initHashTag != null) {
-        List<String> hashTags = AdvancedQuerry().advancedHashTags(hashTags: state.initHashTag!);
-        emit(state.copyWith(hashTags: hashTags, status: BuildChurchStatus.loading));
+        List<String> hashTags =
+            AdvancedQuerry().advancedHashTags(hashTags: state.initHashTag!);
+        emit(state.copyWith(
+            hashTags: hashTags, status: BuildChurchStatus.loading));
       }
 
       //============================================================
@@ -198,8 +209,10 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
 
       Map<Userr, Timestamp> mems = {};
       for (int i = 0; i < state.memberIds.length; i++) {
-        final user = await _userrRepository.getUserrWithId(userrId: state.memberIds[i]);
-        mems[user]=Timestamp(0, 0); // may not work so maybe make a list then emit list o
+        final user =
+            await _userrRepository.getUserrWithId(userrId: state.memberIds[i]);
+        mems[user] = Timestamp(
+            0, 0); // may not work so maybe make a list then emit list o
       }
 
       //============================================================
@@ -219,68 +232,74 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
         }
       }
 
-
       emit(state.copyWith(members: mems));
       //-----------------------------------
       //----------------------------------------------------------
-      
+
       //===========================================================
       //the build of the initial church
       final commuinity = Church(
-          searchPram: state.caseSearchList!,
-          hashTags: state.hashTags ?? null,
-          name: state.name,
-          location: state.location,
-          imageUrl: imageUrl,
-          members: state.members,
-          events: [],
-          about: state.about,
-          size: state.memberIds.length,
-          recentMsgTime: Timestamp(1,0),
-        );
-        // build the church mem 
-        //final ChurchMembers churchMemberIds = ChurchMembers(ids: state.memberIds);
-
+        searchPram: state.caseSearchList!,
+        hashTags: state.hashTags ?? null,
+        name: state.name,
+        location: state.location,
+        imageUrl: imageUrl,
+        members: state.members,
+        events: [],
+        about: state.about,
+        size: state.memberIds.length,
+        recentMsgTime: Timestamp(1, 0),
+      );
+      // build the church mem
+      //final ChurchMembers churchMemberIds = ChurchMembers(ids: state.memberIds);
 
       // make a kings cord on the init of making the church, this is the default room
-      final recentSender = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
-      
+      final recentSender = await _userrRepository.getUserrWithId(
+          userrId: _authBloc.state.user!.uid);
 
-
-      
       //call my church repo and use the upload method to launch commuinity to firestore
-      await _churchRepository.newChurch(church: commuinity, recentSender: recentSender, roles: roles);
-      
+      await _churchRepository.newChurch(
+          church: commuinity, recentSender: recentSender, roles: roles);
+
       //-------------------------------------------------------
       print("The church is made my boi");
       emit(state.copyWith(status: BuildChurchStatus.success));
     } catch (err) {
-      emit(state.copyWith(status: BuildChurchStatus.error ,failure: Failure(message: 'check your internet connection fam')));
+      emit(state.copyWith(
+          status: BuildChurchStatus.error,
+          failure: Failure(message: 'check your internet connection fam')));
     }
-    
   }
 
-  Future <void> lightUpdate(String commuinityId, int updateType ) async {
-    // 1 = update name, 2 = update image, 3 = update about, 4 = update roles 
+  Future<void> lightUpdate(String commuinityId, int updateType) async {
+    // 1 = update name, 2 = update image, 3 = update about, 4 = update roles
     emit(state.copyWith(status: BuildChurchStatus.loading));
-    if (updateType == 1){
-      FirebaseFirestore.instance.collection(Paths.church).doc(commuinityId).update({'name': state.name});
+    if (updateType == 1) {
+      FirebaseFirestore.instance
+          .collection(Paths.church)
+          .doc(commuinityId)
+          .update({'name': state.name});
       emit(state.copyWith(status: BuildChurchStatus.success));
     } else if (updateType == 2) {
-      final imageUrl = await _storageRepository.uploadChurchImage(url: '', image: state.imageFile!);
-      FirebaseFirestore.instance.collection(Paths.church).doc(commuinityId).update({'imageUrl' : imageUrl});
+      final imageUrl = await _storageRepository.uploadChurchImage(
+          url: '', image: state.imageFile!);
+      FirebaseFirestore.instance
+          .collection(Paths.church)
+          .doc(commuinityId)
+          .update({'imageUrl': imageUrl});
     } else if (updateType == 3) {
-      FirebaseFirestore.instance.collection(Paths.church).doc(commuinityId).update({'about' : state.about});
+      FirebaseFirestore.instance
+          .collection(Paths.church)
+          .doc(commuinityId)
+          .update({'about': state.about});
     }
-
   }
-
 
 /*
   this is information that will come after the commuinity has been made.
   for example, we will call the create main room or events. so basically in layman terms
   everything under here will come after the initial call
-*/  
+*/
 
   // ignore: non_constant_identifier_names
   // Future<void> make_main_room(Church commuinity, String cordName) async {
@@ -305,12 +324,12 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
   // }
 
   //this is for the commuinity screen, this is used if we need to find all users in the commuinity
-  // we will paginatee... eventually, but basically we will grab all users via their id and return back 
-  // a bucket with the users 
+  // we will paginatee... eventually, but basically we will grab all users via their id and return back
+  // a bucket with the users
 
-  Future<List<Userr>> commuinityParcticipatents({required List<String> ids}) async {
-    
-    List<Userr> bucket =[];
+  Future<List<Userr>> commuinityParcticipatents(
+      {required List<String> ids}) async {
+    List<Userr> bucket = [];
 
     Future<void> wait() async {
       for (int i = 0; i < ids.length; i++) {
@@ -319,8 +338,8 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       }
     }
 
-      await wait();
-      return bucket;
+    await wait();
+    return bucket;
   }
 
   bool isAdmin({required Church commuinity}) {
@@ -328,72 +347,80 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
     return ids.contains(_authBloc.state.user!.uid);
   }
 
-  void changeRole({required Userr user, required String commuinityId, required String role}) async  {
+  void changeRole(
+      {required Userr user,
+      required String commuinityId,
+      required String role}) async {
     // commuinity.members[FirebaseFirestore.instance.collection(Paths.users).doc(user.id)]['role'] = Roles.Admin;
-    var cmSnap = await  FirebaseFirestore.instance.collection(Paths.church).doc(commuinityId).get();
-    var memRefs =  Church.fromDocMemRefs(cmSnap);
+    var cmSnap = await FirebaseFirestore.instance
+        .collection(Paths.church)
+        .doc(commuinityId)
+        .get();
+    var memRefs = Church.fromDocMemRefs(cmSnap);
     var memRefsMap = memRefs['memRefs'];
     memRefsMap[user.id]['role'] = role;
-    
-    _churchRepository.updateCommuinityMember(memInfo: memRefsMap, cmId: commuinityId);
+
+    _churchRepository.updateCommuinityMember(
+        memInfo: memRefsMap, cmId: commuinityId);
   }
 
- 
-
-  void updateCommuinityName({required Church commuinity, required String name}) async {
+  void updateCommuinityName(
+      {required Church commuinity, required String name}) async {
     emit(state.copyWith(status: BuildChurchStatus.loading));
     try {
       String imageUrl = commuinity.imageUrl;
       if (state.imageFile != null) {
-        imageUrl = await _storageRepository
-          .uploadChatAvatar(image: state.imageFile!, url: commuinity.imageUrl);
+        imageUrl = await _storageRepository.uploadChatAvatar(
+            image: state.imageFile!, url: commuinity.imageUrl);
       }
 
       var commuinityName = commuinity.name;
-      if (state.name.isNotEmpty) 
-        commuinityName = state.name;
+      if (state.name.isNotEmpty) commuinityName = state.name;
 
-      Church updatedCommuinity = commuinity.copyWith(name: commuinityName, imageUrl: imageUrl);
-      await _churchRepository.updateCommuinity(commuinity: updatedCommuinity, roles: {});
-      
+      Church updatedCommuinity =
+          commuinity.copyWith(name: commuinityName, imageUrl: imageUrl);
+      await _churchRepository
+          .updateCommuinity(commuinity: updatedCommuinity, roles: {});
     } catch (e) {
       print("error: $e");
     }
     //FirebaseFirestore.instance.collection(Paths.church).doc(commuinity.id).update(commuinity.copyWith(name: name).toDoc());
   }
 
-  Future < List<Userr> >grabCurrFollowing () async {
+  Future<List<Userr>> grabCurrFollowing() async {
     final uid = _authBloc.state.user!.uid;
-    final currFollowingIds = await _userrRepository.listOfIdsCurrFollowing(uid: uid);
+    final currFollowingIds =
+        await _userrRepository.listOfIdsCurrFollowing(uid: uid);
     List<Userr> bucket = [];
-    Future<void> populateBucket () async {
-      
-      for ( String x in currFollowingIds ) {
+    Future<void> populateBucket() async {
+      for (String x in currFollowingIds) {
         final user = await _userrRepository.getUserrWithId(userrId: x);
         bucket.add(user);
       }
-
     }
 
     await populateBucket();
     return bucket;
   }
 
-  Future<void> inviteToCommuinity({required String toUserId, required Church commuinity}) async {
+  Future<void> inviteToCommuinity(
+      {required String toUserId, required Church commuinity}) async {
     final currid = _authBloc.state.user!.uid;
     final fromUser = await _userrRepository.getUserrWithId(userrId: currid);
-    _churchRepository.inviteUserToCommuinity(fromUser: fromUser, toUserId: toUserId, commuinity: commuinity);
+    _churchRepository.inviteUserToCommuinity(
+        fromUser: fromUser, toUserId: toUserId, commuinity: commuinity);
   }
 
-  Future<void> onJoinCommuinity ({required Church commuinity }) async {
+  Future<void> onJoinCommuinity({required Church commuinity}) async {
     final userrId = _authBloc.state.user!.uid;
     final user = await _userrRepository.getUserrWithId(userrId: userrId);
-    
+
     _churchRepository.onJoinCommuinity(commuinity: commuinity, user: user);
   }
 
-  Future<void> onLeaveCommuinity( {required Church commuinity}) async {
+  Future<void> onLeaveCommuinity({required Church commuinity}) async {
     final userrId = _authBloc.state.user!.uid;
-    _churchRepository.leaveCommuinity(commuinity: commuinity, leavingUserId: userrId);
+    _churchRepository.leaveCommuinity(
+        commuinity: commuinity, leavingUserId: userrId);
   }
 }

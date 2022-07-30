@@ -13,7 +13,8 @@ mediaBottomSheet(
     {required KingscordCubit kingscordCubit,
     required BuildContext context,
     required String cmId,
-    required String kcId}) {
+    required String kcId,
+    required String seenderUsername}) {
   return showModalBottomSheet(
     isScrollControlled: true,
     
@@ -48,7 +49,7 @@ mediaBottomSheet(
                       if (pickedFile != null) {
                         kingscordCubit.onUploadImage(pickedFile);
                         kingscordCubit.onSendTxtImg(
-                            churchId: cmId, kingsCordId: kcId);
+                            churchId: cmId, kingsCordId: kcId, senderUsername: seenderUsername);
                       }
                     },
                     style: ElevatedButton.styleFrom(primary: Colors.red[800]),

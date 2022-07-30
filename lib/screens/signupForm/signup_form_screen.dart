@@ -37,8 +37,21 @@ class SignupFormScreen extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       child: TextFormField(
         decoration: const InputDecoration(labelText: 'Username'),
-        validator: (input) =>
-            input!.trim().isEmpty ? 'Please enter a username' : null,
+        validator: (input) {
+          if (input!.trim().isEmpty)
+            return "You have to enter a username fam";
+          else if (input.length > 10)
+            return "Fam your username must be less than 10 chars";
+          else if (input.contains('^') ||
+              input.contains('^') ||
+              input.contains('*') ||
+              input.contains('@') ||
+              input.contains('!') ||
+              input.contains('%') ||
+              input.contains('(') || input.contains(')')) 
+              return "Fam your username can not contain: \'^'\', \'*\', \'@\', \'!'\ or \'%\', or \'()\'";
+          return null;
+        },
         onChanged: (value) =>
             context.read<SignupformCubit>().usernameChanged(value),
         //onSaved: (input) => _name = input!.trim(),

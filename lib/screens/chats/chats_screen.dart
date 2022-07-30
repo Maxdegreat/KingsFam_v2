@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
@@ -198,7 +199,7 @@ class _ChatsScreenState extends State<ChatsScreen>
                 IconButton(
                     onPressed: () => Navigator.of(context)
                         .pushNamed(CreatePostScreen.routeName),
-                    icon: Icon(Icons.camera)),
+                    icon: FaIcon(FontAwesomeIcons.images)),
                 GestureDetector(
                     onTap: () => Navigator.of(context)
                         .pushNamed(CreateComuinity.routeName),

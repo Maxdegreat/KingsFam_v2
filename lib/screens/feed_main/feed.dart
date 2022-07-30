@@ -93,7 +93,7 @@ class __buildBodyState extends State<_buildBody> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Follow Some Fam First To Have A Feed"),
+                            Text("Follow Some Fam With Post First To Have A Feed"),
                             IconButton(icon: Icon(Icons.refresh), onPressed: () => context.read<FeedBloc>().add(FeedFetchPosts()),),
                           ],
                         )));
