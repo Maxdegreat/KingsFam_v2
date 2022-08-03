@@ -129,6 +129,9 @@ class CustomRoute {
       case CommunityUpdateRoleScreen.routeName:
         return CommunityUpdateRoleScreen.route(args: settings.arguments as CommunityUpdateRoleArgsScreen);
 
+      case SnackTimeShopScreen.routeName:
+        return SnackTimeShopScreen.route();
+
       default:
         return _errorRoute();
     }

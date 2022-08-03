@@ -63,6 +63,7 @@ class PrePost extends Equatable {
   }
 }
 
+// stings for promoted: promotedL1
 
 class Post extends Equatable {
   final String? id; //1 make the model
@@ -78,7 +79,8 @@ class Post extends Equatable {
   final Timestamp date;
   final int? height;
   final Widget? nativeAd;
-  final BannerAd? bannerAd;
+  final String? promoted;
+  final String? webPageUrl; 
   Post({
     this.id,
     required this.author, //2 make the constructor
@@ -93,14 +95,15 @@ class Post extends Equatable {
     required this.date,
     required this.height,
     this.nativeAd,
-    this.bannerAd,
+    this.promoted,
+    this.webPageUrl,
   });
 
   static Post empty = Post( author: Userr.empty, quote: null, imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: '', likes: 0, date: Timestamp(0, 0), height: 10);
 
   @override
   List<Object?> get props =>
-      [id, height, author, commuinity,  quote, imageUrl, videoUrl, thumbnailUrl, soundTrackUrl, caption, likes, date, nativeAd, bannerAd]; //3 do props
+      [id, height, author, commuinity,  quote, imageUrl, videoUrl, thumbnailUrl, soundTrackUrl, caption, likes, date, nativeAd, promoted, webPageUrl]; //3 do props
 
   Post copyWith({
     String? id, //4 do the copy with
@@ -115,6 +118,8 @@ class Post extends Equatable {
     int? likes,
     Timestamp? date,
     int? height,
+    String? promoted,
+    String? webPageUrl,
   }) {
     return Post(
       id: id ?? this.id,
@@ -129,6 +134,8 @@ class Post extends Equatable {
       likes: likes ?? this.likes,
       date: date ?? this.date,
       height: height ?? this.height,
+      promoted: promoted ?? this.promoted,
+      webPageUrl: webPageUrl ?? this.webPageUrl
     );
   }
 
@@ -163,6 +170,8 @@ class Post extends Equatable {
       'date': Timestamp.now(),
       'height': height,
   };
+
+  
 
   static Future<Post?> fromDoc(DocumentSnapshot doc) async {
     log ("function: fromDoc ~ file: post_model.dart");

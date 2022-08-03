@@ -25,6 +25,7 @@ export 'package:kingsfam/screens/commuinity/screens/sounds/sounds.dart';
 export 'feed_new/feed_new.dart';
 export 'video_call/video_call_screen.dart';
 export '../widgets/url_view.dart'; // granted this is in the widgets folder however it plays very much like a screen
+export 'snack_time/snack_time.dart';
 
 
 

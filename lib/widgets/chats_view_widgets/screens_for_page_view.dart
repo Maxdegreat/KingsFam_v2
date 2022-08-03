@@ -54,33 +54,7 @@ class ScreensForPageView {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         state.chs.length == 0
-                            ? Column(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Center(
-                                      child: Container(
-                                          height: 100,
-                                          width: 100,
-                                          child: KFCrownV2())),
-                                  Container(
-                                      width: 125,
-                                      child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                              primary: Color(hexcolor
-                                                  .hexcolorCode('#FFC050'))),
-                                          onPressed: () async {
-                                            helpDialog(context);
-                                          },
-                                          child: Text(
-                                            "Getting Started",
-                                            textAlign: TextAlign.center,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyText1,
-                                          )))
-                                ],
-                              )
+                            ? GettingStartedCrown(context)
                             : Expanded(
                                 flex: 1,
                                 child: ListView.builder(
@@ -149,6 +123,36 @@ class ScreensForPageView {
     );
   }
 
+  Column GettingStartedCrown(BuildContext context) {
+    return Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Center(
+                                    child: Container(
+                                        height: 100,
+                                        width: 100,
+                                        child: KFCrownV2())),
+                                Container(
+                                    width: 125,
+                                    child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            primary: Color(hexcolor
+                                                .hexcolorCode('#FFC050'))),
+                                        onPressed: () async {
+                                          helpDialog(context);
+                                        },
+                                        child: Text(
+                                          "Getting Started",
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1,
+                                        )))
+                              ],
+                            );
+  }
+
   // ignore: non_constant_identifier_names
   Widget chats_view(String userId, ChatscreenState state) {
     return Scaffold(
@@ -180,6 +184,7 @@ class ScreensForPageView {
   }
 
   Widget feed(context) => FeedScreenWidget();
+
 
   //Container(child: FeedScreenWidget());
 }
