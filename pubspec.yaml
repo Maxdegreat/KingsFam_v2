@@ -74,16 +74,14 @@ dependencies:
   timeago: ^3.1.0
   intl: ^0.17.0
 
-  agora_rtc_engine: ^5.3.0
-
   permission_handler: 
   
   camera: #0.8.1+2
   scrollable_positioned_list: ^0.2.3
   video_thumbnail: ^0.5.0
-
   google_mobile_ads: ^0.13.0
   url_launcher: ^6.0.8
+  flutter_svg: ^1.1.2
 
   rename:
   get: ^4.6.1
@@ -130,6 +128,8 @@ flutter:
     - assets/icons/search_icon.riv
     - assets/icons/add_icon.riv
     - assets/icons/Logo_files/PNG/KingsFam-2.png
+    # SVG's are below
+    - assets/promo_banners/boosted_cm_banners/get_boosted.svg
 
     
   #   - images/a_dot_burr.jpeg

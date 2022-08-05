@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/helpers/navigator_helper.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/models/church_kingscord_model.dart';
@@ -72,13 +73,12 @@ class _ChatsScreenState extends State<ChatsScreen>
   void _handleMessage(RemoteMessage message) {
     if (message.data['type'] == 'kc_type') {
       log('The message is $message');
-        // var kc = KingsCord(tag: message.data['tag'], cordName: message.data['cordName'], recentMessage: message.data['recentMessage'], recentSender: message.data['recentSender'], members: message.data['members'], id: message.data['id']);
-        // Navigator.pushNamed(context, KingsCordScreen.routeName, arguments: KingsCordArgs(commuinity: Church(id: message.data['communityId'], searchPram: [], name: message.data['communityName'], location: '...', imageUrl: '...', members: message.data['members'], events: [], about: '...', recentMsgTime: Timestamp(0,0)), kingsCord: kc));
-      } else {
-        log("we were not able to track the remote message to ur wanted screeen");
-      }
+      // var kc = KingsCord(tag: message.data['tag'], cordName: message.data['cordName'], recentMessage: message.data['recentMessage'], recentSender: message.data['recentSender'], members: message.data['members'], id: message.data['id']);
+      // Navigator.pushNamed(context, KingsCordScreen.routeName, arguments: KingsCordArgs(commuinity: Church(id: message.data['communityId'], searchPram: [], name: message.data['communityName'], location: '...', imageUrl: '...', members: message.data['members'], events: [], about: '...', recentMsgTime: Timestamp(0,0)), kingsCord: kc));
+    } else {
+      log("we were not able to track the remote message to ur wanted screeen");
     }
-  
+  }
 
   late BannerAd _bottomBannerAd;
   late BannerAd _inLineBannerAd;
@@ -187,7 +187,7 @@ class _ChatsScreenState extends State<ChatsScreen>
               title: Row(
                 children: [
                   Text(
-                    'K I N G S F A M (alpha)',
+                    'KING\'S FAM',
                     style: TextStyle(
                         color: Color(hexcolor.hexcolorCode('#FFC050'))),
                   ),
@@ -197,20 +197,14 @@ class _ChatsScreenState extends State<ChatsScreen>
               ),
               actions: [
                 IconButton(
-                    onPressed: () => Navigator.of(context)
-                        .pushNamed(CreatePostScreen.routeName),
+                    onPressed: () => NavHelper().navToCreatePost(context),
                     icon: FaIcon(FontAwesomeIcons.images)),
                 GestureDetector(
-                    onTap: () => Navigator.of(context)
-                        .pushNamed(CreateComuinity.routeName),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      child: Container(
-                        height: 25,
-                        width: 25,
-                        child: RiveAnimation.asset('assets/icons/add_icon.riv'),
-                      ),
-                    )),
+                    onTap: () => NavHelper().navToCreateSpaces(context),
+                    child: KfCrownPadded()),
+                IconButton(
+                    onPressed: () => NavHelper().navToSnackBar(context),
+                    icon: Icon(Icons.fastfood_sharp)),
               ],
             ),
             body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
@@ -232,8 +226,8 @@ class _ChatsScreenState extends State<ChatsScreen>
                             controller: _tabController,
                             tabs: [
                               Tab(text: "Feed"),
-                              Tab(text: "Commuinities"),
-                              Tab(text: "Chats")
+                              Tab(text: "Commuinity\'s"),
+                              Tab(text: "Chats"),
                             ],
                           ))
                     ];
@@ -247,5 +241,16 @@ class _ChatsScreenState extends State<ChatsScreen>
                     ],
                   ));
             })));
+  }
+
+  Padding KfCrownPadded() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      child: Container(
+        height: 25,
+        width: 25,
+        child: RiveAnimation.asset('assets/icons/add_icon.riv'),
+      ),
+    );
   }
 }
