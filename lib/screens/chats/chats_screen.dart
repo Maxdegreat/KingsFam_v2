@@ -243,7 +243,7 @@ class _ChatsScreenState extends State<ChatsScreen>
                     children: [
                       ScreensForPageView().feed(context),
                       ScreensForPageView().commuinity_view(userId, context, _bottomBannerAd, _isBottomBannerAdLoaded),
-                      ScreensForPageView().chats_view(userId, state)
+                      ScreensForPageView().chats_view(userId, state, context)
                     ],
                   ));
             })));

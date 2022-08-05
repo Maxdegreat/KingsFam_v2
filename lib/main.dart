@@ -16,6 +16,7 @@ import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/cubit/calls_home_cubit.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
+import 'package:kingsfam/theme_club_house/theme_info.dart';
 
 
 import 'screens/build_church/cubit/buildchurch_cubit.dart';
@@ -114,26 +115,7 @@ class MyApp extends StatelessWidget {
         ],
         child: MaterialApp(
           //THEME DATA
-          theme: ThemeData(
-              brightness: Brightness.dark,
-              appBarTheme: AppBarTheme(color: Colors.black),
-              scaffoldBackgroundColor: Colors.black,
-              primaryColorDark: Colors.red[300],
-              textTheme: TextTheme(
-                  bodyText1: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                  ),
-                  bodyText2: TextStyle(fontSize: 15, color: Colors.grey[400]),
-                  headline1: TextStyle(
-                      fontSize: 25.0,
-                      color: Colors.red[400],
-                      fontWeight: FontWeight.bold),
-                  headline2: TextStyle(
-                      fontSize: 23.0,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold)),
-              accentColor: Colors.white),
+          theme: ThemeInfo().themeClubHouseDark(),
           debugShowCheckedModeBanner: false,
           title: 'KingsFam',
           onGenerateRoute: CustomRoute.onGenerateRoute,

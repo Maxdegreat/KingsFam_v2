@@ -15,7 +15,7 @@ import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/kf_crown_v2.dart';
 import 'package:kingsfam/widgets/chats_view_widgets/chats_screen_widgets.dart';
 import 'package:kingsfam/widgets/widgets.dart';
-
+import 'package:rive/rive.dart';
 
 class ScreensForPageView {
   // ignore: non_constant_identifier_names
@@ -97,11 +97,13 @@ class ScreensForPageView {
                                         .snapshots()
                                         .isEmpty;
 
-                                    var usersrecentTime = commuinity.members[state.currUserr];
+                                    var usersrecentTime =
+                                        commuinity.members[state.currUserr];
                                     log(usersrecentTime.toString());
-                                    var compraeTimes = commuinity.recentMsgTime.compareTo(usersrecentTime['timestamp']);
-                                    bool cmHasNotif = compraeTimes > 0 ;
-                                    
+                                    var compraeTimes = commuinity.recentMsgTime
+                                        .compareTo(
+                                            usersrecentTime['timestamp']);
+                                    bool cmHasNotif = compraeTimes > 0;
 
                                     return GestureDetector(
                                       onLongPress: () => leaveCommuinity(
@@ -116,10 +118,11 @@ class ScreensForPageView {
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 10.0),
                                           // see child of list view here below.
-                                          child: FancyListTile( // ------------------------- update hee
+                                          child: FancyListTile(
+                                              // ------------------------- update hee
                                               isMentioned: state
                                                   .mentionedMap[commuinity.id],
-                                                  newNotification: cmHasNotif,
+                                              newNotification: cmHasNotif,
                                               location:
                                                   commuinity.location.length > 1
                                                       ? commuinity.location
@@ -150,32 +153,64 @@ class ScreensForPageView {
   }
 
   // ignore: non_constant_identifier_names
-  Widget chats_view(String userId, ChatscreenState state) {
+  Widget chats_view(String userId, ChatscreenState state, BuildContext context) {
     return Scaffold(
-      body: GridView.builder(
-        itemCount: state.chat.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          mainAxisSpacing: 20.0,
-          crossAxisSpacing: 20.0,
-          crossAxisCount: 2,
-          childAspectRatio: 0.85,
-        ),
-        itemBuilder: (context, index) {
-          //TODO
-          Chat? chat = state.chat[index];
-          // ignore: unnecessary_null_comparison
-          if (chat != null) {
-          
+      body: state.chat.length > 0
+          ? gridOfChats(state, userId)
+          : Center(
+              child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("Hmm, it's kinda empty over here", style: Theme.of(context).textTheme.bodyText1),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text("Start a chat or Community?  ", style: Theme.of(context).textTheme.bodyText1,),
+                    navToCreateScreen(context),
+                  ],
+                )
+              ],
+            )),
+    );
+  }
+
+  GestureDetector navToCreateScreen(BuildContext context) {
+    return GestureDetector(
+                    onTap: () => Navigator.of(context)
+                      .pushNamed(CreateComuinity.routeName),
+                    child: Container(
+                        height: 20,
+                        width: 20,
+                        child:
+                            RiveAnimation.asset('assets/icons/add_icon.riv')),
+                  );
+  }
+
+  GridView gridOfChats(ChatscreenState state, String userId) {
+    return GridView.builder(
+      itemCount: state.chat.length,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        mainAxisSpacing: 20.0,
+        crossAxisSpacing: 20.0,
+        crossAxisCount: 2,
+        childAspectRatio: 0.85,
+      ),
+      itemBuilder: (context, index) {
+        //TODO
+        Chat? chat = state.chat[index];
+        // ignore: unnecessary_null_comparison
+        if (chat != null) {
           return GestureDetector(
             onTap: () => Navigator.of(context).pushNamed(ChatRoom.routeName,
                 arguments: ChatRoomArgs(chat: chat)),
             child: buildChat(chat: chat, context: context, userId: userId),
           );
-          } else {
-            return SizedBox.shrink();
-          }
-        },
-      ),
+        } else {
+          return SizedBox.shrink();
+        }
+      },
     );
   }
 

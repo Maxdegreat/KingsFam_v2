@@ -40,19 +40,6 @@ class LoginScreen extends StatelessWidget {
                       ],
                     ))),
             Spacer(),
-            Container(
-              width: size.width / 1.2,
-              child: TextButton.icon(
-                onPressed: () => context.read<AuthRepository>().signInWithGoogle(),
-                icon: FaIcon(FontAwesomeIcons.google, color: Colors.red[400],),
-                label: Text('Continue With Google',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                    )),
-                style: TextButton.styleFrom(backgroundColor: Colors.white),
-              ),
-            ),
             SizedBox(height: 20),
             Container(
               width: size.width / 1.2,

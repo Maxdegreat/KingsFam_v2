@@ -93,7 +93,7 @@ class _CreatePostScreenState extends State<CreatePostScreen>
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
     loadCameras();
     super.initState();
   }
@@ -101,7 +101,7 @@ class _CreatePostScreenState extends State<CreatePostScreen>
   @override
   void dispose() {
     //_vidoeController.dispose();
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     closeCameras();
     super.dispose();
   }

@@ -114,12 +114,22 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     List<MessageLines> messageLines = [];
 
     message.forEach((sms) {
+      MessageLines messageLine;
       if (sms != null) {
-        MessageLines messageLine = MessageLines(
+        if (messageLines.length > 0) {
+          messageLine = MessageLines(
+          previousSenderAsUid: null,
           cmId: widget.commuinity.id!,
           kcId: widget.kingsCord.id!,
           message: sms,
         );
+        } else {
+          messageLine = MessageLines(
+          cmId: widget.commuinity.id!,
+          kcId: widget.kingsCord.id!,
+          message: sms,
+        );
+        }
         messageLines.add(messageLine);
       }
     });
