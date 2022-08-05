@@ -11,3 +11,4 @@ export 'commuinity_call.dart';
 export 'notification_model.dart';
 export 'event_model.dart';
 export 'church_members_model.dart';
+export 'snack_model.dart';
