@@ -39,7 +39,7 @@ class _PostSingleViewState extends State<PostSingleView> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return widget.post.bannerAd == null ? Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         userPicAndName(
@@ -50,7 +50,7 @@ class _PostSingleViewState extends State<PostSingleView> {
         contentContainer(post: widget.post, size: size),
         interactions()
       ],
-    ) : Container(color: Colors.green, height: 100, width: double.infinity, );
+    );
   }
 
   Widget viewCommuinity({required Church? commuinity}) {
