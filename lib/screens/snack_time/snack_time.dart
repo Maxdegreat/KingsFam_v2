@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kingsfam/extensions/hexcolor.dart';
-import 'package:kingsfam/models/models.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class SnackTimeShopScreen extends StatefulWidget {
   const SnackTimeShopScreen({ Key? key }) : super(key: key);
@@ -84,9 +83,9 @@ class _SnackTimeShopScreenState extends State<SnackTimeShopScreen> {
         Container(
         height: 95,
         width: double.infinity,
-        child: Center(child: Text("Get access to cm Theme Packs!", textAlign: TextAlign.center,)),
-        decoration: BoxDecoration(color: Colors.blue[100])
-      ),
+        child: SvgPicture.asset("assets/promo_banners/boosted_cm_banners/get_boosted.svg"),
+        decoration: BoxDecoration(color: Colors.blue[100]))
+      ,
               Container(
         height: 95,
         width: double.infinity,
