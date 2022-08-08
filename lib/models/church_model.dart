@@ -21,6 +21,8 @@ class Church extends Equatable {
   final int? size;
   final Map<String, List<dynamic>>? permissions;
   final Timestamp recentMsgTime;
+  final int boosted; // 0 none 1 basic, 2 if I ever add more versions
+  final String themePack;
   // 2 gen the constructor
   Church({
     required this.searchPram,
@@ -34,6 +36,8 @@ class Church extends Equatable {
     required this.events,
     required this.about,
     required this.recentMsgTime,
+    required this.boosted,
+    required this.themePack,
     this.size,
   });
   // 3 make the props
@@ -50,6 +54,8 @@ class Church extends Equatable {
         members,
         events,
         recentMsgTime,
+        boosted,
+        themePack,
         size,
       ];
   //generate the copy with
@@ -65,6 +71,8 @@ class Church extends Equatable {
     Map<Userr, dynamic>? members,
     List<String>? events,
     int? size,
+    int? boosted,
+    String? themePack,
     Map<String, List<dynamic>>? permissions,
   }) {
     return Church(
@@ -79,6 +87,8 @@ class Church extends Equatable {
       members: members ?? this.members,
       events: events ?? this.events,
       size: size ?? this.size,
+      boosted: boosted ?? this.boosted,
+      themePack: themePack ?? this.themePack,
       permissions: permissions ?? this.permissions,
     );
   }
@@ -119,13 +129,9 @@ class Church extends Equatable {
       'members': memRefs,
       'events': events,
       'size': size,
+      'boosted': boosted,
+      'themePack' : themePack,
       'recentMsgTime': Timestamp.now(),
-      // ================= this is not a part of the model
-      'permissions': {
-        Roles.Owner: ['*'],
-        Roles.Admin: Actions.communityAdminDefaultActions,
-        Roles.Elder: Actions.communityElderDefaultActions,
-      }
     };
   }
 
@@ -159,6 +165,8 @@ class Church extends Equatable {
       'members': memRefs,
       'events': events,
       'size': size,
+      'boosted': boosted,
+      'themePack': themePack,
       'recentMsgTime': Timestamp.now(),
     };
   }
@@ -175,8 +183,7 @@ class Church extends Equatable {
   static Future<Church> fromDoc(DocumentSnapshot doc) async {
     final data = doc.data() as Map<String, dynamic>;
     Map<Userr, dynamic> members = {};
-    final memRefs =
-        Map<String, dynamic>.from(data['members']); //data['members'];
+    final memRefs = Map<String, dynamic>.from(data['members']); //data['members'];
 
     // log("about to show you data in the mems ref");
     // for (var id in memRefs.keys) {
@@ -199,36 +206,28 @@ class Church extends Equatable {
     }
 
     return Church(
-      members: members,
-      id: doc.id,
-      size: data['size'] ?? 0,
-      searchPram: List<String>.from(data['searchPram'] ?? []),
-      hashTags: List<String>.from(data['hashTags'] ?? []),
-      name: data['name'] ?? 'name',
-      location: data['location'] ?? 'Heaven',
-      about: data['about'] ?? 'bio',
-      imageUrl: data['imageUrl'] ?? '',
-      recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0),
-      events: List<String>.from(
-        data['events'] ?? [],
-      ),
-      permissions: Map<String, List>.from(data['permissions'])
-    );
+        members: members,
+        id: doc.id,
+        size: data['size'] ?? 0,
+        searchPram: List<String>.from(data['searchPram'] ?? []),
+        hashTags: List<String>.from(data['hashTags'] ?? []),
+        name: data['name'] ?? 'name',
+        location: data['location'] ?? 'Heaven',
+        about: data['about'] ?? 'bio',
+        imageUrl: data['imageUrl'] ?? '',
+        recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0),
+        boosted: data['boosted'] ?? 0,
+        themePack: data['themePack'] ?? "none",
+        events: List<String>.from(
+          data['events'] ?? [],
+        ),
+        );
   }
 
-  static Map<String, dynamic> fromDocMemRefs(DocumentSnapshot doc)  {
+  static Map<String, dynamic> fromDocMemRefs(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    return {
-      'memRefs' : Map<String, dynamic>.from(data['members'])
-    };
+    return {'memRefs': Map<String, dynamic>.from(data['members'])};
   }
-
-static Map<String, dynamic> fromDocPermissions(DocumentSnapshot doc)  {
-  final data = doc.data() as Map<String, dynamic>;
-  return 
-    Map<String, dynamic>.from(data['permissions']);
-  
-}
 
   //7 church. empty
   static Church empty = Church(
@@ -240,7 +239,8 @@ static Map<String, dynamic> fromDocPermissions(DocumentSnapshot doc)  {
     events: [],
     about: '...',
     recentMsgTime: Timestamp(0, 0),
+    boosted: 0,
     hashTags: [],
-    size: 0,
+    size: 0, themePack: 'none',
   );
 }

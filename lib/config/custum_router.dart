@@ -14,12 +14,11 @@ class CustomRoute {
       case '/':
         return MaterialPageRoute(
           settings: const RouteSettings(name: '/'),
-          builder: (_) =>  Scaffold(),
+          builder: (_) => Scaffold(),
         );
 
       case SplashScreen.routeName:
         return SplashScreen.route();
-        
 
       case LoginScreen.routeName:
         return LoginScreen.route();
@@ -44,7 +43,13 @@ class CustomRoute {
       case '/':
         return MaterialPageRoute(
           settings: const RouteSettings(name: '/'),
-          builder: (_) =>  Scaffold(body: Container(height: double.infinity, width: double.infinity, color:  Colors.purple,),),
+          builder: (_) => Scaffold(
+            body: Container(
+              height: double.infinity,
+              width: double.infinity,
+              color: Colors.purple,
+            ),
+          ),
         );
 
       case EditProfileScreen.routeName:
@@ -101,7 +106,8 @@ class CustomRoute {
             args: settings.arguments as StoryCommuinityArgs);
 
       case CommuinityFeedScreen.routeName:
-        return CommuinityFeedScreen.route(args: settings.arguments as CommuinityFeedScreenArgs);
+        return CommuinityFeedScreen.route(
+            args: settings.arguments as CommuinityFeedScreenArgs);
 
       case CallsHome.routeName:
         return CallsHome.route(args: settings.arguments as CallsHomeArgs);
@@ -113,13 +119,15 @@ class CustomRoute {
       case CommuinityScreen.routeName:
         return CommuinityScreen.route(
             args: settings.arguments as CommuinityScreenArgs);
-      
+
       case FeedNewScreen.routeName:
-        return FeedNewScreen.route(args: settings.arguments as FeedNewScreenArgs);
+        return FeedNewScreen.route(
+            args: settings.arguments as FeedNewScreenArgs);
 
       case CommentScreen.routeName:
-        return CommentScreen.route(args: settings.arguments as CommentScreenArgs);
-      
+        return CommentScreen.route(
+            args: settings.arguments as CommentScreenArgs);
+
       case UrlViewScreen.routeName:
         return UrlViewScreen.route(args: settings.arguments as UrlViewArgs);
 
@@ -127,17 +135,19 @@ class CustomRoute {
         return RolesScreen.route(args: settings.arguments as RoleScreenArgs);
 
       case CommunityUpdateRoleScreen.routeName:
-        return CommunityUpdateRoleScreen.route(args: settings.arguments as CommunityUpdateRoleArgsScreen);
+        return CommunityUpdateRoleScreen.route(
+            args: settings.arguments as CommunityUpdateRoleArgsScreen);
 
       case SnackTimeShopScreen.routeName:
         return SnackTimeShopScreen.route();
+
+      case BuyPerkScreen.routeName:
+        return BuyPerkScreen.route(settings.arguments as BuyPerkArgs);
 
       default:
         return _errorRoute();
     }
   }
-
-  
 
   static Route _errorRoute() {
     return MaterialPageRoute(

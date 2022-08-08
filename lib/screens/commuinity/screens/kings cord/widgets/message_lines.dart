@@ -11,11 +11,12 @@ import 'package:url_launcher/url_launcher.dart';
 
 class MessageLines extends StatelessWidget {
   //class data
+  final String? previousSenderAsUid;
   final Message message;
   final String kcId;
   final String cmId;
 
-  MessageLines({required this.message, required this.cmId, required this.kcId});
+  MessageLines({required this.message, required this.cmId, required this.kcId, this.previousSenderAsUid});
 
   showLinkPicker(List<String> links, BuildContext context) {
     return showModalBottomSheet(
@@ -60,7 +61,17 @@ class MessageLines extends StatelessWidget {
       height: 30,
       child: Center(
           child: RichText(
-        text: TextSpan(text: reaction, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold), children: [TextSpan(text: '\t$num', style: TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.bold))]),
+        text: TextSpan(
+            text: reaction,
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            children: [
+              TextSpan(
+                  text: '\t$num',
+                  style: TextStyle(
+                      fontSize: 17,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold))
+            ]),
       )),
       decoration: BoxDecoration(
           color: Colors.white24,
@@ -71,25 +82,26 @@ class MessageLines extends StatelessWidget {
 
   _showReactionBarUi({required Map<String, int>? messageReactions}) {
     return message.reactions == {} || messageReactions == {'': 0}
-              ? SizedBox.shrink()
-              : Container(
-                  height: 30,
-                  child: Row(
-                      children: messageReactions!.keys.map((e) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 7.0),
-                      child: reactionContainer(
-                          reaction: e, num: message.reactions![e]!),
-                    );
-                  }).toList()),
-                );
+        ? SizedBox.shrink()
+        : Container(
+            height: 30,
+            child: Row(
+                children: messageReactions!.keys.map((e) {
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 7.0),
+                child:
+                    reactionContainer(reaction: e, num: message.reactions![e]!),
+              );
+            }).toList()),
+          );
   }
 
   _showReactionsBar(String messageId, Map<String, int>? messageReactions,
       BuildContext context) {
-        if (messageReactions == null) {
-          messageReactions = {};
-        }
+    if (messageReactions == null) {
+      messageReactions = {};
+    }
     return showModalBottomSheet(
         context: context,
         builder: (context) {
@@ -196,7 +208,8 @@ class MessageLines extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onLongPress: () => _showReactionsBar(message.id!, message.reactions, context),
+          onLongPress: () =>
+              _showReactionsBar(message.id!, message.reactions, context),
           onTap: () => Navigator.of(context).pushNamed(UrlViewScreen.routeName,
               arguments: UrlViewArgs(
                   urlMain: message.imageUrl!,
@@ -232,7 +245,8 @@ class MessageLines extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               GestureDetector(
-                onLongPress: () =>_showReactionsBar(message.id!, message.reactions, context),
+                onLongPress: () =>
+                    _showReactionsBar(message.id!, message.reactions, context),
                 onTap: () => Navigator.of(context).pushNamed(
                     UrlViewScreen.routeName,
                     arguments: UrlViewArgs(
@@ -265,7 +279,7 @@ class MessageLines extends StatelessWidget {
                   fit: BoxFit.cover,
                   image: CachedNetworkImageProvider(message.thumbnailUrl!))),
         ),
-                _showReactionBarUi(messageReactions: message.reactions)
+        _showReactionBarUi(messageReactions: message.reactions)
       ],
     );
   }
@@ -288,7 +302,7 @@ class MessageLines extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 //FancyListTile(username: '${kingsCordMemInfo.memberInfo[message.senderId]['username']}', imageUrl: '${kingsCordMemInfo.memberInfo[message.senderId]['profileImageUrl']}', onTap: null, isBtn: false, BR: 18, height: 18, width: 18),
-                kingsCordAvtar(context),
+                previousSenderAsUid == message.sender!.id ? SizedBox.shrink() :kingsCordAvtar(context),
                 SizedBox(
                   width: 5.0,
                 ),
@@ -356,7 +370,7 @@ class MessageLines extends StatelessWidget {
   Widget? kingsCordProfileImg() => CircleAvatar(
       backgroundColor: Colors.grey[400],
       backgroundImage:
-          CachedNetworkImageProvider(message.sender!.profileImageUrl));
+          CachedNetworkImageProvider(message.sender!.profileImageUrl),radius: 8,);
   Widget? kingsCordProfileIcon() =>
       Container(child: Icon(Icons.account_circle));
 }

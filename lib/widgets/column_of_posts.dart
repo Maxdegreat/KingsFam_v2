@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/screens.dart';
-import 'package:kingsfam/widgets/videoPostView16_9.dart';
+import 'package:kingsfam/widgets/videos/videoPostView16_9.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 class ColumnOfPost extends StatelessWidget {

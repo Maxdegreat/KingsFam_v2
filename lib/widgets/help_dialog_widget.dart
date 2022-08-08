@@ -64,10 +64,9 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
         ),
         SizedBox(height: 15),
         ElevatedButton(
-          onPressed: () {},
-          child: Text("Next"),
-          style: ElevatedButton.styleFrom(
-              primary: Color(hexcolor.hexcolorCode('#FFC050'))),
+          onPressed: () {}, 
+          child: Text("Swipe ->"),
+          style: ElevatedButton.styleFrom(primary: Color(hexcolor.hexcolorCode('#FFC050'))),
         )
       ],
     ),
@@ -94,10 +93,9 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
         ),
         SizedBox(height: 15),
         ElevatedButton(
-          onPressed: () {},
-          child: Text("Next"),
-          style: ElevatedButton.styleFrom(
-              primary: Color(hexcolor.hexcolorCode('#FFC050'))),
+          onPressed: () {}, 
+          child: Text("Swipe ->"),
+          style: ElevatedButton.styleFrom(primary: Color(hexcolor.hexcolorCode('#FFC050'))),
         )
       ],
     ),
@@ -125,10 +123,9 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
         ),
         SizedBox(height: 15),
         ElevatedButton(
-          onPressed: () {},
-          child: Text("Next"),
-          style: ElevatedButton.styleFrom(
-              primary: Color(hexcolor.hexcolorCode('#FFC050'))),
+          onPressed: () {}, 
+          child: Text("Swipe ->"),
+          style: ElevatedButton.styleFrom(primary: Color(hexcolor.hexcolorCode('#FFC050'))),
         )
       ],
     ),

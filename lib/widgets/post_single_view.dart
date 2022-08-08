@@ -15,7 +15,7 @@ import 'package:kingsfam/screens/screens.dart';
 
 import 'package:kingsfam/widgets/commuinity_pf_image.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
-import 'package:kingsfam/widgets/videoPostView16_9.dart';
+import 'package:kingsfam/widgets/videos/videoPostView16_9.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PostSingleView extends StatefulWidget {

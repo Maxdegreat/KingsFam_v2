@@ -19,8 +19,10 @@ import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart'
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/chats_view_widgets/screens_for_page_view.dart';
 import 'package:kingsfam/widgets/kf_crown_v2.dart';
+import 'package:kingsfam/widgets/videos/asset_video.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:rive/rive.dart';
+import 'package:video_player/video_player.dart';
 
 class ChatsScreen extends StatefulWidget {
   const ChatsScreen({
@@ -131,6 +133,11 @@ class _ChatsScreenState extends State<ChatsScreen>
     //fcmpermissions();
     setupInteractedMessage();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
+    _perkedVideoPlayerController =
+        VideoPlayerController.asset("assets/promo_assets/Perked-2.mp4")
+          ..addListener(() => setState(() {}))
+          ..setLooping(true)
+          ..initialize().then((_) => _perkedVideoPlayerController.play());
     // _tabController.addListener(tabControllerListener);
     _createBottomBannerAd();
     //super.build(context);
@@ -171,10 +178,12 @@ class _ChatsScreenState extends State<ChatsScreen>
   void dispose() {
     _tabController.dispose();
     _bottomBannerAd.dispose();
+    _perkedVideoPlayerController.dispose();
     super.dispose();
   }
 
   late TabController _tabController;
+  late VideoPlayerController _perkedVideoPlayerController;
   @override
   Widget build(BuildContext context) {
     HexColor hexcolor = HexColor();
@@ -202,9 +211,12 @@ class _ChatsScreenState extends State<ChatsScreen>
                 GestureDetector(
                     onTap: () => NavHelper().navToCreateSpaces(context),
                     child: KfCrownPadded()),
-                IconButton(
-                    onPressed: () => NavHelper().navToSnackBar(context),
-                    icon: Icon(Icons.fastfood_sharp)),
+                GestureDetector(
+                    onTap: () => NavHelper().navToSnackBar(context),
+                    child: Container(
+                        child: AssetVideoPlayer(
+                            controller: _perkedVideoPlayerController,
+                            assetPath: "assets/promo_assets/Perked-2.mp4")))
               ],
             ),
             body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
@@ -238,7 +250,7 @@ class _ChatsScreenState extends State<ChatsScreen>
                       ScreensForPageView().feed(context),
                       ScreensForPageView().commuinity_view(userId, context,
                           _bottomBannerAd, _isBottomBannerAdLoaded),
-                      ScreensForPageView().chats_view(userId, state),
+                      ScreensForPageView().chats_view(userId, state, context)
                     ],
                   ));
             })));
