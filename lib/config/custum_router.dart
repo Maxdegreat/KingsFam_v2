@@ -143,6 +143,9 @@ class CustomRoute {
 
       case BuyPerkScreen.routeName:
         return BuyPerkScreen.route(settings.arguments as BuyPerkArgs);
+      
+      case UpdateCmThemePack.routeName:
+        return UpdateCmThemePack.route(settings.arguments as UpdateCmThemePackArgs);
 
       default:
         return _errorRoute();

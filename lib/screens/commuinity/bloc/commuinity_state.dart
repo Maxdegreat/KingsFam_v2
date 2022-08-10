@@ -13,6 +13,8 @@ class CommuinityState extends Equatable {
   final Failure failure;
   final Map<String, bool> mentionedMap;
   final Userr currUserr;
+  final String themePack;
+  final int boosted;
 
   const CommuinityState({
     required this.isMember,
@@ -26,13 +28,15 @@ class CommuinityState extends Equatable {
     required this.permissions,
     required this.mentionedMap,
     required this.currUserr,
+    required this.themePack,
+    required this.boosted,
 });
   
   @override
-  List<Object> get props => [currUserr, mentionedMap, collapseCordColumn, collapseVvrColumn, permissions, calls, kingCords, postDisplay, isMember, status, failure];
+  List<Object> get props => [currUserr, mentionedMap, collapseCordColumn, collapseVvrColumn, permissions, calls, kingCords, postDisplay, isMember, status, failure, themePack, boosted];
   
   factory CommuinityState.inital() {
-    return CommuinityState(currUserr: Userr.empty, mentionedMap: {}, collapseCordColumn: false, collapseVvrColumn: false, permissions: {}, isMember: false, postDisplay: [], kingCords: [], calls: [], status: CommuintyStatus.inital, failure: Failure());
+    return CommuinityState(currUserr: Userr.empty, mentionedMap: {}, collapseCordColumn: false, collapseVvrColumn: false, permissions: {}, isMember: false, postDisplay: [], kingCords: [], calls: [], status: CommuintyStatus.inital, failure: Failure(), themePack: 'none', boosted: 0);
   }
   CommuinityState copyWith({
     bool? isMember,
@@ -46,6 +50,8 @@ class CommuinityState extends Equatable {
     bool? collapseCordColumn,  
     bool? collapseVvrColumn  ,
     Userr? currUserr,
+    String? themePack,
+    int? boosted,
   }) {
     return CommuinityState(
       permissions: permissions ?? this.permissions,
@@ -59,6 +65,8 @@ class CommuinityState extends Equatable {
       collapseCordColumn: collapseCordColumn ?? this.collapseCordColumn,
       collapseVvrColumn: collapseVvrColumn ?? this.collapseVvrColumn,
       currUserr: currUserr ?? this.currUserr,
+      themePack: themePack ?? this.themePack,
+      boosted: boosted ?? this.boosted,
     );
   }
 }

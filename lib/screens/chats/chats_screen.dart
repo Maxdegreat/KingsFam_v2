@@ -133,11 +133,18 @@ class _ChatsScreenState extends State<ChatsScreen>
     //fcmpermissions();
     setupInteractedMessage();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
-    _perkedVideoPlayerController =
-        VideoPlayerController.asset("assets/promo_assets/Perked-2.mp4")
-          ..addListener(() => setState(() {}))
-          ..setLooping(true)
-          ..initialize().then((_) => _perkedVideoPlayerController.play());
+    _perkedVideoPlayerController = VideoPlayerController.asset(
+      "assets/promo_assets/Perked-2.mp4",
+      videoPlayerOptions: VideoPlayerOptions(
+        mixWithOthers: true,
+      ),
+    )
+      ..addListener(() => setState(() {}))
+      ..setLooping(true)
+      ..initialize().then((_) {
+        _perkedVideoPlayerController.play();
+        _perkedVideoPlayerController.setVolume(0);
+      });
     // _tabController.addListener(tabControllerListener);
     _createBottomBannerAd();
     //super.build(context);

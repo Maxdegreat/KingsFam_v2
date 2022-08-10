@@ -70,9 +70,15 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
     emit(state.copyWith(status: CommuintyStatus.loading));
     try {
+      
       final Userr userr = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
+
+      
+      emit(state.copyWith(themePack: event.commuinity.themePack, boosted: event.commuinity.boosted));
+
       // update the usr timestamp for the cm when they open the cm
       Church cm = Church.empty.copyWith(id: event.commuinity.id, members: event.commuinity.members, );
+
       _churchRepository.updateUserTimestampOnOpenCm(cm, _authBloc.state.user!.uid);
       final List<KingsCord> allCords = [];
       final Map<String, bool> mentionedMap = {};
@@ -93,7 +99,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
                  else {
                    mentionedMap[kc.id!] = false
                  },
-          
                  emit(state.copyWith(mentionedMap: mentionedMap, currUserr: userr))
                });
              }
@@ -150,8 +155,13 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
             isMember: isMem,
             kingCords: event.kcs,
             postDisplay: event.posts,
-            status: CommuintyStatus.loaded));
+            status: CommuintyStatus.loaded,
+            ));
       });
+
+    // checking for perks
+    
+
     } catch (e) {
       emit(state.copyWith(
           failure: Failure(message: failed, code: e.toString())));

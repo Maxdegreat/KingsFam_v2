@@ -85,6 +85,7 @@ dependencies:
 
   rename:
   get: ^4.6.1
+  google_fonts: ^3.0.1
   
   
 
@@ -131,6 +132,7 @@ flutter:
     # SVG's are below
     - assets/promo_banners/boosted_cm_banners_480x200/
     - assets/promo_assets/Perked-2.mp4
+    - assets/cm_backgrounds/
 
     
   #   - images/a_dot_burr.jpeg
