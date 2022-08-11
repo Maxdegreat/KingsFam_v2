@@ -184,6 +184,11 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     emit(state.copyWith(isMember: true));
   }
 
+  void onBoostCm({required String cmId}) {
+    _churchRepository.onBoostCm(cmId: cmId);
+    emit(state.copyWith(boosted: 1));
+  }
+
   Future<void> delKc(
       {required KingsCord cord, required Church commuinity}) async {
     await _churchRepository.delCord(cmmuinity: commuinity, cord: cord);

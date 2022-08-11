@@ -1,7 +1,6 @@
 // used to help decluter pages for navigation
 
 import 'package:flutter/material.dart';
-import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
 
@@ -14,5 +13,5 @@ class NavHelper {
 
   Future<void> navToBuyPerk(BuildContext context, String type) => Navigator.of(context).pushNamed(BuyPerkScreen.routeName, arguments: BuyPerkArgs(type: type));
 
-  Future<void> navToUpdateCmTheme(BuildContext context, CommuinityBloc commuinityBloc, String cmName) => Navigator.of(context).pushNamed(UpdateCmThemePack.routeName, arguments: UpdateCmThemePackArgs(commuinityBloc: commuinityBloc, cmName: cmName));
+  Future<void> navToUpdateCmTheme(BuildContext context, CommuinityBloc commuinityBloc, String cmName, String cmId) => Navigator.of(context).pushNamed(UpdateCmThemePack.routeName, arguments: UpdateCmThemePackArgs(commuinityBloc: commuinityBloc, cmName: cmName, cmId: cmId));
 }

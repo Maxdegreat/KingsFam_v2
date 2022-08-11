@@ -1082,7 +1082,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
       required BuildchurchCubit buildchurchCubit,
       required CommuinityBloc communitiyBloc}) {
     String assetNameForTheme = communitiyBloc.state.themePack == "none"
-        ? "assets/cm_backgrounds/4.svg"
+        ? "assets/cm_backgrounds/2.svg"
         : communitiyBloc.state.themePack;
     return Column(children: [
       ListTile(
@@ -1117,7 +1117,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
           decoration: BoxDecoration(
               color: Colors.grey[700], borderRadius: BorderRadius.circular(50)),
         ),
-        onTap: () => NavHelper().navToUpdateCmTheme(context, cmBloc, commuinity.name),
+        onTap: () => NavHelper().navToUpdateCmTheme(context, cmBloc, commuinity.name, commuinity.id!),
       ),
       ListTile(
         title: Text(

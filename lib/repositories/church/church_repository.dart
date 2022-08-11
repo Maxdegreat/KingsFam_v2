@@ -341,6 +341,11 @@ class   ChurchRepository extends BaseChurchRepository {
     fb.doc(cm.id).update({'members' : memsMap});
   }
 
+  void onBoostCm({required String cmId}) {
+    fb.doc(cmId).set({"boosted" : 1});
+    SetOptions(merge: true);
+  }
+
   // Future<List<Userr>> searchForUsersInCommuinity(
   //     {required String query, required String doc}) async {
   //   final churchSnap = await FirebaseFirestore.instance
