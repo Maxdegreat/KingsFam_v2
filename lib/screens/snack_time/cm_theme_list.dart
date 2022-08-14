@@ -37,8 +37,8 @@ Map<String, dynamic> cmSvgColorThemes = {
     "d" : Color(hexColor.hexcolorCode("#455aae"))
   },
   "assets/cm_backgrounds/3.svg" : {
-    "p" : Color(hexColor.hexcolorCode("#6B302C")),
-    "b" : Color(hexcolor.hexcolorCode("#AD524B")),
+    "p" : Color(hexColor.hexcolorCode("#6B302C")), // using for boost banner
+    "b" : Color(hexColor.hexcolorCode("#AD524B")),
     "d" : Color(hexColor.hexcolorCode("#7e433f"))
   },
   "assets/cm_backgrounds/4.svg" : {
@@ -51,12 +51,12 @@ Map<String, dynamic> cmSvgColorThemes = {
     "b" : Color(hexcolor.hexcolorCode("#D9D9D9")),
     "d" : Color(hexColor.hexcolorCode("#040203"))
   },
-  "assets/cm_backgrounds/" : {
+  "assets/cm_backgrounds/6.svg" : {
     "p" : Color(hexColor.hexcolorCode("#DB4B3D")),
     "b" : Color(hexcolor.hexcolorCode("#525248")),
     "d" : Color(hexColor.hexcolorCode("#000000"))
   },
-    "assets/cm_backgrounds/8.svg" : {
+    "assets/cm_backgrounds/7.svg" : {
     "p" : Color(hexColor.hexcolorCode("#D88BE3")),
     "b" : Color(hexcolor.hexcolorCode("#8B5DA4")),
     "d" : Color(hexColor.hexcolorCode("#EE87EF"))

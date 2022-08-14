@@ -189,10 +189,15 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     emit(state.copyWith(boosted: 1));
   }
 
+  void setTheme({required String cmId, required String theme}) {
+    _churchRepository.setTheme(cmId: cmId, theme: theme);
+  }
+
   Future<void> delKc(
       {required KingsCord cord, required Church commuinity}) async {
     await _churchRepository.delCord(cmmuinity: commuinity, cord: cord);
   }
+
 
   dispose() {
     state.copyWith(calls: [], failure: Failure(), isMember: false, kingCords: [], postDisplay: [], status: CommuintyStatus.inital);
@@ -211,4 +216,5 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     else 
       emit(state.copyWith(collapseVvrColumn: true));
   }
+
 }

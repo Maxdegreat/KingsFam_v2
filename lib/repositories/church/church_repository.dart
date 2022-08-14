@@ -42,9 +42,10 @@ class   ChurchRepository extends BaseChurchRepository {
   }
   Future<List<Church>> getCommuinitysUserIn({required String userrId, required int limit  }) async {
     try {
+    await Future.delayed(Duration(seconds: 1));
     List<Church> bucket = [];
     DocumentReference userRef = FirebaseFirestore.instance.collection(Paths.users).doc(userrId);
-    var querys = await fb.where('members', arrayContains: userRef).limit(limit).get();
+    var querys = await fb.where('members.$userrId.userReference', isEqualTo: userRef).limit(limit).get(); //'members.$currId.userReference', isEqualTo: userRef
     for (var snap in querys.docs) {
       var ch = await Church.fromDoc(snap);
       bucket.add(ch);
@@ -342,8 +343,13 @@ class   ChurchRepository extends BaseChurchRepository {
   }
 
   void onBoostCm({required String cmId}) {
-    fb.doc(cmId).set({"boosted" : 1});
-    SetOptions(merge: true);
+    fb.doc(cmId).set({"boosted" : 1},
+    SetOptions(merge: true));
+  }
+
+  void setTheme({required String cmId, required String theme}) {
+    fb.doc(cmId).set({"themePack" : theme},
+    SetOptions(merge: true));
   }
 
   // Future<List<Userr>> searchForUsersInCommuinity(

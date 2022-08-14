@@ -91,16 +91,41 @@ class _UpdateCmThemePackState extends State<UpdateCmThemePack> {
             ) :
             SizedBox.shrink(),
             SizedBox(height: 7),
-            Text("Why would you want to boost? glad you asked fam"),
-            Text("Boosting is used 1 because unlimited theme pack!"),
-            Text("Boosting is also used for community's that have a large"),
-            Text("Boost allow you more than 105 members, more admins, and more kc's")
+            Container(
+              
+              width: MediaQuery.of(context).size.width/1.2,
+              child: Column(
+                children: [
+                  Container(
+                    height: 50,
+                    color: (Colors.blue[700]),
+                    child: Center(child: Text("Perks When Boosting CM")),
+                ),
+                Container(
+                  height: 300,
+                  color: Colors.blue[400],
+                  child: Column(
+                    children: [
+                      _paddedText(text: "More Than 105 Community Members", ),
+                      _paddedText(text: "More Than 5 KC's"),
+                      _paddedText(text: "More Than 2 Admins"),
+                      _paddedText(text: "Theme Packs!!!"),
+                      _paddedText(text: "More Coming Soon, be on the look out ")
+                    ],
+                  ),
+                )
+                  
+                ],
+              ),
+            )
           ],
         ),
       ),
     );
     
   }
+
+  Padding _paddedText({required String text}) => Padding(padding: EdgeInsets.symmetric(vertical: 7), child: Center(child: Text(text, style: styleBoostBtn,)),);
 
   Widget themePreview({required Color? pcolor, required Color? scolor, required Color? bcolor, required String svgPath, required String svgTitle}) {
     return Stack(
@@ -112,7 +137,7 @@ class _UpdateCmThemePackState extends State<UpdateCmThemePack> {
             if (widget.cmBloc.state.boosted == 0) {
               snackBar(snackMessage: "Hey, to use a theme you have to boost ${widget.cmName}", context: context, bgColor: Colors.red[400]);
             } else {
-              widget.cmBloc.setTheme(svgPath: svgPath, pcolor: pcolor, scolor: scolor, bcolor: bcolor);
+              widget.cmBloc.setTheme(cmId: widget.cmId, theme: svgPath);
             }
           },
           

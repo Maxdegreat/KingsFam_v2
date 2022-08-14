@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/helpers/helpers.dart';
@@ -47,98 +48,10 @@ class _CreatePostScreenState extends State<CreatePostScreen>
   BuildContext? contextPrePost;
   // state to know if recording
   bool isInital = true;
-  // camera controller which is null at first
-  CameraController? controller;
-  // list of cameras, ya dig
-  List<CameraDescription>? cameras;
-  // flash animation controllers
-  late AnimationController _flashModeControlRowAnimationController;
-  late Animation<double> _flashModeControlRowAnimation;
+
   // used for the show in snack bar messaging... 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  loadCameras() async {
-    controller = null;
-    cameras = null;
-    // ignore: non_constant_identifier_names
-    var cameras_ = await availableCameras();
-    // ignore: non_constant_identifier_names
-    var controller_ = CameraController(cameras_[0], ResolutionPreset.medium);
-    controller_.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
-    });
-    setState(() {
-      cameras = cameras_;
-      controller = controller_;
-    });
 
-    _flashModeControlRowAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _flashModeControlRowAnimation = CurvedAnimation(
-      parent: _flashModeControlRowAnimationController,
-      curve: Curves.easeInCubic,
-    );
-  }
-
-  closeCameras() async {
-    if (cameras != null) cameras!.clear();
-    if (controller != null) controller!.dispose();
-    _flashModeControlRowAnimationController.dispose();
-  }
-
-
-  @override
-  void initState() {
-    WidgetsBinding.instance.addObserver(this);
-    loadCameras();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    //_vidoeController.dispose();
-    WidgetsBinding.instance.removeObserver(this);
-    closeCameras();
-    super.dispose();
-  }
-
-
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   if (controller == null || !controller!.value.isInitialized) {
-  //      return;
-  //    }
-  //   if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
-  //     if (controller != null)
-  //        controller!.dispose(); 
-  //     //Navigator.of(context).pop();
-  //   } else if (state == AppLifecycleState.resumed) {
-  //     loadCameras();
-  //   }
-  // }
-
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    // App state changed before we got the chance to initialize.
-    if (controller == null || !controller!.value.isInitialized) {
-      return;
-    }
-
-    if (state == AppLifecycleState.inactive) {
-      log("we have closed the life cycle of the app");
-      if (controller != null)
-        controller!.dispose();
-    } else if (state == AppLifecycleState.resumed) {
-      log("we have resumed the life cycle of the app");
-      
-      loadCameras();
-    }
-  }
 
   void showInSnackBar(String message) {
     // ignore: deprecated_member_use
@@ -215,13 +128,6 @@ class _CreatePostScreenState extends State<CreatePostScreen>
                 isInital = true;
               });
 
-              // BROOOO this caused the error lol ---------------> TODO look at this 😂
-              // if (controller!.value.isInitialized) {
-              //   // re initalizie
-              //   print("NOT INITALIZED");
-              //   loadCameras();
-              // }
-
             }
           },
           builder: (context, state) {
@@ -230,67 +136,12 @@ class _CreatePostScreenState extends State<CreatePostScreen>
                 child: Stack(
               children: [
                 state.status == CreatePostStatus.initial
-                    ? camView(
-                        size: size,
-                        controller: controller!,
-                        context: context,
-                        state: state)
+                    ? Center(child: galleryBtns(context, state))
                     : state.videoFile != null
                         ? InitilizeVideo(videoFile: state.videoFile!)
                         : state.imageFile != null
                             ? previewPostImage(size, state)
                             : SizedBox.shrink(),
-                state.status == CreatePostStatus.initial
-                    ? Positioned(
-                        bottom: 20,
-                        right: size.width / 2.5,
-                        child: Row(
-                          children: [
-                            galleryBtns(context, state),
-                            SizedBox(width: 15),
-                            GestureDetector(
-                              // TODO -----------------------------> UPDATE THE BUILDCONTEXTPREPOST THAT YOU MADE AT TOP OF FILE. DONE
-                              // THIS IS FOR THE REASONING... ACTUALLY JUST READ IT AGAIN.
-                              onTap: () async => state.isRecording
-                                  ? onStopButtonPressed()
-                                  : onTakePictureButtonPressed(context, state),
-                              onLongPress: () async => controller != null &&
-                                      controller!.value.isInitialized &&
-                                      !controller!.value.isRecordingVideo
-                                  ? onVideoRecordButtonPressed()
-                                  : null,
-                              child: Container(
-                                height: 80,
-                                width: 80,
-                                decoration: BoxDecoration(
-                                    color: state.isRecording
-                                        ? Colors.red[400]
-                                        : Colors.white,
-                                    borderRadius: state.isRecording
-                                        ? BorderRadius.circular(45)
-                                        : BorderRadius.circular(50)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : SizedBox.shrink(),
-                state.status == CreatePostStatus.initial
-                    ? Positioned(
-                        top: 20,
-                        right: 20,
-                        child: GestureDetector(
-                            onTap: () {
-                              controller!.value.flashMode == FlashMode.off
-                                  ? onSetFlashModeButtonPressed(FlashMode.torch)
-                                  : onSetFlashModeButtonPressed(FlashMode.off);
-                            }, // -----------------------
-                            child: Container(
-                              height: 25,
-                              width: 25,
-                              child: Icon(Icons.flash_on),
-                            )))
-                    : SizedBox.shrink(),
               ],
             ));
           },
@@ -300,8 +151,10 @@ class _CreatePostScreenState extends State<CreatePostScreen>
   }
 
   Widget galleryBtns(BuildContext context, CreatePostState state) {
-    return state.isRecording != true
-        ? Column(
+    return 
+         Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               GestureDetector(
                 onTap: () async {
@@ -318,13 +171,19 @@ class _CreatePostScreenState extends State<CreatePostScreen>
                     contextPrePost = context;
                   });
                 } ,
-                child: Container(
-                  height: 25,
-                  width: 75,
-                  child: Icon(Icons.image),
-                  decoration: (BoxDecoration(
-                      color: Colors.black45,
-                      borderRadius: BorderRadius.circular(5))),
+                child: Row(
+                  children: 
+                    [
+                      Container(
+                      height: 25,
+                      width: 75,
+                      child: Icon(Icons.image),
+                      decoration: (BoxDecoration(
+                          color: Colors.black45,
+                          borderRadius: BorderRadius.circular(5))),
+                    ),
+                    Text("Upload Image From Gallery", style: GoogleFonts.aBeeZee(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),)
+                  ],
                 ),
               ),
               // ------------------------------------------------> video from gall below image above <<<<<<<<<<<<<<<<<<< READ THAT B4 ATTEMPT TO READ CODE
@@ -343,232 +202,28 @@ class _CreatePostScreenState extends State<CreatePostScreen>
                     contextPrePost = context;
                   });
                 },
-                child: Container(
-                  height: 25,
-                  width: 75,
-                  child: Icon(Icons.video_library),
-                  decoration: (BoxDecoration(
-                      color: Colors.black45,
-                      borderRadius: BorderRadius.circular(5))),
+                child: Row(
+                  children: [
+                    Container(
+                      height: 25,
+                      width: 75,
+                      child: Icon(Icons.video_library),
+                      decoration: (BoxDecoration(
+                          color: Colors.black45,
+                          borderRadius: BorderRadius.circular(5))),
+                    ),
+                    Text("Upload Video From Gallery", style: GoogleFonts.aBeeZee(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20))
+                  ],
                 ),
               ),
             ],
-          )
-        : SizedBox.shrink();
+          );
   }
 
-  Widget camView(
-      {required CameraController controller,
-      required Size size,
-      required BuildContext context,
-      required CreatePostState state}) {
-    var deviceRatio = size.width / size.height;
-    var scale = size.aspectRatio * controller.value.aspectRatio;
+  
 
-    // to prevent scaling down, invert the value
-    if (scale < 1) scale = 1 / scale;
 
-    return Stack(
-      children: [
-        Transform.scale(
-          scale: scale,
-          child: Center(
-            child: CameraPreview(controller),
-          ),
-        ),
-        state.isRecording == true
-            ? Align(
-                alignment: Alignment.topCenter,
-                child: LinearProgressIndicator(
-                  color: Colors.red[400],
-                ),
-              )
-            : SizedBox.shrink()
-      ],
-    );
-  }
-
-  // FLASH MODE SETTINGS -------------------
-  void onSetFlashModeButtonPressed(FlashMode mode) {
-    setFlashMode(mode).then((_) {
-      if (mounted) {
-        setState(() {});
-      }
-      // showInSnackBar('Flash mode set to ${mode.toString().split('.').last}');
-    });
-  }
-
-  Future<void> setFlashMode(FlashMode mode) async {
-    if (controller == null) {
-      return;
-    }
-
-    try {
-      await controller!.setFlashMode(mode);
-    } on CameraException catch (e) {
-      log("an error in create post screen flash segment: $e");
-      rethrow;
-    }
-  }
-
-  // VIDEO RECORDING SEGMENT ----------------
-  void onVideoRecordButtonPressed() {
-    log("recordingggg");
-    startVideoRecording().then((_) {
-      if (mounted) {
-        setState(() {});
-      }
-
-      // allow the state to know that the camera has started recording --> TODO
-      context.read<CreatePostCubit>().startRecording();
-    });
-  }
-
-  Future<void> startVideoRecording() async {
-    final CameraController? cameraController = controller;
-
-    if (cameraController == null || !cameraController.value.isInitialized) {
-      showInSnackBar('Error: select a camera first.');
-      return;
-    }
-
-    if (cameraController.value.isRecordingVideo) {
-      // A recording is already started, do nothing.
-      return;
-    }
-
-    try {
-      await cameraController.startVideoRecording();
-    } on CameraException catch (e) {
-      log("error: ${e.toString()}");
-      return;
-    }
-  }
-
-  void onStopButtonPressed() {
-    stopVideoRecording().then((XFile? file) {
-      if (mounted) {
-        setState(() {});
-      }
-      if (file != null) {
-        log('Video recorded to ${file.path}');
-        // Need to add the video to the cubit ---> TODO
-        context.read<CreatePostCubit>().onStopPostRecording(File(file.path));
-        setState(() {
-          contextPrePost = context;
-        });
-      } else {
-        log("VID NOT SAVEDDDD");
-      }
-    });
-  }
-
-  Future<XFile?> stopVideoRecording() async {
-    final CameraController? cameraController = controller;
-
-    if (cameraController == null || !cameraController.value.isRecordingVideo) {
-      return null;
-    }
-
-    try {
-      return cameraController.stopVideoRecording();
-    } on CameraException catch (e) {
-      log("error when stop recording is: ${e.toString()}");
-      return null;
-    }
-  }
-
-  // PHOTO TAKING SEGMENT --------------------
-  Future<void> onTakePictureButtonPressed(
-      BuildContext context, CreatePostState state) async {
-    takePicture().then((XFile? file) {
-      if (file != null) {
-        var passFile = File(file.path);
-        context.read<CreatePostCubit>().postImageOnChanged(passFile);
-        setState(() {
-          contextPrePost = context;
-        });
-      }
-    });
-  }
-
-  Future<XFile?> takePicture() async {
-    if (controller == null || !controller!.value.isInitialized) {
-      showInSnackBar('Error: select a camera first.');
-      return null;
-    }
-    if (controller!.value.isTakingPicture) {
-      // A capture is already pending, do nothing.
-      return null;
-    }
-    try {
-      final XFile file = await controller!.takePicture();
-      return file;
-    } on CameraException catch (e) {
-      log("The error in taking thre pic is: ${e.toString()}");
-      return null;
-    }
-  }
-
-//   //SELECT POST IMAGE
-//   // void _selectPostImage(BuildContext context) async {
-//   // final pickedFile = await ImageHelper.pickImageFromGallery(
-//   // context: context, cropStyle: CropStyle.rectangle, title: 'Create Post');
-//   // if (pickedFile != null) {
-//   // context.read<CreatePostCubit>().postImageOnChanged(pickedFile);
-//   // }
-//   // }
-//   //SELECT VIDEO FILE FROM GALLERY
-//   void _selectPostVideo(BuildContext context) async {
-//     final pickedFile = await ImageHelper.pickVideoFromGallery();
-//     if (pickedFile != null) {
-//       context.read<CreatePostCubit>().postVideoOnChanged(pickedFile);
-//     }
-//   }
-// //
-//   //TAKE PIC WITH CAMERA
-//   // void _capturePostImage(BuildContext context) async {
-//   // final pickedFile = await ImageHelper.pickImageFromCam(
-//   // context: context, cropStyle: CropStyle.rectangle, title: 'Create Post');
-//   // if (pickedFile != null) {
-//   // context.read<CreatePostCubit>().postImageOnChanged(pickedFile);
-//   // }
-//   // }
-// //
-//   //RECORD VIDEO WITH CAMERA
-//   //  void _capturePostVid(BuildContext context) async {
-//   //  final pickedFile = await ImageHelper.pickVidFromCam(context: context);
-//   //  if (pickedFile != null) {
-//   //  context.read<CreatePostCubit>().postVideoOnChanged(pickedFile);
-//   //  InitilizeVideo(videoFile: pickedFile);
-//   //  }
-//   //  }
-// //
-
-//   //SUBMIT THE POST TO UPLOAD
-//   void _submitForm(
-//       {required BuildContext context,
-//       required File? postVideo,
-//       required File? postImage,
-//       required bool isSubmitting}) {
-//     //makes sure that there is something to submit. keep in mind the image post is will be evaluated in the cubit and if it has a value it will be posted!
-//     //im not too sure why we chek the quote here. I will fix this soon.
-//     //add && _formKey.currentState!.validate() if an error when submitting. I removed bc i dont now why its there
-//     print("we are one now in the submit form function");
-//     if ((postImage != null && !isSubmitting) || (postVideo != null && !isSubmitting)) {
-//       final state = context.read<CreatePostCubit>().state;
-//       final cubit = context.read<CreatePostCubit>();
-
-//       if (postImage != null) cubit.postImageOnChanged(postImage);
-//       if (videoState != null) cubit.postVideoOnChanged(videoState!);
-
-//       print("we passed a conditional test, and now we are heading to the create post cubit");
-//       print("the status of the state photo is ${state.postImage == null}}");
-//       print(state.status);
-//       context.read<CreatePostCubit>().submit();
-//     }
-//   }
-// }
+ 
 }
 
 // PREVIEW FOR THE POST -------> TODO should later become a class that allows for filters
