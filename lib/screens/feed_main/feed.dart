@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
@@ -55,7 +57,9 @@ class __buildBodyState extends State<_buildBody> {
   }
 
   void listenToScrolling() {
-    //TODO you need to add this later make it a p1 requirment
+   log("the position of the scroll controller for the feed is: ${scrollController.position.pixels}");
+    // log("The view port of the scroll controller is: ${scrollController.position.viewportDimension}");
+    // TODO you need to add this later make it a p1 requirment
     if (scrollController.position.atEdge) {
       if (scrollController.position.pixels != 0.0 &&
           scrollController.position.maxScrollExtent ==
@@ -87,7 +91,7 @@ class __buildBodyState extends State<_buildBody> {
                   context.read<LikedPostCubit>().clearAllLikedPosts();
                 },
                 child: state.posts.length > 0
-                    ? listviewsinglePost(state)
+                    ? pageViewForPost(state)// listviewsinglePost(state)
                     : Center(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -102,23 +106,22 @@ class __buildBodyState extends State<_buildBody> {
     );
   }
 
-  ListView listviewsinglePost(FeedState state) {
-    return ListView.builder(
-      shrinkWrap: false,
-      controller: scrollController,
+  pageViewForPost(FeedState state) {
+    return PageView.builder(
+      scrollDirection: Axis.vertical,
       itemCount: state.posts.length,
-      itemBuilder: (BuildContext context, int index) {
+      itemBuilder: (context, index) {
         if (index == state.posts.length) {
-          // TODO call paginate post
+          context.read<FeedBloc>()..add(FeedPaginatePosts());
         }
         final Post? post = state.posts[index];
-        final Post? posts = state.posts[index];
         if (post != null) {
           final LikedPostState = context.watch<LikedPostCubit>().state;
           final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
           final recentlyLiked =
               LikedPostState.recentlyLikedPostIds.contains(post.id!);
           return PostSingleView(
+            scrollController: scrollController,
             isLiked: isLiked,
             post: post,
             recentlyLiked: recentlyLiked,
@@ -136,6 +139,41 @@ class __buildBodyState extends State<_buildBody> {
     );
   }
 }
+
+// ListView listviewsinglePost(FeedState state) {
+  //   return ListView.builder(
+  //     shrinkWrap: false,
+  //     controller: scrollController,
+  //     itemCount: state.posts.length,
+  //     itemBuilder: (BuildContext context, int index) {
+  //       if (index == state.posts.length) {
+  //         // TODO call paginate post
+  //       }
+  //       final Post? post = state.posts[index];
+  //       if (post != null) {
+  //         final LikedPostState = context.watch<LikedPostCubit>().state;
+  //         final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
+  //         final recentlyLiked =
+  //             LikedPostState.recentlyLikedPostIds.contains(post.id!);
+  //         return PostSingleView(
+  //           scrollController: scrollController,
+  //           isLiked: isLiked,
+  //           post: post,
+  //           recentlyLiked: recentlyLiked,
+  //           onLike: () {
+  //             if (isLiked) {
+  //               context.read<LikedPostCubit>().unLikePost(post: post);
+  //             } else {
+  //               context.read<LikedPostCubit>().likePost(post: post);
+  //             }
+  //           },
+  //         );
+  //       }
+  //       return SizedBox.shrink();
+  //     },
+  //   );
+  // }
+  
 
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:flutter/material.dart';

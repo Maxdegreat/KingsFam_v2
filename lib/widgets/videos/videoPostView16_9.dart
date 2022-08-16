@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/widgets/videos/video_player.dart';
@@ -38,6 +40,16 @@ class _VideoPostView16_9State extends State<VideoPostView16_9> {
       } )
       ..setLooping(true)
       ..initialize().then((_) => controller.pause());
+
+      // add a controller to listen to the scroll position.
+      // if passed half the size of vid then pause vid.
+      // if passed more than half the size of vid restart and pause.
+      if (widget.scrollCtrl != null) {
+        widget.scrollCtrl!.addListener(() {
+          //log("the position of the scroll controller for the feed is: ${widget.scrollCtrl!.position.pixels}");
+          
+         });
+      }
   }
 
   @override
