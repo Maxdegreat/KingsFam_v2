@@ -121,7 +121,6 @@ class __buildBodyState extends State<_buildBody> {
           final recentlyLiked =
               LikedPostState.recentlyLikedPostIds.contains(post.id!);
           return PostSingleView(
-            scrollController: scrollController,
             isLiked: isLiked,
             post: post,
             recentlyLiked: recentlyLiked,

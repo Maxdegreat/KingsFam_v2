@@ -8,6 +8,7 @@ import 'package:video_player/video_player.dart';
 class VideoPostView16_9 extends StatefulWidget {
   final String videoUrl;
   final ScrollController? scrollCtrl;
+  final bool? playVidNow;
   final Post post;
   final Userr userr;
   const VideoPostView16_9({
@@ -15,7 +16,8 @@ class VideoPostView16_9 extends StatefulWidget {
     required this.videoUrl, 
     required this.post,
     required this.userr,
-    this.scrollCtrl
+    this.scrollCtrl,
+    this.playVidNow,
     })
     : super(key: key);
 
@@ -39,7 +41,9 @@ class _VideoPostView16_9State extends State<VideoPostView16_9> {
         setState(() {});
       } )
       ..setLooping(true)
-      ..initialize().then((_) => controller.pause());
+      ..initialize().then((_) {
+        widget.playVidNow != null && widget.playVidNow == true ? controller.play() : controller.pause();
+      });
 
       // add a controller to listen to the scroll position.
       // if passed half the size of vid then pause vid.

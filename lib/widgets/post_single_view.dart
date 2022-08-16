@@ -38,12 +38,31 @@ class PostSingleView extends StatefulWidget {
 }
 
 class _PostSingleViewState extends State<PostSingleView> {
+  bool _visible = false;
+  bool _wasEverVisible = false;
+  void updateVisibility() {
+    if (widget.post.imageUrl != null) {
+      _visible = true;
+      _wasEverVisible = true;
+    }
+    Future.delayed(Duration(seconds: 1)).then((value) {
+      setState(() {
+        _visible = false;
+      });
+    });
+  }
+  @override
+  void initState() {
+    updateVisibility();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Stack(
       children: [
         contentContainer(post: widget.post, size: size),
+        _visible ? blackOverLay() : SizedBox.shrink(),
         Positioned.fill(child: userPicAndName(
             name: widget.post.author.username,
             imgurl: widget.post.author.profileImageUrl)),
@@ -54,12 +73,31 @@ class _PostSingleViewState extends State<PostSingleView> {
     );
   }
 
+  Widget blackOverLay () {
+    return GestureDetector(
+      onTap: () {
+        if (_visible) 
+            setState(() => _visible = false);
+          else if (_wasEverVisible && !_visible)
+            setState(() => _visible = true);
+      },
+      onDoubleTap: widget.onLike ,
+      child: Container(
+        height: MediaQuery.of(context).size.height, 
+        width: double.infinity, 
+        color: Colors.black54, 
+        alignment: Alignment.center,
+      ),
+    );
+  }
+
   Widget viewCommuinity({required Church? commuinity}) {
     return commuinity != null
         ? Stack(
           children: [
+            _visible ?
             Positioned(
-              top: 30,
+              top: 90,
               right: 30,
               left: 0,
                 child: Padding(
@@ -92,16 +130,26 @@ class _PostSingleViewState extends State<PostSingleView> {
                     ),
                   ),
                 ),
-              ),
-            ],
-        )
-        : Text("No Commuinity bruv");
+              ) : SizedBox.shrink() ])
+        : _visible ? Stack(
+          children: [
+            Positioned(
+                top: 90,
+                right: 30,
+                left: 0,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 7.0, right: 12.0, left: 12.0),
+                      child: Container(
+                       child: Text("NO Community Bruv"),),
+                    )),
+                  ],
+        ) : SizedBox.shrink();
   }
 
   Widget interactions() {
     return Stack(
-      children: 
-        [Positioned(
+      children: [
+        _wasEverVisible && _visible ? Positioned(
           bottom: 50,
           right: 30,
           left: 0,
@@ -150,7 +198,7 @@ class _PostSingleViewState extends State<PostSingleView> {
               ],
             ),
           ),
-        ),
+        ) : SizedBox.shrink(),
       ],
     );
   }
@@ -257,6 +305,12 @@ class _PostSingleViewState extends State<PostSingleView> {
   Widget contentContainer({required Post post, required Size size}) {
     if (post.imageUrl != null) {
       return GestureDetector(
+        onTap: () {
+          if (_visible) 
+            setState(() => _visible = false);
+          else if (_wasEverVisible && !_visible)
+            setState(() => _visible = true);
+        },
         onDoubleTap: widget.onLike,
         child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: size.height / 1.7),
@@ -277,7 +331,7 @@ class _PostSingleViewState extends State<PostSingleView> {
         onDoubleTap: widget.onLike,
         child: AspectRatio(
             aspectRatio: 9 / 16,
-            child:  VideoPostView16_9(post: widget.post, userr: widget.post.author, videoUrl: widget.post.videoUrl!, scrollCtrl: widget.scrollController ,) ),
+            child:  VideoPostView16_9(post: widget.post, userr: widget.post.author, videoUrl: widget.post.videoUrl!, playVidNow: true,) ),
       );
     } else if (post.quote != null) {
       return Text("caption ${post.quote}");
