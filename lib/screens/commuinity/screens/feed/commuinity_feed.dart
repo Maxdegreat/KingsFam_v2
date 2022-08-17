@@ -50,7 +50,7 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
       builder: (context, state) {
         return Scaffold(
             appBar: AppBar(title: Text("${widget.commuinity.name}\'s Content", overflow: TextOverflow.fade, style: Theme.of(context).textTheme.bodyText1,),),
-            body: state.posts.length > 0 ? ListView.builder(
+            body: state.posts.length > 0 ? PageView.builder(
                   itemCount: state.posts.length,
                   itemBuilder: (BuildContext context, int index) {
                     final Post? post = state.posts[index];

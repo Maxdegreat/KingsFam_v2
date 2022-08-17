@@ -771,7 +771,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
               children: [
                 SizedBox(height: 8.0),
                 Center(
-                    child: Text(
+                  child: Text(
                   "Name For New Chat Room",
                   style: TextStyle(color: Colors.blue[300]),
                 )),
@@ -792,12 +792,6 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                               primary: Colors.blue[300]),
                           onPressed: () {
                             if (_txtController.value.text.length != 0) {
-                              context.read<BuildchurchCubit>().makeKingsCord(
-                                  commuinity: widget.commuinity,
-                                  cordName: _txtController.text);
-                              Navigator.of(context).pop();
-                              _txtController.clear();
-                            } else {
                               showDialog(
                                   context: context,
                                   builder: (BuildContext context) =>
@@ -805,8 +799,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                         //title
                                         title: const Text("mmm, err my boi"),
                                         //content
-                                        content: const Text(
-                                            "be sure you add a name for the Channel room you are making"),
+                                        content: const Text("be sure you add a name for the Channel room you are making"),
                                         //actions
                                         actions: [
                                           TextButton(
@@ -815,8 +808,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                               style: TextStyle(
                                                   color: Colors.blue[300]),
                                             ),
-                                            onPressed: () =>
-                                                Navigator.of(context).pop(),
+                                            onPressed: () => Navigator.of(context).pop(),
                                           )
                                         ],
                                       ));

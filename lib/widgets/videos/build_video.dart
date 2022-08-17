@@ -19,35 +19,35 @@ class BuildVideo extends StatelessWidget {
   Widget build(BuildContext context) => Stack(
         children: [
           buildVideoPlayer(controller: controller),
-          Positioned.fill(child: _showPostUi()),
+          // Positioned.fill(child: _showPostUi()),
           Positioned.fill(child: BasicOverlayWidget(controller: controller))
           //add btn that will allow fill of video on width
         ],
       );
 
-Widget _showPostUi() {
-  return Stack(children: [
-    Positioned(
-      bottom: 10,
-      right: 0,
-      left: 0,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              ProfileImage(radius: 20, pfpUrl: user.profileImageUrl),
-              SizedBox(width: 7),
-              Text(user.username),
-            ],
-          )
-        ],
-      ),
-    )
-  ],);
-}
+// Widget _showPostUi() {
+//   return Stack(children: [
+//     Positioned(
+//       bottom: 10,
+//       right: 0,
+//       left: 0,
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.end,
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.start,
+//             children: [
+//               ProfileImage(radius: 20, pfpUrl: user.profileImageUrl),
+//               SizedBox(width: 7),
+//               Text(user.username),
+//             ],
+//           )
+//         ],
+//       ),
+//     )
+//   ],);
+// }
 
 }
 
