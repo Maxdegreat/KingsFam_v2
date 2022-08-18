@@ -11,6 +11,11 @@ import 'package:kingsfam/repositories/auth/base_auth_repository.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kingsfam/repositories/extraTools.dart';
 import 'package:kingsfam/widgets/snackbar.dart';
+import 'dart:convert';
+import 'dart:math';
+import 'package:crypto/crypto.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthRepository extends BaseAuthRepository {
   //class data
@@ -151,36 +156,74 @@ class AuthRepository extends BaseAuthRepository {
       throw Failure(code: e.code, message: e.message!);
     }
   }
+
+  // APPLE AUTH
+/// Generates a cryptographically secure random nonce, to be included in a
+/// credential request.
+String generateNonce([int length = 32]) {
+  final charset =
+      '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+  final random = Random.secure();
+  return List.generate(length, (_) => charset[random.nextInt(charset.length)]).join();
 }
 
-  // final googleSignIn = GoogleSignIn();
-  // Stream<auth.User?> get user => _firebaseAuth.userChanges();
-//   Stream<auth.UserCredential> get googleUser => _firebaseAuth.authStateChanges();
+/// Returns the sha256 hash of [input] in hex notation.
+String sha256ofString(String input) {
+  final bytes = utf8.encode(input);
+  final digest = sha256.convert(bytes);
+  return digest.toString();
+}
 
-//   @override
-//   Future<auth.UserCredential> signInWithGoogle() async {
-//     //trigger auth flow
-//     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+Future<auth.User?> signInWithApple(BuildContext context) async {
+  try {
+    // To prevent replay attacks with the credential returned from Apple, we
+  // include a nonce in the credential request. When signing in with
+  // Firebase, the nonce in the id token returned by Apple, is expected to
+  // match the sha256 hash of `rawNonce`.
+  final rawNonce = generateNonce();
+  final nonce = sha256ofString(rawNonce);
 
-//     //obtain auth details from request
-//     final GoogleSignInAuthentication googleAuth =
-//         await googleUser!.authentication;
+  // Request credential for the currently signed in Apple account.
+  final appleCredential = await SignInWithApple.getAppleIDCredential(
+    scopes: [
+      AppleIDAuthorizationScopes.email,
+      AppleIDAuthorizationScopes.fullName,
+    ],
+    nonce: nonce,
+  );
 
-//     //create a new crediental
-//     final credential = auth.GoogleAuthProvider.credential(
-//       accessToken: googleAuth.accessToken,
-//       idToken: googleAuth.idToken,
-//     );
+  // Create an `OAuthCredential` from the credential returned by Apple.
+  final oauthCredential = OAuthProvider("apple.com").credential(
+    idToken: appleCredential.identityToken,
+    rawNonce: rawNonce,
+  );
 
-//     String? token = await _messaging.getToken();
-//     _firebaseFirestore.collection(Paths.users).doc(googleUser.id).set({
-//       'profileImage': googleUser.photoUrl,
-//       'username': googleUser.displayName,
-//       'email': googleUser.email,
-//       'followers': 0,
-//       'following': 0,
-//       'token': token,
-//     });
-//     //once signed in return user crediental
-//     return await _firebaseAuth.signInWithCredential(credential);
-//   }
+  // make the user to be returned.
+  final auth.UserCredential userCredential = await _firebaseAuth.signInWithCredential(oauthCredential);
+  currUser = userCredential.user;
+
+  // make the Userr model
+  _firebaseFirestore.collection(Paths.users).doc(currUser!.uid).set({
+       'profileImage': null,
+       'username': "New_User#" + currUser!.uid.substring(0,5),
+       'email': appleCredential.email,
+       'followers': 0,
+       'following': 0,
+       'token': [],
+       'colorPref': '#9814F4'
+     });
+
+      String? token = await FirebaseMessaging.instance.getToken();
+      await saveTokenToDatabase(token!);
+      FirebaseMessaging.instance.onTokenRefresh.listen(saveTokenToDatabase);
+      return currUser;
+  } on auth.FirebaseAuthException catch (e) {
+      throw Failure(code: e.code, message: e.message!);
+    } on PlatformException catch (e) {
+      throw Failure(code: e.code, message: e.message!);
+    }
+  // Sign in the user with Firebase. If the nonce we generated earlier does
+  // not match the nonce in `appleCredential.identityToken`, sign in will fail.
+  // return await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+}
+}

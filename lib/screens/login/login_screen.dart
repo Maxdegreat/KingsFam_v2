@@ -1,8 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kingsfam/repositories/auth/auth_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 
 import '../screens.dart';
 
@@ -44,8 +45,12 @@ class LoginScreen extends StatelessWidget {
             Container(
               width: size.width / 1.2,
               child: TextButton.icon(
-                onPressed: () => context.read<AuthRepository>().signInWithGoogle(context),
-                icon: FaIcon(FontAwesomeIcons.google, color: Colors.red[400],),
+                onPressed: () =>
+                    context.read<AuthRepository>().signInWithGoogle(context),
+                icon: FaIcon(
+                  FontAwesomeIcons.google,
+                  color: Colors.red[400],
+                ),
                 label: Text('Continue With Google',
                     style: TextStyle(
                       color: Colors.black,
@@ -54,7 +59,15 @@ class LoginScreen extends StatelessWidget {
                 style: TextButton.styleFrom(backgroundColor: Colors.white),
               ),
             ),
-            Spacer()
+            Spacer(),
+            Platform.isIOS ? Container(
+                width: size.width / 1.2,
+                child: TextButton.icon(
+                  onPressed: () => context.read<AuthRepository>().signInWithApple(context),
+                  icon: Icon(Icons.apple),
+                  label: Text("Sign In With Apple"),
+                  style: TextButton.styleFrom(backgroundColor: Colors.white),
+                )) : SizedBox.shrink(),
           ],
         )),
       ),

@@ -172,7 +172,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   SizedBox(height: 20.0),
 
                   Text(
-                    "Commuinitys All Over",
+                    "Communitys All Over",
                     style: TextStyle(
                         fontSize: 20,
                         color: Color(hexcolor.hexcolorCode('#FFC050'))),

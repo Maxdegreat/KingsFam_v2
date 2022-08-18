@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get_connect/http/src/interceptors/get_modifiers.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
@@ -12,6 +13,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/extraTools.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/roles/role_types.dart';
+import 'package:kingsfam/widgets/widgets.dart';
 
 part 'buildchurch_state.dart';
 
@@ -52,9 +54,28 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
   // }
 
   Future<void> makeKingsCord(
-      {required Church commuinity, required String cordName}) async {
-    if (state.kingsCords.length < 7) {
-      Userr currUser = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
+      {required Church commuinity,
+      required String cordName,
+      required BuildContext ctx}) async {
+    // TODO code is duped can fix later for readability
+    if (state.kingsCords.length == 3) {
+      if (commuinity.boosted > 0) {
+        Userr currUser = await _userrRepository.getUserrWithId(
+            userrId: _authBloc.state.user!.uid);
+        KingsCord? kc = await _churchRepository.newKingsCord2(
+            ch: commuinity, cordName: cordName, currUser: currUser);
+        var lst = state.kingsCords;
+        lst.add(kc);
+        emit(state.copyWith(kingsCords: lst));
+      } else {
+        snackBar(
+            snackMessage:
+                "Hey Fam, to have more than 3 Chat Rooms you have to boost this community",
+            context: ctx, bgColor: Colors.red[400]);
+      }
+    } else {
+      Userr currUser = await _userrRepository.getUserrWithId(
+          userrId: _authBloc.state.user!.uid);
       KingsCord? kc = await _churchRepository.newKingsCord2(
           ch: commuinity, cordName: cordName, currUser: currUser);
       var lst = state.kingsCords;
@@ -239,19 +260,18 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       //===========================================================
       //the build of the initial church
       final commuinity = Church(
-        searchPram: state.caseSearchList!,
-        hashTags: state.hashTags ?? null,
-        name: state.name,
-        location: state.location,
-        imageUrl: imageUrl,
-        members: state.members,
-        events: [],
-        about: state.about,
-        size: state.memberIds.length,
-        recentMsgTime: Timestamp(1, 0), 
-        boosted: 0,
-        themePack: 'none'
-      );
+          searchPram: state.caseSearchList!,
+          hashTags: state.hashTags ?? null,
+          name: state.name,
+          location: state.location,
+          imageUrl: imageUrl,
+          members: state.members,
+          events: [],
+          about: state.about,
+          size: state.memberIds.length,
+          recentMsgTime: Timestamp(1, 0),
+          boosted: 0,
+          themePack: 'none');
       // build the church mem
       //final ChurchMembers churchMemberIds = ChurchMembers(ids: state.memberIds);
 

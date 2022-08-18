@@ -147,10 +147,9 @@ class _CommuinityScreenState extends State<CommuinityScreen>
         backgoundColor = Color.fromARGB(255, 4, 34, 78);
       }
     }
-    return CustomScrollView(
-      slivers: <Widget>[
-        cmSliverAppBar(context: context, cmBloc: context.read<CommuinityBloc>()),
-        SliverToBoxAdapter(
+    return CustomScrollView(slivers: <Widget>[
+      cmSliverAppBar(context: context, cmBloc: context.read<CommuinityBloc>()),
+      SliverToBoxAdapter(
           child: Stack(
         children: [
           Container(
@@ -384,7 +383,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     ]);
   }
 
-  SliverAppBar cmSliverAppBar({required BuildContext context, required CommuinityBloc cmBloc}) {
+  SliverAppBar cmSliverAppBar(
+      {required BuildContext context, required CommuinityBloc cmBloc}) {
     return SliverAppBar(
       expandedHeight: MediaQuery.of(context).size.height / 3,
       flexibleSpace: FlexibleSpaceBar(
@@ -771,7 +771,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
               children: [
                 SizedBox(height: 8.0),
                 Center(
-                  child: Text(
+                    child: Text(
                   "Name For New Chat Room",
                   style: TextStyle(color: Colors.blue[300]),
                 )),
@@ -791,27 +791,16 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                           style: ElevatedButton.styleFrom(
                               primary: Colors.blue[300]),
                           onPressed: () {
-                            if (_txtController.value.text.length != 0) {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) =>
-                                      AlertDialog(
-                                        //title
-                                        title: const Text("mmm, err my boi"),
-                                        //content
-                                        content: const Text("be sure you add a name for the Channel room you are making"),
-                                        //actions
-                                        actions: [
-                                          TextButton(
-                                            child: Text(
-                                              "Ok",
-                                              style: TextStyle(
-                                                  color: Colors.blue[300]),
-                                            ),
-                                            onPressed: () => Navigator.of(context).pop(),
-                                          )
-                                        ],
-                                      ));
+                            if (_txtController.value.text.length == 0) {
+                              ErrorDialog(
+                                  content:
+                                      "be sure you add a name for the Channel room you are making");
+                            } else {
+                              // make a new channel
+                              context.read<BuildchurchCubit>().makeKingsCord(
+                                  commuinity: widget.commuinity,
+                                  cordName: _txtController.value.text,
+                                  ctx: context);
                             }
                           },
                           child: Text("Done"))),
@@ -861,7 +850,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                   currUserr)
                               : SizedBox.shrink(),
                           _editView(
-                            cmBloc: cmBloc,
+                              cmBloc: cmBloc,
                               commuinity: widget.commuinity,
                               buildchurchCubit:
                                   context.read<BuildchurchCubit>(),
@@ -887,7 +876,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   }
 
   //TODO ADMIN WHERE 2==2
-  Widget _participantsView(List<Userr> users, Map<Userr, dynamic> memberInfo, Userr currUserr) {
+  Widget _participantsView(
+      List<Userr> users, Map<Userr, dynamic> memberInfo, Userr currUserr) {
     return ListView.builder(
       itemCount: widget.commuinity.members.length,
       itemBuilder: (BuildContext context, int index) {
@@ -975,7 +965,11 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   }
 
   // TODO ADMIN
-  Future<dynamic> _adminsOptions({required Church commuinity,required Userr participatant,required String role}) {return showDialog(
+  Future<dynamic> _adminsOptions(
+      {required Church commuinity,
+      required Userr participatant,
+      required String role}) {
+    return showDialog(
         context: context,
         builder: (context) {
           if (role == Roles.Admin || role == Roles.Owner) {
@@ -1069,8 +1063,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   }
 
   Widget _editView(
-      { required CommuinityBloc cmBloc,
-        required Church commuinity,
+      {required CommuinityBloc cmBloc,
+      required Church commuinity,
       required BuildchurchCubit buildchurchCubit,
       required CommuinityBloc communitiyBloc}) {
     String assetNameForTheme = communitiyBloc.state.themePack == "none"
@@ -1109,7 +1103,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
           decoration: BoxDecoration(
               color: Colors.grey[700], borderRadius: BorderRadius.circular(50)),
         ),
-        onTap: () => NavHelper().navToUpdateCmTheme(context, cmBloc, commuinity.name, commuinity.id!),
+        onTap: () => NavHelper().navToUpdateCmTheme(
+            context, cmBloc, commuinity.name, commuinity.id!),
       ),
       ListTile(
         title: Text(
