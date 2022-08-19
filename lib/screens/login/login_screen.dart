@@ -5,7 +5,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kingsfam/repositories/auth/auth_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../screens.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String routeName = '/login';

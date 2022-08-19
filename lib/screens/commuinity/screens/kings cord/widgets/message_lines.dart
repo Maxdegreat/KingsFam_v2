@@ -1,12 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/extensions/extensions.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/widgets.dart';
+import 'package:bloc/bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MessageLines extends StatelessWidget {
@@ -105,51 +108,87 @@ class MessageLines extends StatelessWidget {
     return showModalBottomSheet(
         context: context,
         builder: (context) {
-          return Container(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GestureDetector(
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                        onTap: () {
+                          uploadReaction('💖', messageId, messageReactions!);
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          '💖',
+                          style: TextStyle(fontSize: 27),
+                        )),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                        onTap: () {
+                          uploadReaction('😁', messageId, messageReactions!);
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('😁', style: TextStyle(fontSize: 27))),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                        onTap: () {
+                          uploadReaction('😭', messageId, messageReactions!);
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('😭', style: TextStyle(fontSize: 27))),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                        onTap: () {
+                          uploadReaction('👀', messageId, messageReactions!);
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('👀', style: TextStyle(fontSize: 27))),
+                  ),
+                ],
+              ),
+              SizedBox(height: 7),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // TODO add a reply capability
+                  // GestureDetector(
+                  //   onTap: () {},
+                  //   child: Container(
+                  //     child: Text("Reply", style: Theme.of(context).textTheme.bodyMedium),
+                  //   ),
+                  // ),
+                  // SizedBox(width: 5,),
+                    GestureDetector(
                       onTap: () {
-                        uploadReaction('💖', messageId, messageReactions!);
-                        Navigator.of(context).pop();
+                        if (message.sender!.id == context.read<AuthBloc>().state.user!.uid) {
+                          if (message.text != null && message.text == "CTRL+ALT+DEL ... the message was deleted") {
+                            snackBar(snackMessage: "You can' del this fam", context: context, bgColor: Colors.red[400]!);
+                          } else {
+                            Message messageForDel = message.copyWith(text: "CTRL+ALT+DEL ... the message was deleted", imageUrl: null, mentionedIds: null, thumbnailUrl: null, videoUrl: null,);
+                        FirebaseFirestore.instance.collection(Paths.church).doc(this.cmId).collection(Paths.kingsCord).doc(this.kcId).collection(Paths.messages).doc(this.message.id).update(messageForDel.ToDoc(senderId: message.sender!.id));
+                          }
+                      } else
+                        snackBar(snackMessage: "hmm, can't del a message that is not yours fam", context: context, bgColor: Colors.red[400]!);
                       },
-                      child: Text(
-                        '💖',
-                        style: TextStyle(fontSize: 27),
-                      )),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GestureDetector(
-                      onTap: () {
-                        uploadReaction('😁', messageId, messageReactions!);
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('😁', style: TextStyle(fontSize: 27))),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GestureDetector(
-                      onTap: () {
-                        uploadReaction('😭', messageId, messageReactions!);
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('😭', style: TextStyle(fontSize: 27))),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GestureDetector(
-                      onTap: () {
-                        uploadReaction('👀', messageId, messageReactions!);
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('👀', style: TextStyle(fontSize: 27))),
-                ),
-              ],
-            ),
+                      child: Container(
+                        child: Text("Unsend", style: Theme.of(context).textTheme.bodyMedium),
+                      ),
+                    ),
+                ],
+              ),
+              
+            ],
           );
         });
   }
@@ -355,15 +394,15 @@ class MessageLines extends StatelessWidget {
           ? kingsCordProfileImg()
           : kingsCordProfileIcon(),
       decoration: BoxDecoration(
-          border: Border.all(
-              width: 2,
-              color: message.sender!.colorPref == ""
-                  ? Colors.red
-                  : Color(hexcolor.hexcolorCode(message.sender!.colorPref))),
+         border: Border.all(
+             width: 2,
+             color: message.sender!.colorPref == ""
+                 ? Colors.red
+                 : Color(hexcolor.hexcolorCode(message.sender!.colorPref))),
           color: message.sender!.colorPref == ""
               ? Colors.red
               : Color(hexcolor.hexcolorCode(message.sender!.colorPref)),
-          borderRadius: BorderRadius.circular(25)),
+         shape: BoxShape.circle),
     );
   }
 

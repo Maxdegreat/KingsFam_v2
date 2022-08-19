@@ -140,7 +140,7 @@ class _ChatsScreenState extends State<ChatsScreen>
       ),
     )
       ..addListener(() => setState(() {}))
-      ..setLooping(true)
+      ..setLooping(false) // -------------------------------- SET PERKED LOOPING TO TRUE
       ..initialize().then((_) {
         _perkedVideoPlayerController.play();
         _perkedVideoPlayerController.setVolume(0);

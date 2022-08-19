@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ThemeInfo {
   ThemeData themeClubHouseDark() {
@@ -8,11 +9,8 @@ class ThemeInfo {
         scaffoldBackgroundColor: Colors.black,
         primaryColorDark: Colors.red[300],
         textTheme: TextTheme(
-            bodyText1: TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-            ),
-            bodyText2: TextStyle(fontSize: 15, color: Colors.grey[400]),
+            bodyText1: GoogleFonts.acme(color: Colors.white, fontSize: 18),
+            bodyText2: GoogleFonts.aBeeZee(color: Colors.white, fontSize: 17),
             headline1: TextStyle(
                 fontSize: 25.0,
                 color: Colors.red[400],

@@ -222,7 +222,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 crossAxisCount: 2,
                                 crossAxisSpacing: 10,
                                 mainAxisSpacing: 10,
-                                mainAxisExtent: 100),
+                                mainAxisExtent: 105),
                         primary: false,
                         shrinkWrap: true,
                         itemCount: state.userExploreList.length,
@@ -231,7 +231,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           return ProfileCard(userr);
                         })
                     : Container(
-                        height: 170,
+                        height: 181,
                         child: Center(
                             child: Text("You are folloing all the fam!?!?"))))
           ],
@@ -299,10 +299,10 @@ class _SearchScreenState extends State<SearchScreen> {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
           child: Container(
-            height: 150,
+            height: 152,
             width: MediaQuery.of(context).size.width * .70,
             decoration: BoxDecoration(
-                color: Colors.deepPurpleAccent,
+                color: Color.fromARGB(255, 102, 102, 103),
                 image: DecorationImage(
                     image: CachedNetworkImageProvider(church.imageUrl),
                     fit: BoxFit.cover),

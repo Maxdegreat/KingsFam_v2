@@ -13,6 +13,7 @@ class BuildVideo extends StatelessWidget {
   final VideoPlayerController controller;
   final Post post; 
   final Userr user;
+  
   const BuildVideo({Key? key, required this.controller, required this.post, required this.user}) : super(key: key);
 
   @override
