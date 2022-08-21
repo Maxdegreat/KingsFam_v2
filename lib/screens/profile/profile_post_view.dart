@@ -11,6 +11,8 @@ import 'package:kingsfam/widgets/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
+import '../../widgets/post_single_view_pfp.dart';
+
 // class ProfilePostViewArgs {
 //   final List<Post?> posts;
 //   final int? indexAt;
@@ -25,7 +27,8 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 class ProfilePostViewArgs {
   final int startIndex;
   final List<Post?> posts;
-  ProfilePostViewArgs({required this.startIndex, required this.posts});
+  final bool? isFromPfpScreen;
+  ProfilePostViewArgs({required this.startIndex, required this.posts, this.isFromPfpScreen = false});
 }
 
 class ProfilePostView extends StatefulWidget {
@@ -133,8 +136,6 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                   itemScrollController: itemController,
                   itemCount: state.post.length,
                   itemBuilder: (BuildContext context, int index) {
-                    print(
-                        "we are at index: $index ()()()()()()()()()())()()()()()()()()()()()()()()");
                     if (index >= (state.post.length) - 1 &&
                         !seenIds.contains(lastPostId)) {
                       paginatePosts();
@@ -150,7 +151,7 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                           LikedPostState.likedPostsIds.contains(post.id!);
                       final recentlyLiked = LikedPostState.recentlyLikedPostIds
                           .contains(post.id!);
-                      return PostSingleView(
+                      return PostSingleViewPfp(
                         isLiked: isLiked,
                         post: post,
                         recentlyLiked: recentlyLiked,
@@ -165,7 +166,6 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                         },
                       );
                     }
-                    print(post);
                     return Text("post is null");
                   },
                 )

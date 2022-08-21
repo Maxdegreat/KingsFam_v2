@@ -205,7 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen>  {
                 return Column(
                   children: [
                     GestureDetector(
-                      onTap: () => Navigator.of(context).pushNamed(ProfilePostView.routeName, arguments: ProfilePostViewArgs(posts: state.post, startIndex: index)),
+                      onTap: () => Navigator.of(context).pushNamed(ProfilePostView.routeName, arguments: ProfilePostViewArgs(posts: state.post, startIndex: index, isFromPfpScreen: true)),
                       //Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(startIndex: index, posts: state.post)),
                       child: Container(
                       height: 240, width: 300, 
