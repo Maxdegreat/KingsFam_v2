@@ -326,14 +326,15 @@ class _PostSingleViewState extends State<PostSingleView> {
     } else if (post.videoUrl != null) {
       return GestureDetector(
         onDoubleTap: widget.onLike,
-        child: AspectRatio(
-            aspectRatio: 9 / 16,
-            child: VideoPostView16_9(
-              post: widget.post,
-              userr: widget.post.author,
-              videoUrl: widget.post.videoUrl!,
-              playVidNow: true,
-            )),
+        child: Align(
+          alignment: Alignment.center,
+          child: VideoPostView16_9(
+            post: widget.post,
+            userr: widget.post.author,
+            videoUrl: widget.post.videoUrl!,
+            playVidNow: true,
+          ),
+        ),
       );
     } else if (post.quote != null) {
       return Text("caption ${post.quote}");

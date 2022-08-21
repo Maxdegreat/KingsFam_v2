@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:get/get_connect/http/src/interceptors/get_modifiers.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
@@ -56,10 +57,12 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
   Future<void> makeKingsCord(
       {required Church commuinity,
       required String cordName,
-      required BuildContext ctx}) async {
+      required BuildContext ctx, CommuinityBloc? cmBloc}) async {
     // TODO code is duped can fix later for readability
-    if (state.kingsCords.length == 3) {
-      if (commuinity.boosted > 0) {
+    log("the number of cr's in this chat is ${state.kingsCords.length}");
+    if (cmBloc != null && cmBloc.state.kingCords.length == 3) {
+      await Future.delayed(Duration(seconds: 1));
+      if (cmBloc.state.boosted > 0) {
         Userr currUser = await _userrRepository.getUserrWithId(
             userrId: _authBloc.state.user!.uid);
         KingsCord? kc = await _churchRepository.newKingsCord2(

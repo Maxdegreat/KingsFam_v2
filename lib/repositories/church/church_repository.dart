@@ -7,6 +7,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/base_church_repository.dart';
 import 'package:kingsfam/roles/role_types.dart';
 import 'package:kingsfam/screens/commuinity/actions.dart';
+import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 class   ChurchRepository extends BaseChurchRepository {
 
@@ -25,21 +26,35 @@ class   ChurchRepository extends BaseChurchRepository {
       });
   }
   
-  Stream<List<Future<Church?>>> getCmsStream({required String currId}) {
-    log("we are now in the getCmsStream");
-    final userRef = FirebaseFirestore.instance.collection(Paths.users).doc(currId);
-    return FirebaseFirestore.instance.collection(Paths.church).limit(10).where('members.$currId.userReference', isEqualTo: userRef)
-    .snapshots().map((snap) {
-    log("in the snnap map");
-      List<Future<Church?>> chs = [];
-      snap.docs.forEach((doc) async{ 
-        log("got a doc");
-        Future<Church> ch = Church.fromDoc(doc);
-        chs.add(ch);
-      });
-      return chs;
-    });
-  }
+   Stream<List<Future<Church?>>> getCmsStream({required String currId}) {
+     log("we are now in the getCmsStream");
+     final userRef = FirebaseFirestore.instance.collection(Paths.users).doc(currId);
+     return FirebaseFirestore.instance.collection(Paths.church).limit(10).where('members.$currId.userReference', isEqualTo: userRef)
+     .snapshots().map((snap) {
+     log("in the snnap map");
+       List<Future<Church?>> chs = [];
+       snap.docs.forEach((doc) async{ 
+         log("got a doc");
+         Future<Church> ch = Church.fromDoc(doc);
+         chs.add(ch);
+       });
+       return chs;
+     });
+   }
+
+  // Stream<List<Church?>> getCmsStream(StreamingSharedPreferences preferences) {
+  //   log("we are now in the getCmsStream shared prefs");
+  //   var p = preferences.getCustomValue<List<Church>>(Paths.church, defaultValue: [], adapter: JsonAdapter(
+  //   deserializer: (value) {
+  //     log("in the get custom val");
+  //     Iterable itr = value as Iterable<dynamic>;
+  //     log("the len of stream is: ${itr.length}");
+  //     return List<Church>.from(itr.map((model)=> Church.fromJson(model)));
+  //   }));
+  //   log("p: ${p}");
+  //   return p;
+  // }
+  
   Future<List<Church>> getCommuinitysUserIn({required String userrId, required int limit  }) async {
     try {
     await Future.delayed(Duration(seconds: 1));

@@ -9,6 +9,7 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 part 'chatscreen_event.dart';
 part 'chatscreen_state.dart';
@@ -22,7 +23,8 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   final UserrRepository _userrRepository;
 
   StreamSubscription<List<Future<Chat?>>>? _chatsStreamSubscription;
-  StreamSubscription<List<Future<Church?>>>? _churchStreamSubscription;
+   StreamSubscription<List<Future<Church?>>>? _churchStreamSubscription;
+  // StreamSubscription<List<Church?>>? _churchStreamSubscription; // a stream form shared preerences
 
 
   ChatscreenBloc({
@@ -67,14 +69,16 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
       final Userr currUserr = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
       final Map<String, bool> mentionedMap = {};
       final List<Church> allChs = [];
+      final preferences = await StreamingSharedPreferences.instance;
       _churchStreamSubscription?.cancel();
       _churchStreamSubscription = _churchRepository
-          .getCmsStream(currId: _authBloc.state.user!.uid)
+          .getCmsStream(currId: currUserr.id)
           .listen((churchs) async {
+            log("in cm stream");
         final allChs = await Future.wait(churchs);
         for (var ch in churchs) {
           var church = await ch;
-          // if(church != null)
+          // if (church != null)
           //   allChs.add(church);
           var hasSnap = await FirebaseFirestore.instance.collection(Paths.mention).doc(_authBloc.state.user!.uid).collection(church!.id!).limit(1).get();
           var snaps = hasSnap.docs;

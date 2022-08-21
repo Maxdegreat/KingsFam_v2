@@ -2,6 +2,7 @@
 // on the main room we need to pass a list of member ids which this, the church / commuinity contains. so will extract it and make the main room
 
 //esentally this has the main room, events, storyes ,calls
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -35,6 +36,7 @@ import 'package:kingsfam/widgets/widgets.dart';
 import 'package:rive/rive.dart';
 import 'package:flutter/src/painting/gradient.dart' as paint;
 import 'package:kingsfam/screens/commuinity/actions.dart' as cmActions;
+import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 class CommuinityScreenArgs {
   final Church commuinity;
@@ -91,8 +93,15 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     super.dispose();
   }
 
+  Future<void> _saveCmToPref() async {
+    final preferences = await StreamingSharedPreferences.instance;
+    String cmAsJson = jsonEncode(widget.commuinity);
+    preferences.setString(Paths.church, cmAsJson);
+  } 
+
   @override
   Widget build(BuildContext context) {
+
     // ignore: unused_local_variable
     final userId = context.read<AuthBloc>().state.user!.uid;
     return BlocConsumer<CommuinityBloc, CommuinityState>(
@@ -239,8 +248,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                     ),
                     overflow: TextOverflow.fade,
                   ),
-                  // collapseOrExpand(context.read<CommuinityBloc>(), 'cord'),
-                  new_kingscord(),
+                  collapseOrExpand(context.read<CommuinityBloc>(), 'cord'),
+                  new_kingscord(cmBloc: context.read<CommuinityBloc>()),
                 ],
               ),
               //TODO below should work if change name else use lib?
@@ -627,29 +636,33 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   }
 
   Widget _new_call() {
-    if (widget.commuinity.members
-        .containsKey(context.read<CommuinityBloc>().state.currUserr)) {
-      if (widget.commuinity
-                      .members[context.read<CommuinityBloc>().state.currUserr]
-                  ['role'] !=
-              Roles.Member ||
-          widget.commuinity
-                      .members[context.read<CommuinityBloc>().state.currUserr]
-                  ['role'] !=
-              Roles.Elder) {
+    cmActions.Actions actions = cmActions.Actions();
+      Userr? currUsr = null;
+      var lst = widget.commuinity.members.keys.toList();
+      for (int i = 0; i<widget.commuinity.members.length; i++) {
+        if (lst[i].id == context.read<AuthBloc>().state.user!.uid) {
+          currUsr = lst[i];
+          log("found the informatjion we were looking gor and rhis is me tping ewithout thinkting at all as ig you lweant to see how sgas ttla dcaion tipa rt;his is my true speds");
+          break;
+        } 
+      }
+      String? currRole = widget.commuinity.members.containsKey(currUsr) ?
+        widget.commuinity.members[currUsr]["role"] : null;
+        log("cur role is: $currRole");
+        log("users info is: ${widget.commuinity.members[currUsr]}");
+      if ((currRole != null && currRole == Roles.Owner) ||
+        (currRole != null && actions.hasAccess(role: currRole, action: cmActions.Actions.communityActions[4]))) {
         return GestureDetector(
-            onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-                    "VVR will be added shortly in an update"))), //_new_call_sheet(),
+            onTap: () => snackBar(snackMessage: "VVR's will be out in a upcoming update :)", context: context),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
               child: Container(
                 height: 25,
                 width: 25,
                 child: RiveAnimation.asset('assets/icons/add_icon.riv'),
               ),
             ));
-      }
+      
     }
     return SizedBox.shrink();
   }
@@ -729,16 +742,25 @@ class _CommuinityScreenState extends State<CommuinityScreen>
             ),
           )));
 
-  Widget new_kingscord() {
-    if (widget.commuinity.members
-        .containsKey(context.read<CommuinityBloc>().state.currUserr)) {
+  Widget new_kingscord({required CommuinityBloc cmBloc}) {
       cmActions.Actions actions = cmActions.Actions();
-      if (actions.hasAccess(
-          role: widget.commuinity
-              .members[context.read<CommuinityBloc>().state.currUserr]['role'],
-          action: cmActions.Actions.communityActions[4])) {
+      Userr? currUsr = null;
+      var lst = widget.commuinity.members.keys.toList();
+      for (int i = 0; i<widget.commuinity.members.length; i++) {
+        if (lst[i].id == context.read<AuthBloc>().state.user!.uid) {
+          currUsr = lst[i];
+          log("found the informatjion we were looking gor and rhis is me tping ewithout thinkting at all as ig you lweant to see how sgas ttla dcaion tipa rt;his is my true speds");
+          break;
+        } 
+      }
+      String? currRole = widget.commuinity.members.containsKey(currUsr) ?
+        widget.commuinity.members[currUsr]["role"] : null;
+        log("cur role is: $currRole");
+        log("users info is: ${widget.commuinity.members[currUsr]}");
+      if ((currRole != null && currRole == Roles.Owner) ||
+        (currRole != null && actions.hasAccess(role: currRole, action: cmActions.Actions.communityActions[4]))) {
         return GestureDetector(
-            onTap: () => new_kingsCord_sheet(),
+            onTap: () => new_kingsCord_sheet(cmBloc),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: Container(
@@ -747,21 +769,16 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                 child: RiveAnimation.asset('assets/icons/add_icon.riv'),
               ),
             ));
-      }
+      
     }
     return SizedBox.shrink();
   }
 
-  new_kingsCord_sheet() => showModalBottomSheet(
+  new_kingsCord_sheet(CommuinityBloc cmBloc) => showModalBottomSheet(
       context: context,
-      builder: (context) => BlocProvider<BuildchurchCubit>(
-          create: (context) => BuildchurchCubit(
-              callRepository: context.read<CallRepository>(),
-              churchRepository: context.read<ChurchRepository>(),
-              storageRepository: context.read<StorageRepository>(),
-              authBloc: context.read<AuthBloc>(),
-              userrRepository: context.read<UserrRepository>()),
-          child: Container(
+      builder: (context) { 
+        int prevKcLen = cmBloc.state.kingCords.length; 
+         return                                                                                                                                                                                                                                                                                                                                                                  Container(
             width: double.infinity,
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -790,22 +807,20 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                               primary: Colors.blue[300]),
                           onPressed: () {
                             if (_txtController.value.text.length == 0) {
-                              ErrorDialog(
-                                  content:
-                                      "be sure you add a name for the Channel room you are making");
-                            } else {
+                              snackBar( snackMessage: "be sure you add a name for the Chat Room you are making", context: context, bgColor: Colors.red[400]);
+                            } else if (prevKcLen == cmBloc.state.kingCords.length) {
+                              snackBar(snackMessage:"Hey Fam, to have more than 3 Chat Rooms you have to boost this community",context: context, bgColor: Colors.red[400]);
+                            }else {
                               // make a new channel
-                              context.read<BuildchurchCubit>().makeKingsCord(
-                                  commuinity: widget.commuinity,
-                                  cordName: _txtController.value.text,
-                                  ctx: context);
+                              cmBloc.makeNewKc(commuinity: widget.commuinity, cordName: _txtController.value.text, ctx: context);
+                              Navigator.of(context).pop();
                             }
                           },
                           child: Text("Done"))),
                 )
               ],
             ),
-          )));
+          );});
 
   _settingsBtn({required CommuinityBloc cmBloc}) {
     return IconButton(
@@ -949,7 +964,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
           if (context.read<AuthBloc>().state.user!.uid == participant.id) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(
-                    "your role is $role, can not modify ucommunityActions own permissions")));
+                    "your role is $role, can not modify this")));
           } else {
             return _adminsOptions(
                 commuinity: widget.commuinity,
@@ -1070,7 +1085,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
         : communitiyBloc.state.themePack;
     return Column(children: [
       ListTile(
-          title: Text("Update Community name",
+          title: Text("Update the Community name",
               style: Theme.of(context).textTheme.bodyText1),
           onTap: () async => _updateCommuinityName(
               commuinity: commuinity,
@@ -1176,12 +1191,36 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                         onPressed: () {
                           var state = buildchurchCubit.state;
                           if (_txtController.value.text.length != 0) {
-                            buildchurchCubit.onNameChanged(_txtController.text);
+                            if (_txtController.value.text.length <= 19) {
+                              buildchurchCubit.onNameChanged(_txtController.text);
                             buildchurchCubit.lightUpdate(commuinity.id!,
                                 1); // ----------- The method that calls thr update
                             Navigator.of(context).pop();
                             this.setState(() {});
                             _txtController.clear();
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                      //title
+                                      title: const Text("mmm, err my boi"),
+                                      //content
+                                      content: const Text(
+                                          "The name can not be longer than 19 chars"),
+                                      //actions
+                                      actions: [
+                                        TextButton(
+                                          child: Text(
+                                            "Ok",
+                                            style: TextStyle(
+                                                color: Colors.green[400]),
+                                          ),
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
+                                        )
+                                      ],
+                                    ));
+                            }
                           } else {
                             print(state.name);
                             showDialog(
@@ -1453,12 +1492,14 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   }
 
   _onJoinCommuinity() {
+    _saveCmToPref();
     context
         .read<CommuinityBloc>()
         .onJoinCommuinity(commuinity: widget.commuinity);
     snackBar(
         snackMessage: "JOINED, to have full access refresh your homescreen",
         context: context);
+        
   }
 
   _onLeaveCommuinity() {

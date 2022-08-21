@@ -10,6 +10,7 @@ class ChatscreenState extends Equatable {
   final Userr currUserr;
   final List<Church?> chs;
   final Map<String, dynamic> mentionedMap;
+  final StreamingSharedPreferences? preferences;
   final bool inAChat;
   final bool isToggle;
   final ChatStatus status;
@@ -32,6 +33,7 @@ class ChatscreenState extends Equatable {
     required this.status,
     required this.mentionedMap,
     required this.failure,
+    required this.preferences,
     //==== feed half ====
     required this.posts,
     required this.fstatus,
@@ -48,6 +50,7 @@ class ChatscreenState extends Equatable {
         mentionedMap: {},
         currUserr: Userr.empty,
         status: ChatStatus.initial,
+        preferences: null,
         failure: Failure(),
         posts: [], 
         likedPostIds: {}, 
@@ -58,7 +61,7 @@ class ChatscreenState extends Equatable {
 
   //3 make the props
   @override
-  List<Object?> get props => [posts, currUserr, likedPostIds, mentionedMap, fstatus, isToggle, chat, chs, inAChat, status, failure];
+  List<Object?> get props => [posts, preferences, currUserr, likedPostIds, mentionedMap, fstatus, isToggle, chat, chs, inAChat, status, failure];
 
   //4 gen the copy with
   ChatscreenState copyWith({
@@ -71,6 +74,7 @@ class ChatscreenState extends Equatable {
     List<Post?>? posts,
     Set<String?>? likedPostIds,
     Map<String, dynamic>? mentionedMap,
+    StreamingSharedPreferences? preferences,
     FeedStatus_chats? fstatus,
     Failure? failure,
 
@@ -84,6 +88,7 @@ class ChatscreenState extends Equatable {
       chat: chat ?? this.chat,
       mentionedMap: mentionedMap ?? this.mentionedMap,
       isToggle: isToggle ?? this.isToggle,
+      preferences: preferences ?? preferences,
       inAChat: inAChat ?? this.inAChat,
       status: status ?? this.status,
       failure: failure ?? this.failure,

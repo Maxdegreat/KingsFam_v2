@@ -65,7 +65,7 @@ class _VideoPostView16_9State extends State<VideoPostView16_9> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 5.0),
+      padding: EdgeInsets.symmetric(vertical: 0.0),
       child: Center(child: VideoPlayerWidget(controller: controller, post: widget.post, user: widget.userr,)),
     );
   }

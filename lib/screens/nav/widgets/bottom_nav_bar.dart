@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:kingsfam/enums/enums.dart';
+import 'package:kingsfam/extensions/hexcolor.dart';
 
 class BottomNavBar extends StatelessWidget {
   final Map<BottomNavItem, IconData> items;
@@ -16,20 +17,22 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    HexColor hc = HexColor();
     return BottomNavigationBar(
+      elevation: 5,
       backgroundColor: Colors.black,
       showSelectedLabels: false,
       showUnselectedLabels: false,
       type: BottomNavigationBarType.fixed,
-      selectedItemColor: Colors.red[400],
-      unselectedItemColor: Colors.red[100],
+      selectedItemColor:  Colors.amber[600],
+      unselectedItemColor: Colors.white,
       currentIndex: BottomNavItem.values.indexOf(selectedItem),
       onTap: onTap,
       items: items.map((item, icon) => MapEntry(
         item.toString(), 
         BottomNavigationBarItem(
           label: '',
-          icon:  Icon(icon, size:30.0),
+          icon:  Icon(icon, size:25.0),
         ))).values.toList(),
     );
   }

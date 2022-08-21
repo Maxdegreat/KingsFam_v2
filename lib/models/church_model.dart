@@ -6,7 +6,9 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/roles/role_types.dart';
 import 'package:kingsfam/screens/commuinity/actions.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+@JsonSerializable()
 class Church extends Equatable {
   //1 make the church class data
   final String? id;
@@ -228,6 +230,27 @@ class Church extends Equatable {
     final data = doc.data() as Map<String, dynamic>;
     return {'memRefs': Map<String, dynamic>.from(data['members'])};
   }
+
+  static Church fromJson(var data) {
+    return Church(
+        members: data['members'],
+        id: data['id'],
+        size: data['size'] ?? 0,
+        searchPram: List<String>.from(data['searchPram'] ?? []),
+        hashTags: List<String>.from(data['hashTags'] ?? []),
+        name: data['name'] ?? 'name',
+        location: data['location'] ?? 'Heaven',
+        about: data['about'] ?? 'bio',
+        imageUrl: data['imageUrl'] ?? '',
+        recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0),
+        boosted: data['boosted'] ?? 0,
+        themePack: data['themePack'] ?? "none",
+        events: List<String>.from(
+          data['events'] ?? [],
+        ),
+      );
+  }
+
 
   //7 church. empty
   static Church empty = Church(

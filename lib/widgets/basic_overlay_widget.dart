@@ -27,7 +27,7 @@ class BasicOverlayWidget extends StatelessWidget {
   );
 
   Widget buildIndicator() =>
-      VideoProgressIndicator(controller, allowScrubbing: true);
+      VideoProgressIndicator(controller, allowScrubbing: true, colors: VideoProgressColors(playedColor: (Colors.amber[900])!));
   Widget isPlay() => controller.value.isPlaying
       ? SizedBox.shrink()
       : Container(

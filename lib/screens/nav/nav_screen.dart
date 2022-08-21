@@ -35,7 +35,7 @@ class NavScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false, // sets the ability to pop this stack to false
+      onWillPop: () async => true, // sets the ability to pop this stack to false
       child: BlocBuilder<BottomnavbarCubit, BottomnavbarState>(
         builder: (context, state) { 
           return Scaffold(
@@ -49,6 +49,7 @@ class NavScreen extends StatelessWidget {
                   .toList(),
             ),
             bottomNavigationBar: BottomNavBar(
+              
               onTap: (index) {
                 final selectedItem = BottomNavItem.values[index];
                 _selectBottomNavItem(context, selectedItem, selectedItem == state.selectedItem);

@@ -21,6 +21,7 @@ class Actions {
     /* 4 */ 'cm/addChatRooms',
     /* 5 */ 'cm/addVvr',
     /* 6 */ 'cm/kickMembers',
+    /* 7 */ 'cm/delChatRooms'
   ];
 
   static final communityAdminDefaultActions = [

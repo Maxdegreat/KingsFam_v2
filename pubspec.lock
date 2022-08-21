@@ -506,6 +506,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.4"
+  json_annotation:
+    dependency: "direct main"
+    description:
+      name: json_annotation
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.6.0"
   lint:
     dependency: transitive
     description:
@@ -809,6 +816,13 @@ packages:
     dependency: transitive
     description:
       name: stream_transform
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  streaming_shared_preferences:
+    dependency: "direct main"
+    description:
+      name: streaming_shared_preferences
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"

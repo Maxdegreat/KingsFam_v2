@@ -91,6 +91,8 @@ dependencies:
   get: ^4.6.1
   google_fonts: ^3.0.1
   
+  streaming_shared_preferences: ^2.0.0
+  json_annotation: ^4.6.0
   
 
 
