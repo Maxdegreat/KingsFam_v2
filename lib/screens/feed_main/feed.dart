@@ -110,16 +110,20 @@ class __buildBodyState extends State<_buildBody> {
     return PageView.builder(
       scrollDirection: Axis.vertical,
       itemCount: state.posts.length,
-      itemBuilder: (context, index) {
-        if (index == state.posts.length) {
+      onPageChanged: (pageNum) {
+        if (pageNum == state.posts.length - 1) {
           context.read<FeedBloc>()..add(FeedPaginatePosts());
         }
+      },
+      itemBuilder: (context, index) {
+        
         final Post? post = state.posts[index];
         if (post != null) {
           final LikedPostState = context.watch<LikedPostCubit>().state;
           final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
           final recentlyLiked =
               LikedPostState.recentlyLikedPostIds.contains(post.id!);
+              // there is also a PostSingleViewPfp used for the profile screen
           return PostSingleView(
             isLiked: isLiked,
             post: post,

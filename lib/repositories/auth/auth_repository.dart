@@ -118,39 +118,56 @@ class AuthRepository extends BaseAuthRepository {
     await _firebaseAuth.signOut();
   }
 
-  Future<auth.User?> signInWithGoogle(BuildContext context) async {
-  // Trigger the authentication flow
-  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-  if (googleUser == null) return snackBar(snackMessage: "Your google acount is erroring?", context: context);
-  try {
-    // Obtain the auth details from the request
-  final GoogleSignInAuthentication? googleAuth = await googleUser.authentication;
+    final googleSignIn = GoogleSignIn();
+  // Stream<auth.User?> get user => _firebaseAuth.userChanges();
+  // Stream<auth.UserCredential> get googleUser =>
+  //     _firebaseAuth.authStateChanges();
 
-  // Create a new credential
-  final credential = auth.GoogleAuthProvider.credential(
-    accessToken: googleAuth?.accessToken,
-    idToken: googleAuth?.idToken,
-  );
+  @override
+  Future<auth.User?> signInWithGoogle() async {
+    auth.User? user;
+    //trigger auth flow
+    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
-  // create a User crediential
-   final auth.UserCredential userCredential = await _firebaseAuth.signInWithCredential(credential);
-  currUser = userCredential.user;
+    //obtain auth details from request
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser!.authentication;
 
-     _firebaseFirestore.collection(Paths.users).doc(googleUser.id).set({
-       'profileImage': googleUser.photoUrl,
-       'username': googleUser.displayName,
-       'email': googleUser.email,
-       'followers': 0,
-       'following': 0,
-       'token': [],
-       'colorPref': '#9814F4'
-     });
+    //create a new crediental
+    final crediential = auth.GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
 
-      String? token = await FirebaseMessaging.instance.getToken();
-      await saveTokenToDatabase(token!);
-      FirebaseMessaging.instance.onTokenRefresh.listen(saveTokenToDatabase);
-      return currUser;
-  } on auth.FirebaseAuthException catch (e) {
+    try {
+      final auth.UserCredential userCredential =
+          await _firebaseAuth.signInWithCredential(crediential);
+      user = userCredential.user;
+
+      final List<String> usernameSearchCase =
+          AdvancedQuerry().advancedSearch(query: googleUser.displayName!);
+
+      if (userCredential.additionalUserInfo!.isNewUser) {
+        String? token = await _messaging.getToken();
+        _firebaseFirestore.collection(Paths.users).doc(user!.uid).set({
+          'profileImage': user.photoURL,
+          'username': user.displayName,
+          'usernameSearchCase': usernameSearchCase,
+          'email': user.email,
+          'followers': 0,
+          'following': 0,
+          'token': [token],
+          'colorPref': '#9814F4',
+        });
+      }
+
+    currUser = userCredential.user;
+    String? token = await FirebaseMessaging.instance.getToken();
+    await saveTokenToDatabase(token!);
+    FirebaseMessaging.instance.onTokenRefresh.listen(saveTokenToDatabase);
+
+      return user;
+    } on auth.FirebaseAuthException catch (e) {
       throw Failure(code: e.code, message: e.message!);
     } on PlatformException catch (e) {
       throw Failure(code: e.code, message: e.message!);

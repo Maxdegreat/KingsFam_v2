@@ -201,7 +201,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                         ctx.onIsTyping(messageText.length >= 1);
                       },
                       decoration:
-                          InputDecoration.collapsed(hintText: 'Mat 6:33'),
+                          InputDecoration.collapsed(hintText: 'think b4 u txt'),
                     ),
                   ),
                 ),

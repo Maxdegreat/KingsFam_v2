@@ -12,6 +12,16 @@ class GrabUsersPaginate extends SearchEvent {
   const GrabUsersPaginate({required this.currId});
 }
 
+class PaginateChList1 extends SearchEvent {
+  final String currId;
+  const PaginateChList1({required this.currId});
+}
+
+class PaginateChList2 extends SearchEvent {
+  final String currId;
+  const PaginateChList2({required this.currId});
+}
+
 class UserrSelected extends SearchEvent {
   final bool isSelected;
   UserrSelected({

@@ -38,12 +38,15 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       yield* _mapRemoveMemberToState(event);
     } else if (event is GrabUsersPaginate) {
       yield* _mapGrabUsersPaginate(event);
+    } else if (event is PaginateChList1) {
+      yield* _mapPaginateChList1(event);
+    } else if (event is PaginateChList2) {
+      yield* _mapPaginateChList2(event);
     }
   }
 
   // In mapLoadUserToState we also init the instances of commuinitys and the user explore in the search page
   Stream<SearchState> _mapGrabUsersPaginate(GrabUsersPaginate event) async* {
-    print("paginiationgh");
     yield state.copyWith(status: SearchStatus.pag);
     try {
       List<Userr>? newUserExploreList = [];
@@ -60,8 +63,23 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       yield state.copyWith(userExploreList: updatedUsers, status: SearchStatus.initial);
 
     } catch (e) {
+      yield state.copyWith(status: SearchStatus.error, failure: Failure(message: "uhh, sorry. error when geting next set of data", code: e.toString() + " from the search bloc"));
     }
   }
+
+  Stream<SearchState> _mapPaginateChList1(PaginateChList1 event) async*{
+    yield state.copyWith(status: SearchStatus.pag);
+    try {
+      
+    } catch (e) {
+      yield state.copyWith(status: SearchStatus.error, failure: Failure(message: "uhh, sorry. error when geting next set of data", code: e.toString() + " from the search bloc"));
+    }
+  }
+
+  Stream<SearchState> _mapPaginateChList2(PaginateChList2 event) async* {
+
+  }
+
   Stream<SearchState> _mapLoadUserToState(InitializeUser event) async* {
     log("lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll");
     yield state.copyWith(status: SearchStatus.loading);

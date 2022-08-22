@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
@@ -107,6 +108,7 @@ class EditProfileCubit extends Cubit<EditProfileState> {
           status: EditProfileStatus.error,
           failure:
               Failure(message: 'mmm, there\'s an error updating ur profile')));
+              log(e.toString() + " from edit profile cubit");
     }
   }
 }

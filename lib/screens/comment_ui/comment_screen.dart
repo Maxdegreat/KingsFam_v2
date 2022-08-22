@@ -48,7 +48,7 @@ class _CommentScreenState extends State<CommentScreen> {
         child: BlocConsumer<CommentBloc, CommentState>(
          listener: (context, state) {
            if (state is CommentError) {
-             log("CommentScreen error: ${state.failure.code}");
+             snackBar(snackMessage: "CommentScreen error: ${state.failure.code}", context: context, bgColor: Colors.red[400]);
            }
          },
          builder: (context, state) {
@@ -72,7 +72,6 @@ class _CommentScreenState extends State<CommentScreen> {
      mainAxisAlignment: MainAxisAlignment.end,
      children: [
         Expanded(
-     
           child: ListView.builder(
             physics: AlwaysScrollableScrollPhysics(),
             reverse: true,
@@ -120,32 +119,39 @@ class _CommentScreenState extends State<CommentScreen> {
         Row(
          children: [
            Expanded(
+            flex: 1,
              child: Container(
-                 decoration: BoxDecoration(
-                     color: Colors.grey[900], borderRadius: BorderRadius.circular(5.0)),
-                 height: textHeight,
-                   child: Align(
-                     alignment: Alignment.center,
-                     child: TextField(
-                       controller: _messageController,
-                       textAlignVertical: TextAlignVertical.center,
-                       style: TextStyle(fontSize: 18),
-                       keyboardType: TextInputType.multiline,
-                       decoration: InputDecoration(hintText: "Add A Comment Fam..."),
-                       maxLines: null,
-                       expands: true,
-                       textCapitalization: TextCapitalization.sentences,
-                       onChanged: (messageText) {
-                        if (messageText.length >= 29) 
-                          setState(() => textHeight = 50.0);
-                        else if (messageText.length >= 87)
-                          setState(() => textHeight = 65.0);
-                        else 
-                          setState(() => textHeight = 30.0 );
-                      },
-                     ),
+              height: 50,
+               child: Padding(
+                 padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                 child: Align(
+                   alignment: Alignment.center,
+                   child: TextFormField(
+                    validator: (val) {
+                      if (val != null && val.length > 200) {
+                        return "Keep each comment to less than 200 chars. Thanks fam.";
+                      }
+                    },
+                     controller: _messageController,
+                     textAlignVertical: TextAlignVertical.center,
+                     style: TextStyle(fontSize: 18),
+                     keyboardType: TextInputType.multiline,
+                     decoration: InputDecoration(hintText: "Add A Comment Fam..."),
+                     maxLines: null,
+                     expands: true,
+                     textCapitalization: TextCapitalization.sentences,
+                     onChanged: (messageText) {
+                      if (messageText.length >= 29) 
+                        setState(() => textHeight = 50.0);
+                      else if (messageText.length >= 87)
+                        setState(() => textHeight = 65.0);
+                      else 
+                        setState(() => textHeight = 30.0 );
+                    },
                    ),
-                 )),
+                 ),
+               ),
+             )),
            
            IconButton(
                onPressed: () {

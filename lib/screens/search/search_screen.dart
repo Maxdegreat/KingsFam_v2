@@ -37,28 +37,51 @@ HexColor hexcolor = HexColor();
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _textEditingController = TextEditingController();
-  ScrollController scrollController = ScrollController();
+  late ScrollController scrollController;
+  late ScrollController cmListScrollController1;
+  late ScrollController cmListScrollController2;
   bool initSearchScreen = false;
 
   @override
   void initState() {
+    scrollController = ScrollController();
+    cmListScrollController1  = ScrollController();
+    cmListScrollController2  = ScrollController();
     scrollController.addListener(listenToScrolling);
+    cmListScrollController1.addListener(listenToScrolling);
+    cmListScrollController2.addListener(listenToScrolling);
     initSearchScreen = false;
     super.initState();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    scrollController.dispose();
+    cmListScrollController1.dispose();
+    cmListScrollController2.dispose();
+  }
+
   void listenToScrolling() {
-    if (scrollController.position.atEdge) if (scrollController
-                .position.pixels !=
-            0.0 &&
-        scrollController.position.maxScrollExtent ==
-            scrollController.position.pixels) {
-      //const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
-      //ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      context.read<SearchBloc>()
-        ..add(GrabUsersPaginate(
-            currId: context.read<AuthBloc>().state.user!.uid));
+    if (cmListScrollController1.position.atEdge) {
+      if (cmListScrollController1.position.pixels != 0.0 && cmListScrollController1.position.maxScrollExtent == cmListScrollController1.position.pixels) {
+      context.read<SearchBloc>()..add(GrabUsersPaginate(currId: context.read<AuthBloc>().state.user!.uid));
+      }
     }
+
+    if (cmListScrollController2.position.atEdge) {
+      if (cmListScrollController2.position.pixels != 0.0 && cmListScrollController2.position.maxScrollExtent == cmListScrollController2.position.pixels) {
+      context.read<SearchBloc>()..add(GrabUsersPaginate(currId: context.read<AuthBloc>().state.user!.uid));
+      }
+    }
+
+    if (scrollController.position.atEdge) {
+      if (scrollController.position.pixels != 0.0 && scrollController.position.maxScrollExtent == scrollController.position.pixels) {
+      context.read<SearchBloc>()..add(GrabUsersPaginate(currId: context.read<AuthBloc>().state.user!.uid));
+      }
+    }
+    
+    
   }
 
   // this is to make sure the search screen is initalized only once 
@@ -183,6 +206,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ? Container(
                           height: 170,
                           child: ListView.builder(
+                            controller: ,
                             scrollDirection: Axis.horizontal,
                             itemCount: state.chruchesList3.length,
                             itemBuilder: (context, index) {

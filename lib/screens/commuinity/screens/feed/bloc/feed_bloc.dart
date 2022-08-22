@@ -35,7 +35,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     } // TODO make a paginate community func
   }
 
-  static const int PAGIATIONLIMIT = 8;
+  static const int PAGIATIONLIMIT = 4;
 
   Stream<FeedState> _mapFeedCommuinityFetchPostToState(
       String commuinityId) async* {
@@ -86,6 +86,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   Stream<FeedState> _mapFeedPaginatePosts() async* {
    yield state.copyWith(status: FeedStatus.paginating);
     try {
+      log("PLEASEEEEEEEE DELLLLLLLLLL UR LOGSSSSSSSSSS");
       final lastPostId = state.posts.isNotEmpty ? state.posts.last!.id : null;
       final posts = await _postsRepository.getUserFeed(
           userId: _authBloc.state.user!.uid, lastPostId: lastPostId, limit: 8);
