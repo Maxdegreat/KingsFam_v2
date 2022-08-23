@@ -16,8 +16,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   final UserrRepository _userrRepository;
   final ChurchRepository _churchRepository;
   final AuthBloc _authBloc;
-  SearchBloc({
-    required UserrRepository userrRepository,
+  SearchBloc(
+      {required UserrRepository userrRepository,
       required ChurchRepository churchRepository,
       required AuthBloc authBloc})
       : _userrRepository = userrRepository,
@@ -51,67 +51,92 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     try {
       List<Userr>? newUserExploreList = [];
       List<Userr>? updatedUsers = [];
-      final String? lastPostId = state.userExploreList.isNotEmpty ? state.userExploreList.last.id : null; 
+      final String? lastPostId = state.userExploreList.isNotEmpty
+          ? state.userExploreList.last.id
+          : null;
       if (lastPostId != null) {
-        newUserExploreList = await _userrRepository.getSearchUsers(currId: event.currId, limit: 8, lastId: lastPostId);
-        print("The length of the newuserExploreList is ... ${newUserExploreList.length} ");
-        updatedUsers = List<Userr>.from(state.userExploreList)..addAll(newUserExploreList);
-        print("Updated Users list length is ... ${updatedUsers.length}");
-
+        newUserExploreList = await _userrRepository.getSearchUsers(
+            currId: event.currId, limit: 8, lastId: lastPostId);
+        updatedUsers = List<Userr>.from(state.userExploreList)
+          ..addAll(newUserExploreList);
       }
-      
-      yield state.copyWith(userExploreList: updatedUsers, status: SearchStatus.initial);
 
+      yield state.copyWith(
+          userExploreList: updatedUsers, status: SearchStatus.initial);
     } catch (e) {
-      yield state.copyWith(status: SearchStatus.error, failure: Failure(message: "uhh, sorry. error when geting next set of data", code: e.toString() + " from the search bloc"));
+      yield state.copyWith(
+          status: SearchStatus.error,
+          failure: Failure(
+              message: "uhh, sorry. error when geting next set of data",
+              code: e.toString() + " from the search bloc"));
     }
   }
 
-  Stream<SearchState> _mapPaginateChList1(PaginateChList1 event) async*{
+  Stream<SearchState> _mapPaginateChList1(PaginateChList1 event) async* {
     yield state.copyWith(status: SearchStatus.pag);
     try {
-      
+      List<Church>? newCms = [];
+      List<Church>? updatedCms = [];
+      final String? lastCmId =
+          state.churches.isNotEmpty ? state.churches.last.id : null;
+      if (lastCmId != null) {
+        newCms = await _churchRepository.grabChurchWithLocation(
+            location: state.user.location, limit: 4, lastPostId: lastCmId);
+        updatedCms = state.churches..addAll(newCms);
+        yield state.copyWith(churches: updatedCms);
+      }
     } catch (e) {
-      yield state.copyWith(status: SearchStatus.error, failure: Failure(message: "uhh, sorry. error when geting next set of data", code: e.toString() + " from the search bloc"));
+      yield state.copyWith(
+          status: SearchStatus.error,
+          failure: Failure(
+              message: "uhh, sorry. error when geting next set of data",
+              code: e.toString() + " from the search bloc"));
     }
   }
 
   Stream<SearchState> _mapPaginateChList2(PaginateChList2 event) async* {
-
+    List<Church>? newCms = [];
+    List<Church>? updatedCms = [];
+    final String? lastCmId =
+        state.chruchesList3.isNotEmpty ? state.chruchesList3.last.id : null;
+    log("the last cmId: $lastCmId");
+    if (lastCmId != null) {
+      newCms = await _churchRepository.grabChurchAllOver(
+          location: "not equal to", limit: 4, lastPostId: lastCmId);
+      log("new cms: ${newCms.length}");
+      updatedCms = state.chruchesList3..addAll(newCms);
+      log("updated cms len is: ${updatedCms.length}");
+      yield state.copyWith(churches: []);
+    }
   }
 
   Stream<SearchState> _mapLoadUserToState(InitializeUser event) async* {
-    log("lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll");
     yield state.copyWith(status: SearchStatus.loading);
     try {
-      print("Now in the map load user to state");
-      Userr user = await _userrRepository.getUserrWithId(userrId: event.currentUserrId);
-      print("we now have the user");
-      List<Church> churches = await _churchRepository.grabChurchWithLocation(location: user.location);
-      
+      Userr user =
+          await _userrRepository.getUserrWithId(userrId: event.currentUserrId);
+      List<Church> churches = await _churchRepository.grabChurchWithLocation(
+          location: user.location);
+
       // CHURCHLLIST2 IS CURRENTLY NOT BEING USED
-      // List<Church> churchesList2 =
-          // await _churchRepository.grabChurchWithSpecial(special: "#tiktok");
-      List<Church> churchesList3 = await _churchRepository.grabChurchAllOver(location: user.location);
+      List<Church> churchesList3 =
+          await _churchRepository.grabChurchAllOver(location: user.location);
       print("just grabed some churches ---------------> user explore");
 
       // final userExploreController = BehaviorSubject<List<DocumentSnapshot>>();
-      List<Userr> userExploreList = await _userrRepository.getSearchUsers(currId: event.currentUserrId, limit: 8, lastId: null);
-      print("YOUUUUUUUUUUUUUUUUUUUUUUUUUUUU GOT UR USERS");
-      
-      
+      List<Userr> userExploreList = await _userrRepository.getSearchUsers(
+          currId: event.currentUserrId, limit: 4, lastId: null);
+
       print("just grabed the users");
-      
+
       // await _userrRepository.grabUserExploreListNext10(ownerId);
-      print("now setting state to init ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
       yield state.copyWith(
           user: user,
           churches: churches,
           churchesList2: [], //churchesList2,
           churchesList3: churchesList3,
-          userExploreList: userExploreList,//userExploreList,
-          status: SearchStatus.initial
-      );
+          userExploreList: userExploreList, //userExploreList,
+          status: SearchStatus.initial);
     } catch (e) {
       state.copyWith(
           failure: Failure(message: "Check your internet connection"),
@@ -177,22 +202,26 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     }
   }
 
-    void searchUserAdvancedAddToCommuinity(String query) async {
+  void searchUserAdvancedAddToCommuinity(String query) async {
     if (query.isEmpty) {
       emit(state.copyWith(status: SearchStatus.initial));
     } else {
       try {
-        final users = await _userrRepository.searchUsersAdvancedFollowing(query: query, currUserId: _authBloc.state.user!.uid);
+        final users = await _userrRepository.searchUsersAdvancedFollowing(
+            query: query, currUserId: _authBloc.state.user!.uid);
         emit(state.copyWith(users: users, status: SearchStatus.success));
       } catch (e) {
-        print("Error: ${e. toString()}");
-        state.copyWith( failure: Failure(message: 'Some Thing went wrong'), status: SearchStatus.error);
+        print("Error: ${e.toString()}");
+        state.copyWith(
+            failure: Failure(message: 'Some Thing went wrong'),
+            status: SearchStatus.error);
       }
     }
   }
 
   void followingUsersList({required String? lastStingId}) async {
-    var followingList =  await _userrRepository.followingList(currUserId: _authBloc.state.user!.uid, lastStringId: lastStingId);
+    var followingList = await _userrRepository.followingList(
+        currUserId: _authBloc.state.user!.uid, lastStringId: lastStingId);
     emit(state.copyWith(followingUsers: followingList));
   }
 

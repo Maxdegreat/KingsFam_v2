@@ -63,22 +63,28 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void listenToScrolling() {
-    if (cmListScrollController1.position.atEdge) {
-      if (cmListScrollController1.position.pixels != 0.0 && cmListScrollController1.position.maxScrollExtent == cmListScrollController1.position.pixels) {
-      context.read<SearchBloc>()..add(GrabUsersPaginate(currId: context.read<AuthBloc>().state.user!.uid));
-      }
+    if (cmListScrollController1.hasClients) {
+      if (cmListScrollController1.position.atEdge) {
+        if (cmListScrollController1.position.pixels != 0.0 && cmListScrollController1.position.maxScrollExtent == cmListScrollController1.position.pixels) {
+        context.read<SearchBloc>()..add(GrabUsersPaginate(currId: context.read<AuthBloc>().state.user!.uid));
+        }
+     }
     }
 
-    if (cmListScrollController2.position.atEdge) {
+    if (cmListScrollController2.hasClients) {
+      if (cmListScrollController2.position.atEdge) {
       if (cmListScrollController2.position.pixels != 0.0 && cmListScrollController2.position.maxScrollExtent == cmListScrollController2.position.pixels) {
-      context.read<SearchBloc>()..add(GrabUsersPaginate(currId: context.read<AuthBloc>().state.user!.uid));
+      context.read<SearchBloc>()..add(PaginateChList1(currId: context.read<AuthBloc>().state.user!.uid));
       }
     }
+    }
 
-    if (scrollController.position.atEdge) {
+    if (cmListScrollController2.hasClients) {
+      if (scrollController.position.atEdge) {
       if (scrollController.position.pixels != 0.0 && scrollController.position.maxScrollExtent == scrollController.position.pixels) {
-      context.read<SearchBloc>()..add(GrabUsersPaginate(currId: context.read<AuthBloc>().state.user!.uid));
+      context.read<SearchBloc>()..add(PaginateChList2(currId: context.read<AuthBloc>().state.user!.uid));
       }
+    }
     }
     
     
@@ -104,8 +110,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return RefreshIndicator(
         onRefresh: () async {
           context.read<SearchBloc>()
-            ..add(InitializeUser(
-                currentUserrId: context.read<AuthBloc>().state.user!.uid));
+            ..add(InitializeUser(currentUserrId: context.read<AuthBloc>().state.user!.uid));
         },
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
@@ -177,6 +182,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ? Container(
                           height: 170,
                           child: ListView.builder(
+                            controller: cmListScrollController1,
                             scrollDirection: Axis.horizontal,
                             itemCount: state.churches.length,
                             itemBuilder: (context, index) {
@@ -206,7 +212,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ? Container(
                           height: 170,
                           child: ListView.builder(
-                            controller: ,
+                            controller: cmListScrollController2,
                             scrollDirection: Axis.horizontal,
                             itemCount: state.chruchesList3.length,
                             itemBuilder: (context, index) {
@@ -333,24 +339,27 @@ class _SearchScreenState extends State<SearchScreen> {
                 borderRadius: BorderRadius.circular(5.0)),
           ),
         ),
-        Container(
-          height: 150 / 2, //use parent height / 2,
-          width: MediaQuery.of(context).size.width * .70,
-          decoration: BoxDecoration(color: Colors.black54),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("${church.name}",
-                  style: TextStyle(fontSize: 20), overflow: TextOverflow.fade),
-              Text("At ${church.location}",
-                  style: TextStyle(fontSize: 20), overflow: TextOverflow.fade),
-              Text(
-                "${church.members.length} members",
-                style: TextStyle(fontSize: 20),
-                overflow: TextOverflow.fade,
-              ),
-            ],
+        Expanded(
+          flex: 1,
+          child: Container(
+            height: 150 / 1.5, //use parent height / 2,
+            width: MediaQuery.of(context).size.width * .70,
+            decoration: BoxDecoration(color: Colors.black54),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("${church.name}",
+                    style: TextStyle(fontSize: 20), overflow: TextOverflow.fade),
+                Text("At ${church.location}",
+                    style: TextStyle(fontSize: 20), overflow: TextOverflow.fade),
+                Text(
+                  "${church.members.length} members",
+                  style: TextStyle(fontSize: 20),
+                  overflow: TextOverflow.fade,
+                ),
+              ],
+            ),
           ),
         )
       ],
