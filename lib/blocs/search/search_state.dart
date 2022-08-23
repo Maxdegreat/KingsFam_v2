@@ -12,7 +12,7 @@ class SearchState extends Equatable {
 
   final List<Church> churches; // list of churches
   final List<Church> churchesList2; // rn ppl from tik tok
-  final List<Church> chruchesList3; // new churches
+  final List<Church> chruchesNotEqualLocation; // new churches
   final List<Userr> userExploreList; // a list to find new users
 
   final bool isSelected; // bool for ?
@@ -27,7 +27,7 @@ class SearchState extends Equatable {
         followingUsers: [],
         selectedUsers: {},
         churches: [],
-        chruchesList3: [],
+        chruchesNotEqualLocation: [],
         churchesList2: [],
         userExploreList: [],
         isSelected: false,
@@ -43,7 +43,7 @@ class SearchState extends Equatable {
     required this.selectedUsers,
     required this.churches,
     required this.churchesList2,
-    required this.chruchesList3,
+    required this.chruchesNotEqualLocation,
     required this.userExploreList,
     required this.isSelected,
     required this.status,
@@ -59,7 +59,7 @@ class SearchState extends Equatable {
         selectedUsers,
         churches,
         churchesList2,
-        chruchesList3,
+        chruchesNotEqualLocation,
         userExploreList,
         isSelected,
         status,
@@ -75,7 +75,7 @@ class SearchState extends Equatable {
     bool? isSelected,
     List<Church>? churches,
     List<Church>? churchesList2,
-    List<Church>? churchesList3,
+    List<Church>? chruchesNotEqualLocation,
     List<Userr>? userExploreList,
     SearchStatus? status,
     Failure? failure,
@@ -88,7 +88,7 @@ class SearchState extends Equatable {
       selectedUsers: selectedUsers ?? this.selectedUsers,
       churches: churches ?? this.churches,
       churchesList2: churchesList2 ?? this.churchesList2,
-      chruchesList3: churchesList3 ?? this.chruchesList3,
+      chruchesNotEqualLocation: chruchesNotEqualLocation ?? this.chruchesNotEqualLocation,
       userExploreList: userExploreList ?? this.userExploreList,
       isSelected: isSelected ?? this.isSelected,
       status: status ?? this.status,

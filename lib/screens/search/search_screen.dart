@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/blocs/search/search_bloc.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
+import 'package:kingsfam/helpers/navigator_helper.dart';
 
 import 'package:kingsfam/models/models.dart';
 
@@ -38,18 +40,12 @@ HexColor hexcolor = HexColor();
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _textEditingController = TextEditingController();
   late ScrollController scrollController;
-  late ScrollController cmListScrollController1;
-  late ScrollController cmListScrollController2;
   bool initSearchScreen = false;
 
   @override
   void initState() {
     scrollController = ScrollController();
-    cmListScrollController1  = ScrollController();
-    cmListScrollController2  = ScrollController();
     scrollController.addListener(listenToScrolling);
-    cmListScrollController1.addListener(listenToScrolling);
-    cmListScrollController2.addListener(listenToScrolling);
     initSearchScreen = false;
     super.initState();
   }
@@ -58,59 +54,42 @@ class _SearchScreenState extends State<SearchScreen> {
   void dispose() {
     super.dispose();
     scrollController.dispose();
-    cmListScrollController1.dispose();
-    cmListScrollController2.dispose();
   }
 
   void listenToScrolling() {
-    if (cmListScrollController1.hasClients) {
-      if (cmListScrollController1.position.atEdge) {
-        if (cmListScrollController1.position.pixels != 0.0 && cmListScrollController1.position.maxScrollExtent == cmListScrollController1.position.pixels) {
-        context.read<SearchBloc>()..add(GrabUsersPaginate(currId: context.read<AuthBloc>().state.user!.uid));
-        }
-     }
-    }
-
-    if (cmListScrollController2.hasClients) {
-      if (cmListScrollController2.position.atEdge) {
-      if (cmListScrollController2.position.pixels != 0.0 && cmListScrollController2.position.maxScrollExtent == cmListScrollController2.position.pixels) {
-      context.read<SearchBloc>()..add(PaginateChList1(currId: context.read<AuthBloc>().state.user!.uid));
-      }
-    }
-    }
-
-    if (cmListScrollController2.hasClients) {
       if (scrollController.position.atEdge) {
-      if (scrollController.position.pixels != 0.0 && scrollController.position.maxScrollExtent == scrollController.position.pixels) {
-      context.read<SearchBloc>()..add(PaginateChList2(currId: context.read<AuthBloc>().state.user!.uid));
+        if (scrollController.position.pixels != 0.0 &&
+            scrollController.position.maxScrollExtent ==
+                scrollController.position.pixels) {
+          context.read<SearchBloc>()
+            ..add(GrabUsersPaginate(
+                currId: context.read<AuthBloc>().state.user!.uid));
+        }
       }
-    }
-    }
-    
-    
   }
 
-  // this is to make sure the search screen is initalized only once 
+  // this is to make sure the search screen is initalized only once
   // unless refreshed. soon find a way to only load once the screen is opened
   // i usupect the need to rewrite the stack logic for that tho.
 
   initializeSeachScreen(BuildContext context) {
     initSearchScreen = true;
-     context.read<SearchBloc>()..add(InitializeUser(
-               currentUserrId: context.read<AuthBloc>().state.user!.uid));
+    context.read<SearchBloc>()
+      ..add(InitializeUser(
+          currentUserrId: context.read<AuthBloc>().state.user!.uid));
   }
 
   // the build method is shown below
 
   @override
   Widget build(BuildContext context) {
-    if (initSearchScreen == false)
-      initializeSeachScreen(context);
+    if (initSearchScreen == false) initializeSeachScreen(context);
 
     return RefreshIndicator(
         onRefresh: () async {
           context.read<SearchBloc>()
-            ..add(InitializeUser(currentUserrId: context.read<AuthBloc>().state.user!.uid));
+            ..add(InitializeUser(
+                currentUserrId: context.read<AuthBloc>().state.user!.uid));
         },
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
@@ -166,23 +145,32 @@ class _SearchScreenState extends State<SearchScreen> {
         return CustomScrollView(
           controller: scrollController,
           slivers: [
-            //
-
             SliverToBoxAdapter(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 10),
-                  Text("Commuinities Around You",
-                      style: TextStyle(
-                          fontSize: 20,
-                          color: Color(hexcolor.hexcolorCode('#FFC050')))),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text("Local Communities",
+                          style: GoogleFonts.aBeeZee(
+                              color: Color(hexcolor.hexcolorCode('#FFC050')),
+                              fontSize: 20)),
+                      TextButton(
+                          onPressed: () => NavHelper().navToMoreCm(context, "local", context.read<SearchBloc>()),
+                          child: Text(
+                            "More Cm's",
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ))
+                    ],
+                  ),
                   SizedBox(height: 5.0),
                   state.churches.length > 0
                       ? Container(
                           height: 170,
                           child: ListView.builder(
-                            controller: cmListScrollController1,
                             scrollDirection: Axis.horizontal,
                             itemCount: state.churches.length,
                             itemBuilder: (context, index) {
@@ -200,23 +188,34 @@ class _SearchScreenState extends State<SearchScreen> {
                               child: Text("You Are In Every Community?!?!"))),
                   SizedBox(height: 20.0),
 
-                  Text(
-                    "Communitys All Over",
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: Color(hexcolor.hexcolorCode('#FFC050'))),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Global Communitys",
+                        style: GoogleFonts.aBeeZee(
+                            color: Color(hexcolor.hexcolorCode('#FFC050')),
+                            fontSize: 20),
+                      ),
+                      TextButton(
+                          onPressed: () => NavHelper().navToMoreCm(context, "global", context.read<SearchBloc>()),
+                          child: Text(
+                            "More Cm's",
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ))
+                    ],
                   ),
-                  // to find most popular write a script that finds greater than sum of of all commuinities then
+
                   SizedBox(height: 5.0),
-                  state.chruchesList3.length > 0
+                  state.chruchesNotEqualLocation.length > 0
                       ? Container(
                           height: 170,
                           child: ListView.builder(
-                            controller: cmListScrollController2,
                             scrollDirection: Axis.horizontal,
-                            itemCount: state.chruchesList3.length,
+                            itemCount: state.chruchesNotEqualLocation.length,
                             itemBuilder: (context, index) {
-                              Church church = state.chruchesList3[index];
+                              Church church = state.chruchesNotEqualLocation[index];
                               return GestureDetector(
                                   onTap: () => navToChurch(
                                       context: context, commuinity: church),
@@ -226,8 +225,8 @@ class _SearchScreenState extends State<SearchScreen> {
                           ))
                       : Container(
                           height: 170,
-                          child: Center(
-                              child: Text("You Are In Every Community?!?!"))),
+                          child:
+                              Center(child: Text("hmm, nothing to see here"))),
 
                   SizedBox(height: 20.0),
                   Text(
@@ -243,7 +242,6 @@ class _SearchScreenState extends State<SearchScreen> {
                 ],
               ),
             ),
-
             SliverToBoxAdapter(
                 child: state.userExploreList.length > 0
                     ? GridView.builder(
@@ -312,7 +310,8 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  void navToChurch({required BuildContext context, required Church commuinity}) {
+  void navToChurch(
+      {required BuildContext context, required Church commuinity}) {
     Navigator.of(context).pushNamed(CommuinityScreen.routeName,
         arguments: CommuinityScreenArgs(commuinity: commuinity));
   }
@@ -350,9 +349,11 @@ class _SearchScreenState extends State<SearchScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("${church.name}",
-                    style: TextStyle(fontSize: 20), overflow: TextOverflow.fade),
+                    style: TextStyle(fontSize: 20),
+                    overflow: TextOverflow.fade),
                 Text("At ${church.location}",
-                    style: TextStyle(fontSize: 20), overflow: TextOverflow.fade),
+                    style: TextStyle(fontSize: 20),
+                    overflow: TextOverflow.fade),
                 Text(
                   "${church.members.length} members",
                   style: TextStyle(fontSize: 20),

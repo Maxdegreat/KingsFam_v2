@@ -6,6 +6,7 @@ import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
 import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
 import 'package:kingsfam/screens/screens.dart';
+import 'package:kingsfam/screens/search/more_cm_screen.dart';
 
 class CustomRoute {
   static Route onGenerateRoute(RouteSettings settings) {
@@ -146,6 +147,9 @@ class CustomRoute {
       
       case UpdateCmThemePack.routeName:
         return UpdateCmThemePack.route(settings.arguments as UpdateCmThemePackArgs);
+      
+      case MoreCm.routeName:
+        return MoreCm.route(settings.arguments as MoreCmArgs);
 
       default:
         return _errorRoute();

@@ -40,8 +40,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       yield* _mapGrabUsersPaginate(event);
     } else if (event is PaginateChList1) {
       yield* _mapPaginateChList1(event);
-    } else if (event is PaginateChList2) {
-      yield* _mapPaginateChList2(event);
+    } else if (event is PaginateChListNotEqualToLocation) {
+      yield* _mapPaginateChListNotEqualToLocation(event);
     }
   }
 
@@ -94,19 +94,19 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     }
   }
 
-  Stream<SearchState> _mapPaginateChList2(PaginateChList2 event) async* {
+  Stream<SearchState> _mapPaginateChListNotEqualToLocation(PaginateChListNotEqualToLocation event) async* {
     List<Church>? newCms = [];
     List<Church>? updatedCms = [];
     final String? lastCmId =
-        state.chruchesList3.isNotEmpty ? state.chruchesList3.last.id : null;
+        state.chruchesNotEqualLocation.isNotEmpty ? state.chruchesNotEqualLocation.last.id : null;
     log("the last cmId: $lastCmId");
     if (lastCmId != null) {
       newCms = await _churchRepository.grabChurchAllOver(
-          location: "not equal to", limit: 4, lastPostId: lastCmId);
+          location: state.user.location, limit: 4, lastPostId: lastCmId);
       log("new cms: ${newCms.length}");
-      updatedCms = state.chruchesList3..addAll(newCms);
+      updatedCms = state.chruchesNotEqualLocation..addAll(newCms);
       log("updated cms len is: ${updatedCms.length}");
-      yield state.copyWith(churches: []);
+      yield state.copyWith(chruchesNotEqualLocation: updatedCms);
     }
   }
 
@@ -134,7 +134,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
           user: user,
           churches: churches,
           churchesList2: [], //churchesList2,
-          churchesList3: churchesList3,
+          chruchesNotEqualLocation: churchesList3,
           userExploreList: userExploreList, //userExploreList,
           status: SearchStatus.initial);
     } catch (e) {

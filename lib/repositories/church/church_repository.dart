@@ -323,10 +323,9 @@ class ChurchRepository extends BaseChurchRepository {
           .get();
 
       churchSnap = await FirebaseFirestore.instance
-          .collection(Paths.church)
-          .where('location', isNotEqualTo: location)
+          .collection(Paths.church).orderBy("location")
+          .where('location', isNotEqualTo: location).startAfterDocument(lastDocSnap)
           .limit(limit)
-          .startAfterDocument(lastDocSnap)
           .get();
 
       List<Church> bucket = [];
