@@ -22,8 +22,10 @@ class PostSingleView extends StatefulWidget {
   final VoidCallback onLike;
   final bool recentlyLiked;
   final ScrollController? scrollController;
+  final TabController? tabCtrl;
 
   PostSingleView({
+    this.tabCtrl,
     this.scrollController,
     this.recentlyLiked = false,
     required this.post,
@@ -329,6 +331,7 @@ class _PostSingleViewState extends State<PostSingleView> {
         child: Align(
           alignment: Alignment.center,
           child: VideoPostView16_9(
+            tabCtrl: widget.tabCtrl,
             post: widget.post,
             userr: widget.post.author,
             videoUrl: widget.post.videoUrl!,

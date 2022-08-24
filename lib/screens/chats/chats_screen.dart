@@ -40,47 +40,6 @@ class _ChatsScreenState extends State<ChatsScreen>
   //bool get wantKeepAlive => true;
   // handel permissions for notifications using FCM
 
-  // make support for FCM
-  Future<void> setupInteractedMessage() async {
-    // Get any messages which caused the application to open from
-    // a terminated state.
-    RemoteMessage? initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
-
-    // If the message also contains a data property with a "type" of "chat",
-    // navigate to a chat screen
-    log(initialMessage.toString());
-    log('that was the inital message');
-    if (initialMessage != null) {
-      _handleMessage(initialMessage);
-    }
-
-    // Also handle any interaction when the app is in the background via a
-    // Stream listener
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      log("This is data on a onMessageOpenedApp notification");
-      log('---------------------------');
-      log("The notif: ${message.notification}");
-      log('---------------------------');
-      log("The data: ${message.data}");
-      log('---------------------------');
-      log('the message: $message');
-      final dynamic data = message.data;
-      log(data.toString());
-    });
-
-    //FirebaseMessaging.instance.requestPermission()
-  }
-
-  void _handleMessage(RemoteMessage message) {
-    if (message.data['type'] == 'kc_type') {
-      log('The message is $message');
-      // var kc = KingsCord(tag: message.data['tag'], cordName: message.data['cordName'], recentMessage: message.data['recentMessage'], recentSender: message.data['recentSender'], members: message.data['members'], id: message.data['id']);
-      // Navigator.pushNamed(context, KingsCordScreen.routeName, arguments: KingsCordArgs(commuinity: Church(id: message.data['communityId'], searchPram: [], name: message.data['communityName'], location: '...', imageUrl: '...', members: message.data['members'], events: [], about: '...', recentMsgTime: Timestamp(0,0)), kingsCord: kc));
-    } else {
-      log("we were not able to track the remote message to ur wanted screeen");
-    }
-  }
 
   late BannerAd _bottomBannerAd;
   late BannerAd _inLineBannerAd;
@@ -94,6 +53,7 @@ class _ChatsScreenState extends State<ChatsScreen>
     }
     return index;
   }
+  int _tabIdx = 1;
 
   void _createBottomBannerAd() {
     _bottomBannerAd = BannerAd(
@@ -127,11 +87,25 @@ class _ChatsScreenState extends State<ChatsScreen>
     _inLineBannerAd.load();
   }
 
+  tabControllerListener() {
+    if (_tabController.indexIsChanging) {
+      if (_tabController.index == 0) {
+        log("setting state, idx == 0");
+        setState(() {
+          
+        });
+      } else if (_tabController.previousIndex == 0) {
+        log("setting state, idx was 0");
+        setState(() {
+          
+        });
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    //fcmpermissions();
-    setupInteractedMessage();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
     _perkedVideoPlayerController = VideoPlayerController.asset(
       "assets/promo_assets/Perked-2.mp4",
@@ -145,41 +119,12 @@ class _ChatsScreenState extends State<ChatsScreen>
         _perkedVideoPlayerController.play();
         _perkedVideoPlayerController.setVolume(0);
       });
-    // _tabController.addListener(tabControllerListener);
+    _tabController.addListener(() => setState(() {}));
     _createBottomBannerAd();
     //super.build(context);
   }
 
-  // void fcmpermissions() async {
-  //   FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-  //   NotificationSettings settings = await messaging.requestPermission(
-  //     alert: true,
-  //     announcement: false,
-  //     badge: true,
-  //     carPlay: false,
-  //     criticalAlert: false,
-  //     provisional: false,
-  //     sound: true,
-  //   );
-
-  //   if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-  //     print('User granted permission');
-  //   } else if (settings.authorizationStatus ==
-  //       AuthorizationStatus.provisional) {
-  //     print('User granted provisional permission');
-  //   } else {
-  //     print('User declined or has not accepted permission');
-  //   }
-  // }
-
-  // bool feedBeenLoaded = false;
-  // void tabControllerListener() {
-  //   if (_tabController.index == 0 && !feedBeenLoaded) {
-  //     context.read<ChatscreenBloc>()..add(ChatScreenFetchPosts());
-  //     feedBeenLoaded = true;
-  //   }
-  // }
+  
 
   @override
   void dispose() {
@@ -234,13 +179,13 @@ class _ChatsScreenState extends State<ChatsScreen>
               }
             }, builder: (context, state) {
               return NestedScrollView(
-                  headerSliverBuilder:
+                  headerSliverBuilder: 
                       (BuildContext context, bool isScrollableInnerBox) {
-                    return <Widget>[
-                      SliverAppBar(
-                          floating: true,
-                          toolbarHeight: 10,
-                          expandedHeight: 10,
+                    return _tabController.index == 0 ? <Widget> [] : <Widget>[
+                     SliverAppBar(
+                          floating: false,
+                          toolbarHeight:  00,
+                          expandedHeight:   00,
                           bottom: TabBar(
                             controller: _tabController,
                             tabs: [
@@ -254,9 +199,8 @@ class _ChatsScreenState extends State<ChatsScreen>
                   body: TabBarView(
                     controller: _tabController,
                     children: [
-                      ScreensForPageView().feed(context),
-                      ScreensForPageView().commuinity_view(userId, context,
-                          _bottomBannerAd, _isBottomBannerAdLoaded),
+                      ScreensForPageView().feed(context, _tabController),
+                      ScreensForPageView().commuinity_view(userId, context,_bottomBannerAd, _isBottomBannerAdLoaded),
                       ScreensForPageView().chats_view(userId, state, context)
                     ],
                   ));

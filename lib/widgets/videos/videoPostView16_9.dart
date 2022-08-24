@@ -11,12 +11,14 @@ class VideoPostView16_9 extends StatefulWidget {
   final bool? playVidNow;
   final Post post;
   final Userr userr;
+  final TabController? tabCtrl;
   const VideoPostView16_9({
     Key? key, 
     required this.videoUrl, 
     required this.post,
     required this.userr,
     this.scrollCtrl,
+    this.tabCtrl,
     this.playVidNow,
     })
     : super(key: key);
@@ -28,6 +30,8 @@ class VideoPostView16_9 extends StatefulWidget {
 class _VideoPostView16_9State extends State<VideoPostView16_9> {
 
   late VideoPlayerController controller;
+
+
   @override
   void initState() {
     super.initState();
@@ -35,7 +39,9 @@ class _VideoPostView16_9State extends State<VideoPostView16_9> {
     // HERE IS MY MASTER PLAN ALGO IDEA.
     // PASS POST.ID ACCORDING TO SCROLL CONTROLLER
     // IF ID.POSTVIDEO != NULL PLAY VIDEO ONCE OFFSET MOVES PAUSE THE VIDEO.
-
+    if (widget.tabCtrl != null) {
+      widget.tabCtrl!.addListener(() { listenToTabBarChanges(); });
+    }
     controller = VideoPlayerController.network(widget.videoUrl)
       ..addListener(() {
         setState(() {});
@@ -56,6 +62,14 @@ class _VideoPostView16_9State extends State<VideoPostView16_9> {
       }
   }
 
+  
+  void listenToTabBarChanges() {
+    if (widget.tabCtrl!= null && widget.tabCtrl!.index != 0) {
+      log("The video is pausing because the tabctrl is now != 0");
+      controller.pause();
+    }
+  }
+
   @override
   void dispose() {
     controller.dispose();
@@ -64,9 +78,12 @@ class _VideoPostView16_9State extends State<VideoPostView16_9> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 0.0),
-      child: Center(child: VideoPlayerWidget(controller: controller, post: widget.post, user: widget.userr,)),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 0.0),
+        child: Center(child: VideoPlayerWidget(controller: controller, post: widget.post, user: widget.userr,)),
+      ),
     );
   }
 }

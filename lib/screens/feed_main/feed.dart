@@ -10,7 +10,8 @@ import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 class FeedScreenWidget extends StatefulWidget {
-  const FeedScreenWidget({Key? key}) : super(key: key);
+  const FeedScreenWidget({Key? key, required this.tabController}) : super(key: key);
+  final TabController tabController;
 
   @override
   _FeedScreenWidgetState createState() => _FeedScreenWidgetState();
@@ -31,7 +32,7 @@ class _FeedScreenWidgetState extends State<FeedScreenWidget>
         likedPostCubit: context.read<LikedPostCubit>(),
         postsRepository: context.read<PostsRepository>(),
       )..add(FeedFetchPosts()),
-      child: _buildBody(size: size),
+      child: _buildBody(size: size, tabCtrl: widget.tabController),
     );
   }
 }
@@ -40,9 +41,11 @@ class _buildBody extends StatefulWidget {
   const _buildBody({
     Key? key,
     required this.size,
+    required this.tabCtrl,
   }) : super(key: key);
 
   final Size size;
+  final TabController tabCtrl;
 
   @override
   __buildBodyState createState() => __buildBodyState();
@@ -52,10 +55,11 @@ class __buildBodyState extends State<_buildBody> {
   @override
   ScrollController scrollController = ScrollController();
   void initState() {
+    
     scrollController.addListener(listenToScrolling);
     super.initState();
   }
-
+  
   void listenToScrolling() {
    log("the position of the scroll controller for the feed is: ${scrollController.position.pixels}");
     // log("The view port of the scroll controller is: ${scrollController.position.viewportDimension}");
@@ -71,6 +75,7 @@ class __buildBodyState extends State<_buildBody> {
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -125,6 +130,7 @@ class __buildBodyState extends State<_buildBody> {
               LikedPostState.recentlyLikedPostIds.contains(post.id!);
               // there is also a PostSingleViewPfp used for the profile screen
           return PostSingleView(
+            tabCtrl: widget.tabCtrl,
             isLiked: isLiked,
             post: post,
             recentlyLiked: recentlyLiked,
