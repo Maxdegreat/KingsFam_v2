@@ -138,7 +138,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final userr =
           await _userrRepository.getUserrWithId(userrId: event.userId);
       yield state.copyWith(userr: userr);
-      log("LLLLLLLLLLLLLLLLOOOOOOOOOOOOOOOOOOAAAAAAAAAAAAAAAAADDDDDDDDDDDDEEEEEEEEEEEEEEDDDDDDDDDDDDDD");
 
       final isCurrentUser = _authBloc.state.user!.uid == event.userId;
 

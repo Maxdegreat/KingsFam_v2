@@ -83,7 +83,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         newCms = await _churchRepository.grabChurchWithLocation(
             location: state.user.location, limit: 4, lastPostId: lastCmId);
         updatedCms = state.churches..addAll(newCms);
-        yield state.copyWith(churches: updatedCms);
+        yield state.copyWith(churches: updatedCms, status: SearchStatus.initial);
       }
     } catch (e) {
       yield state.copyWith(
@@ -95,6 +95,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   }
 
   Stream<SearchState> _mapPaginateChListNotEqualToLocation(PaginateChListNotEqualToLocation event) async* {
+    yield state.copyWith(status: SearchStatus.pag);
     List<Church>? newCms = [];
     List<Church>? updatedCms = [];
     final String? lastCmId =
@@ -106,7 +107,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       log("new cms: ${newCms.length}");
       updatedCms = state.chruchesNotEqualLocation..addAll(newCms);
       log("updated cms len is: ${updatedCms.length}");
-      yield state.copyWith(chruchesNotEqualLocation: updatedCms);
+      yield state.copyWith(chruchesNotEqualLocation: updatedCms, status: SearchStatus.initial);
     }
   }
 
@@ -115,19 +116,17 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     try {
       Userr user =
           await _userrRepository.getUserrWithId(userrId: event.currentUserrId);
+
       List<Church> churches = await _churchRepository.grabChurchWithLocation(
           location: user.location);
 
       // CHURCHLLIST2 IS CURRENTLY NOT BEING USED
       List<Church> churchesList3 =
           await _churchRepository.grabChurchAllOver(location: user.location);
-      print("just grabed some churches ---------------> user explore");
 
       // final userExploreController = BehaviorSubject<List<DocumentSnapshot>>();
       List<Userr> userExploreList = await _userrRepository.getSearchUsers(
           currId: event.currentUserrId, limit: 4, lastId: null);
-
-      print("just grabed the users");
 
       // await _userrRepository.grabUserExploreListNext10(ownerId);
       yield state.copyWith(

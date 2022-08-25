@@ -207,6 +207,8 @@ class Church extends Equatable {
       }
     }
 
+    String location = data['location'] == " " || data['location']  == "" ? "Reomte" : data['location'];
+
     return Church(
         members: members,
         id: doc.id,
@@ -214,7 +216,7 @@ class Church extends Equatable {
         searchPram: List<String>.from(data['searchPram'] ?? []),
         hashTags: List<String>.from(data['hashTags'] ?? []),
         name: data['name'] ?? 'name',
-        location: data['location'] ?? 'Heaven',
+        location: location,
         about: data['about'] ?? 'bio',
         imageUrl: data['imageUrl'] ?? '',
         recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0),

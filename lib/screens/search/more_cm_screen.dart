@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/blocs/search/search_bloc.dart';
+import 'package:kingsfam/widgets/snackbar.dart';
 
 import '../../models/church_model.dart';
 
@@ -53,20 +54,24 @@ class _MoreCmState extends State<MoreCm> {
   void addListenerToScrollCtrl() {
     if (controller.position.atEdge) {
       if (controller.position.pixels != 0.0 &&
-          controller.position.maxScrollExtent == controller.position.pixels) {
+          controller.position.maxScrollExtent - 100 == controller.position.pixels - 100) {
+        setState(() {});
         if (widget.type == "global") {
-          log("looking in the global cms");
-          log("cms len b4: ${widget.bloc.state.chruchesNotEqualLocation.length}");
-          widget.bloc
+
+          
+          setState(() {
+            snackBar(snackMessage: "", context: context, showLoading: true, bgColor: Colors.blue);
+            widget.bloc
             ..add(PaginateChListNotEqualToLocation(
                 currId: context.read<AuthBloc>().state.user!.uid));
-          log("cms len after: ${widget.bloc.state.chruchesNotEqualLocation.length}");
-          setState(() {});
+          });
         } else {
-          widget.bloc
+          setState(() {
+            snackBar(snackMessage: "", context: context, showLoading: true, bgColor: Colors.blue);
+            widget.bloc
             ..add(PaginateChList1(
                 currId: context.read<AuthBloc>().state.user!.uid));
-          setState(() {});
+          });
         }
       }
     }
@@ -82,21 +87,25 @@ class _MoreCmState extends State<MoreCm> {
           child: Container(
         height: MediaQuery.of(context).size.height,
         width: double.infinity,
-        child: ListView.builder(
-          controller: controller,
-          itemCount: widget.type == "global"
-              ? widget.bloc.state.chruchesNotEqualLocation.length
-              : widget.bloc.state.churches.length,
-          itemBuilder: (BuildContext context, int index) {
-            Church cm = widget.type == "global"
-                ? widget.bloc.state.chruchesNotEqualLocation[index]
-                : widget.bloc.state.churches[index];
-            return _cmDisplay(
-                bgImgUrl: cm.imageUrl,
-                name: cm.name,
-                location: cm.location,
-                count: cm.members.length.toString());
-          },
+        child: Stack(
+          children: 
+            [ListView.builder(
+              controller: controller,
+              itemCount: widget.type == "global"
+                  ? widget.bloc.state.chruchesNotEqualLocation.length
+                  : widget.bloc.state.churches.length,
+              itemBuilder: (BuildContext context, int index) {
+                Church cm = widget.type == "global"
+                    ? widget.bloc.state.chruchesNotEqualLocation[index]
+                    : widget.bloc.state.churches[index];
+                return _cmDisplay(
+                    bgImgUrl: cm.imageUrl,
+                    name: cm.name,
+                    location: cm.location,
+                    count: cm.members.length.toString());
+              },
+            ),
+          ],
         ),
       )),
     );

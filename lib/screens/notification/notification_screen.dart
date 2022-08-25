@@ -102,6 +102,8 @@ class NotyTile extends StatelessWidget {
         return " sent you a direct message  ";
       case Notification_type.comment_post:
         return " commented on your post";
+      case Notification_type.deleted_noty:
+        return " This is a deleted notification";
     }
   }
 
