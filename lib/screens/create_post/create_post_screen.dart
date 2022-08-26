@@ -295,7 +295,7 @@ Future<dynamic> previewPost(
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       context: contextInhearated,
-      builder: (context) => BlocProvider(
+      builder: (context) => BlocProvider( 
           create: (context) => CreatePostCubit(
                 postsRepository: context.read<PostsRepository>(),
                 storageRepository: context.read<StorageRepository>(),

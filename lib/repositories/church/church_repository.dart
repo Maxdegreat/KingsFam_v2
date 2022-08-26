@@ -229,6 +229,7 @@ class ChurchRepository extends BaseChurchRepository {
   // ignore: override_on_non_overriding_member
   Future<List<Church>> grabChurchWithLocation(
       {required String location, int limit = 3, String? lastPostId}) async {
+
     final QuerySnapshot<Map<String, dynamic>> churches;
     if (lastPostId == null) {
       churches = await FirebaseFirestore.instance
@@ -242,6 +243,7 @@ class ChurchRepository extends BaseChurchRepository {
         var ch = await Church.fromDoc(x);
         bucket.add(ch);
       }
+
       return bucket;
       // return churches.docs.map((doc) => Church.fromDoc(doc)).toList();
       //return userSnap.docs.map((doc) => Userr.fromDoc(doc)).toList();

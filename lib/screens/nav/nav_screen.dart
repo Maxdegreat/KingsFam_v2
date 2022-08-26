@@ -35,7 +35,7 @@ class NavScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => true, // sets the ability to pop this stack to false
+      onWillPop: () async => false, // sets the ability to pop this stack to false
       child: BlocBuilder<BottomnavbarCubit, BottomnavbarState>(
         builder: (context, state) { 
           return Scaffold(

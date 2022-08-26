@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/models/user_model.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
@@ -10,10 +11,12 @@ class ProfileStats extends StatelessWidget {
   final int following;
   final String username;
   final ProfileBloc profileBloc;
+  final String id;
   const ProfileStats({
     Key? key,
     required this.profileBloc,
     required this.username,
+    required this.id, // id for user whos pge were lookig at
     required this.posts,
     required this.followers,
     required this.following,
@@ -43,14 +46,15 @@ class ProfileStats extends StatelessWidget {
         ));
   }
 
-  GestureDetector followingInfoBtn(context) => GestureDetector(onTap:(){_showFollowing(context); profileBloc.add(ProfileLoadFollowingUsers(lastStringId: null));}, child: Text("$following Following", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)));
+  GestureDetector followingInfoBtn(context) => GestureDetector(onTap:(){_showFollowing(context); profileBloc.add(ProfileLoadFollowingUsers(lastStringId: null, id: null));}, child: Text("$following Following", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)));
 
-  GestureDetector followersInfoBtn(context) => GestureDetector(onTap:(){_showFollowers(context); profileBloc.add(ProfileLoadFollowersUsers(lastStringId: null));},child: Text("$followers Followers", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)));
+  GestureDetector followersInfoBtn(context) => GestureDetector(onTap:(){_showFollowers(context); profileBloc.add(ProfileLoadFollowersUsers(lastStringId: null, id: null));},child: Text("$followers Followers", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)));
 
-  // TODO show modal is having a hard time keeping up with data. I will need to make it a stful then do init load users then display
   _showFollowing(BuildContext context) async {
-    return showModalBottomSheet(context: context, builder: (context) {
-      return Container(
+    return showModalBottomSheet(context: context, 
+    builder: (context) => BlocProvider<ProfileBloc>.value(
+      value: profileBloc,
+      child: Container(
         height: MediaQuery.of(context).size.height,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -61,22 +65,29 @@ class ProfileStats extends StatelessWidget {
             Expanded(
               flex: 1 ,
               child: ListView.builder(
-                itemCount: profileBloc.state.followingUserList.length,
+                itemCount: context.read<ProfileBloc>().state.followingUserList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  final Userr user = profileBloc.state.followingUserList[index];
-                  return ListTile(
-                    leading: ProfileImage(radius: 30, pfpUrl: user.profileImageUrl),
-                    title: Text(user.username),
-                    trailing: Text("followers: ${user.followers}"),
-                    onTap: ()=> Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: user.id)),
+                  final Userr user = context.read<ProfileBloc>().state.followingUserList[index];
+                  return Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        leading: ProfileImage(radius: 30, pfpUrl: user.profileImageUrl),
+                        title: Text(user.username),
+                        trailing: Text("followers: ${user.followers}"),
+                        onTap: ()=> Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: user.id)),
+                      ),
+                      SizedBox(height: 7,)
+                    ],
                   );
                 }
               ),
             ),
           ],
         ),
-      );
-    });
+      ),
+    ));
   }
 
   _showFollowers(BuildContext context) {

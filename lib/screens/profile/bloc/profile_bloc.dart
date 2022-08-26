@@ -75,7 +75,16 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       yield* _mapProfileLoadFollowersUsersToState(event);
     } else if (event is ProfileLoadFollowingUsers) {
       yield* _mapProfileLoadFollowingUsersToState(event);
+    } else if (event is ProfileUpdateUserr) {
+      yield* _mapNewUserToState(event);
     }
+  }
+
+  // quick methods
+  Stream<ProfileState> _mapNewUserToState(ProfileUpdateUserr event) async* {
+    final userr =
+          await _userrRepository.getUserrWithId(userrId: event.usrId);
+      yield state.copyWith(userr: userr);
   }
 
   Stream<ProfileState> _mapLikePostToState(ProfileLikePost event) async* {
@@ -138,7 +147,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final userr =
           await _userrRepository.getUserrWithId(userrId: event.userId);
       yield state.copyWith(userr: userr);
-      log("LLLLLLLLLLLLLLLLOOOOOOOOOOOOOOOOOOAAAAAAAAAAAAAAAAADDDDDDDDDDDDEEEEEEEEEEEEEEDDDDDDDDDDDDDD");
 
       final isCurrentUser = _authBloc.state.user!.uid == event.userId;
 
@@ -313,12 +321,15 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   Stream<ProfileState> _mapProfileLoadFollowersUsersToState(ProfileLoadFollowersUsers event) async* {
     // query into curr users followers grab first 10. make to users, then yield to state
-    var followersAsUsers = await _userrRepository.followerList(currUserId: _authBloc.state.user!.uid, lastStringId: event.lastStringId);
+    var followersAsUsers = await _userrRepository.followerList(currUserId: state.userr.id, lastStringId: event.lastStringId);
     yield state.copyWith(followersUserList: followersAsUsers);
   }
 
   Stream<ProfileState> _mapProfileLoadFollowingUsersToState(ProfileLoadFollowingUsers event) async* {
-    var followingAsUsers = await _userrRepository.followingList(currUserId: _authBloc.state.user!.uid, lastStringId: event.lastStringId);
+    var id = state.userr.id == null ? event.id : state.userr.id;
+    log("The id is: " + id.toString());
+    var followingAsUsers = await _userrRepository.followingList(currUserId: state.userr.id, lastStringId: event.lastStringId);
+    log("The len of the list is now " + followingAsUsers.length.toString());
     yield state.copyWith(followingUserList: followingAsUsers);
   }
 }

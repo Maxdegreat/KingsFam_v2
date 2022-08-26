@@ -155,7 +155,7 @@ class _ProfileScreenState extends State<ProfileScreen>  {
                               ),
                               Positioned(
                                 top: 105, right: state.isCurrentUserr ? 40 : 10,
-                                child: ProfileButton(isCurrentUserr: state.isCurrentUserr, isFollowing: state.isFollowing, colorPref: state.userr.colorPref, profileOwnersId: widget.ownerId),
+                                child: ProfileButton(isCurrentUserr: state.isCurrentUserr, isFollowing: state.isFollowing, colorPref: state.userr.colorPref, profileOwnersId: widget.ownerId,),
                               )
                             ],
                             clipBehavior: Clip.none,
@@ -166,7 +166,7 @@ class _ProfileScreenState extends State<ProfileScreen>  {
                          child: BigBoyBio(username: state.userr.username, bio: state.userr.bio),
                        ),
               
-                       ProfileStats( username: state.userr.username, posts: state.post.length, followers: state.userr.followers, following: state.userr.following, profileBloc: context.read<ProfileBloc>()),
+                       ProfileStats( username: state.userr.username, posts: state.post.length, followers: state.userr.followers, following: state.userr.following, profileBloc: context.read<ProfileBloc>(), id: state.userr.id),
 
 
                       // add a linked list of commuinitys that I am in ... lol im done with this alredy but linked list dont make me laugh

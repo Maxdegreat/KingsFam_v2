@@ -7,5 +7,6 @@ enum Notification_type {
   invite_to_call, // invite to call
   direct_message, //direct message
   comment_post, // comment on a post
+  deleted_noty, // deleted noty
 }
 

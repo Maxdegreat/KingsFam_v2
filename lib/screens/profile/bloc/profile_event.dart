@@ -56,14 +56,21 @@ class ProfileDm extends ProfileEvent {
 
 class ProfileLoadFollowersUsers extends ProfileEvent {
   final String? lastStringId;
-  ProfileLoadFollowersUsers({required this.lastStringId}) ;
+  final String? id; // id of person whos followers are being loaded
+  ProfileLoadFollowersUsers({required this.lastStringId, required this.id}) ;
   @override
-  List<Object?> get props => [lastStringId];
+  List<Object?> get props => [lastStringId, id];
 }
 
 class ProfileLoadFollowingUsers extends ProfileEvent {
     final String? lastStringId;
-  ProfileLoadFollowingUsers({required this.lastStringId}) ;
+    final String? id; // id of person whos followers are being loaded
+  ProfileLoadFollowingUsers({required this.lastStringId, required this.id}) ;
   @override
-  List<Object?> get props => [lastStringId];
+  List<Object?> get props => [lastStringId, id];
+}
+
+class ProfileUpdateUserr extends ProfileEvent {
+  final String usrId;
+  ProfileUpdateUserr({required this.usrId});
 }

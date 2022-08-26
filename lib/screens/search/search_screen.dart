@@ -338,32 +338,30 @@ class _SearchScreenState extends State<SearchScreen> {
                 borderRadius: BorderRadius.circular(5.0)),
           ),
         ),
-        Expanded(
-          flex: 1,
-          child: Container(
-            height: 150 / 1.5, //use parent height / 2,
-            width: MediaQuery.of(context).size.width * .70,
-            decoration: BoxDecoration(color: Colors.black54),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("${church.name}",
-                    style: TextStyle(fontSize: 20),
-                    overflow: TextOverflow.fade),
-                Text("At ${church.location}",
-                    style: TextStyle(fontSize: 20),
-                    overflow: TextOverflow.fade),
-                Text(
-                  "${church.members.length} members",
+        Container(
+          height: 150 / 1.4, //use parent height / 2,
+          width: MediaQuery.of(context).size.width * .70,
+          decoration: BoxDecoration(color: Colors.black54),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("${church.name}",
                   style: TextStyle(fontSize: 20),
-                  overflow: TextOverflow.fade,
-                ),
-              ],
-            ),
+                   overflow: TextOverflow.fade),
+               Text("At ${church.location}",
+                   style: TextStyle(fontSize: 20),
+                   overflow: TextOverflow.fade),
+               Text(
+                 "${church.members.length} members",
+                 style: TextStyle(fontSize: 20),
+                 overflow: TextOverflow.fade,
+               ),
+              
+            ],
           ),
         )
-      ],
+      ],clipBehavior: Clip.none,
     );
   }
 

@@ -65,6 +65,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
+      log("in get the crr cms and load to state");
       // geting the currUserr for later use
       final Userr currUserr = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
       final Map<String, bool> mentionedMap = {};

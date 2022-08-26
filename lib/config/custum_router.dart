@@ -7,6 +7,7 @@ import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
 import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/screens/search/more_cm_screen.dart';
+import 'package:kingsfam/screens/search/widgets/show_following.dart';
 
 class CustomRoute {
   static Route onGenerateRoute(RouteSettings settings) {
@@ -150,6 +151,9 @@ class CustomRoute {
       
       case MoreCm.routeName:
         return MoreCm.route(settings.arguments as MoreCmArgs);
+      
+      case ShowFollowingList.routeName:
+        return ShowFollowingList.route(settings.arguments as ShowFollowingListArgs);
 
       default:
         return _errorRoute();

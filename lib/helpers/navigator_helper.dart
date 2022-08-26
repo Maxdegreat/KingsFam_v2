@@ -3,8 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:kingsfam/blocs/search/search_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
+import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/screens/search/more_cm_screen.dart';
+import 'package:kingsfam/screens/search/widgets/show_following.dart';
 
 class NavHelper {
   Future<void> navToSnackBar(context) => Navigator.of(context).pushNamed(SnackTimeShopScreen.routeName);
@@ -18,4 +20,9 @@ class NavHelper {
   Future<void> navToUpdateCmTheme(BuildContext context, CommuinityBloc commuinityBloc, String cmName, String cmId) => Navigator.of(context).pushNamed(UpdateCmThemePack.routeName, arguments: UpdateCmThemePackArgs(commuinityBloc: commuinityBloc, cmName: cmName, cmId: cmId));
 
   Future<void> navToMoreCm(BuildContext context, String type, SearchBloc bloc) => Navigator.of(context).pushNamed(MoreCm.routeName, arguments: MoreCmArgs(type: type, bloc: bloc));
+
+  Future<void> navToShowFollowing(BuildContext context, String usrIdToViewFollowing, ProfileBloc profileBloc, BuildContext ctxFromPf) => Navigator.of(context).pushNamed(ShowFollowingList.routeName, arguments: ShowFollowingListArgs(usrId: usrIdToViewFollowing, bloc: profileBloc, ctxFromPf: ctxFromPf ));
+
+  //Future<void> navToShowFollowers(BuildContext context,) => Navigator.of(context).pushNamed(routeName);
+
 }
