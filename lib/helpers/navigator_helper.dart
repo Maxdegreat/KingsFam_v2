@@ -21,7 +21,7 @@ class NavHelper {
 
   Future<void> navToMoreCm(BuildContext context, String type, SearchBloc bloc) => Navigator.of(context).pushNamed(MoreCm.routeName, arguments: MoreCmArgs(type: type, bloc: bloc));
 
-  Future<void> navToShowFollowing(BuildContext context, String usrIdToViewFollowing, ProfileBloc profileBloc, BuildContext ctxFromPf) => Navigator.of(context).pushNamed(ShowFollowingList.routeName, arguments: ShowFollowingListArgs(usrId: usrIdToViewFollowing, bloc: profileBloc, ctxFromPf: ctxFromPf ));
+  Future<void> navToShowFollowing(BuildContext context, String usrIdToViewFollowing, ProfileBloc profileBloc, BuildContext ctxFromPf, String type) => Navigator.of(context).pushNamed(ShowFollowingList.routeName, arguments: ShowFollowingListArgs(usrId: usrIdToViewFollowing, bloc: profileBloc, ctxFromPf: ctxFromPf, type: type ));
 
   //Future<void> navToShowFollowers(BuildContext context,) => Navigator.of(context).pushNamed(routeName);
 

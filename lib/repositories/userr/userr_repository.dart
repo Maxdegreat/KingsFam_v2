@@ -172,7 +172,7 @@ class UserrRepository extends BaseUserrRepository {
     Future<List<Userr>> followingList({required String currUserId, required String? lastStringId}) async {
       List<Userr> bucket = [];
       if (lastStringId == null) {
-        final userSnap = await _firebaseFirestore.collection(Paths.following).doc(currUserId).collection(Paths.userrFollowing).limit(15).get();
+        final userSnap = await _firebaseFirestore.collection(Paths.following).doc(currUserId).collection(Paths.userrFollowing).limit(10).get();
         for (var v in  userSnap.docs) {
          if (v.exists) {
            Userr user = await getUserrWithId(userrId: v.id);
@@ -181,7 +181,7 @@ class UserrRepository extends BaseUserrRepository {
         }
       } else {
         var startAfterUserDoc = await _firebaseFirestore.collection(Paths.users).doc(lastStringId).get();
-        final userSnap = await _firebaseFirestore.collection(Paths.following).doc(currUserId).collection(Paths.userrFollowing).startAfterDocument(startAfterUserDoc).limit(15).get();
+        final userSnap = await _firebaseFirestore.collection(Paths.following).doc(currUserId).collection(Paths.userrFollowing).startAfterDocument(startAfterUserDoc).limit(10).get();
         for (var v in  userSnap.docs) {
          if (v.exists) {
            Userr user = await getUserrWithId(userrId: v.id);

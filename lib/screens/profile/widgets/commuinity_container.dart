@@ -59,15 +59,8 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
 
   return Padding(
     padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0,),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            TextButton(onPressed:()  {
-              // show an alert dialog that list all commuinitys
-              showModalBottomSheet(context: context, builder: (context) {
+    child: GestureDetector(
+      onTap: () => showModalBottomSheet(context: context, builder: (context) {
                 final _churchRepo = context.read<ChurchRepository>();
                 
                 return FutureBuilder(
@@ -90,18 +83,26 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
                     } else return SizedBox.shrink();
                   },
                 );
-              });
-
-
-            }, style: TextButton.styleFrom(primary: Colors.white), child: Text("See More", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),),),
-            SizedBox(width: 10),
-            Text(" Commuintys",  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),)
+              }),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal:7 , vertical: 7),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text("See More", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),),
+                SizedBox(width: 10),
+                Text(" Commuintys",  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),)
+              ],
+            ),
+            Container(
+              child: !moreBtn ? Container() : greaterThan2 ? twoCommuinitys : oneCommuinitys,
+            ),
           ],
         ),
-        Container(
-          child: !moreBtn ? Container() : greaterThan2 ? twoCommuinitys : oneCommuinitys,
-        ),
-      ],
+      ),
     ),
   );
 }

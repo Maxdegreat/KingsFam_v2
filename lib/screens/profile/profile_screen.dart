@@ -166,7 +166,7 @@ class _ProfileScreenState extends State<ProfileScreen>  {
                          child: BigBoyBio(username: state.userr.username, bio: state.userr.bio),
                        ),
               
-                       ProfileStats( username: state.userr.username, posts: state.post.length, followers: state.userr.followers, following: state.userr.following, profileBloc: context.read<ProfileBloc>(), id: state.userr.id),
+                       ProfileStats( username: state.userr.username, posts: state.post.length, followers: state.userr.followers, following: state.userr.following, profileBloc: context.read<ProfileBloc>(), ctxFromPf: context),
 
 
                       // add a linked list of commuinitys that I am in ... lol im done with this alredy but linked list dont make me laugh
