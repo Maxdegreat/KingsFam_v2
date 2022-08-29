@@ -1,6 +1,13 @@
 part of 'profile_bloc.dart';
 
-enum ProfileStatus { initial, loadingSingleView, loading,  loaded, paginating, error }
+enum ProfileStatus {
+  initial,
+  loadingSingleView,
+  loading,
+  loaded,
+  paginating,
+  error
+}
 
 class ProfileState extends Equatable {
   // step 1  class data
@@ -17,6 +24,7 @@ class ProfileState extends Equatable {
   final Chat chatFromDm;
   final List<Userr> followersUserList;
   final List<Userr> followingUserList;
+  final bool loadingPost;
 
   final VideoPlayerController? vidCtrl;
   // step 2 make the constructor
@@ -34,32 +42,48 @@ class ProfileState extends Equatable {
     required this.chatFromDm,
     required this.followersUserList,
     required this.followingUserList,
+    required this.loadingPost,
     this.vidCtrl,
   });
 
   //step 5 make the initial state
   factory ProfileState.initial() {
     return ProfileState(
-        post: [],
-        showPost: false,
-        userr: Userr.empty,
-        seen: {},
-        isCurrentUserr: false,
-        isFollowing: false,
-        status: ProfileStatus.initial,
-        likedPostIds: {},
-        failure: Failure(),
-        cms: [],
-        chatFromDm: Chat.empty,
-        followersUserList: [],
-        followingUserList: [],
-        vidCtrl: null,
-      );
+      post: [],
+      showPost: false,
+      userr: Userr.empty,
+      seen: {},
+      isCurrentUserr: false,
+      isFollowing: false,
+      status: ProfileStatus.initial,
+      likedPostIds: {},
+      failure: Failure(),
+      cms: [],
+      chatFromDm: Chat.empty,
+      followersUserList: [],
+      followingUserList: [],
+      vidCtrl: null,
+      loadingPost: true,
+    );
   }
   // step 3 make the props
   @override
-  List<Object?> get props =>
-      [post, userr, isCurrentUserr,chatFromDm, followersUserList, followingUserList, seen, isFollowing, status, failure, showPost, cms, vidCtrl];
+  List<Object?> get props => [
+        post,
+        userr,
+        isCurrentUserr,
+        chatFromDm,
+        followersUserList,
+        followingUserList,
+        seen,
+        isFollowing,
+        status,
+        failure,
+        showPost,
+        cms,
+        vidCtrl,
+        loadingPost,
+      ];
 
   // step 4 make the copy with
   ProfileState copyWith({
@@ -77,6 +101,7 @@ class ProfileState extends Equatable {
     Chat? chatFromDm,
     List<Church?>? cms,
     VideoPlayerController? vidCtrl,
+    bool? loadingPost,
   }) {
     return ProfileState(
       post: post ?? this.post,
@@ -93,6 +118,7 @@ class ProfileState extends Equatable {
       failure: failure ?? this.failure,
       cms: cms ?? this.cms,
       vidCtrl: vidCtrl ?? vidCtrl,
+      loadingPost: loadingPost ?? this.loadingPost
     );
   }
 }

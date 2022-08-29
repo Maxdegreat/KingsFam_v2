@@ -147,7 +147,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           // pause vids coming from other screens TODO look for optimizing
           event.vidCtrl!.pause();
         }
-    yield state.copyWith(status: ProfileStatus.loading);
+    yield state.copyWith(status: ProfileStatus.loading, loadingPost: true);
     try {
       final userr =
           await _userrRepository.getUserrWithId(userrId: event.userId);
@@ -186,7 +186,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           isCurrentUserr: isCurrentUser,
           isFollowing: isFollowing,
           cms: cms,
-          status: ProfileStatus.loaded);
+          status: ProfileStatus.loaded,
+          loadingPost: false);
     } /*on PlatformException*/ catch (e) {
       yield state.copyWith(
           status: ProfileStatus.error,

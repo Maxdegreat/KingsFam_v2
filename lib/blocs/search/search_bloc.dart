@@ -112,7 +112,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   }
 
   Stream<SearchState> _mapLoadUserToState(InitializeUser event) async* {
-    yield state.copyWith(status: SearchStatus.loading);
+    yield state.copyWith(status: SearchStatus.loading, );
     try {
       Userr user =
           await _userrRepository.getUserrWithId(userrId: event.currentUserrId);
