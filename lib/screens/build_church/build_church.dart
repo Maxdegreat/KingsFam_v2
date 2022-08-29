@@ -242,8 +242,6 @@ class _BuildChurchState extends State<BuildChurch> {
                                                 ),
                                                 _updateToMember(context, state),
                                                 SizedBox(height: 7),
-                                                Text(
-                                                    "Hey Fam! Please note these roles will not have any special permissions untill you activate them. you can do this in the settings once the community is made :)")
                                               ],
                                             ),
                                           )

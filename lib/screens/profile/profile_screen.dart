@@ -10,12 +10,14 @@ import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/profile/widgets/commuinity_container.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/widgets.dart';
+import 'package:video_player/video_player.dart';
 
 import 'widgets/widgets.dart';
 
 class ProfileScreenArgs {
   final String userId;
-  ProfileScreenArgs({required this.userId});
+  final VideoPlayerController? vidCtrl;
+  ProfileScreenArgs({required this.userId, this.vidCtrl});
 }
 
 class ProfileScreen extends StatefulWidget {
@@ -39,7 +41,7 @@ class ProfileScreen extends StatefulWidget {
                   authBloc: context.read<AuthBloc>(),
                   postRepository: context.read<PostsRepository>(),
                   chatRepository: context.read<ChatRepository>())
-                ..add(ProfileLoadUserr(userId: args.userId)),
+                ..add(ProfileLoadUserr(userId: args.userId, vidCtrl: args.vidCtrl)),
               child: ProfileScreen(ownerId: args.userId,),
             ));
   }

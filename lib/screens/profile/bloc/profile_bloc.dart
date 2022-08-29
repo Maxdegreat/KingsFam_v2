@@ -12,6 +12,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/chat_room/chat_room.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
+import 'package:video_player/video_player.dart';
 
 part 'profile_event.dart';
 part 'profile_state.dart';
@@ -142,6 +143,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   Stream<ProfileState> _mapProfileLoadUserToState(
       ProfileLoadUserr event) async* {
+        if (event.vidCtrl!=null) {
+          event.vidCtrl!.pause();
+        }
     yield state.copyWith(status: ProfileStatus.loading);
     try {
       final userr =

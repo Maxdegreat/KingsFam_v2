@@ -17,6 +17,8 @@ class ProfileState extends Equatable {
   final Chat chatFromDm;
   final List<Userr> followersUserList;
   final List<Userr> followingUserList;
+
+  final VideoPlayerController? vidCtrl;
   // step 2 make the constructor
   ProfileState({
     required this.post,
@@ -32,6 +34,7 @@ class ProfileState extends Equatable {
     required this.chatFromDm,
     required this.followersUserList,
     required this.followingUserList,
+    this.vidCtrl,
   });
 
   //step 5 make the initial state
@@ -50,12 +53,13 @@ class ProfileState extends Equatable {
         chatFromDm: Chat.empty,
         followersUserList: [],
         followingUserList: [],
+        vidCtrl: null,
       );
   }
   // step 3 make the props
   @override
   List<Object?> get props =>
-      [post, userr, isCurrentUserr,chatFromDm, followersUserList, followingUserList, seen, isFollowing, status, failure, showPost, cms];
+      [post, userr, isCurrentUserr,chatFromDm, followersUserList, followingUserList, seen, isFollowing, status, failure, showPost, cms, vidCtrl];
 
   // step 4 make the copy with
   ProfileState copyWith({
@@ -72,6 +76,7 @@ class ProfileState extends Equatable {
     Failure? failure,
     Chat? chatFromDm,
     List<Church?>? cms,
+    VideoPlayerController? vidCtrl,
   }) {
     return ProfileState(
       post: post ?? this.post,
@@ -86,7 +91,8 @@ class ProfileState extends Equatable {
       status: status ?? this.status,
       likedPostIds: likedPostIds ?? this.likedPostIds,
       failure: failure ?? this.failure,
-      cms: cms ?? this.cms
+      cms: cms ?? this.cms,
+      vidCtrl: vidCtrl ?? vidCtrl,
     );
   }
 }

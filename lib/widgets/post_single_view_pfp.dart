@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 
 
@@ -14,6 +16,8 @@ import 'package:kingsfam/widgets/commuinity_pf_image.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
 import 'package:kingsfam/widgets/videos/videoPostView16_9.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class PostSingleViewPfp extends StatefulWidget {
   final Post post;
@@ -33,6 +37,16 @@ class PostSingleViewPfp extends StatefulWidget {
 }
 
 class _PostSingleViewState extends State<PostSingleViewPfp> {
+  late VideoPlayerController vidCtrl;
+
+  @override
+  void initState() {
+    if (widget.post.videoUrl != null) {
+       vidCtrl  = VideoPlayerController.network(widget.post.videoUrl!);
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -63,7 +77,7 @@ class _PostSingleViewState extends State<PostSingleViewPfp> {
                 child: GestureDetector(
                   onTap: () => Navigator.of(context).pushNamed(
                       CommuinityScreen.routeName,
-                      arguments: CommuinityScreenArgs(commuinity: commuinity)),
+                      arguments: CommuinityScreenArgs(commuinity: commuinity, vidCtrl: vidCtrl)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -72,10 +86,7 @@ class _PostSingleViewState extends State<PostSingleViewPfp> {
                       commuinity_pf_img(commuinity.imageUrl, 25, 25),
                       SizedBox(width: 7),
                       // add the commuinity name
-                      Text(
-                        commuinity.name,
-                        style: TextStyle(color: Colors.grey[350], fontSize: 17),
-                      )
+                      Text(commuinity.name, style: TextStyle(color: Colors.grey[350], fontSize: 17))
                     ],
                   ),
                 ),
@@ -138,7 +149,7 @@ class _PostSingleViewState extends State<PostSingleViewPfp> {
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 7),
       child: GestureDetector(
         onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName,
-            arguments: ProfileScreenArgs(userId: widget.post.author.id)),
+            arguments: ProfileScreenArgs(userId: widget.post.author.id, vidCtrl: vidCtrl)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -238,16 +249,31 @@ class _PostSingleViewState extends State<PostSingleViewPfp> {
         ),
       );
     } else if (post.videoUrl != null) {
-      return GestureDetector(
-        onDoubleTap: widget.onLike,
-        child: AspectRatio(
-            aspectRatio: 9 / 16,
-            child:  VideoPostView16_9(
-            post: widget.post,
-            userr: widget.post.author,
-            videoUrl: widget.post.videoUrl!,
-            playVidNow: false,
-          )),
+      bool playNow = false;
+      return VisibilityDetector(
+        key: ObjectKey(widget.post),
+        onVisibilityChanged: (vis) {
+          if (vis.visibleFraction == 1) {
+            setState(() {
+              playNow = true;
+            });
+          } else {
+            vidCtrl.pause();
+          }
+        } ,
+        child: GestureDetector(
+          onDoubleTap: widget.onLike,
+          child: AspectRatio(
+              aspectRatio: 9 / 16,
+              child:  VideoPostView16_9(
+              post: widget.post,
+              userr: widget.post.author,
+              videoUrl: widget.post.videoUrl!,
+              playVidNow: playNow,
+              controller: vidCtrl,
+      
+            )),
+        ),
       );
     } else if (post.quote != null) {
       return Text("caption ${post.quote}");

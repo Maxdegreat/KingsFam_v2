@@ -10,10 +10,7 @@ class NavScreen extends StatelessWidget {
     return PageRouteBuilder(
         settings: const RouteSettings(name: routeName),
         transitionDuration: const Duration(seconds: 0),
-        pageBuilder: (_, __, ___) => BlocProvider<BottomnavbarCubit>(
-              create: (_) => BottomnavbarCubit(),
-              child: NavScreen(),
-            )); //buildcontext, animaitons ;
+        pageBuilder: (_, __, ___) => NavScreen()); //buildcontext, animaitons ;
   }
 
   //navigator keys to maintain current satate across pages

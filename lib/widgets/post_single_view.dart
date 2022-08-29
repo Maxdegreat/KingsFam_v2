@@ -15,6 +15,7 @@ import 'package:kingsfam/widgets/commuinity_pf_image.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
 import 'package:kingsfam/widgets/videos/videoPostView16_9.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:video_player/video_player.dart';
 
 class PostSingleView extends StatefulWidget {
   final Post post;
@@ -40,6 +41,7 @@ class PostSingleView extends StatefulWidget {
 class _PostSingleViewState extends State<PostSingleView> {
   bool _visible = false;
   bool _wasEverVisible = false;
+  late VideoPlayerController vidCtrl;
   void updateVisibility() {
     if (widget.post.imageUrl != null) {
       _visible = true;
@@ -54,6 +56,9 @@ class _PostSingleViewState extends State<PostSingleView> {
 
   @override
   void initState() {
+    if (widget.post.videoUrl != null) {
+      vidCtrl = VideoPlayerController.network(widget.post.videoUrl!);
+    }
     updateVisibility();
     super.initState();
   }
@@ -65,12 +70,8 @@ class _PostSingleViewState extends State<PostSingleView> {
       children: [
         contentContainer(post: widget.post, size: size),
         _visible ? blackOverLay() : SizedBox.shrink(),
-        Positioned.fill(
-            child: userPicAndName(
-                name: widget.post.author.username,
-                imgurl: widget.post.author.profileImageUrl)),
-        Positioned.fill(
-            child: viewCommuinity(commuinity: widget.post.commuinity)),
+        Positioned.fill(child: userPicAndName(name: widget.post.author.username, imgurl: widget.post.author.profileImageUrl)),
+        Positioned.fill(child: viewCommuinity(commuinity: widget.post.commuinity)),
         // captionBox(caption: widget.post.caption, size: size),
         Positioned.fill(child: interactions()),
         Positioned.fill(
@@ -234,7 +235,7 @@ class _PostSingleViewState extends State<PostSingleView> {
             child: GestureDetector(
               onTap: () => Navigator.of(context).pushNamed(
                   ProfileScreen.routeName,
-                  arguments: ProfileScreenArgs(userId: widget.post.author.id)),
+                  arguments: ProfileScreenArgs(userId: widget.post.author.id, vidCtrl: vidCtrl)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -336,6 +337,7 @@ class _PostSingleViewState extends State<PostSingleView> {
             userr: widget.post.author,
             videoUrl: widget.post.videoUrl!,
             playVidNow: true,
+            controller: vidCtrl,
           ),
         ),
       );

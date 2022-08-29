@@ -12,6 +12,7 @@ import 'package:kingsfam/models/mentioned_model.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/widgets/snackbar.dart';
+import 'package:video_player/video_player.dart';
 
 part 'commuinity_event.dart';
 part 'commuinity_state.dart';
@@ -70,7 +71,9 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   
 
   Stream<CommuinityState> _mapCommuinityLoadCommuinityToState(CommuinityLoadCommuinity event) async* {
-
+    if(event.vidCtrl != null) {
+      event.vidCtrl!.pause();
+    }
     emit(state.copyWith(status: CommuintyStatus.loading));
     try {
       

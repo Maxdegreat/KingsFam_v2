@@ -9,12 +9,14 @@ abstract class ProfileEvent extends Equatable {
 
 class ProfileLoadUserr extends ProfileEvent {
   final String userId;
+  final VideoPlayerController? vidCtrl;
   ProfileLoadUserr({
     required this.userId,
+    this.vidCtrl,
   });
 
   @override
-  List<Object?> get props => [userId];
+  List<Object?> get props => [userId, vidCtrl];
 }
 
 class ProfilePaginatePosts extends ProfileEvent {

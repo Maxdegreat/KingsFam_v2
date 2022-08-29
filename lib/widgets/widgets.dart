@@ -4,7 +4,7 @@ export 'banner_image_widget.dart';
 export 'fancy_list_tile.dart';
 export 'post_view.dart';
 export 'chat_screen_image_holder.dart';
-export 'post_view_display.dart';
+export 'post_view_display_DELSOON.dart';
 export 'basic_overlay_widget.dart';
 export 'videos/build_video.dart';
 export 'quote_display.dart';

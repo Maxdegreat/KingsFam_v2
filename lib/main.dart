@@ -15,6 +15,7 @@ import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/cubit/calls_home_cubit.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
+import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/theme_club_house/theme_info.dart';
 
@@ -74,13 +75,16 @@ class MyApp extends StatelessWidget {
                     userrRepository: context.read<UserrRepository>(),
                     authBloc: context.read<AuthBloc>(),
                   )),
-          BlocProvider<BuildchurchCubit>(
-              create: (context) => BuildchurchCubit(
-                  callRepository: context.read<CallRepository>(),
-                  churchRepository: context.read<ChurchRepository>(),
-                  storageRepository: context.read<StorageRepository>(),
-                  authBloc: context.read<AuthBloc>(),
-                  userrRepository: context.read<UserrRepository>())),
+          // BlocProvider<BuildchurchCubit>(
+          //     create: (context) => BuildchurchCubit(
+          //         callRepository: context.read<CallRepository>(),
+          //         churchRepository: context.read<ChurchRepository>(),
+          //         storageRepository: context.read<StorageRepository>(),
+          //         authBloc: context.read<AuthBloc>(),
+          //         userrRepository: context.read<UserrRepository>())),
+          BlocProvider<BottomnavbarCubit>(
+            create: (context) => BottomnavbarCubit(),
+          ),
           BlocProvider<FeedBloc>(
             create: (context) => FeedBloc(
                 postsRepository: context.read<PostsRepository>(),
@@ -103,15 +107,6 @@ class MyApp extends StatelessWidget {
                  likedPostCubit: context.read<LikedPostCubit>(),
                  churchRepository: context.read<ChurchRepository>())..add(ProfileLoadUserr(userId: context.read<AuthBloc>().state.user!.uid)),
            ),
-          // BlocProvider<CommentBloc>(
-          //   create: (context) => CommentBloc(
-          //     postsRepository: context.read<PostsRepository>(),
-          //     authBloc:context.read<AuthBloc>()
-          //   )),
-          // BlocProvider<RingerBloc>(
-          // create: (context) => RingerBloc(
-          // authBloc: context.read<AuthBloc>())
-          // )
         ],
         child: MaterialApp(
           //THEME DATA

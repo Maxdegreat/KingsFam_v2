@@ -37,11 +37,12 @@ import 'package:rive/rive.dart';
 import 'package:flutter/src/painting/gradient.dart' as paint;
 import 'package:kingsfam/screens/commuinity/actions.dart' as cmActions;
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
+import 'package:video_player/video_player.dart';
 
 class CommuinityScreenArgs {
   final Church commuinity;
-
-  CommuinityScreenArgs({required this.commuinity});
+  final VideoPlayerController? vidCtrl;
+  CommuinityScreenArgs({required this.commuinity, this.vidCtrl});
 }
 
 class CommuinityScreen extends StatefulWidget {
@@ -61,7 +62,7 @@ class CommuinityScreen extends StatefulWidget {
                 churchRepository: context.read<ChurchRepository>(),
                 storageRepository: context.read<StorageRepository>(),
                 userrRepository: context.read<UserrRepository>(),
-              )..add(CommuinityLoadCommuinity(commuinity: args.commuinity)),
+              )..add(CommuinityLoadCommuinity(commuinity: args.commuinity, vidCtrl: args.vidCtrl)),
               child: CommuinityScreen(
                 commuinity: args.commuinity,
               ),

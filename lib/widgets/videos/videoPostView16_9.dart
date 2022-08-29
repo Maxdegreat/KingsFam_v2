@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/models/models.dart';
+import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/widgets/videos/video_player.dart';
 import 'package:video_player/video_player.dart';
 
@@ -12,11 +14,13 @@ class VideoPostView16_9 extends StatefulWidget {
   final Post post;
   final Userr userr;
   final TabController? tabCtrl;
+  final VideoPlayerController controller;
   const VideoPostView16_9({
     Key? key, 
     required this.videoUrl, 
     required this.post,
     required this.userr,
+    required this.controller,
     this.scrollCtrl,
     this.tabCtrl,
     this.playVidNow,
@@ -29,8 +33,6 @@ class VideoPostView16_9 extends StatefulWidget {
 
 class _VideoPostView16_9State extends State<VideoPostView16_9> {
 
-  late VideoPlayerController controller;
-
 
   @override
   void initState() {
@@ -42,13 +44,13 @@ class _VideoPostView16_9State extends State<VideoPostView16_9> {
     if (widget.tabCtrl != null) {
       widget.tabCtrl!.addListener(() { listenToTabBarChanges(); });
     }
-    controller = VideoPlayerController.network(widget.videoUrl)
+    widget.controller
       ..addListener(() {
         setState(() {});
       } )
       ..setLooping(true)
       ..initialize().then((_) {
-        widget.playVidNow != null && widget.playVidNow == true ? controller.play() : controller.pause();
+        widget.playVidNow != null && widget.playVidNow == true ? widget.controller.play() : widget.controller.pause();
       });
 
       // add a controller to listen to the scroll position.
@@ -66,23 +68,24 @@ class _VideoPostView16_9State extends State<VideoPostView16_9> {
   void listenToTabBarChanges() {
     if (widget.tabCtrl!= null && widget.tabCtrl!.index != 0) {
       log("The video is pausing because the tabctrl is now != 0");
-      controller.pause();
+      widget.controller.pause();
     }
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    widget.controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    context.read<BottomnavbarCubit>().setVidCtrl(widget.controller);
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 0.0),
-        child: Center(child: VideoPlayerWidget(controller: controller, post: widget.post, user: widget.userr,)),
+        child: Center(child: VideoPlayerWidget(controller: widget.controller, post: widget.post, user: widget.userr,)),
       ),
     );
   }

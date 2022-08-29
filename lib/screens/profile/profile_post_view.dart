@@ -110,7 +110,6 @@ class _ProfilePostViewState extends State<ProfilePostView> {
       }
     }
 
-    print("in the build");
     return BlocConsumer<ProfileBloc, ProfileState>(
       listener: (context, state) {
         if (state.status == ProfileStatus.loaded && loaded == false) {
@@ -136,12 +135,13 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                   itemScrollController: itemController,
                   itemCount: state.post.length,
                   itemBuilder: (BuildContext context, int index) {
-                    if (index >= (state.post.length) - 1 &&
-                        !seenIds.contains(lastPostId)) {
-                      paginatePosts();
-                      seenIds.add(lastPostId);
-                      updateSeenIds();
-                    }
+                  // TODO check this out. its pag code. think its throwing some bug
+                    // if (index >= (state.post.length) - 1 &&
+                    //     !seenIds.contains(lastPostId)) {
+                    //   paginatePosts();
+                    //   seenIds.add(lastPostId);
+                    //   updateSeenIds();
+                    // }
 
                     final Post? post = state.post[index];
                     if (post != null) {

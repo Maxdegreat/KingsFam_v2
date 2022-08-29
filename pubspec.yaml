@@ -93,6 +93,7 @@ dependencies:
   
   streaming_shared_preferences: ^2.0.0
   json_annotation: ^4.6.0
+  visibility_detector: ^0.3.3
   
 
 
