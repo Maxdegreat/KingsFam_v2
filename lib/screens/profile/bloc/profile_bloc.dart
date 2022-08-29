@@ -159,14 +159,14 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           userrId: _authBloc.state.user!.uid, otherUserId: event.userId);
 
       final cms = await _churchRepository.getCommuinitysUserIn(
-          userrId: event.userId, limit: 3);
+          userrId: event.userId, limit: 2);
       Set<String> seen = state.seen;
       var beenSeen = state.post.length > 0 ? state.post.last : null;
       // log("seen id's: $seen");
       // whenever a new post is posted it will update the home page post view
       _postStreamSubscription?.cancel();
       _postStreamSubscription = _postsRepository
-          .getUserPosts(userId: event.userId, limit: 8, lastPostDoc: null)
+          .getUserPosts(userId: event.userId, limit: 4, lastPostDoc: null)
           .listen((posts) async {
         List<Post?> postList = [];
         for (var i in posts) {

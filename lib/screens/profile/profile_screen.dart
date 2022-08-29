@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,7 +27,7 @@ class ProfileScreen extends StatefulWidget {
 
   static const String routeName = '/profileScreen';
 
-   final String? ownerId;
+  final String? ownerId;
   const ProfileScreen({
     required this.ownerId,
   });
@@ -41,17 +43,19 @@ class ProfileScreen extends StatefulWidget {
                   authBloc: context.read<AuthBloc>(),
                   postRepository: context.read<PostsRepository>(),
                   chatRepository: context.read<ChatRepository>())
-                ..add(ProfileLoadUserr(userId: args.userId, vidCtrl: args.vidCtrl)),
-              child: ProfileScreen(ownerId: args.userId,),
+                ..add(ProfileLoadUserr(
+                    userId: args.userId, vidCtrl: args.vidCtrl)),
+              child: ProfileScreen(
+                ownerId: args.userId,
+              ),
             ));
   }
-
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen>  {
+class _ProfileScreenState extends State<ProfileScreen> {
   // controllers
 
   ScrollController scrollController = ScrollController();
@@ -70,13 +74,18 @@ class _ProfileScreenState extends State<ProfileScreen>  {
 
   void listenToScrolling() {
     //TODO you need to add this later make it a p1 requirment
-     if (scrollController.position.atEdge) {
-       if (scrollController.position.pixels != 0.0 && scrollController.position.maxScrollExtent == scrollController.position.pixels) {
+    if (scrollController.position.atEdge) {
+      if (scrollController.position.pixels != 0.0 &&
+          scrollController.position.maxScrollExtent ==
+              scrollController.position.pixels) {
         //  const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
         //  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-         context.read<ProfileBloc>()..add(ProfilePaginatePosts(userId: context.read<AuthBloc>().state.user!.uid));
-       }
-     }
+        context.read<ProfileBloc>()
+          ..add(ProfilePaginatePosts(
+              userId: context.read<AuthBloc>().state.user!.uid));
+        log("HEY I AM CALLING A PAGINATION MAX!!!");
+      }
+    }
   }
 
   @override
@@ -96,7 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen>  {
       builder: (context, state) {
         //----------------------------------------scaffold starts here
         return Scaffold(
-          
+
             //---------------------------------------------------body path
             body: _bodyBabbyyyy(state));
       },
@@ -111,81 +120,100 @@ class _ProfileScreenState extends State<ProfileScreen>  {
         return CircularProgressIndicator(color: Colors.red[400]);
       default:
         return RefreshIndicator(
-          onRefresh: () async => context.read<ProfileBloc>().add(ProfileLoadUserr(userId: state.userr.id)),
-          child: CustomScrollView(
-             controller: scrollController ,
-            slivers: [
-              SliverAppBar(
-                floating: true,
-                pinned: true,
-                title: Text(state.userr.username),
+            onRefresh: () async => context
+                .read<ProfileBloc>()
+                .add(ProfileLoadUserr(userId: state.userr.id)),
+            child: CustomScrollView(
+              controller: scrollController,
+              slivers: [
+                SliverAppBar(
+                  floating: true,
+                  pinned: true,
+                  title: Text(state.userr.username),
                   actions: [
                     if (state.isCurrentUserr)
                       IconButton(
-                        icon: Icon(Icons.settings),
-                        //onLongPress: () async => context.read<AuthBloc>().add(AuthLogoutRequested()),
-                        onPressed: () => Navigator.of(context).pushNamed(EditProfileScreen.routeName, arguments: EditProfileScreenArgs(context: context))
-                        ),
+                          icon: Icon(Icons.settings),
+                          //onLongPress: () async => context.read<AuthBloc>().add(AuthLogoutRequested()),
+                          onPressed: () => Navigator.of(context).pushNamed(
+                              EditProfileScreen.routeName,
+                              arguments:
+                                  EditProfileScreenArgs(context: context))),
                   ],
-                 // expandedHeight: 200,
-              ), 
-
-              SliverToBoxAdapter(
-                child: 
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                          Stack(
-                            children: [
-                              Container(
-                                height: MediaQuery.of(context).size.height / 5,
-                                width: double.infinity,
-                              ),
-                              BannerImage(
-                                isOpasaty: false,
-                                bannerImageUrl: state.userr.bannerImageUrl,
-                                passedColor: hexcolor.hexcolorCode(state.userr.colorPref),
-                              ),
-                              Positioned(
-                                top: 50,
-                                left: 20,
-                                child: ProfileImage(
-                                  radius: 45,
-                                  pfpUrl: state.userr.profileImageUrl,
-                                ),
-                              ),
-                              Positioned(
-                                top: 105, right: state.isCurrentUserr ? 40 : 10,
-                                child: ProfileButton(isCurrentUserr: state.isCurrentUserr, isFollowing: state.isFollowing, colorPref: state.userr.colorPref, profileOwnersId: widget.ownerId,),
-                              )
-                            ],
-                            clipBehavior: Clip.none,
-                          ),
-
-                       Padding(
-                         padding: const EdgeInsets.symmetric(vertical: 10),
-                         child: BigBoyBio(username: state.userr.username, bio: state.userr.bio),
-                       ),
-              
-                       ProfileStats( username: state.userr.username, posts: state.post.length, followers: state.userr.followers, following: state.userr.following, profileBloc: context.read<ProfileBloc>(), ctxFromPf: context),
-
-
-                      // add a linked list of commuinitys that I am in ... lol im done with this alredy but linked list dont make me laugh
-                      CommuinityContainer( cms: state.cms, ownerId: widget.ownerId!),
-                  ]
+                  // expandedHeight: 200,
                 ),
-              ),
-                state.loadingPost ? SliverToBoxAdapter(child: LinearProgressIndicator()) : state.post.length > 0 ? 
-                imageGrids(state: state) 
-                : SliverToBoxAdapter(child: CenterdText(text: "${state.userr.username} Has No Post To Display Fam"))
+                SliverToBoxAdapter(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          children: [
+                            Container(
+                              height: MediaQuery.of(context).size.height / 5,
+                              width: double.infinity,
+                            ),
+                            BannerImage(
+                              isOpasaty: false,
+                              bannerImageUrl: state.userr.bannerImageUrl,
+                              passedColor:
+                                  hexcolor.hexcolorCode(state.userr.colorPref),
+                            ),
+                            Positioned(
+                              top: 50,
+                              left: 20,
+                              child: ProfileImage(
+                                radius: 45,
+                                pfpUrl: state.userr.profileImageUrl,
+                              ),
+                            ),
+                            Positioned(
+                              top: 105,
+                              right: state.isCurrentUserr ? 40 : 10,
+                              child: ProfileButton(
+                                isCurrentUserr: state.isCurrentUserr,
+                                isFollowing: state.isFollowing,
+                                colorPref: state.userr.colorPref,
+                                profileOwnersId: widget.ownerId,
+                              ),
+                            )
+                          ],
+                          clipBehavior: Clip.none,
+                        ),
 
-            ],
-          )
-            
-          
-          
-        );
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: BigBoyBio(
+                              username: state.userr.username,
+                              bio: state.userr.bio),
+                        ),
+
+                        ProfileStats(
+                            username: state.userr.username,
+                            posts: state.post.length,
+                            followers: state.userr.followers,
+                            following: state.userr.following,
+                            profileBloc: context.read<ProfileBloc>(),
+                            ctxFromPf: context),
+
+                        // add a linked list of commuinitys that I am in ... lol im done with this alredy but linked list dont make me laugh
+                        CommuinityContainer(
+                            cms: state.cms, ownerId: widget.ownerId!),
+                      ]),
+                ),
+                state.loadingPost
+                    ? SliverToBoxAdapter(
+                        child: LinearProgressIndicator(
+                        color: Colors.amber,
+                      ))
+                    : state.post.length > 0
+                        ? imageGrids(state: state)
+                        : SliverToBoxAdapter(
+                            child: CenterdText(
+                                text:
+                                    "${state.userr.username} Has No Post To Display Fam"))
+              ],
+            ));
     }
   }
 
@@ -193,50 +221,62 @@ class _ProfileScreenState extends State<ProfileScreen>  {
   // eternal life. Amen.
 
   imageGrids({required ProfileState state}) => SliverToBoxAdapter(
-    child: GridView.builder(
-             
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0,
-                mainAxisExtent: 320.0,
-              ),
-              primary: false,
-              shrinkWrap: true,
-              itemCount: state.post.length,
-              itemBuilder: (BuildContext context, int index) {
-                Post? post = state.post[index];
-                return Column(
-                  children: [
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).pushNamed(ProfilePostView.routeName, arguments: ProfilePostViewArgs(posts: state.post, startIndex: index, isFromPfpScreen: true)),
-                      //Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(startIndex: index, posts: state.post)),
-                      child: Container(
-                      height: 240, width: 300, 
-                      decoration: BoxDecoration(
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10.0,
+            mainAxisSpacing: 10.0,
+            mainAxisExtent: 320.0,
+          ),
+          primary: false,
+          shrinkWrap: true,
+          itemCount: state.post.length,
+          itemBuilder: (BuildContext context, int index) {
+            Post? post = state.post[index];
+            return Column(
+              children: [
+                GestureDetector(
+                  onTap: () => Navigator.of(context).pushNamed(
+                      ProfilePostView.routeName,
+                      arguments: ProfilePostViewArgs(
+                          posts: state.post,
+                          startIndex: index,
+                          isFromPfpScreen: true)),
+                  //Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(startIndex: index, posts: state.post)),
+                  child: Container(
+                    height: 240,
+                    width: 300,
+                    decoration: BoxDecoration(
                         color: Colors.white,
-                        image: post!.imageUrl != null ? 
-                          DecorationImage(image: CachedNetworkImageProvider(post.imageUrl!), fit: BoxFit.cover) :
-                          DecorationImage(image: CachedNetworkImageProvider(post.thumbnailUrl!), fit: BoxFit.cover),
-                        borderRadius: BorderRadius.circular(18)
-                      ),
+                        image: post!.imageUrl != null
+                            ? DecorationImage(
+                                image:
+                                    CachedNetworkImageProvider(post.imageUrl!),
+                                fit: BoxFit.cover)
+                            : DecorationImage(
+                                image: CachedNetworkImageProvider(
+                                    post.thumbnailUrl!),
+                                fit: BoxFit.cover),
+                        borderRadius: BorderRadius.circular(18)),
                   ),
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        commuinity_pf_img(post.author.profileImageUrl, 35, 35),
-                        SizedBox(width: 5),
-                        Flexible(child: Text(post.author.username, style: Theme.of(context).textTheme.bodyText1, overflow: TextOverflow.fade,))
-                      ],
-                    )
+                ),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    commuinity_pf_img(post.author.profileImageUrl, 35, 35),
+                    SizedBox(width: 5),
+                    Flexible(
+                        child: Text(
+                      post.author.username,
+                      style: Theme.of(context).textTheme.bodyText1,
+                      overflow: TextOverflow.fade,
+                    ))
                   ],
-                );
-              },
-  
-            ),
-  );
+                )
+              ],
+            );
+          },
+        ),
+      );
 }
-
-
