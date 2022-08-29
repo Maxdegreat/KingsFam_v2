@@ -144,6 +144,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   Stream<ProfileState> _mapProfileLoadUserToState(
       ProfileLoadUserr event) async* {
         if (event.vidCtrl!=null) {
+          // pause vids coming from other screens TODO look for optimizing
           event.vidCtrl!.pause();
         }
     yield state.copyWith(status: ProfileStatus.loading);

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:kingsfam/enums/bottom_nav_items.dart';
@@ -9,7 +11,11 @@ class BottomnavbarCubit extends Cubit<BottomnavbarState> {
   BottomnavbarCubit()
       : super(BottomnavbarState(selectedItem: BottomNavItem.chats));
 
-  void setVidCtrl(VideoPlayerController vidCtrl) => emit(state.copyWith(vidCtrl: vidCtrl));
+  void setVidCtrl(VideoPlayerController vidCtrl) {
+    log("77777777777777777777777777777777777777777777777777");
+    emit(state.copyWith(vidCtrl: vidCtrl));
+  }
+  
   void rmvVidCtrl() => emit(state.copyWith(vidCtrl: null));
   
   void updateSelectedItem(BottomNavItem item) {

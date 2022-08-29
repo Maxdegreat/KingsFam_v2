@@ -6,6 +6,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
+import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 
 import 'package:kingsfam/screens/screens.dart';
 
@@ -16,6 +17,7 @@ import 'package:kingsfam/widgets/profile_image.dart';
 import 'package:kingsfam/widgets/videos/videoPostView16_9.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class PostSingleView extends StatefulWidget {
   final Post post;
@@ -327,17 +329,26 @@ class _PostSingleViewState extends State<PostSingleView> {
         ),
       );
     } else if (post.videoUrl != null) {
-      return GestureDetector(
-        onDoubleTap: widget.onLike,
-        child: Align(
-          alignment: Alignment.center,
-          child: VideoPostView16_9(
-            tabCtrl: widget.tabCtrl,
-            post: widget.post,
-            userr: widget.post.author,
-            videoUrl: widget.post.videoUrl!,
-            playVidNow: true,
-            controller: vidCtrl,
+    // context.read<BottomnavbarCubit>().setVidCtrl(vidCtrl);
+      return VisibilityDetector(
+        key: ObjectKey(widget.post),
+        onVisibilityChanged: (vis) {
+          if (vis.visibleFraction == 0) {
+            vidCtrl.pause();
+          }
+        },
+        child: GestureDetector(
+          onDoubleTap: widget.onLike,
+          child: Align(
+            alignment: Alignment.center,
+            child: VideoPostView16_9(
+              tabCtrl: widget.tabCtrl,
+              post: widget.post,
+              userr: widget.post.author,
+              videoUrl: widget.post.videoUrl!,
+              playVidNow: true,
+              controller: vidCtrl,
+            ),
           ),
         ),
       );

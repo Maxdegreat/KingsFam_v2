@@ -80,7 +80,6 @@ class _VideoPostView16_9State extends State<VideoPostView16_9> {
 
   @override
   Widget build(BuildContext context) {
-    context.read<BottomnavbarCubit>().setVidCtrl(widget.controller);
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Padding(
