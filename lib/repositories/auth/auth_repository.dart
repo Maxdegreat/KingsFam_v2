@@ -151,7 +151,7 @@ class AuthRepository extends BaseAuthRepository {
         String? token = await _messaging.getToken();
         _firebaseFirestore.collection(Paths.users).doc(user!.uid).set({
           'profileImage': user.photoURL,
-          'username': user.displayName,
+          'username': formatUsername(user.displayName, user.uid),
           'usernameSearchCase': usernameSearchCase,
           'email': user.email,
           'followers': 0,
@@ -222,7 +222,7 @@ Future<auth.User?> signInWithApple(BuildContext context) async {
   // make the Userr model
   _firebaseFirestore.collection(Paths.users).doc(currUser!.uid).set({
        'profileImage': null,
-       'username': "New_User#" + currUser!.uid.substring(0,5),
+       'username': formatUsername(null, currUser!.uid),
        'email': appleCredential.email,
        'followers': 0,
        'following': 0,
@@ -243,4 +243,17 @@ Future<auth.User?> signInWithApple(BuildContext context) async {
   // not match the nonce in `appleCredential.identityToken`, sign in will fail.
   // return await FirebaseAuth.instance.signInWithCredential(oauthCredential);
 }
+  String formatUsername(String? name, String uid) {
+    String newName = "";
+    if (name == null) {
+      return "user#" + uid.substring(0,4);
+    }
+    for (int i = 0; i < name.length; i++) {
+      if (name[i] == " ")
+        newName += "_";
+      else
+        newName += name[i];
+    }
+      return newName;
+  }
 }

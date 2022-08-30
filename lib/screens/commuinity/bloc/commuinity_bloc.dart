@@ -212,10 +212,8 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     if (state.kingCords.length == 3) {
       await Future.delayed(Duration(seconds: 1));
       if (state.boosted > 0) {
-        Userr currUser = await _userrRepository.getUserrWithId(
-            userrId: _authBloc.state.user!.uid);
-        KingsCord? kc = await _churchRepository.newKingsCord2(
-            ch: commuinity, cordName: cordName, currUser: currUser);
+        Userr currUser = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
+        KingsCord? kc = await _churchRepository.newKingsCord2(ch: commuinity, cordName: formatCordName(cordName), currUser: currUser);
         var lst = state.kingCords;
         lst.add(kc);
         emit(state.copyWith(kingCords: lst));
@@ -226,17 +224,25 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
         //     context: ctx, bgColor: Colors.red[400]);
       }
     } else {
-      Userr currUser = await _userrRepository.getUserrWithId(
-          userrId: _authBloc.state.user!.uid);
-      KingsCord? kc = await _churchRepository.newKingsCord2(
-          ch: commuinity, cordName: cordName, currUser: currUser);
+      Userr currUser = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
+      KingsCord? kc = await _churchRepository.newKingsCord2(ch: commuinity, cordName: formatCordName(cordName), currUser: currUser);
       var lst = state.kingCords;
       lst.add(kc);
       emit(state.copyWith(kingCords: lst));
     }
   }
 
-  
+  String formatCordName(String cordName) {
+    String newName = "";
+    for (int i = 0; i < cordName.length; i++) {
+      if (cordName[i] == " ") {
+        newName += "-";
+      } else {
+        newName += cordName[i];
+      }
+    }
+    return newName;
+  }
 
 
   dispose() {

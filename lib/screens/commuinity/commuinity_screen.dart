@@ -283,74 +283,9 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                               },
                               onLongPress: () => _delKcDialog(
                                   cord: cord, commuinity: widget.commuinity),
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                    top: 7,
-                                    bottom: 7,
-                                    left:
-                                        MediaQuery.of(context).size.width / 7),
-                                child: Container(
-                                  height: 55,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                      color: secondaryColor,
-                                      borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(5),
-                                          bottomLeft: Radius.circular(5))),
-                                  child: Center(
-                                      child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 7),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          cord.cordName,
-                                          overflow: TextOverflow.fade,
-                                          style: TextStyle(
-                                              color:
-                                                  state.mentionedMap[cord.id] ==
-                                                          true
-                                                      ? Colors.amber
-                                                      : Colors.white,
-                                              fontWeight:
-                                                  state.mentionedMap[cord.id] ==
-                                                          true
-                                                      ? FontWeight.w900
-                                                      : FontWeight.w700),
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              cord.recentSender[1],
-                                              style: TextStyle(
-                                                  color: primaryColor,
-                                                  fontSize: 17),
-                                              overflow: TextOverflow.fade,
-                                            ),
-                                            SizedBox(
-                                              width: 7,
-                                            ),
-                                            Text(
-                                              cord.recentTimestamp.timeAgo(),
-                                              style: TextStyle(
-                                                  color: Colors.grey[300],
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold),
-                                              overflow: TextOverflow.fade,
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  )),
-                                ),
-                              ));
+                              child: cordTabView(context, secondaryColor, cord, state, primaryColor));
                         } else {
-                          return SizedBox.shrink();
+                          return SizedBox.shrink(); 
                         }
                       }).toList(),
               ),
@@ -389,6 +324,75 @@ class _CommuinityScreenState extends State<CommuinityScreen>
         ],
       ))
     ]);
+  }
+
+  Padding cordTabView(BuildContext context, Color secondaryColor, KingsCord cord, CommuinityState state, Color primaryColor) {
+    return Padding(
+                              padding: EdgeInsets.only(
+                                  top: 7,
+                                  bottom: 7,
+                                  left:
+                                      MediaQuery.of(context).size.width / 7),
+                              child: Container(
+                                height: 55,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                    color: secondaryColor,
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(5),
+                                        bottomLeft: Radius.circular(5))),
+                                child: Center(
+                                    child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 7),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        cord.cordName,
+                                        overflow: TextOverflow.fade,
+                                        style: TextStyle(
+                                            color:
+                                                state.mentionedMap[cord.id] ==
+                                                        true
+                                                    ? Colors.amber
+                                                    : Colors.white,
+                                            fontWeight:
+                                                state.mentionedMap[cord.id] ==
+                                                        true
+                                                    ? FontWeight.w900
+                                                    : FontWeight.w700),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            cord.recentSender[1].substring(0, 10),
+                                            style: TextStyle(
+                                                color: primaryColor,
+                                                fontSize: 17),
+                                            overflow: TextOverflow.fade,
+                                          ),
+                                          SizedBox(
+                                            width: 7,
+                                          ),
+                                          Text(
+                                            cord.recentTimestamp.timeAgo(),
+                                            style: TextStyle(
+                                                color: Colors.grey[300],
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                            overflow: TextOverflow.fade,
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                )),
+                              ),
+                            );
   }
 
   SliverAppBar cmSliverAppBar(
@@ -745,9 +749,9 @@ class _CommuinityScreenState extends State<CommuinityScreen>
 
   Widget new_kingscord({required CommuinityBloc cmBloc}) {
       cmActions.Actions actions = cmActions.Actions();
-      Userr? currUsr = null;
+      Userr? currUsr;
       var lst = widget.commuinity.members.keys.toList();
-      for (int i = 0; i<widget.commuinity.members.length; i++) {
+      for (int i = 0; i < widget.commuinity.members.length; i++) {
         if (lst[i].id == context.read<AuthBloc>().state.user!.uid) {
           currUsr = lst[i];
           log("found the informatjion we were looking gor and rhis is me tping ewithout thinkting at all as ig you lweant to see how sgas ttla dcaion tipa rt;his is my true speds");
@@ -756,7 +760,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
       }
       String? currRole = widget.commuinity.members.containsKey(currUsr) ?
         widget.commuinity.members[currUsr]["role"] : null;
-        log("cur role is: $currRole");
+        log("cur role is: $currRole usr Id is ${currUsr!.id}");
         log("users info is: ${widget.commuinity.members[currUsr]}");
       if ((currRole != null && currRole == Roles.Owner) ||
         (currRole != null && actions.hasAccess(role: currRole, action: cmActions.Actions.communityActions[4]))) {
@@ -778,7 +782,6 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   new_kingsCord_sheet(CommuinityBloc cmBloc) => showModalBottomSheet(
       context: context,
       builder: (context) { 
-        int prevKcLen = cmBloc.state.kingCords.length; 
          return                                                                                                                                                                                                                                                                                                                                                                  Container(
             width: double.infinity,
             child: Column(
@@ -809,7 +812,9 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                           onPressed: () {
                             if (_txtController.value.text.length == 0) {
                               snackBar( snackMessage: "be sure you add a name for the Chat Room you are making", context: context, bgColor: Colors.red[400]);
-                            } else if (prevKcLen == cmBloc.state.kingCords.length) {
+                            } else if (_txtController.value.text.length > 10) {
+                              snackBar(snackMessage: "Yo, Fam less than or equal to 10 chars please nd thanks", context: context, bgColor: Colors.red[400]);
+                            } else if (cmBloc.state.boosted < 1 && cmBloc.state.kingCords.length == 3) {
                               snackBar(snackMessage:"Hey Fam, to have more than 3 Chat Rooms you have to boost this community",context: context, bgColor: Colors.red[400]);
                             }else {
                               // make a new channel

@@ -116,7 +116,7 @@ class KingscordCubit extends Cubit<KingscordState> {
   }
 
   
-  void onUploadVideo({required File videoFile, required String kcId, required String cmId}) async {
+  void onUploadVideo({required File videoFile, required String kcId, required String cmId, required String senderUsername}) async {
     emit(state.copyWith(status: KingsCordStatus.loading, ));
     // make the thumbnail
     final thumbnail = await VideoThumbnail.thumbnailFile(
@@ -129,9 +129,9 @@ class KingscordCubit extends Cubit<KingscordState> {
     if (thumbnail == null)
       return
     // add thumbnail to queue
-    log("abt to add $thumbnail into the queue");
+    print("abt to add $thumbnail into the queue");
     state.filesToBePosted.addFirst(File(thumbnail));
-    log("added $thumbnail in the queue");
+    print("added $thumbnail in the queue");
     FileShareStatus fileShareStatus = FileShareStatus.imgSharing;
     emit(state.copyWith(fileShareStatus: fileShareStatus, filesToBePosted: state.filesToBePosted));
     // store the thumbnail
@@ -139,7 +139,7 @@ class KingscordCubit extends Cubit<KingscordState> {
     // pass vid to storage
     final videoUrl = await _storageRepository.uploadchatVideo(video: videoFile);
     // make message
-    final message = Message(date: Timestamp.now(), thumbnailUrl: thumbnailUrl, videoUrl: videoUrl,);
+    final message = Message(date: Timestamp.now(), thumbnailUrl: thumbnailUrl, videoUrl: videoUrl, senderUsername: senderUsername);
     // send the message to the cloud:::::
     //upload message to the cloud
     _kingsCordRepository.sendMsgTxt(
