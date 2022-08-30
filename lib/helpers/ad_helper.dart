@@ -3,8 +3,11 @@ import 'dart:io';
 class AdHelper {
 
   static String get bannerAdUnitId {
+    String prodAdUnitId = "ca-app-pub-4874104031068690/5905761705";
+    String testAdUnitId = "ca-app-pub-3940256099942544/6300978111";
     if (Platform.isAndroid) {
-      return "ca-app-pub-3940256099942544/6300978111";
+      // ignore: dead_code
+      return true ? prodAdUnitId : testAdUnitId ;
     } else if (Platform.isIOS) {
       return "ca-app-pub-3940256099942544/2934735716";
     } else {
