@@ -23,6 +23,7 @@ import 'package:kingsfam/widgets/videos/asset_video.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:rive/rive.dart';
 import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class ChatsScreen extends StatefulWidget {
   const ChatsScreen({
@@ -114,7 +115,7 @@ class _ChatsScreenState extends State<ChatsScreen>
       ),
     )
       ..addListener(() => setState(() {}))
-      ..setLooping(false) // -------------------------------- SET PERKED LOOPING TO TRUE
+      ..setLooping(true) // -------------------------------- SET PERKED LOOPING TO TRUE
       ..initialize().then((_) {
         _perkedVideoPlayerController.play();
         _perkedVideoPlayerController.setVolume(0);
@@ -165,10 +166,16 @@ class _ChatsScreenState extends State<ChatsScreen>
                     child: KfCrownPadded()),
                 GestureDetector(
                     onTap: () => NavHelper().navToSnackBar(context),
-                    child: Container(
-                        child: AssetVideoPlayer(
-                            controller: _perkedVideoPlayerController,
-                            assetPath: "assets/promo_assets/Perked-2.mp4")))
+                    child: VisibilityDetector(
+                      key: ObjectKey(_perkedVideoPlayerController),
+                      onVisibilityChanged: (vis) {
+                        vis.visibleFraction > 0 ? _perkedVideoPlayerController.play() : _perkedVideoPlayerController.pause();
+                      },
+                      child: Container(
+                          child: AssetVideoPlayer(
+                              controller: _perkedVideoPlayerController,
+                              assetPath: "assets/promo_assets/Perked-2.mp4")),
+                    ))
               ],
             ),
             body: BlocConsumer<ChatscreenBloc, ChatscreenState>(

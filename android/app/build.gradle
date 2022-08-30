@@ -35,7 +35,7 @@ if (keystorePropertiesFile.exists()) {
 
 
 android {
-    compileSdkVersion 31 //31
+    compileSdkVersion 32 //31
     //ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -57,7 +57,7 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
         minSdkVersion 21 //---------------- this was changed from 21 to 23 bc of package (flutter_sound)
-        targetSdkVersion 31 //30
+        targetSdkVersion 32 //31
         multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

@@ -110,12 +110,12 @@ dev_dependencies:
 # flutter clean && flutter pub get && flutter pub run flutter_native_splash:create
 flutter_native_splash: 
   color: "#050505"
-  image: assets/icons/Logo_files/PNG/KingsFam-2.png
+  image: assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png
 
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/icons/Logo_files/PNG/KingsFam-2.png"
+  image_path: "assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

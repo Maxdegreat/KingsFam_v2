@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:kingsfam/widgets/basic_overlay_widget.dart';
 
 import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class UrlViewArgs {
   final String urlMain;
@@ -61,20 +62,29 @@ class _FileViewScreenState extends State<UrlViewScreen> {
     );
   }
 
-  Widget _viewPort() => Expanded(
-    child: AspectRatio(
-      aspectRatio: 9 / 16,
-      child: Center(
-        child: Container(
-              child: widget.subUrl.isNotEmpty ? _videoPortFromMessage() : null,
-              // ignore: unnecessary_null_comparison
-              decoration: widget.subUrl.isEmpty || widget.subUrl == null
-                  ? BoxDecoration(
-                      image: DecorationImage(
-                          image: CachedNetworkImageProvider(widget.url),
-                          fit: BoxFit.fitWidth))
-                  : null,
-            ),
+  Widget _viewPort() => VisibilityDetector(
+    key: ObjectKey(vidController),
+    onVisibilityChanged: (vis) {
+      if (vis.visibleFraction == 0 && this.mounted) {
+        Navigator.of(context).pop();
+        vidController.dispose();
+      }
+    },
+    child: Expanded(
+      child: AspectRatio(
+        aspectRatio: 9 / 16,
+        child: Center(
+          child: Container(
+                child: widget.subUrl.isNotEmpty ? _videoPortFromMessage() : null,
+                // ignore: unnecessary_null_comparison
+                decoration: widget.subUrl.isEmpty || widget.subUrl == null
+                    ? BoxDecoration(
+                        image: DecorationImage(
+                            image: CachedNetworkImageProvider(widget.url),
+                            fit: BoxFit.fitWidth))
+                    : null,
+              ),
+        ),
       ),
     ),
   );

@@ -74,10 +74,11 @@ class ScreensForPageView {
                                     var usersrecentTime =
                                         commuinity.members[state.currUserr];
                                     log(usersrecentTime.toString());
-                                    var compraeTimes = commuinity.recentMsgTime
+                                    int? compraeTimes = commuinity.recentMsgTime
                                         .compareTo(
                                             usersrecentTime['timestamp']);
-                                    bool cmHasNotif = compraeTimes > 0;
+                                    // ignore: unnecessary_null_comparison
+                                    bool cmHasNotif = compraeTimes != null ? compraeTimes  > 0 : false;
 
                                     return GestureDetector(
                                       onLongPress: () => leaveCommuinity(

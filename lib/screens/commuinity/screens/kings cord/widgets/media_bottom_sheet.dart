@@ -31,7 +31,7 @@ mediaBottomSheet(
                           await ImageHelper.pickVideoFromGallery();
                       if (pickedFile != null) {
                         kingscordCubit.onUploadVideo(
-                            videoFile: pickedFile, cmId: cmId, kcId: kcId);
+                            videoFile: pickedFile, cmId: cmId, kcId: kcId, senderUsername: seenderUsername);
                       } else {
                         snackBar(
                             snackMessage:
@@ -65,5 +65,6 @@ mediaBottomSheet(
             ],
           ),
         );
-      });
+      }
+    );
 }
