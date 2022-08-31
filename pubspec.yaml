@@ -83,7 +83,7 @@ dependencies:
   camera: #0.8.1+2
   scrollable_positioned_list: ^0.2.3
   video_thumbnail: ^0.5.0
-  google_mobile_ads: ^2.0.1
+  google_mobile_ads: ^0.13.0 #^2.0.1 pod update Google-Mobile-Ads-SDK
   url_launcher: ^6.0.8
   flutter_svg: ^1.1.2
 
