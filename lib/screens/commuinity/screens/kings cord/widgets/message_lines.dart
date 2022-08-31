@@ -173,7 +173,7 @@ class MessageLines extends StatelessWidget {
                       onTap: () {
                         if (message.sender!.id == context.read<AuthBloc>().state.user!.uid) {
                           if (message.text != null && message.text == "CTRL+ALT+DEL ... the message was deleted") {
-                            snackBar(snackMessage: "You can' del this fam", context: context, bgColor: Colors.red[400]!);
+                            snackBar(snackMessage: "You can\'t del this fam", context: context, bgColor: Colors.red[400]!);
                           } else {
                             Message messageForDel = message.copyWith(text: "CTRL+ALT+DEL ... the message was deleted", imageUrl: null, mentionedIds: null, thumbnailUrl: null, videoUrl: null,);
                         FirebaseFirestore.instance.collection(Paths.church).doc(this.cmId).collection(Paths.kingsCord).doc(this.kcId).collection(Paths.messages).doc(this.message.id).update(messageForDel.ToDoc(senderId: message.sender!.id));
