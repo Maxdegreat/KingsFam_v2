@@ -13,7 +13,6 @@ import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/create_post/cubit/create_post_cubit.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:video_player/video_player.dart';
-import 'package:camera/camera.dart';
 
 // ignore: camel_case_types
 enum setStateOfPostType { image, quote }
