@@ -668,7 +668,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
               ),
             ));
       
-    }
+    } else
     return SizedBox.shrink();
   }
 
@@ -760,8 +760,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
       }
       String? currRole = widget.commuinity.members.containsKey(currUsr) ?
         widget.commuinity.members[currUsr]["role"] : null;
-        log("cur role is: $currRole usr Id is ${currUsr!.id}");
-        log("users info is: ${widget.commuinity.members[currUsr]}");
+        // log("cur role is: $currRole usr Id is ${currUsr!.id}");
+        // log("users info is: ${widget.commuinity.members[currUsr]}");
       if ((currRole != null && currRole == Roles.Owner) ||
         (currRole != null && actions.hasAccess(role: currRole, action: cmActions.Actions.communityActions[4]))) {
         return GestureDetector(
@@ -775,8 +775,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
               ),
             ));
       
-    }
-    return SizedBox.shrink();
+    } else 
+      return SizedBox.shrink();
   }
 
   new_kingsCord_sheet(CommuinityBloc cmBloc) => showModalBottomSheet(
