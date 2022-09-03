@@ -138,6 +138,7 @@ flutter:
     - assets/icons/Logo_files/PNG/KingsFam-2.png
     # SVG's are below
     - assets/promo_banners/boosted_cm_banners_480x200/
+    - assets/promo_banners/turbo_ad_banner.svg
     - assets/promo_assets/Perked-2.mp4
     - assets/cm_backgrounds/
 

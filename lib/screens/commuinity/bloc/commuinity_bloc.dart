@@ -208,28 +208,13 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       {required Church commuinity,
       required String cordName,
       required BuildContext ctx,}) async {
-    // TODO code is duped can fix later for readability
-    if (state.kingCords.length == 3) {
-      await Future.delayed(Duration(seconds: 1));
-      if (state.boosted > 0) {
-        Userr currUser = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
-        KingsCord? kc = await _churchRepository.newKingsCord2(ch: commuinity, cordName: formatCordName(cordName), currUser: currUser);
-        var lst = state.kingCords;
-        lst.add(kc);
-        emit(state.copyWith(kingCords: lst));
-      } else {
-        // snackBar(
-        //     snackMessage:
-        //         "Hey Fam, to have more than 3 Chat Rooms you have to boost this community",
-        //     context: ctx, bgColor: Colors.red[400]);
-      }
-    } else {
+
       Userr currUser = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
       KingsCord? kc = await _churchRepository.newKingsCord2(ch: commuinity, cordName: formatCordName(cordName), currUser: currUser);
       var lst = state.kingCords;
       lst.add(kc);
       emit(state.copyWith(kingCords: lst));
-    }
+    
   }
 
   String formatCordName(String cordName) {

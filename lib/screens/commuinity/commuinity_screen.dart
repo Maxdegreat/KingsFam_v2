@@ -445,6 +445,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
       actions: [
         _settingsBtn(cmBloc: cmBloc),
         _inviteButton(),
+        _themePackButton()
       ],
     );
   }
@@ -814,8 +815,6 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                               snackBar( snackMessage: "be sure you add a name for the Chat Room you are making", context: context, bgColor: Colors.red[400]);
                             } else if (_txtController.value.text.length > 10) {
                               snackBar(snackMessage: "Yo, Fam less than or equal to 10 chars please nd thanks", context: context, bgColor: Colors.red[400]);
-                            } else if (cmBloc.state.boosted < 1 && cmBloc.state.kingCords.length == 3) {
-                              snackBar(snackMessage:"Hey Fam, to have more than 3 Chat Rooms you have to boost this community",context: context, bgColor: Colors.red[400]);
                             }else {
                               // make a new channel
                               cmBloc.makeNewKc(commuinity: widget.commuinity, cordName: _txtController.value.text, ctx: context);
@@ -892,6 +891,15 @@ class _CommuinityScreenState extends State<CommuinityScreen>
               await context.read<BuildchurchCubit>().grabCurrFollowing();
           _inviteBottomSheet(following);
         });
+  }
+
+  Widget _themePackButton() {
+    return TextButton(
+      onPressed: () {
+        NavHelper().navToUpdateCmTheme(context, context.read<CommuinityBloc>(), widget.commuinity.name, widget.commuinity.id!);
+      }, 
+      child: Text("ThemePack")
+    );
   }
 
   //TODO ADMIN WHERE 2==2

@@ -57,9 +57,9 @@ class _SnackTimeShopScreenState extends State<SnackTimeShopScreen> {
               Text("Post Promos", style: SnackTimeShopScreen.tStyle),
               vipDisplay(display: "postPromo"),
               SizedBox(height: 10),
-              Text("Give a gift?!", style: SnackTimeShopScreen.tStyle),
+              Text("Get Turbo Charged!", style: SnackTimeShopScreen.tStyle),
               SizedBox(height: 5),
-              vipDisplay(display: "gifting"),
+              vipDisplay(display: "Turbo"),
             ],
           ),
         ));
@@ -95,7 +95,7 @@ class _SnackTimeShopScreenState extends State<SnackTimeShopScreen> {
                               context, typeOf.postPromo.toString());
                         } else {
                           NavHelper().navToBuyPerk(
-                              context, typeOf.gifting.toString());
+                              context, typeOf.turbo.toString());
                         }
                       },
                       child: vipDisplayContent(display, buildDots)[index]);
@@ -150,27 +150,15 @@ class _SnackTimeShopScreenState extends State<SnackTimeShopScreen> {
             )),
             decoration: BoxDecoration(color: Colors.blue[100])),
       ];
-    } else {
-      // when display is == gifting
+    } else { 
+      // when display is == Turbo
       return [
         Container(
             height: 95,
             width: double.infinity,
-            child: Center(
-                child: Text(
-              "Feeling Generous, Gift Someone!",
-              textAlign: TextAlign.center,
-            )),
-            decoration: BoxDecoration(color: Colors.blue[100])),
-        Container(
-            height: 95,
-            width: double.infinity,
-            child: Center(
-                child: Text(
-              "Gift A CM Owner, Staff Or Any User!",
-              textAlign: TextAlign.center,
-            )),
-            decoration: BoxDecoration(color: Colors.blue[100]))
+            child: SvgPicture.asset(
+                "assets/promo_banners/turbo_ad_banner.svg"),
+            decoration: BoxDecoration(color: Colors.transparent)),
       ];
     }
   }

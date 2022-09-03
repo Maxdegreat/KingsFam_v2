@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:kingsfam/config/type_of.dart';
 
 class BuyPerkArgs {
@@ -24,32 +25,56 @@ class BuyPerkScreen extends StatefulWidget {
 }
 
 class _BuyPerkScreenState extends State<BuyPerkScreen> {
+  TextStyle st = GoogleFonts.aBeeZee();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.type.toString()),
       ),
-      body: widget.type == typeOf.cmBoosting ? cmBoostingView() : Container(),
+      body: widget.type == typeOf.cmBoosting ? cmBoostingWid() : 
+        widget.type == typeOf.turbo ? turboWid() : postPromoWid(),
     );
   }
 
-  Widget cmBoostingView() {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("The perks of boosting a CM"),
-          Text("Theme Packs!"),
-          Text("Get more than 105 members"),
-          Text("Get more than 5 Text channels"),
-          Text("Get more than two admins"),
-          Text("And more features are fs coming!"),
-          SizedBox(height: 10),
-          Text("Select Community\'s to boost!")
-        ],
-      ),
+
+  Widget cmBoostingWid() { // price at $2.75 monthly
+    return ListView(
+      children: [
+        ListTile(
+          title: Text("CM Them Packs!", style: st),
+        ),
+        ListTile(
+          title: Text("+5 CM Theme Pack slots (access to CM Themes and 5 slots for custom theme packs)", style: st),
+        ),
+        ListTile(
+          title: Text("+5 CM Stickers slots. Stickers can be used as emojis)", style: st),
+        ),
+        ListTile(
+          title: Text("Volume Up! (Elders Can Start Audio Calls) - Admins always can", style: st),
+        ),
+      ],
     );
+  }
+
+    Widget turboWid() { // price at $1.50 monthly
+    return ListView(
+      children: [
+        ListTile(
+          title: Text("Upload Videos Longer Than 60 seconds (up to 120 seconds)", style: st),
+        ),
+        ListTile(
+          title: Text("Access To Super Cool Special Emojis", style: st),
+        ),
+        ListTile(
+          title: Text("Flex Turbo and Highest Role With Badges", style: st),
+        ),
+        // use themes thoughout the app???
+      ],
+    );
+  }
+
+    Widget postPromoWid() { // price at $2.50 per post or $5.50 a month for 7 promoted post a month or $7.00 for unlimited promo a month
+    return ListView();
   }
 }

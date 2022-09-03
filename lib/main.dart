@@ -19,6 +19,7 @@ import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/theme_club_house/theme_info.dart';
 
+import 'screens/build_church/cubit/buildchurch_cubit.dart';
 import 'screens/screens.dart';
 
 void main() async {
@@ -73,13 +74,13 @@ class MyApp extends StatelessWidget {
                     userrRepository: context.read<UserrRepository>(),
                     authBloc: context.read<AuthBloc>(),
                   )),
-          // BlocProvider<BuildchurchCubit>(
-          //     create: (context) => BuildchurchCubit(
-          //         callRepository: context.read<CallRepository>(),
-          //         churchRepository: context.read<ChurchRepository>(),
-          //         storageRepository: context.read<StorageRepository>(),
-          //         authBloc: context.read<AuthBloc>(),
-          //         userrRepository: context.read<UserrRepository>())),
+           BlocProvider<BuildchurchCubit>( // TODO                                        PLEASE NOTE THIS DOES NOT NEED TO BE A GLOBAL THING. NOTE IT IS USED IN CM SCREEN ON A GLOBAL SCOPE BUT IT CAN BE REFACTORED.
+               create: (context) => BuildchurchCubit(
+                   callRepository: context.read<CallRepository>(),
+                   churchRepository: context.read<ChurchRepository>(),
+                   storageRepository: context.read<StorageRepository>(),
+                   authBloc: context.read<AuthBloc>(),
+                   userrRepository: context.read<UserrRepository>())),
           BlocProvider<BottomnavbarCubit>(
             create: (context) => BottomnavbarCubit(),
           ),
