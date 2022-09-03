@@ -33,12 +33,12 @@ class _BuyPerkScreenState extends State<BuyPerkScreen> {
         title: Text(widget.type.toString()),
       ),
       body: widget.type == typeOf.cmBoosting ? cmBoostingWid() : 
-        widget.type == typeOf.turbo ? turboWid() : postPromoWid(),
+        widget.type == typeOf.turbo ? turboWid() : SizedBox.shrink()
     );
   }
 
 
-  Widget cmBoostingWid() { // price at $2.75 monthly
+  Widget cmBoostingWid() { // price at $2.25 monthly
     return ListView(
       children: [
         ListTile(
@@ -67,9 +67,8 @@ class _BuyPerkScreenState extends State<BuyPerkScreen> {
           title: Text("Access To Super Cool Special Emojis", style: st),
         ),
         ListTile(
-          title: Text("Flex Turbo and Highest Role With Badges", style: st),
+          title: Text("Use Theme Packs And add Customization Througout KingsFam", style: st),
         ),
-        // use themes thoughout the app???
       ],
     );
   }

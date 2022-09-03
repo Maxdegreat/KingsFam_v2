@@ -22,7 +22,7 @@ class ComuinityLoadingCords extends CommuinityEvent {
 
   ComuinityLoadingCords({required this.cords, required this.commuinity});
   @override
-  List<Object> get props => [cords]; 
+  List<Object> get props => [cords, commuinity]; 
 }
 
 class CommuinityLoadedEvent extends CommuinityEvent {

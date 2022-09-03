@@ -90,7 +90,4 @@ class KingsCord extends Equatable {
         recentTimestamp: data['recentTimestamp']
       );
   }
-
-
-
 }

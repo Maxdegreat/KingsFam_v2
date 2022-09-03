@@ -15,6 +15,7 @@ class Userr extends Equatable {
   final int followers;
   final List<String> friends;
   final String colorPref;
+  final int? turbo;
 
   Userr({
     required this.id,
@@ -29,7 +30,8 @@ class Userr extends Equatable {
     required this.following,
     required this.followers,
     required this.friends,
-    required this.colorPref
+    required this.colorPref,
+    this.turbo
   });
 
   static Userr empty = Userr(
@@ -64,6 +66,7 @@ class Userr extends Equatable {
         followers,
         friends,
         colorPref,
+        turbo
       ];
 
   Userr copyWith({
@@ -80,6 +83,7 @@ class Userr extends Equatable {
     int? followers,
     List<String>? friends,
     String? colorPref,
+    int? turbo,
   }) {
     return Userr(
       id: id ?? this.id,
@@ -95,6 +99,7 @@ class Userr extends Equatable {
       followers: followers ?? this.followers,
       friends: friends ?? this.friends,
       colorPref: colorPref ?? this.colorPref,
+      turbo: turbo ?? turbo,
     );
   }
 
@@ -110,7 +115,8 @@ class Userr extends Equatable {
       'followers': followers,
       'following': following,
       'friends': friends,
-      'colorPref' : colorPref
+      'colorPref' : colorPref,
+      'turbo' : turbo
     };
   }
 
@@ -135,6 +141,7 @@ class Userr extends Equatable {
         token: List<String>.from(data['token']),
         friends: List<String>.from(data['friends'] ?? []),
         colorPref: data['colorPref'] ?? '#9814F4',
+        turbo: data['turbo'] ?? null,
     );
   }
 }

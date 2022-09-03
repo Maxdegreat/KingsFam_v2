@@ -283,51 +283,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                               },
                               onLongPress: () => _delKcDialog(
                                   cord: cord, commuinity: widget.commuinity),
-                              child: cordTabView(context, secondaryColor, cord, state, primaryColor));
-                        } else {
-                          return SizedBox.shrink(); 
-                        }
-                      }).toList(),
-              ),
-              SizedBox(height: 15),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text(
-                  "Voice / Video Rooms",
-                  style: TextStyle(
-                    color: primaryColor,
-                    fontSize: 21,
-                    fontWeight: FontWeight.w800,
-                  ),
-                  overflow: TextOverflow.fade,
-                ),
-                collapseOrExpand(context.read<CommuinityBloc>(), 'vvr'),
-                _new_call(),
-              ]),
-              Column(
-                children: state.calls.map((call) {
-                  if (call != null) {
-                    // return Container();
-                    return GestureDetector(
-                      onTap: () {},
-                      // onTap: () => Navigator.of(context).pushNamed(
-                      //     VideoCallScreen.routeName,
-                      //     arguments: VideoCallScreenArgs(channlName: call.name, tokenUrl: call.id! + widget.commuinity.id! + call.name)),
-                      child: callTile(context, call),
-                    );
-                  } else {
-                    return SizedBox.shrink();
-                  }
-                }).toList(),
-              )
-            ],
-          ),
-        ],
-      ))
-    ]);
-  }
-
-  Padding cordTabView(BuildContext context, Color secondaryColor, KingsCord cord, CommuinityState state, Color primaryColor) {
-    return Padding(
+                              child: Padding(
                               padding: EdgeInsets.only(
                                   top: 7,
                                   bottom: 7,
@@ -369,7 +325,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                       Row(
                                         children: [
                                           Text(
-                                            cord.recentSender[1].substring(0, 10),
+                                            cord.recentSender[1].length >= 10 ? cord.recentSender[1].substring(0, 10) : cord.recentSender[1], 
                                             style: TextStyle(
                                                 color: primaryColor,
                                                 fontSize: 17),
@@ -392,7 +348,47 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                   ),
                                 )),
                               ),
-                            );
+                            ));
+                        } else {
+                          return SizedBox.shrink(); 
+                        }
+                      }).toList(),
+              ),
+              SizedBox(height: 15),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Text(
+                  "Voice / Video Rooms",
+                  style: TextStyle(
+                    color: primaryColor,
+                    fontSize: 21,
+                    fontWeight: FontWeight.w800,
+                  ),
+                  overflow: TextOverflow.fade,
+                ),
+                collapseOrExpand(context.read<CommuinityBloc>(), 'vvr'),
+                _new_call(),
+              ]),
+              Column(
+                children: state.calls.map((call) {
+                  if (call != null) {
+                    // return Container();
+                    return GestureDetector(
+                      onTap: () {},
+                      // onTap: () => Navigator.of(context).pushNamed(
+                      //     VideoCallScreen.routeName,
+                      //     arguments: VideoCallScreenArgs(channlName: call.name, tokenUrl: call.id! + widget.commuinity.id! + call.name)),
+                      child: callTile(context, call),
+                    );
+                  } else {
+                    return SizedBox.shrink();
+                  }
+                }).toList(),
+              )
+            ],
+          ),
+        ],
+      ))
+    ]);
   }
 
   SliverAppBar cmSliverAppBar(

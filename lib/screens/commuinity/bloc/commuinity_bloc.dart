@@ -90,7 +90,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       final Map<String, bool> mentionedMap = {};
       _streamSubscriptionKingsCord?.cancel();
       _streamSubscriptionKingsCord = _churchRepository
-          .getCommuinityCordsStream(commuinity: event.commuinity, limit: 7)
+          .getCommuinityCordsStream(commuinity: event.commuinity, limit: 20)
           .listen((kcords) async {
           final allCords = await Future.wait(kcords);
            for (var kcAwait in kcords) {
@@ -124,7 +124,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       ComuinityLoadingCords event) async* {
     // make calls sream
     // add calls to loaded then yield
-    // also add this.event to loaded yield ... now has both list
+    // also add this.event to loaded yield ... now has both list (this event has the cord and cm)
     // STILL LOAFDING SO NO YIELD YET
     try {
       List<Post?> posts = await _churchRepository.getCommuinityPosts(cm: event.commuinity);
@@ -155,6 +155,10 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       var ism = await _churchRepository
           .streamIsCmMember(cm: event.commuinity, authorId: _authBloc.state.user!.uid);
       _streamSubscriptionIsMember = ism.listen((isMemStream) async {
+        for (var kc in event.kcs) 
+
+          log("from bloc kc recentSenderInfo is: ${kc!.recentSender}");
+        
         isMem = await isMemStream;
         emit(state.copyWith(
             calls: event.calls,
@@ -211,9 +215,8 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
       Userr currUser = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
       KingsCord? kc = await _churchRepository.newKingsCord2(ch: commuinity, cordName: formatCordName(cordName), currUser: currUser);
-      var lst = state.kingCords;
-      lst.add(kc);
-      emit(state.copyWith(kingCords: lst));
+      // WE DO NOT EMIT TO STATE BECAUSE THERE IS ALREDY A STREAM LISTENING FOR KC'S AND THE STREAM EMITS TO STATE
+      // ANY ATTEMPT TO EMIT FROM HERE WHILE THE STREAM IS ACTIVE WILL CAUSE SOME OUT OF RANGE ERRORS.
     
   }
 

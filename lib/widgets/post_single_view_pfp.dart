@@ -77,7 +77,7 @@ class _PostSingleViewState extends State<PostSingleViewPfp> {
                 child: GestureDetector(
                   onTap: () => Navigator.of(context).pushNamed(
                       CommuinityScreen.routeName,
-                      arguments: CommuinityScreenArgs(commuinity: commuinity, vidCtrl: vidCtrl)),
+                      arguments: CommuinityScreenArgs(commuinity: commuinity)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,

@@ -186,8 +186,8 @@ class ChurchRepository extends BaseChurchRepository {
         cordName: cordName,
         recentMessage: "Welcome To $cordName!",
         recentSender: [
-          currUser != null ? currUser.id : '',
-          currUser != null ? currUser.username.substring(0, 5) : ''
+          currUser != null ? currUser.id : '000',
+          currUser != null ? currUser.username.substring(0, 5) : 'A-Member'
         ],
         recentTimestamp: Timestamp.now());
     var kcPath = await FirebaseFirestore.instance
