@@ -120,7 +120,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
 
 
   Widget submitButton() {
-    return ElevatedButton(
+    return TextButton(
       onPressed: () => submit(), 
       child: Row(
         children: [
@@ -135,7 +135,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
   @override
   Widget build(BuildContext context) {
     if (success) {
-      Navigator.of(context).popUntil(ModalRoute.withName("/Page1"));
+      Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
     }
     log("curr user is: " + context.read<ProfileBloc>().state.userr.toString());
     return Scaffold(
@@ -166,6 +166,15 @@ class _PostContentScreenState extends State<PostContentScreen> {
           border: OutlineInputBorder(),
           labelText: s == "c" ? 'Caption???' : "ex: #meme #sermon #God",
         ),
+        onChanged: (val) {
+          if (s == "c") {
+            caption = val;
+            setState(() {});
+          } else if (s != "c") {
+            hashTags = val;
+            setState(() {});
+          }
+        },
       ),
     );
   }
@@ -210,9 +219,10 @@ class _PostContentScreenState extends State<PostContentScreen> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: Container(
-        height: 350,
+        height: 220,
         width: double.infinity,
         child: ListView.builder(
+          scrollDirection: Axis.horizontal,
           itemCount: chs.length,
           itemBuilder: (context, index) {
             Church ch = chs[index];
@@ -261,7 +271,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
       setState(() {});
       final author = context.read<ProfileBloc>().state.userr;
       final Church ch = Church(searchPram: [], name: '', location: '', imageUrl: '', members: {}, events: [], about: '', recentMsgTime: Timestamp.now(), boosted: 0, themePack: 'none');
-      
+
       if (imgF != null) {
         final postImageUrl = await StorageRepository().uploadPostImage(image: imgF!);
 
@@ -276,7 +286,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
             caption: caption,
             likes: 0,
             date: Timestamp.now(),
-            height: 0
+            height: 0, 
         );
 
         await PostsRepository().createPost(post: post);

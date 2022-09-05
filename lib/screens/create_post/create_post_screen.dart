@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -10,7 +11,6 @@ import 'package:kingsfam/helpers/navigator_helper.dart';
 import 'package:kingsfam/helpers/vid_helper.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
 import 'package:kingsfam/screens/create_post/cubit/create_post_cubit.dart';
-
 
 import '../../blocs/auth/auth_bloc.dart';
 import '../../helpers/image_helper.dart';
@@ -29,39 +29,39 @@ class CreatePostScreen extends StatefulWidget {
   //2 make the route function
   static Route route() {
     return MaterialPageRoute(
-        settings: const RouteSettings(name: routeName),
-        builder: (_) => CreatePostScreen(),
-      );
+      settings: const RouteSettings(name: routeName),
+      builder: (_) => CreatePostScreen(),
+    );
   }
 }
 
 class _CreatePostScreenState extends State<CreatePostScreen> {
-
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-        body: SafeArea(
-          child: columnView(),
-        ),
-      );
+      body: SafeArea(
+        child: columnView(),
+      ),
+    );
   }
 
-  // ======================================================================================================================================= 
+  // =======================================================================================================================================
 
-
-   Widget columnView() {
-    return Column( mainAxisAlignment: MainAxisAlignment.center,
+  Widget columnView() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         GestureDetector(
           onTap: () async {
-            final pickedFile = await ImageHelper.pickImageFromGallery(context: context, cropStyle: CropStyle.rectangle, title: "Croping Post");
-            if (pickedFile != null)  {
+            final pickedFile = await ImageHelper.pickImageFromGallery(
+                context: context,
+                cropStyle: CropStyle.rectangle,
+                title: "Croping Post");
+            if (pickedFile != null) {
               // NavHelper().navToImageEditor(context, File(pickedFile.path));
-              NavHelper().navToPostContent(context, File(pickedFile.path), "image");
+              NavHelper().navToPostContent(context, pickedFile, "image");
             }
           },
           child: Row(
@@ -90,31 +90,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         ),
         GestureDetector(
           onTap: () async {
-         
-       
-                showModalBottomSheet(
-                    context: context,
-                    builder: (_) {
-                 
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          CenterdText(text: "GO TURBO"),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(child: Text("~ Trim Video or Go TURBO To Upload Longer Vid's", textAlign: TextAlign.center,)),
-                          ),
-                          Container(
-                              height: 150,
-                              width: double.infinity,
-                              child: SvgPicture.asset("assets/promo_banners/turbo_ad_banner.svg"),
-                              decoration:BoxDecoration(color: Colors.transparent)),
-                        ],
-                      );
-                     });
-
-            
+            final pickedFile = await ImageHelper.pickVideoFromGallery();
+            if (pickedFile != null) {
+              log("we can see that the picked file is not null, moving to the vid editor");
+              NavHelper().navToVideoEditor(context, pickedFile);
+              // NavHelper().navToPostContent(context, pickedFile, 'video');
+            }
           },
           child: Row(
             children: [
@@ -137,6 +118,4 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       ],
     );
   }
-
 }
-        

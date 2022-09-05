@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:kingsfam/helpers/vid_helper.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
@@ -158,6 +159,9 @@ class CustomRoute {
 
       case PostContentScreen.routeName:
         return PostContentScreen.route(args: settings.arguments as PostContentArgs);
+      
+      case VideoEditor.routeName:
+        return VideoEditor.route(settings.arguments as VideoEditorArgs);
 
       default:
         return _errorRoute();

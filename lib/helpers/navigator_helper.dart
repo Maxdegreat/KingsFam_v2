@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:kingsfam/blocs/search/search_bloc.dart';
+import 'package:kingsfam/helpers/vid_helper.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
@@ -32,4 +33,5 @@ class NavHelper {
 
   Future<void> navToPostContent(BuildContext context, File editedImage, String type) => Navigator.of(context).pushNamed(PostContentScreen.routeName, arguments: PostContentArgs(content: editedImage, type: type));
 
+  Future<void> navToVideoEditor(BuildContext context, File vidF) => Navigator.of(context).pushNamed(VideoEditor.routeName, arguments: VideoEditorArgs(file: vidF));
 }

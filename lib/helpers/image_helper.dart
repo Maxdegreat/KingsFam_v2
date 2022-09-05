@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:video_player/video_player.dart';
+import 'package:video_editor/video_editor.dart';
 
 class ImageHelper {
   //IF WE ARE SELECTING A VIDEO FROM GALLERY
@@ -14,17 +14,12 @@ class ImageHelper {
     final pickedFileVideo =
         await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (pickedFileVideo != null) {
-      VideoPlayerController vidController =
-          new VideoPlayerController.file(File(pickedFileVideo.path));
-      vidController.initialize();
-      if (vidController.value.duration <= Duration(seconds: 60)) {
-        return File(pickedFileVideo.path);
-      } else {
-        return null;
-      }
+      // note. when you call picked file for a video in any other screen you should be sure that you call
+      // the vid editor if you would like to edit a vdieo
+      return File(pickedFileVideo.path);
+    } else {
+      return null;
     }
-
-    return null;
   }
 
   //IF WE ARE SLECTING A IMAGE FROM GALLEREY
