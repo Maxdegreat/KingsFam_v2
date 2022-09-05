@@ -33,5 +33,5 @@ class NavHelper {
 
   Future<void> navToPostContent(BuildContext context, File editedImage, String type) => Navigator.of(context).pushNamed(PostContentScreen.routeName, arguments: PostContentArgs(content: editedImage, type: type));
 
-  Future<void> navToVideoEditor(BuildContext context, File vidF) => Navigator.of(context).pushNamed(VideoEditor.routeName, arguments: VideoEditorArgs(file: vidF));
+  // Future<void> navToVideoEditor(BuildContext context, File vidF) => Navigator.of(context).pushNamed(VideoEditor.routeName, arguments: VideoEditorArgs(file: vidF));
 }

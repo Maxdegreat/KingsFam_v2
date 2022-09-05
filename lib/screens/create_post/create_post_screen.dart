@@ -93,8 +93,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             final pickedFile = await ImageHelper.pickVideoFromGallery();
             if (pickedFile != null) {
               log("we can see that the picked file is not null, moving to the vid editor");
-              NavHelper().navToVideoEditor(context, pickedFile);
-              // NavHelper().navToPostContent(context, pickedFile, 'video');
+              //NavHelper().navToVideoEditor(context, pickedFile);
+              NavHelper().navToPostContent(context, pickedFile, 'video');
             }
           },
           child: Row(
