@@ -5,6 +5,7 @@ import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart'
 import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
 import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
+
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/screens/search/more_cm_screen.dart';
 import 'package:kingsfam/screens/search/widgets/show_following.dart';
@@ -154,6 +155,9 @@ class CustomRoute {
       
       case ShowFollowingList.routeName:
         return ShowFollowingList.route(settings.arguments as ShowFollowingListArgs);
+
+      case PostContentScreen.routeName:
+        return PostContentScreen.route(args: settings.arguments as PostContentArgs);
 
       default:
         return _errorRoute();

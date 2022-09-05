@@ -28,6 +28,7 @@ export 'video_call/video_call_screen.dart';
 export '../widgets/url_view.dart'; // granted this is in the widgets folder however it plays very much like a screen
 export 'snack_time/snack_time.dart';
 export 'snack_time/buy_perk.dart';
+export 'package:kingsfam/screens/create_post/post_content_screen.dart';
 
 
 

@@ -66,12 +66,13 @@ dependencies:
   cached_network_image: ^3.0.0
   
   # file_picker: ^4.1.4
+  # image_editor_plus: ^0.1.5 this thing litterly causes my app to crash
   image_cropper: ^1.4.1
   video_player:
 
   shared_preferences: ^2.0.6
 
-  font_awesome_flutter: ^9.1.0
+  font_awesome_flutter: ^10.1.0
   flare_flutter: ^3.0.2
   rive: ^0.7.22
   

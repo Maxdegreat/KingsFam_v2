@@ -1,12 +1,17 @@
 // used to help decluter pages for navigation
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:kingsfam/blocs/search/search_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
+
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/screens/search/more_cm_screen.dart';
-import 'package:kingsfam/screens/search/widgets/show_following.dart';
+
+import '../screens/search/widgets/show_following.dart';
+
 
 class NavHelper {
   Future<void> navToSnackBar(context) => Navigator.of(context).pushNamed(SnackTimeShopScreen.routeName);
@@ -23,6 +28,8 @@ class NavHelper {
 
   Future<void> navToShowFollowing(BuildContext context, String usrIdToViewFollowing, ProfileBloc profileBloc, BuildContext ctxFromPf, String type) => Navigator.of(context).pushNamed(ShowFollowingList.routeName, arguments: ShowFollowingListArgs(usrId: usrIdToViewFollowing, bloc: profileBloc, ctxFromPf: ctxFromPf, type: type ));
 
-  //Future<void> navToShowFollowers(BuildContext context,) => Navigator.of(context).pushNamed(routeName);
+  // Future<void> navToImageEditor(BuildContext context, File file) => Navigator.of(context).pushNamed(ImageEditorExample.routeName, arguments: ImageEditorArgs(file: file));
+
+  Future<void> navToPostContent(BuildContext context, File editedImage, String type) => Navigator.of(context).pushNamed(PostContentScreen.routeName, arguments: PostContentArgs(content: editedImage, type: type));
 
 }

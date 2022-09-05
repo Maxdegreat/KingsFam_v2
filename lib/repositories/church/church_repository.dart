@@ -68,22 +68,45 @@ class ChurchRepository extends BaseChurchRepository {
   // }
 
   Future<List<Church>> getCommuinitysUserIn(
-      {required String userrId, required int limit}) async {
+      {required String userrId,
+      required int limit,
+      String? lastStringId}) async {
     try {
-      await Future.delayed(Duration(seconds: 1));
-      List<Church> bucket = [];
-      DocumentReference userRef =
-          FirebaseFirestore.instance.collection(Paths.users).doc(userrId);
-      var querys = await fb
-          .where('members.$userrId.userReference', isEqualTo: userRef)
-          .limit(limit)
-          .get(); //'members.$currId.userReference', isEqualTo: userRef
-      for (var snap in querys.docs) {
-        var ch = await Church.fromDoc(snap);
-        bucket.add(ch);
-      }
+      if (lastStringId == null) {
+        List<Church> bucket = [];
+        DocumentReference userRef =
+            FirebaseFirestore.instance.collection(Paths.users).doc(userrId);
+        var querys = await fb
+            .where('members.$userrId.userReference', isEqualTo: userRef)
+            .limit(limit)
+            .get(); //'members.$currId.userReference', isEqualTo: userRef
+        for (var snap in querys.docs) {
+          var ch = await Church.fromDoc(snap);
+          bucket.add(ch);
+        }
 
-      return bucket;
+        return bucket;
+      } else {
+        // get the last doc
+        var lastDocSnap = await FirebaseFirestore.instance
+            .collection(Paths.church)
+            .doc(lastStringId)
+            .get();
+        List<Church> bucket = [];
+        DocumentReference userRef =
+            FirebaseFirestore.instance.collection(Paths.users).doc(userrId);
+        var querys = await fb
+            .where('members.$userrId.userReference', isEqualTo: userRef)
+            .startAfterDocument(lastDocSnap)
+            .limit(limit)
+            .get(); //'members.$currId.userReference', isEqualTo: userRef
+        for (var snap in querys.docs) {
+          var ch = await Church.fromDoc(snap);
+          bucket.add(ch);
+        }
+
+        return bucket;
+      }
     } catch (err) {
       log(err.toString());
     }
@@ -229,7 +252,6 @@ class ChurchRepository extends BaseChurchRepository {
   // ignore: override_on_non_overriding_member
   Future<List<Church>> grabChurchWithLocation(
       {required String location, int limit = 3, String? lastPostId}) async {
-
     final QuerySnapshot<Map<String, dynamic>> churches;
     if (lastPostId == null) {
       churches = await FirebaseFirestore.instance
@@ -325,8 +347,10 @@ class ChurchRepository extends BaseChurchRepository {
           .get();
 
       churchSnap = await FirebaseFirestore.instance
-          .collection(Paths.church).orderBy("location")
-          .where('location', isNotEqualTo: location).startAfterDocument(lastDocSnap)
+          .collection(Paths.church)
+          .orderBy("location")
+          .where('location', isNotEqualTo: location)
+          .startAfterDocument(lastDocSnap)
           .limit(limit)
           .get();
 

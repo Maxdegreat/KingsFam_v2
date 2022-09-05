@@ -1,65 +1,32 @@
 part of 'create_post_cubit.dart';
 
-enum CreatePostStatus { initial, preview, submitting, success, error }
-
 class CreatePostState extends Equatable {
-  //1
-  File? imageFile; //  bc we are changing the post image
-  File? videoFile;
-  String? caption; //because we are changing the caption
-  final bool isRecording;
-  String? selectedCommuinityId;
-  PrePost? prePost;
-  final CreatePostStatus status; //for different times in the sinario
-  final Failure failure; //for failures
-  //2
-  CreatePostState({
-    this.imageFile,
-    this.videoFile,
-    this.caption,
-    this.prePost,
-    this.selectedCommuinityId,
-    required this.isRecording,
-    required this.status,
-    required this.failure,
-  });
-  //5
-  factory CreatePostState.initial() {
-    return CreatePostState(
-        imageFile: null,
-        videoFile: null,
-        caption: null,
-        selectedCommuinityId: null,
-        prePost: null,
-        isRecording: false,
-        status: CreatePostStatus.initial,
-        failure: Failure());
+  final File? imgF;
+  final File? vidF;
+  final String caption;
+  final String hashTags;
+  
+  const CreatePostState({ required this.imgF, required  this.vidF, required  this.caption, required  this.hashTags});
+
+  factory CreatePostState.inital() {
+    return CreatePostState(imgF: null, vidF: null, caption: "", hashTags: "");
   }
 
-  //3
   @override
-  List<Object?> get props => [videoFile, imageFile, selectedCommuinityId, prePost, caption, status, failure, isRecording];
+  List<Object?> get props => [imgF, vidF, caption, hashTags];
 
-  //4
   CreatePostState copyWith({
-    File? imageFile,
-    File? videoFile,
+    File? imgF,
+    File? vidF,
     String? caption,
-    PrePost? prePost,
-    String? selectedCommuinityId,
-    bool? isRecording,
-    CreatePostStatus? status,
-    Failure? failure,
+    String? hashTags,
   }) {
     return CreatePostState(
-      imageFile: imageFile ?? this.imageFile, // ---------> so i will del the value of this.imagFile and this.videofile
-      videoFile: videoFile ?? this.videoFile, // ---------> I do this because I need to rewrite and the copy with does not allow this
-      caption: caption ?? this.caption,      
-      selectedCommuinityId: selectedCommuinityId ?? this.selectedCommuinityId, //            The rewrite is done in the cubit function, I will change the value of state.file to null
-      prePost: prePost ?? this.prePost,
-      isRecording: isRecording ?? this.isRecording, //      will be seen when I do the onClear... atm called onRemovePostContent
-      status: status ?? this.status,
-      failure: failure ?? this.failure,
+      imgF: imgF ?? this.imgF,
+      vidF: vidF ?? this.vidF,
+      caption: caption ?? this.caption,
+      hashTags: hashTags ?? this.hashTags
     );
   }
 }
+

@@ -82,7 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         //  ScaffoldMessenger.of(context).showSnackBar(snackBar);
         context.read<ProfileBloc>()
           ..add(ProfilePaginatePosts(
-              userId: context.read<AuthBloc>().state.user!.uid));
+              userId: context.read<AuthBloc>().state.user!.uid)); // ----------------- TODO This is why ur pag does not work properly. use a dynamic id. cant pag someone else w/ ur id
         log("HEY I AM CALLING A PAGINATION MAX!!!");
       }
     }
