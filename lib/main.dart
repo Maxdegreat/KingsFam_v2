@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:kingsfam/blocs/search/search_bloc.dart';
 import 'package:kingsfam/blocs/simple_bloc_observer.dart';
 import 'package:kingsfam/config/custum_router.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
+import 'package:kingsfam/helpers/payment_helper.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/cubit/calls_home_cubit.dart';
@@ -27,6 +29,8 @@ void main() async {
   // lets keep the splash till app is one initializing
   MobileAds.instance.initialize();
   await Firebase.initializeApp();
+  Stripe.publishableKey = StripeParishableKey;
+  await Stripe.instance.applySettings();
 
   EquatableConfig.stringify = kDebugMode;
   Bloc.observer = SimpleBlocObserver();
@@ -42,14 +46,17 @@ class MyApp extends StatelessWidget {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<ChurchRepository>(create: (_) => ChurchRepository()),
-        RepositoryProvider<KingsCordRepository>(create: (_) => KingsCordRepository()),
+        RepositoryProvider<KingsCordRepository>(
+            create: (_) => KingsCordRepository()),
         RepositoryProvider<ChatRepository>(create: (_) => ChatRepository()),
         RepositoryProvider<AuthRepository>(create: (_) => AuthRepository()),
         RepositoryProvider<UserrRepository>(create: (_) => UserrRepository()),
-        RepositoryProvider<StorageRepository>(create: (_) => StorageRepository()),
+        RepositoryProvider<StorageRepository>(
+            create: (_) => StorageRepository()),
         RepositoryProvider<PostsRepository>(create: (_) => PostsRepository()),
         RepositoryProvider<CallRepository>(create: (_) => CallRepository()),
-        RepositoryProvider<NotificationRepository>(create: (_) => NotificationRepository()),
+        RepositoryProvider<NotificationRepository>(
+            create: (_) => NotificationRepository()),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -61,8 +68,7 @@ class MyApp extends StatelessWidget {
               create: (context) => SearchBloc(
                   userrRepository: context.read<UserrRepository>(),
                   churchRepository: context.read<ChurchRepository>(),
-                  authBloc: context.read<AuthBloc>())
-                ),
+                  authBloc: context.read<AuthBloc>())),
           BlocProvider<LikedPostCubit>(
             create: (context) => LikedPostCubit(
                 postsRepository: context.read<PostsRepository>(),
@@ -74,13 +80,14 @@ class MyApp extends StatelessWidget {
                     userrRepository: context.read<UserrRepository>(),
                     authBloc: context.read<AuthBloc>(),
                   )),
-           BlocProvider<BuildchurchCubit>( // TODO                                        PLEASE NOTE THIS DOES NOT NEED TO BE A GLOBAL THING. NOTE IT IS USED IN CM SCREEN ON A GLOBAL SCOPE BUT IT CAN BE REFACTORED.
-               create: (context) => BuildchurchCubit(
-                   callRepository: context.read<CallRepository>(),
-                   churchRepository: context.read<ChurchRepository>(),
-                   storageRepository: context.read<StorageRepository>(),
-                   authBloc: context.read<AuthBloc>(),
-                   userrRepository: context.read<UserrRepository>())),
+          BlocProvider<BuildchurchCubit>(
+              // TODO                                        PLEASE NOTE THIS DOES NOT NEED TO BE A GLOBAL THING. NOTE IT IS USED IN CM SCREEN ON A GLOBAL SCOPE BUT IT CAN BE REFACTORED.
+              create: (context) => BuildchurchCubit(
+                  callRepository: context.read<CallRepository>(),
+                  churchRepository: context.read<ChurchRepository>(),
+                  storageRepository: context.read<StorageRepository>(),
+                  authBloc: context.read<AuthBloc>(),
+                  userrRepository: context.read<UserrRepository>())),
           BlocProvider<BottomnavbarCubit>(
             create: (context) => BottomnavbarCubit(),
           ),
@@ -97,15 +104,17 @@ class MyApp extends StatelessWidget {
                   storageRepository: context.read<StorageRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   userrRepository: context.read<UserrRepository>())),
-           BlocProvider<ProfileBloc>(
-             create: (context) => ProfileBloc(
-              chatRepository: context.read<ChatRepository>(),
-                 userrRepository: context.read<UserrRepository>(),
-                 authBloc: context.read<AuthBloc>(),
-                 postRepository: context.read<PostsRepository>(),
-                 likedPostCubit: context.read<LikedPostCubit>(),
-                 churchRepository: context.read<ChurchRepository>())..add(ProfileLoadUserr(userId: context.read<AuthBloc>().state.user!.uid)),
-           ),
+          BlocProvider<ProfileBloc>(
+            create: (context) => ProfileBloc(
+                chatRepository: context.read<ChatRepository>(),
+                userrRepository: context.read<UserrRepository>(),
+                authBloc: context.read<AuthBloc>(),
+                postRepository: context.read<PostsRepository>(),
+                likedPostCubit: context.read<LikedPostCubit>(),
+                churchRepository: context.read<ChurchRepository>())
+              ..add(ProfileLoadUserr(
+                  userId: context.read<AuthBloc>().state.user!.uid)),
+          ),
         ],
         child: MaterialApp(
           //THEME DATA

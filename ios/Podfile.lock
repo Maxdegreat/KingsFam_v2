@@ -564,6 +564,27 @@ PODS:
   - sqflite (0.0.2):
     - Flutter
     - FMDB (>= 2.7.5)
+  - Stripe (22.7.1):
+    - Stripe/Stripe3DS2 (= 22.7.1)
+    - StripeApplePay (= 22.7.1)
+    - StripeCore (= 22.7.1)
+    - StripeUICore (= 22.7.1)
+  - Stripe/Stripe3DS2 (22.7.1):
+    - StripeApplePay (= 22.7.1)
+    - StripeCore (= 22.7.1)
+    - StripeUICore (= 22.7.1)
+  - stripe_ios (0.0.1):
+    - Flutter
+    - Stripe (~> 22.7.0)
+    - StripeFinancialConnections (~> 22.7.0)
+  - StripeApplePay (22.7.1):
+    - StripeCore (= 22.7.1)
+  - StripeCore (22.7.1)
+  - StripeFinancialConnections (22.7.1):
+    - StripeCore (= 22.7.1)
+    - StripeUICore (= 22.7.1)
+  - StripeUICore (22.7.1):
+    - StripeCore (= 22.7.1)
   - TOCropViewController (2.6.1)
   - url_launcher (0.0.1):
     - Flutter
@@ -591,6 +612,7 @@ DEPENDENCIES:
   - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
   - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
+  - stripe_ios (from `.symlinks/plugins/stripe_ios/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
   - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/ios`)
   - video_thumbnail (from `.symlinks/plugins/video_thumbnail/ios`)
@@ -626,6 +648,11 @@ SPEC REPOS:
     - PromisesObjC
     - SDWebImage
     - SDWebImageWebPCoder
+    - Stripe
+    - StripeApplePay
+    - StripeCore
+    - StripeFinancialConnections
+    - StripeUICore
     - TOCropViewController
 
 EXTERNAL SOURCES:
@@ -663,6 +690,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sign_in_with_apple/ios"
   sqflite:
     :path: ".symlinks/plugins/sqflite/ios"
+  stripe_ios:
+    :path: ".symlinks/plugins/stripe_ios/ios"
   url_launcher:
     :path: ".symlinks/plugins/url_launcher/ios"
   video_player_avfoundation:
@@ -717,6 +746,12 @@ SPEC CHECKSUMS:
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
   sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
+  Stripe: fb29a476e4866fec4ef22fb76207363dd32795aa
+  stripe_ios: a0caca0ef103a32909183c62a652a91a0773b443
+  StripeApplePay: 09955cdf3f49b367af2feadd9c5b3bddb35446c0
+  StripeCore: 39ea580c26ccc324fb9671288a2ae21114e54dca
+  StripeFinancialConnections: 0e1d638388572d52ce829416fbc7b0af2bde3865
+  StripeUICore: eed17e95a4517fc02482e250a6422c2a81a14ce8
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
   video_player_avfoundation: e489aac24ef5cf7af82702979ed16f2a5ef84cff
