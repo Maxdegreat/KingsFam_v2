@@ -107,8 +107,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   //TODO FOR OPTIMIZE YOU CAN MAKE A SET. IF LASTPOSTID HAS BEEN SEEN THEN DO NOT EVEN ENTER FUNCTIONS THAT WILL DO READS.
   Stream<ProfileState> _mapProfilePaginatePost(
       ProfilePaginatePosts event) async* {
-    log('PAGINATEEEEEEEEEEEE PFP BLOCCCCCCCCCCCC POSTSSSSSSSSSSSSSSS');
-    log('PAGINATEEEEEEEEEEEE PFP BLOCCCCCCCCCCCC POSTSSSSSSSSSSSSSSS');
     yield state.copyWith(status: ProfileStatus.paginating);
     try {
       Stream<List<Future<Post?>>> posts;
@@ -256,14 +254,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
 
       if (chatRef.docs.length > 0) {
-        log("in the if statment. This means that chat doc .length is greater than 0");
         chatDoc = chatRef.docs[0];
         Chat chat = await Chat.fromDoc(chatDoc);
-        log("The chat: ${chat.id}");
         if (chat.id != null)
           Navigator.of(event.ctx).pushNamed(ChatRoom.routeName, arguments: ChatRoomArgs(chat: chat));
         else
-          log("CHAT.ID == NULL CHAT.ID == NULL CHAT.ID == NULL CHAT.ID == NULL CHAT.ID == NULL");
           yield state.copyWith(status: ProfileStatus.error, failure: Failure(message: "The chat.id was null"));
       
       } else {

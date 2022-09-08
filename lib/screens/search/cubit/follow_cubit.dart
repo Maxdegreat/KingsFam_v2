@@ -16,13 +16,11 @@ class FollowCubit extends Cubit<FollowState> {
   //  ---------------- methods --------------------
   Future<void> getFollowing({required String userId, required String? lastStringId}) async {
     var lst = await _userrRepository.followingList(currUserId: userId, lastStringId: lastStringId);
-    log("The last id is: $lastStringId, len of the lst is ${lst.length} -- from followCubit.dart");
     emit(state.copyWith(following: List<Userr>.from(state.following)..addAll(lst)));
   }
 
   Future<void> getFollowers({required String userId, required String? lastStringId}) async {
     var lst = await _userrRepository.followerList(currUserId: userId, lastStringId: lastStringId);
-    log("The last id is: $lastStringId, len of the lst is ${lst.length} -- from followCubit.dart");
     emit(state.copyWith(followers: List<Userr>.from(state.followers)..addAll(lst)));
   }
 

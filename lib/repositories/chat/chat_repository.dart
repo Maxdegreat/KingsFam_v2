@@ -19,7 +19,6 @@ class ChatRepository extends BaseChatRepository {
   Future<Chat?> createChat({required Chat chat, bool? shouldPassBackChat, BuildContext? ctx}) async {
   
     if (shouldPassBackChat == true) {
-      log("77777777777777777777777777777");
       _firebaseFirestore.collection(Paths.chats).add(chat.toDoc()).then((value) async {
         final chatdoc = await value.get();
         var newChat = await Chat.fromDoc(chatdoc);

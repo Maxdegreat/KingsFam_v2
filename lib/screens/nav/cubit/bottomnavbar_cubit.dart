@@ -12,7 +12,6 @@ class BottomnavbarCubit extends Cubit<BottomnavbarState> {
       : super(BottomnavbarState(selectedItem: BottomNavItem.chats));
 
   void setVidCtrl(VideoPlayerController vidCtrl) {
-    log("77777777777777777777777777777777777777777777777777");
     emit(state.copyWith(vidCtrl: vidCtrl));
   }
   

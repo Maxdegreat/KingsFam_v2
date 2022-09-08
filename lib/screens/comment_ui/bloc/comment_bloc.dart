@@ -49,7 +49,6 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
         .getPostComments(postId: event.post!.id!)
         .listen((comments) async {
         final allComments = await Future.wait(comments);
-        // log(allComments.toString());
         add(CommentUpdateComments(comments: allComments, post: event.post));
       });
     } catch (e) {
@@ -59,7 +58,6 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
 
   Stream<CommentState> _mapCommentUpdateComments(CommentUpdateComments event) async* {
       yield CommentLoaded(post: event.post, comments: event.comments);
-    log(event.comments.length.toString());
   }
 
   Stream<CommentState> _mapCommentPostComent(CommentPostComment event) async* {

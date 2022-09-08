@@ -66,7 +66,10 @@ class _ChatsScreenState extends State<ChatsScreen>
           });
         }, onAdFailedToLoad: (ad, error) {
           ad.dispose();
+          log("!!!!!!!!!!!!!!!!!! - bottom Ad Error - !!!!!!!!!!!!!!!!!!!!!!!!!");
           log("chatsScreen ad error: ${error.toString()}");
+          log("!!!!!!!!!!!!!!!!!! - bottom Ad Error - !!!!!!!!!!!!!!!!!!!!!!!!!");
+
         }),
         request: AdRequest());
     _bottomBannerAd.load();

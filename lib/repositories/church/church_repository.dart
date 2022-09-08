@@ -43,10 +43,10 @@ class ChurchRepository extends BaseChurchRepository {
         .where('members.$currId.userReference', isEqualTo: userRef)
         .snapshots()
         .map((snap) {
-      log("in the snnap map");
+     
       List<Future<Church?>> chs = [];
       snap.docs.forEach((doc) async {
-        log("got a doc");
+       
         Future<Church> ch = Church.fromDoc(doc);
         chs.add(ch);
       });
@@ -467,12 +467,10 @@ class ChurchRepository extends BaseChurchRepository {
   }
 
   void updateUserTimestampOnOpenCm(Church cm, String usrId) {
-    log("in updateUserTimestampOnOpenCm: usrId = $usrId");
     Map<String, dynamic> memsMap = {};
     var memListFromCm = cm.members.keys.toList();
 
     for (int i = 0; i < cm.members.keys.length; i++) {
-      log("currId in loop = ${memListFromCm[i].id}");
       if (memListFromCm[i].id == usrId) {
         memsMap[memListFromCm[i].id] = {
           'timestamp': Timestamp.now(),

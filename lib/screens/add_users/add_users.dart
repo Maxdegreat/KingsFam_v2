@@ -167,7 +167,6 @@ class _AddUsersState extends State<AddUsers> {
                                         itemCount: state.users.length,
                                         itemBuilder:
                                             (BuildContext context, int index) {
-                                          log("The len of users is ${state.users.length}");
                                           Userr user = state.users[index];
                                           return Padding(
                                             padding: EdgeInsets.symmetric(

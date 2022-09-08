@@ -751,7 +751,6 @@ class _CommuinityScreenState extends State<CommuinityScreen>
       for (int i = 0; i < widget.commuinity.members.length; i++) {
         if (lst[i].id == context.read<AuthBloc>().state.user!.uid) {
           currUsr = lst[i];
-          log("found the informatjion we were looking gor and rhis is me tping ewithout thinkting at all as ig you lweant to see how sgas ttla dcaion tipa rt;his is my true speds");
           break;
         } 
       }
@@ -964,8 +963,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     //widget.commuinity.memberInfo[context.read<AuthBloc>().state.user!.uid]['isAdmin']
     String role = memberInfo[currUserr]['role'];
     cmActions.Actions hasPermissions = cmActions.Actions();
-    log("message");
-    log("The role at start is $role");
+
     return IconButton(
       icon: Icon(Icons.more_vert),
       onPressed: () async {

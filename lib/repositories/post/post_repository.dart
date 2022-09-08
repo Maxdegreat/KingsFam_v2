@@ -32,7 +32,6 @@ class PostsRepository extends BasePostsRepository {
         .doc(comment.postId)
         .collection(Paths.postsComments)
         .add(comment.toDoc());
-        log("added comment to firestore");
         if (post != null) {
           final notification = NotificationKF(
             fromUser: comment.author, 

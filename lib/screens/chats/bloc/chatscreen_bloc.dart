@@ -109,8 +109,6 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
           .getUserChats(userId: _authBloc.state.user!.uid)
           .listen((chat) async {
         final allChats = await Future.wait(chat);
-        log("SOMETHING CLEARRRRRRRRRRRRRRRRRRRRRRR");
-        log("the len of all chats: ${allChats.length}");
         emit(state.copyWith(chat: allChats));
       });
       add(LoadCms());

@@ -73,7 +73,6 @@ class ScreensForPageView {
 
                                     var usersrecentTime =
                                         commuinity.members[state.currUserr];
-                                    log(usersrecentTime.toString());
                                     int? compraeTimes = commuinity.recentMsgTime
                                         .compareTo(
                                             usersrecentTime['timestamp']);

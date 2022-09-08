@@ -67,7 +67,6 @@ class _VideoPostView16_9State extends State<VideoPostView16_9> {
   
   void listenToTabBarChanges() {
     if (widget.tabCtrl!= null && widget.tabCtrl!.index != 0) {
-      log("The video is pausing because the tabctrl is now != 0");
       widget.controller.pause();
     }
   }

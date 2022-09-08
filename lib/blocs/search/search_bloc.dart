@@ -100,13 +100,13 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     List<Church>? updatedCms = [];
     final String? lastCmId =
         state.chruchesNotEqualLocation.isNotEmpty ? state.chruchesNotEqualLocation.last.id : null;
-    log("the last cmId: $lastCmId");
+    // log("the last cmId: $lastCmId");
     if (lastCmId != null) {
       newCms = await _churchRepository.grabChurchAllOver(
           location: state.user.location, limit: 4, lastPostId: lastCmId);
-      log("new cms: ${newCms.length}");
+      // log("new cms: ${newCms.length}");
       updatedCms = state.chruchesNotEqualLocation..addAll(newCms);
-      log("updated cms len is: ${updatedCms.length}");
+      // log("updated cms len is: ${updatedCms.length}");
       yield state.copyWith(chruchesNotEqualLocation: updatedCms, status: SearchStatus.initial);
     }
   }

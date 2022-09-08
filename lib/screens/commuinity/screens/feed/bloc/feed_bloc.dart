@@ -43,7 +43,6 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     try {
       final posts =
           await _postsRepository.getCommuinityFeed(commuinityId: commuinityId);
-      log("likes commuinity: ${posts.first!.likes}");
 
       _likedPostCubit.clearAllLikedPosts();
       //Set<String?> postIds = posts.map((e) => e != null ? e.id : "").toSet();
@@ -86,7 +85,6 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   Stream<FeedState> _mapFeedPaginatePosts() async* {
    yield state.copyWith(status: FeedStatus.paginating);
     try {
-      log("PLEASEEEEEEEE DELLLLLLLLLL UR LOGSSSSSSSSSS");
       final lastPostId = state.posts.isNotEmpty ? state.posts.last!.id : null;
       final posts = await _postsRepository.getUserFeed(
           userId: _authBloc.state.user!.uid, lastPostId: lastPostId, limit: 8);

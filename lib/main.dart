@@ -4,11 +4,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/blocs/search/search_bloc.dart';
 import 'package:kingsfam/blocs/simple_bloc_observer.dart';
+import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/custum_router.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/repositories/repositories.dart';
@@ -30,6 +32,8 @@ void main() async {
 
   EquatableConfig.stringify = kDebugMode;
   Bloc.observer = SimpleBlocObserver();
+  Stripe.publishableKey = stripeParishableKeyTest;
+  //await Stripe.instance.applySettings();
   runApp(MyApp());
 }
 
