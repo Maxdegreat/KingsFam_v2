@@ -149,7 +149,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     Color backgoundColor = Colors.black;
     if (state.themePack != "none") {
       if (state.themePack == "assets/cm_backgrounds/2.svg") {
-        log("theme pack contains 1.svg");
+        // log("theme pack contains 1.svg");
         primaryColor = Colors.pink[700]!;
         secondaryColor = Colors.blue[700]!;
         backgoundColor = Color.fromARGB(255, 4, 34, 78);
@@ -644,14 +644,14 @@ class _CommuinityScreenState extends State<CommuinityScreen>
       for (int i = 0; i<widget.commuinity.members.length; i++) {
         if (lst[i].id == context.read<AuthBloc>().state.user!.uid) {
           currUsr = lst[i];
-          log("found the informatjion we were looking gor and rhis is me tping ewithout thinkting at all as ig you lweant to see how sgas ttla dcaion tipa rt;his is my true speds");
+          // log("found the informatjion we were looking gor and rhis is me tping ewithout thinkting at all as ig you lweant to see how sgas ttla dcaion tipa rt;his is my true speds");
           break;
         } 
       }
       String? currRole = widget.commuinity.members.containsKey(currUsr) ?
         widget.commuinity.members[currUsr]["role"] : null;
-        log("cur role is: $currRole");
-        log("users info is: ${widget.commuinity.members[currUsr]}");
+        // log("cur role is: $currRole");
+        // log("users info is: ${widget.commuinity.members[currUsr]}");
       if ((currRole != null && currRole == Roles.Owner) ||
         (currRole != null && actions.hasAccess(role: currRole, action: cmActions.Actions.communityActions[4]))) {
         return GestureDetector(

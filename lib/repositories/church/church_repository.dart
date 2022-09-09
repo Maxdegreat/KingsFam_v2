@@ -441,8 +441,7 @@ class ChurchRepository extends BaseChurchRepository {
     return;
   }
 
-  Future<Stream<bool>> streamIsCmMember(
-      {required Church cm, required String authorId}) async {
+  Future<Stream<bool>> streamIsCmMember({required Church cm, required String authorId}) async {
     final doc = await fb.doc(cm.id).get();
 
     Set<String> memIds = Church.getCommunityMemberIds(doc);

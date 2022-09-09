@@ -32,9 +32,15 @@ class AuthRepository extends BaseAuthRepository {
         _firebaseAuth = firebaseAuth ?? auth.FirebaseAuth.instance,
         _messaging = messaging ?? FirebaseMessaging.instance;
 
+  bool? isNew;
   @override
   Stream<auth.User?> get user => _firebaseAuth.userChanges();
+  Stream<bool?> get isNewUser {
+    return Stream.value(true);
+  }
   auth.User? currUser;
+  
+
 
   //                                                           Save a users new token to a the database
   Future<void> saveTokenToDatabase(String token) async {
@@ -106,6 +112,10 @@ class AuthRepository extends BaseAuthRepository {
     }
   }
 
+  // if user was new reset the var userisNew = null. so that if log out and in all in one session the app wont bug out.
+  void resetNewIsUserNew() {
+  }
+
   //log out of app
   @override
   Future<void> logout() async {
@@ -125,6 +135,7 @@ class AuthRepository extends BaseAuthRepository {
 
   @override
   Future<auth.User?> signInWithGoogle() async {
+   
     auth.User? user;
     //trigger auth flow
     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
@@ -147,7 +158,8 @@ class AuthRepository extends BaseAuthRepository {
       final List<String> usernameSearchCase =
           AdvancedQuerry().advancedSearch(query: googleUser.displayName!);
 
-      if (userCredential.additionalUserInfo!.isNewUser) {
+      if (userCredential.additionalUserInfo != null && userCredential.additionalUserInfo!.isNewUser) {
+       
         String? token = await _messaging.getToken();
         _firebaseFirestore.collection(Paths.users).doc(user!.uid).set({
           'profileImage': user.photoURL,
@@ -193,6 +205,7 @@ String sha256ofString(String input) {
 
 Future<auth.User?> signInWithApple(BuildContext context) async {
   try {
+     
     // To prevent replay attacks with the credential returned from Apple, we
   // include a nonce in the credential request. When signing in with
   // Firebase, the nonce in the id token returned by Apple, is expected to
@@ -214,12 +227,14 @@ Future<auth.User?> signInWithApple(BuildContext context) async {
     idToken: appleCredential.identityToken,
     rawNonce: rawNonce,
   );
+  
 
   // make the user to be returned.
   final auth.UserCredential userCredential = await _firebaseAuth.signInWithCredential(oauthCredential);
   currUser = userCredential.user;
 
-  // make the Userr model
+  if (userCredential.additionalUserInfo != null && userCredential.additionalUserInfo!.isNewUser) {
+    
   _firebaseFirestore.collection(Paths.users).doc(currUser!.uid).set({
        'profileImage': null,
        'username': formatUsername(null, currUser!.uid),
@@ -229,6 +244,7 @@ Future<auth.User?> signInWithApple(BuildContext context) async {
        'token': [],
        'colorPref': '#9814F4'
      });
+  }
 
       String? token = await FirebaseMessaging.instance.getToken();
       await saveTokenToDatabase(token!);

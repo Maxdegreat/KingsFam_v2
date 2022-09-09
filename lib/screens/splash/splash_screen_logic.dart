@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
@@ -25,6 +27,13 @@ class SplashScreen extends StatelessWidget {
           //go to login Screen
           Navigator.pushNamed(context, LoginScreen.routeName);
         } else if (state.status == AuthStatus.authenticated) {
+          if (state.isUserNew == true) {
+            log("Working intergration of new user checking +=================================");
+            log(state.isUserNew.toString());
+          } else {
+            log("SO NOT A WORKING MODAL???? -=================================");
+            log(state.isUserNew.toString());
+          }
           //go to Nav screen
           Navigator.pushNamed(context, NavScreen.routeName);
         } 

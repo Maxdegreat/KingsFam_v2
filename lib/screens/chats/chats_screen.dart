@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -7,16 +8,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/navigator_helper.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
+import 'package:kingsfam/models/chat_model.dart';
 import 'package:kingsfam/models/church_kingscord_model.dart';
 import 'package:kingsfam/models/church_model.dart';
+import 'package:kingsfam/screens/chat_room/chat_room.dart';
+
 //import 'package:firebase_messaging/firebase_messaging.dart';
 //import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
-import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
-import 'package:kingsfam/screens/screens.dart';
+import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
+
 import 'package:kingsfam/widgets/chats_view_widgets/screens_for_page_view.dart';
 import 'package:kingsfam/widgets/kf_crown_v2.dart';
 import 'package:kingsfam/widgets/videos/asset_video.dart';
@@ -107,16 +112,60 @@ class _ChatsScreenState extends State<ChatsScreen>
     }
   }
 
+  Future<void> setupInteractedMessage() async {
+    // Get any messages which caused the application to open from
+    // a terminated state.
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+
+    // If the message also contains a data property with a "type" of "chat",
+    // navigate to a chat screen
+    if (initialMessage != null) {
+      _handleMessage(initialMessage);
+    }
+
+    // Also handle any interaction when the app is in the background via a
+    // Stream listener
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+  }
+
+
+  Future<void> _handleMessage(RemoteMessage message) async {
+    // log("MESSAGE.DATA['TYPE'] IS OF VAL: "  + message.data['type'].toString());
+     if (message.data['type'] == 'kc_type') {
+     log(message.data.toString());
+      // type: kc_type has a cmId and a kcId. see cloud functions onMentionedUser for reference
+      // var snap = await FirebaseFirestore.instance.collection(Paths.church).doc(message.data['cmId']).collection(Paths.kingsCord).doc(message.data['kcId']).get();
+      var snap = await FirebaseFirestore.instance.collection(Paths.church).doc(message.data['cmId']).get();
+
+      if (!snap.exists) {log("SNAP DOES NOT EXIST OF TYPE kc_type -> RETURNING"); return;} 
+      // KingsCord? kc = KingsCord.fromDoc(snap);
+      Church? cm = await Church.fromDoc(snap);
+      // ignore: unnecessary_null_comparison
+      if (cm != null) {
+        // log ("PROOF U CAN GET THE KC STILL: " + kc.cordName);
+        Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: cm));
+        return ;
+      }
+      return ;
+     } else if (message.data['type'] == 'directMsg_type') {
+      var snap = await FirebaseFirestore.instance.collection(Paths.chats).doc(message.data['chatId']).get();
+
+      if (!snap.exists) {log("SNAP DOES NOT EXIST OF TYPE directMsg_type -> RETURNING");}
+      Chat? chat = await Chat.fromDoc(snap);
+      // ignore: unnecessary_null_comparison
+      if (chat != null) {
+        Navigator.of(context).pushNamed(ChatsScreen.routeName, arguments: ChatRoomArgs(chat: chat));
+        return ;
+      }
+     }
+     return ;
+  }
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
-    _perkedVideoPlayerController = VideoPlayerController.asset(
-      "assets/promo_assets/Perked-2.mp4",
-      videoPlayerOptions: VideoPlayerOptions(
-        mixWithOthers: true,
-      ),
-    )
+    _perkedVideoPlayerController = VideoPlayerController.asset("assets/promo_assets/Perked-2.mp4", videoPlayerOptions: VideoPlayerOptions( mixWithOthers: true, ),)
       ..addListener(() => setState(() {}))
       ..setLooping(true) // -------------------------------- SET PERKED LOOPING TO TRUE
       ..initialize().then((_) {
@@ -125,6 +174,7 @@ class _ChatsScreenState extends State<ChatsScreen>
       });
     _tabController.addListener(() => setState(() {}));
     _createBottomBannerAd();
+    setupInteractedMessage();
     //super.build(context);
   }
 

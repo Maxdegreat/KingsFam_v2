@@ -1,3 +1,5 @@
+// i always forget the command. this is how you deploy functions in firebase: firebase deploy --only functions
+// or $ firebase deploy --only functions:func1,functions:func2
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const { user } = require("firebase-functions/v1/auth");
@@ -174,15 +176,16 @@ exports.onFollowUserr = functions.firestore.document("/followers/{userrId}/userF
             'body': snap.messageBody,
           },
           'data': {
+            'kcId': String(snap.type_id),
             'type': String(snap.type),
-            'id': String(snap.type_id),
-            'tag': String(snap.type_tag),
-            'cordName': String(snap.type_cordName),
-            'recentSender': String(snap.type_recentSender),
-            'recentMessage': String(snap.type_recentMessage),
-            'members': String(snap.type_members),
-            'communityName': String(snap.communityName),
-            'communityId': String(communityId)
+            'cmId': communityId,
+            //'tag': String(snap.type_tag),
+            //'cordName': String(snap.type_cordName),
+            //'recentSender': String(snap.type_recentSender),
+            //'recentMessage': String(snap.type_recentMessage),
+            //'members': String(snap.type_members),
+            //'communityName': String(snap.communityName),
+            //'communityId': String(communityId)
           }
 
       };
@@ -209,15 +212,16 @@ exports.onFollowUserr = functions.firestore.document("/followers/{userrId}/userF
             'body': snap.messageBody,
           },
           'data': {
+            'kcId': String(snap.type_id),
             'type': String(snap.type),
-            'id': String(snap.type_id),
-            'tag': String(snap.type_tag),
-            'cordName': String(snap.type_cordName),
-            'recentSender': String(snap.type_recentSender),
-            'recentMessage': String(snap.type_recentMessage),
-            'members': String(snap.type_members),
-            'communityName': String(snap.communityName),
-            'communityId': String(communityId)
+            'cmId': communityId,
+            //'tag': String(snap.type_tag),
+            //'cordName': String(snap.type_cordName),
+            //'recentSender': String(snap.type_recentSender),
+            //'recentMessage': String(snap.type_recentMessage),
+            //'members': String(snap.type_members),
+            //'communityName': String(snap.communityName),
+            //'communityId': String(communityId)
           }
 
       };
@@ -258,7 +262,10 @@ exports.addChatMessage = functions.firestore
           readStatus[userId] = false;
         }
       }
-
+// open msg and store val.
+// sends msg checks if val stored.
+// if val stored write read = 1
+// if val not exist write read = 0
            // for (let userId in readStatus) {
       //   if (readStatus.hasOwnProperty(userId) && userId !== senderId) 
       //   {
@@ -288,7 +295,11 @@ exports.addChatMessage = functions.firestore
            notification: {
              title: chatData['chatName'],
              body: body,
-           },
+           }, 
+           'data': {
+            'chatId': chatId,
+            'type': 'directMsg_type',
+          }
        };
 
 
