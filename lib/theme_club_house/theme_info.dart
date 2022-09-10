@@ -18,7 +18,13 @@ class ThemeInfo {
             headline2: TextStyle(
                 fontSize: 23.0,
                 color: Colors.white,
-                fontWeight: FontWeight.bold)),
+                fontWeight: FontWeight.bold),
+            headline3: GoogleFonts.abhayaLibre(
+              fontSize: 35,
+              color: Colors.amber,
+              fontWeight: FontWeight.bold
+            )
+          ),
         accentColor: Colors.white);
   }
 }

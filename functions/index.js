@@ -298,7 +298,7 @@ exports.addChatMessage = functions.firestore
            }, 
            'data': {
             'chatId': chatId,
-            'type': 'directMsg_type',
+            'type': "directMsg_type",
           }
        };
 

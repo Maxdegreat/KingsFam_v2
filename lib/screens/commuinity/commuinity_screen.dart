@@ -39,6 +39,8 @@ import 'package:kingsfam/screens/commuinity/actions.dart' as cmActions;
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
+import '../profile/bloc/profile_bloc.dart';
+
 class CommuinityScreenArgs {
   final Church commuinity;
   final VideoPlayerController? vidCtrl;
@@ -62,7 +64,8 @@ class CommuinityScreen extends StatefulWidget {
                 churchRepository: context.read<ChurchRepository>(),
                 storageRepository: context.read<StorageRepository>(),
                 userrRepository: context.read<UserrRepository>(),
-              )..add(CommuinityLoadCommuinity(commuinity: args.commuinity, vidCtrl: args.vidCtrl)),
+              )..add(CommuinityLoadCommuinity(
+                  commuinity: args.commuinity, vidCtrl: args.vidCtrl)),
               child: CommuinityScreen(
                 commuinity: args.commuinity,
               ),
@@ -94,15 +97,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     super.dispose();
   }
 
-  Future<void> _saveCmToPref() async {
-    final preferences = await StreamingSharedPreferences.instance;
-    String cmAsJson = jsonEncode(widget.commuinity);
-    preferences.setString(Paths.church, cmAsJson);
-  } 
-
   @override
   Widget build(BuildContext context) {
-
     // ignore: unused_local_variable
     final userId = context.read<AuthBloc>().state.user!.uid;
     return BlocConsumer<CommuinityBloc, CommuinityState>(
@@ -257,12 +253,13 @@ class _CommuinityScreenState extends State<CommuinityScreen>
               Column(
                 children: state.collapseCordColumn
                     ? [SizedBox.shrink()]
-                    : state.kingCords.map((cord) {
+                    : state.kingCords.map((cord) { 
                         if (cord != null) {
                           return GestureDetector(
                               onTap: () {
                                 // handels the navigation to the kingscord screen and also handels the
                                 // deletion of a noti if it eist. we check if noty eist by through a function insde the bloc.
+                                log("widget.cm for naving to cord: " + widget.commuinity.members[context.read<ProfileBloc>().state.userr].toString(),);
                                 Navigator.of(context).pushNamed(
                                     KingsCordScreen.routeName,
                                     arguments: KingsCordArgs(
@@ -284,73 +281,76 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                               onLongPress: () => _delKcDialog(
                                   cord: cord, commuinity: widget.commuinity),
                               child: Padding(
-                              padding: EdgeInsets.only(
-                                  top: 7,
-                                  bottom: 7,
-                                  left:
-                                      MediaQuery.of(context).size.width / 7),
-                              child: Container(
-                                height: 55,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                    color: secondaryColor,
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(5),
-                                        bottomLeft: Radius.circular(5))),
-                                child: Center(
-                                    child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 7),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        cord.cordName,
-                                        overflow: TextOverflow.fade,
-                                        style: TextStyle(
-                                            color:
-                                                state.mentionedMap[cord.id] ==
-                                                        true
-                                                    ? Colors.amber
-                                                    : Colors.white,
-                                            fontWeight:
-                                                state.mentionedMap[cord.id] ==
-                                                        true
-                                                    ? FontWeight.w900
-                                                    : FontWeight.w700),
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            cord.recentSender[1].length >= 10 ? cord.recentSender[1].substring(0, 10) : cord.recentSender[1], 
-                                            style: TextStyle(
-                                                color: primaryColor,
-                                                fontSize: 17),
-                                            overflow: TextOverflow.fade,
-                                          ),
-                                          SizedBox(
-                                            width: 7,
-                                          ),
-                                          Text(
-                                            cord.recentTimestamp.timeAgo(),
-                                            style: TextStyle(
-                                                color: Colors.grey[300],
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold),
-                                            overflow: TextOverflow.fade,
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                )),
-                              ),
-                            ));
+                                padding: EdgeInsets.only(
+                                    top: 7,
+                                    bottom: 7,
+                                    left:
+                                        MediaQuery.of(context).size.width / 7),
+                                child: Container(
+                                  height: 55,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                      color: secondaryColor,
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(5),
+                                          bottomLeft: Radius.circular(5))),
+                                  child: Center(
+                                      child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 7),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          cord.cordName,
+                                          overflow: TextOverflow.fade,
+                                          style: TextStyle(
+                                              color:
+                                                  state.mentionedMap[cord.id] ==
+                                                          true
+                                                      ? Colors.amber
+                                                      : Colors.white,
+                                              fontWeight:
+                                                  state.mentionedMap[cord.id] ==
+                                                          true
+                                                      ? FontWeight.w900
+                                                      : FontWeight.w700),
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              cord.recentSender[1].length >= 10
+                                                  ? cord.recentSender[1]
+                                                      .substring(0, 10)
+                                                  : cord.recentSender[1],
+                                              style: TextStyle(
+                                                  color: primaryColor,
+                                                  fontSize: 17),
+                                              overflow: TextOverflow.fade,
+                                            ),
+                                            SizedBox(
+                                              width: 7,
+                                            ),
+                                            Text(
+                                              cord.recentTimestamp.timeAgo(),
+                                              style: TextStyle(
+                                                  color: Colors.grey[300],
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold),
+                                              overflow: TextOverflow.fade,
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  )),
+                                ),
+                              ));
                         } else {
-                          return SizedBox.shrink(); 
+                          return SizedBox.shrink();
                         }
                       }).toList(),
               ),
@@ -639,34 +639,39 @@ class _CommuinityScreenState extends State<CommuinityScreen>
 
   Widget _new_call() {
     cmActions.Actions actions = cmActions.Actions();
-      Userr? currUsr = null;
-      var lst = widget.commuinity.members.keys.toList();
-      for (int i = 0; i<widget.commuinity.members.length; i++) {
-        if (lst[i].id == context.read<AuthBloc>().state.user!.uid) {
-          currUsr = lst[i];
-          // log("found the informatjion we were looking gor and rhis is me tping ewithout thinkting at all as ig you lweant to see how sgas ttla dcaion tipa rt;his is my true speds");
-          break;
-        } 
+    Userr? currUsr = null;
+    var lst = widget.commuinity.members.keys.toList();
+    for (int i = 0; i < widget.commuinity.members.length; i++) {
+      if (lst[i].id == context.read<AuthBloc>().state.user!.uid) {
+        currUsr = lst[i];
+        // log("found the informatjion we were looking gor and rhis is me tping ewithout thinkting at all as ig you lweant to see how sgas ttla dcaion tipa rt;his is my true speds");
+        break;
       }
-      String? currRole = widget.commuinity.members.containsKey(currUsr) ?
-        widget.commuinity.members[currUsr]["role"] : null;
-        // log("cur role is: $currRole");
-        // log("users info is: ${widget.commuinity.members[currUsr]}");
-      if ((currRole != null && currRole == Roles.Owner) ||
-        (currRole != null && actions.hasAccess(role: currRole, action: cmActions.Actions.communityActions[4]))) {
-        return GestureDetector(
-            onTap: () => snackBar(snackMessage: "VVR's will be out in a upcoming update :)", context: context),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: Container(
-                height: 25,
-                width: 25,
-                child: RiveAnimation.asset('assets/icons/add_icon.riv'),
-              ),
-            ));
-      
+    }
+    String? currRole = widget.commuinity.members.containsKey(currUsr)
+        ? widget.commuinity.members[currUsr]["role"]
+        : null;
+    // log("cur role is: $currRole");
+    // log("users info is: ${widget.commuinity.members[currUsr]}");
+    if ((currRole != null && currRole == Roles.Owner) ||
+        (currRole != null &&
+            actions.hasAccess(
+                role: currRole,
+                action: cmActions.Actions.communityActions[4]))) {
+      return GestureDetector(
+          onTap: () => snackBar(
+              snackMessage: "VVR's will be out in a upcoming update :)",
+              context: context),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: Container(
+              height: 25,
+              width: 25,
+              child: RiveAnimation.asset('assets/icons/add_icon.riv'),
+            ),
+          ));
     } else
-    return SizedBox.shrink();
+      return SizedBox.shrink();
   }
 
   _new_call_sheet() => showModalBottomSheet(
@@ -745,82 +750,97 @@ class _CommuinityScreenState extends State<CommuinityScreen>
           )));
 
   Widget new_kingscord({required CommuinityBloc cmBloc}) {
-      cmActions.Actions actions = cmActions.Actions();
-      Userr? currUsr;
-      var lst = widget.commuinity.members.keys.toList();
-      for (int i = 0; i < widget.commuinity.members.length; i++) {
-        if (lst[i].id == context.read<AuthBloc>().state.user!.uid) {
-          currUsr = lst[i];
-          break;
-        } 
+    cmActions.Actions actions = cmActions.Actions();
+    Userr? currUsr;
+    var lst = widget.commuinity.members.keys.toList();
+    for (int i = 0; i < widget.commuinity.members.length; i++) {
+      if (lst[i].id == context.read<AuthBloc>().state.user!.uid) {
+        currUsr = lst[i];
+        break;
       }
-      String? currRole = widget.commuinity.members.containsKey(currUsr) ?
-        widget.commuinity.members[currUsr]["role"] : null;
-        // log("cur role is: $currRole usr Id is ${currUsr!.id}");
-        // log("users info is: ${widget.commuinity.members[currUsr]}");
-      if ((currRole != null && currRole == Roles.Owner) ||
-        (currRole != null && actions.hasAccess(role: currRole, action: cmActions.Actions.communityActions[4]))) {
-        return GestureDetector(
-            onTap: () => new_kingsCord_sheet(cmBloc),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: Container(
-                height: 25,
-                width: 25,
-                child: RiveAnimation.asset('assets/icons/add_icon.riv'),
-              ),
-            ));
-      
-    } else 
+    }
+    String? currRole = widget.commuinity.members.containsKey(currUsr)
+        ? widget.commuinity.members[currUsr]["role"]
+        : null;
+    // log("cur role is: $currRole usr Id is ${currUsr!.id}");
+    // log("users info is: ${widget.commuinity.members[currUsr]}");
+    if ((currRole != null && currRole == Roles.Owner) ||
+        (currRole != null &&
+            actions.hasAccess(
+                role: currRole,
+                action: cmActions.Actions.communityActions[4]))) {
+      return GestureDetector(
+          onTap: () => new_kingsCord_sheet(cmBloc),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: Container(
+              height: 25,
+              width: 25,
+              child: RiveAnimation.asset('assets/icons/add_icon.riv'),
+            ),
+          ));
+    } else
       return SizedBox.shrink();
   }
 
   new_kingsCord_sheet(CommuinityBloc cmBloc) => showModalBottomSheet(
       context: context,
-      builder: (context) { 
-         return                                                                                                                                                                                                                                                                                                                                                                  Container(
-            width: double.infinity,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 8.0),
-                Center(
-                    child: Text(
-                  "Name For New Chat Room",
-                  style: TextStyle(color: Colors.blue[300]),
-                )),
-                SizedBox(height: 8.0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: TextField(
-                      decoration: InputDecoration(hintText: "Enter a name"),
-                      onChanged: (value) => _txtController.text = value),
-                ),
-                SizedBox(height: 8.0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Container(
-                      width: (double.infinity * .70),
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              primary: Colors.blue[300]),
-                          onPressed: () {
-                            if (_txtController.value.text.length == 0) {
-                              snackBar( snackMessage: "be sure you add a name for the Chat Room you are making", context: context, bgColor: Colors.red[400]);
-                            } else if (_txtController.value.text.length > 10) {
-                              snackBar(snackMessage: "Yo, Fam less than or equal to 10 chars please nd thanks", context: context, bgColor: Colors.red[400]);
-                            }else {
-                              // make a new channel
-                              cmBloc.makeNewKc(commuinity: widget.commuinity, cordName: _txtController.value.text, ctx: context);
-                              Navigator.of(context).pop();
-                            }
-                          },
-                          child: Text("Done"))),
-                )
-              ],
-            ),
-          );});
+      builder: (context) {
+        return Container(
+          width: double.infinity,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(height: 8.0),
+              Center(
+                  child: Text(
+                "Name For New Chat Room",
+                style: TextStyle(color: Colors.blue[300]),
+              )),
+              SizedBox(height: 8.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: TextField(
+                    decoration: InputDecoration(hintText: "Enter a name"),
+                    onChanged: (value) => _txtController.text = value),
+              ),
+              SizedBox(height: 8.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Container(
+                    width: (double.infinity * .70),
+                    child: ElevatedButton(
+                        style:
+                            ElevatedButton.styleFrom(primary: Colors.blue[300]),
+                        onPressed: () {
+                          if (_txtController.value.text.length == 0) {
+                            snackBar(
+                                snackMessage:
+                                    "be sure you add a name for the Chat Room you are making",
+                                context: context,
+                                bgColor: Colors.red[400]);
+                          } else if (_txtController.value.text.length > 10) {
+                            snackBar(
+                                snackMessage:
+                                    "Yo, Fam less than or equal to 10 chars please nd thanks",
+                                context: context,
+                                bgColor: Colors.red[400]);
+                          } else {
+                            // make a new channel
+                            cmBloc.makeNewKc(
+                                commuinity: widget.commuinity,
+                                cordName: _txtController.value.text,
+                                ctx: context);
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        child: Text("Done"))),
+              )
+            ],
+          ),
+        );
+      });
 
   _settingsBtn({required CommuinityBloc cmBloc}) {
     return IconButton(
@@ -890,11 +910,14 @@ class _CommuinityScreenState extends State<CommuinityScreen>
 
   Widget _themePackButton() {
     return TextButton(
-      onPressed: () {
-        NavHelper().navToUpdateCmTheme(context, context.read<CommuinityBloc>(), widget.commuinity.name, widget.commuinity.id!);
-      }, 
-      child: Text("ThemePack")
-    );
+        onPressed: () {
+          NavHelper().navToUpdateCmTheme(
+              context,
+              context.read<CommuinityBloc>(),
+              widget.commuinity.name,
+              widget.commuinity.id!);
+        },
+        child: Text("ThemePack"));
   }
 
   //TODO ADMIN WHERE 2==2
@@ -971,8 +994,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
             role: role, action: cmActions.Actions.communityActions[3])) {
           if (context.read<AuthBloc>().state.user!.uid == participant.id) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-                    "your role is $role, can not modify this")));
+                content: Text("your role is $role, can not modify this")));
           } else {
             return _adminsOptions(
                 commuinity: widget.commuinity,
@@ -1200,34 +1222,36 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                           var state = buildchurchCubit.state;
                           if (_txtController.value.text.length != 0) {
                             if (_txtController.value.text.length <= 19) {
-                              buildchurchCubit.onNameChanged(_txtController.text);
-                            buildchurchCubit.lightUpdate(commuinity.id!,
-                                1); // ----------- The method that calls thr update
-                            Navigator.of(context).pop();
-                            this.setState(() {});
-                            _txtController.clear();
+                              buildchurchCubit
+                                  .onNameChanged(_txtController.text);
+                              buildchurchCubit.lightUpdate(commuinity.id!,
+                                  1); // ----------- The method that calls thr update
+                              Navigator.of(context).pop();
+                              this.setState(() {});
+                              _txtController.clear();
                             } else {
                               showDialog(
-                                context: context,
-                                builder: (BuildContext context) => AlertDialog(
-                                      //title
-                                      title: const Text("mmm, err my boi"),
-                                      //content
-                                      content: const Text(
-                                          "The name can not be longer than 19 chars"),
-                                      //actions
-                                      actions: [
-                                        TextButton(
-                                          child: Text(
-                                            "Ok",
-                                            style: TextStyle(
-                                                color: Colors.green[400]),
-                                          ),
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(),
-                                        )
-                                      ],
-                                    ));
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      AlertDialog(
+                                        //title
+                                        title: const Text("mmm, err my boi"),
+                                        //content
+                                        content: const Text(
+                                            "The name can not be longer than 19 chars"),
+                                        //actions
+                                        actions: [
+                                          TextButton(
+                                            child: Text(
+                                              "Ok",
+                                              style: TextStyle(
+                                                  color: Colors.green[400]),
+                                            ),
+                                            onPressed: () =>
+                                                Navigator.of(context).pop(),
+                                          )
+                                        ],
+                                      ));
                             }
                           } else {
                             print(state.name);
@@ -1500,22 +1524,30 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   }
 
   _onJoinCommuinity() {
-    _saveCmToPref();
+    log("testing on join ~ user: ${context.read<ProfileBloc>().state.userr}");
     context
         .read<CommuinityBloc>()
         .onJoinCommuinity(commuinity: widget.commuinity);
-    snackBar(
-        snackMessage: "JOINED, to have full access refresh your homescreen",
-        context: context);
-        
+    widget.commuinity.members[context.read<CommuinityBloc>().state.currUserr] = {
+      'role': Roles.Member,
+      'timestamp': Timestamp.now(),
+      'userReference': '...'
+    };
+    context.read<CommuinityBloc>()
+      ..add(CommuinityLoadCommuinity(commuinity: widget.commuinity));
+    log("==== " + widget.commuinity.members[context.read<ProfileBloc>().state.userr].toString() + " ===========");
+    // snackBar(snackMessage: "JOINED, to have full access refresh your homescreen",context: context);
   }
 
   _onLeaveCommuinity() {
+    log("testing on leave ~ user: ${context.read<CommuinityBloc>().state.currUserr}");
     context
         .read<CommuinityBloc>()
         .onLeaveCommuinity(commuinity: widget.commuinity);
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("left! you may need to refresh home screen")));
+    widget.commuinity.members.remove(context.read<CommuinityBloc>().state.currUserr);
+    context.read<CommuinityBloc>()
+      ..add(CommuinityLoadCommuinity(commuinity: widget.commuinity));
+    // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("left! you may need to refresh home screen")));
   }
 
   showLeaveCommuinity() => showModalBottomSheet(

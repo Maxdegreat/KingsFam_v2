@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 
@@ -17,12 +18,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository;
 
   late StreamSubscription<auth.User?> _userSubscription;
-  late StreamSubscription<bool?> _isNewUserSubscription;
+ 
   AuthBloc({
     required AuthRepository authRepository,
   })  : _authRepository = authRepository,
         super(AuthState.unknown()) {
-    _isNewUserSubscription = _authRepository.isNewUser.listen((isNew) => state.copyWith(isUserNew: isNew));      
+    
     _userSubscription = _authRepository.user.listen((user) => add(AuthUserChanged(user: user)));
   }
 
@@ -30,10 +31,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> close() {
     _userSubscription.cancel();
     return super.close();
-  }
-
-  Stream<AuthState> newUserKnown() async* {
-    yield state.copyWith(isUserNew: false);
   }
 
   @override
@@ -48,9 +45,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Stream<AuthState> _mapAuthUserChangedToState(AuthUserChanged event) async* {
-    // FirebaseFirestore.instance.collection(Paths.users).doc(state.user!.uid).get();
-    yield event.user != null
-        ? AuthState.authenicated(user: event.user!, isNew: state.isUserNew)
-        : AuthState.unauthenicated();
+    if (event.user != null) {
+      // var userSnap = await FirebaseFirestore.instance.collection(Paths.users).doc(event.user!.uid).get();
+      // var user = Userr.fromDoc(userSnap);
+      // ignore: invalid_use_of_visible_for_testing_member
+      // emit(state.copyWith(userr: user));
+      yield AuthState.authenicated(user: event.user!);
+    } else {
+      yield AuthState.unauthenicated();
+    }
+  // ----------- METHODS BELOW -----------------
+  
   }
 }
