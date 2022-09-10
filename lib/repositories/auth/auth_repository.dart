@@ -32,12 +32,9 @@ class AuthRepository extends BaseAuthRepository {
         _firebaseAuth = firebaseAuth ?? auth.FirebaseAuth.instance,
         _messaging = messaging ?? FirebaseMessaging.instance;
 
-  bool? isNew;
+
   @override
   Stream<auth.User?> get user => _firebaseAuth.userChanges();
-  Stream<bool?> get isNewUser {
-    return Stream.value(true);
-  }
   auth.User? currUser;
   
 
@@ -163,6 +160,7 @@ class AuthRepository extends BaseAuthRepository {
         String? token = await _messaging.getToken();
         _firebaseFirestore.collection(Paths.users).doc(user!.uid).set({
           'profileImage': user.photoURL,
+          // 'username': "!" + formatUsername(user.displayName, user.uid),
           'username': formatUsername(user.displayName, user.uid),
           'usernameSearchCase': usernameSearchCase,
           'email': user.email,
@@ -237,6 +235,7 @@ Future<auth.User?> signInWithApple(BuildContext context) async {
     
   _firebaseFirestore.collection(Paths.users).doc(currUser!.uid).set({
        'profileImage': null,
+       // 'username': "!" + formatUsername(null, currUser!.uid),
        'username': formatUsername(null, currUser!.uid),
        'email': appleCredential.email,
        'followers': 0,

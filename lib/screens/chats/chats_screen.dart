@@ -30,6 +30,8 @@ import 'package:rive/rive.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
+import '../../widgets/show_asset_image.dart';
+
 class ChatsScreen extends StatefulWidget {
   const ChatsScreen({
     Key? key,
@@ -132,7 +134,6 @@ class _ChatsScreenState extends State<ChatsScreen>
   Future<void> _handleMessage(RemoteMessage message) async {
     // log("MESSAGE.DATA['TYPE'] IS OF VAL: "  + message.data['type'].toString());
      if (message.data['type'] == 'kc_type') {
-     log(message.data.toString());
       // type: kc_type has a cmId and a kcId. see cloud functions onMentionedUser for reference
       // var snap = await FirebaseFirestore.instance.collection(Paths.church).doc(message.data['cmId']).collection(Paths.kingsCord).doc(message.data['kcId']).get();
       var snap = await FirebaseFirestore.instance.collection(Paths.church).doc(message.data['cmId']).get();
@@ -148,15 +149,26 @@ class _ChatsScreenState extends State<ChatsScreen>
       }
       return ;
      } else if (message.data['type'] == 'directMsg_type') {
+      log("message type is ${message.data['type']}");
       var snap = await FirebaseFirestore.instance.collection(Paths.chats).doc(message.data['chatId']).get();
 
-      if (!snap.exists) {log("SNAP DOES NOT EXIST OF TYPE directMsg_type -> RETURNING");}
+      if (!snap.exists) {log("SNAP DOES NOT EXIST OF TYPE directMsg_type -> RETURNING"); return; }
       Chat? chat = await Chat.fromDoc(snap);
       // ignore: unnecessary_null_comparison
       if (chat != null) {
-        Navigator.of(context).pushNamed(ChatsScreen.routeName, arguments: ChatRoomArgs(chat: chat));
+        log("The chat is not null");
+        Navigator.of(context).pushNamed(ChatRoom.routeName, arguments: ChatRoomArgs(chat: chat));
         return ;
+      } else {
+        log(" The chat is def null Max");
       }
+     } else {
+      log("++++++++++++++++++++++++++++++");
+      log("Message type did not get cought. see type: ");
+      log(message.data['type']);
+      log(message.data.toString());
+      log("+++++++++++++++++++++++++++++++");
+
      }
      return ;
   }
@@ -165,7 +177,7 @@ class _ChatsScreenState extends State<ChatsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
-    _perkedVideoPlayerController = VideoPlayerController.asset("assets/promo_assets/Perked-2.mp4", videoPlayerOptions: VideoPlayerOptions( mixWithOthers: true, ),)
+    _perkedVideoPlayerController = VideoPlayerController.asset("assets/promo_assets/Perked-2.mp4", videoPlayerOptions: VideoPlayerOptions( mixWithOthers: true, ))
       ..addListener(() => setState(() {}))
       ..setLooping(true) // -------------------------------- SET PERKED LOOPING TO TRUE
       ..initialize().then((_) {
@@ -207,7 +219,8 @@ class _ChatsScreenState extends State<ChatsScreen>
                         color: Color(hexcolor.hexcolorCode('#FFC050'))),
                   ),
                   SizedBox(width: 5),
-                  KFCrownV2()
+                  showAssetImage(40, 40, 5, "assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png")
+                  // KFCrownV2()
                 ],
               ),
               actions: [
@@ -227,7 +240,7 @@ class _ChatsScreenState extends State<ChatsScreen>
                       child: Container(
                           child: AssetVideoPlayer(
                               controller: _perkedVideoPlayerController,
-                              assetPath: "assets/promo_assets/Perked-2.mp4")),
+                              )),
                     ))
               ],
             ),
