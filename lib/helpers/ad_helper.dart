@@ -9,7 +9,7 @@ class AdHelper {
       // ignore: dead_code
       return prodAdUnitIdA ;
     } else if (Platform.isIOS) {
-      return "ca-app-pub-3940256099942544/2934735716";
+      return "!ca-app-pub-3940256099942544/2934735716";
     } else {
       throw new UnsupportedError("Unsupported platform");
     }

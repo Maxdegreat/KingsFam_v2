@@ -6,7 +6,6 @@ import 'package:kingsfam/repositories/auth/auth_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/videos/asset_video.dart';
-import 'package:rive/rive.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -36,7 +35,6 @@ class _LoginScreenState extends State<LoginScreen> {
         vc.play();
         vc.setVolume(0);
       });
-    vc.initialize();
     super.initState();
   }
 
@@ -98,44 +96,45 @@ class _LoginScreenState extends State<LoginScreen> {
                 label: Text('Continue With Google',
                     style: TextStyle(
                       color: Colors.black,
+                      fontWeight: FontWeight.w700,
                       fontSize: 18,
                     )),
                 style: TextButton.styleFrom(backgroundColor: Colors.white),
               ),
             ),
             // ------------------------------------------------------ manuel sign in methods
-             SizedBox(height: 20),
-             Container(
-               width: size.width / 1.2,
-               child: TextButton(
-                   onPressed: () {
-                     //push route to sign up screen
-                     Navigator.of(context).pushNamed(SignupFormScreen.routeName);
-                   },
-                   child: Text('Sign Up',
-                       style: Theme.of(context).textTheme.bodyText1),
-                   style: TextButton.styleFrom(backgroundColor: Colors.amber[400])),
-             ),
-             SizedBox(height: 20.0),
-             Container(
-               width: size.width / 1.2,
-               child: TextButton(
-                   onPressed: () {
-                     //push named route to login screen
-                     Navigator.of(context).pushNamed(LoginFormScren.routeName);
-                   },
-                   child: Text('Login In',
-                       style: Theme.of(context).textTheme.bodyText1),
-                   style: TextButton.styleFrom(backgroundColor: Colors.amber[400])),
-             ),
+            // SizedBox(height: 20),
+            // Container(
+            //   width: size.width / 1.2,
+            //   child: TextButton(
+            //       onPressed: () {
+            //         //push route to sign up screen
+            //         Navigator.of(context).pushNamed(SignupFormScreen.routeName);
+            //       },
+            //       child: Text('Sign Up',
+            //           style: Theme.of(context).textTheme.bodyText1),
+            //       style: TextButton.styleFrom(backgroundColor: Colors.amber[400])),
+            // ),
+            // SizedBox(height: 20.0),
+            // Container(
+            //   width: size.width / 1.2,
+            //   child: TextButton(
+            //       onPressed: () {
+            //         //push named route to login screen
+            //         Navigator.of(context).pushNamed(LoginFormScren.routeName);
+            //       },
+            //       child: Text('Login In',
+            //           style: Theme.of(context).textTheme.bodyText1),
+            //       style: TextButton.styleFrom(backgroundColor: Colors.amber[400])),
+            // ),
             // ----------------------------------------------------------------------------------------------
             SizedBox(height: 20),
             Platform.isIOS ? Container(
                 width: size.width / 1.2,
                 child: TextButton.icon(
                   onPressed: () => context.read<AuthRepository>().signInWithApple(context),
-                  icon: Icon(Icons.apple),
-                  label: Text("Sign In With Apple"),
+                  icon: Icon(Icons.apple, color: Colors.amber,),
+                  label: Text("Sign In With Apple", style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.w700)),
                   style: TextButton.styleFrom(backgroundColor: Colors.white),
                 )) : SizedBox.shrink(),
                 Spacer()

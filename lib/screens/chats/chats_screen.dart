@@ -231,7 +231,7 @@ class _ChatsScreenState extends State<ChatsScreen>
                     onTap: () => NavHelper().navToCreateSpaces(context),
                     child: KfCrownPadded()),
                 GestureDetector(
-                    onTap: () => NavHelper().navToSnackBar(context),
+                    onTap: () => null, // NavHelper().navToSnackBar(context),
                     child: VisibilityDetector(
                       key: ObjectKey(_perkedVideoPlayerController),
                       onVisibilityChanged: (vis) {

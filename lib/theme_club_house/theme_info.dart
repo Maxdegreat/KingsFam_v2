@@ -11,6 +11,7 @@ class ThemeInfo {
         textTheme: TextTheme(
             bodyText1: GoogleFonts.acme(color: Colors.white, fontSize: 18),
             bodyText2: GoogleFonts.aBeeZee(color: Colors.white, fontSize: 17),
+            subtitle1: GoogleFonts.aBeeZee(color: Colors.white),
             headline1: TextStyle(
                 fontSize: 25.0,
                 color: Colors.red[400],
