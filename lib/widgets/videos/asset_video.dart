@@ -4,13 +4,11 @@ import 'package:video_player/video_player.dart';
 
 class AssetVideoPlayer extends StatelessWidget {
   final VideoPlayerController controller;
-  final String assetPath;
   final double height;
   final double width;
   const AssetVideoPlayer({
     Key? key,
     required this.controller,
-    required this.assetPath,
     this.height = 70,
     this.width = 70,
   }) : super(key: key);

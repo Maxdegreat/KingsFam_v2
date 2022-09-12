@@ -87,7 +87,7 @@ class ScreensForPageView {
                                           .pushNamed(CommuinityScreen.routeName,
                                               arguments: CommuinityScreenArgs(
                                                 commuinity: commuinity,
-                                              )),
+                                              )), // ----------------------------------------------------------------------set state here
                                       child: Padding(
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 10.0),

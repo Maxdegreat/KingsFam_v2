@@ -157,7 +157,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       _streamSubscriptionIsMember = ism.listen((isMemStream) async {
         for (var kc in event.kcs) 
 
-          log("from bloc kc recentSenderInfo is: ${kc!.recentSender}");
+          //log("from bloc kc recentSenderInfo is: ${kc!.recentSender}");
         
         isMem = await isMemStream;
         emit(state.copyWith(
