@@ -184,6 +184,7 @@ class _PostSingleViewState extends State<PostSingleViewPfp> {
           return Container(
               height: 120,
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -265,20 +266,23 @@ class _PostSingleViewState extends State<PostSingleViewPfp> {
           onDoubleTap: widget.onLike,
           child: AspectRatio(
               aspectRatio: 9 / 16,
-              child:  VideoPostView16_9(
-              post: widget.post,
-              userr: widget.post.author,
-              videoUrl: widget.post.videoUrl!,
-              playVidNow: playNow,
-              controller: vidCtrl,
-      
-            )),
+              child:  Align(
+                alignment: Alignment.center,
+                child: VideoPostView16_9(
+                post: widget.post,
+                userr: widget.post.author,
+                videoUrl: widget.post.videoUrl!,
+                playVidNow: playNow,
+                controller: vidCtrl,
+                    
+                          ),
+              )),
         ),
       );
     } else if (post.quote != null) {
       return Text("caption ${post.quote}");
     } else {
-      return Text("contennt containe is empty???");
+      return Text("contennt container is empty???");
     }
   }
 }

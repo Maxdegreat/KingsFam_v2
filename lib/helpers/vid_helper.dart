@@ -27,10 +27,12 @@ class VideoEditorArgs {
   final File file;
   VideoEditorArgs({required this.file});
 }
+
+
 class VideoEditor extends StatefulWidget {
   const VideoEditor({Key? key, required this.file}) : super(key: key);
 
-  final File file;
+  final File? file;
   static const String routeName = "/videoEditor";
   static Route route (VideoEditorArgs args) {
     return MaterialPageRoute(
@@ -54,9 +56,11 @@ class _VideoEditorState extends State<VideoEditor> {
 
   @override
   void initState() {
-    _controller = VideoEditorController.file(widget.file,
+    if (widget.file != null) {
+      _controller = VideoEditorController.file(widget.file!,
         maxDuration: const Duration(seconds: 30))
       ..initialize().then((_) => setState(() {}));
+    } else {/*Navigator.of(context).pop();*/}
     super.initState();
   }
 
@@ -88,9 +92,11 @@ class _VideoEditorState extends State<VideoEditor> {
         _isExporting.value = false;
         setState(() {});
         if (newFile != null) {
-          NavHelper().navToPostContent(context, newFile!, 'video');
+          _controller.video.pause();
+          NavHelper().navToPostContent(context, newFile!, 'video') . then((value) => Navigator.of(context).pop());
         } else {
-          NavHelper().navToPostContent(context, widget.file, 'video');
+          _controller.video.pause();
+          NavHelper().navToPostContent(context, widget.file!, 'video') . then((value) => Navigator.of(context).pop());
         }
       },
     );
