@@ -83,9 +83,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   // quick methods
   Stream<ProfileState> _mapNewUserToState(ProfileUpdateUserr event) async* {
-    final userr =
-          await _userrRepository.getUserrWithId(userrId: event.usrId);
-      yield state.copyWith(userr: userr);
+    final userr = await _userrRepository.getUserrWithId(userrId: event.usrId);
+    yield state.copyWith(userr: userr);
   }
 
   Stream<ProfileState> _mapLikePostToState(ProfileLikePost event) async* {
@@ -141,10 +140,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   Stream<ProfileState> _mapProfileLoadUserToState(
       ProfileLoadUserr event) async* {
-        if (event.vidCtrl!=null) {
-          // pause vids coming from other screens TODO look for optimizing
-          event.vidCtrl!.pause();
-        }
+    if (event.vidCtrl != null) {
+      // pause vids coming from other screens TODO look for optimizing
+      event.vidCtrl!.pause();
+    }
     yield state.copyWith(status: ProfileStatus.loading, loadingPost: true);
     try {
       final userr =
@@ -162,6 +161,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       var beenSeen = state.post.length > 0 ? state.post.last : null;
       // log("seen id's: $seen");
       // whenever a new post is posted it will update the home page post view
+      yield state.copyWith(post: []);
       _postStreamSubscription?.cancel();
       _postStreamSubscription = _postsRepository
           .getUserPosts(userId: event.userId, limit: 4, lastPostDoc: null)
@@ -248,22 +248,25 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       var chatRef = await FirebaseFirestore.instance
           .collection(Paths.chats)
           .where('memRefs', isEqualTo: [
-        FirebaseFirestore.instance.collection(Paths.users).doc(_authBloc.state.user!.uid),
-        FirebaseFirestore.instance.collection(Paths.users).doc(event.profileOwnersId),
+        FirebaseFirestore.instance
+            .collection(Paths.users)
+            .doc(_authBloc.state.user!.uid),
+        FirebaseFirestore.instance
+            .collection(Paths.users)
+            .doc(event.profileOwnersId),
       ]).get();
-
 
       if (chatRef.docs.length > 0) {
         chatDoc = chatRef.docs[0];
         Chat chat = await Chat.fromDoc(chatDoc);
         if (chat.id != null)
-          Navigator.of(event.ctx).pushNamed(ChatRoom.routeName, arguments: ChatRoomArgs(chat: chat));
+          Navigator.of(event.ctx).pushNamed(ChatRoom.routeName,
+              arguments: ChatRoomArgs(chat: chat));
         else
-          yield state.copyWith(status: ProfileStatus.error, failure: Failure(message: "The chat.id was null"));
-      
+          yield state.copyWith(
+              status: ProfileStatus.error,
+              failure: Failure(message: "The chat.id was null"));
       } else {
-
-
         log("in the else statement, meaning that the chat doc does not exist");
         final currUser = await _userrRepository.getUserrWithId(
             userrId: _authBloc.state.user!.uid);
@@ -291,10 +294,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
               .doc(event.profileOwnersId)
         ];
 
-         var a = currUser.username.substring(0, 3);
-         var b = profileOwner.username.substring(0, 3);
+        var a = currUser.username.substring(0, 3);
+        var b = profileOwner.username.substring(0, 3);
         //TODO SEARCH PRAM
-         Chat chat = Chat(
+        Chat chat = Chat(
             memRefs: memRefs,
             activeMems: [],
             chatName: '$a & $b',
@@ -303,33 +306,40 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             recentMessage: recentMessage,
             searchPram: []);
 
-          await _chatRepository.createChat(chat: chat,   shouldPassBackChat:  true, ctx: event.ctx); // the chat is now made
-          // 2 options: 
+        await _chatRepository.createChat(
+            chat: chat,
+            shouldPassBackChat: true,
+            ctx: event.ctx); // the chat is now made
+        // 2 options:
 
-          // 1 nav all the way home and you will see the chat in the right side
+        // 1 nav all the way home and you will see the chat in the right side
 
-          // 2 find the chat and just nav to 
+        // 2 find the chat and just nav to
       }
     } catch (e) {
       yield state.copyWith(
           status: ProfileStatus.error,
           failure: Failure(
               message: e.toString(),
-                  //"mmm, error when trying to do a holy slide into them dms",
+              //"mmm, error when trying to do a holy slide into them dms",
               code: e.toString()));
     }
   }
 
-  Stream<ProfileState> _mapProfileLoadFollowersUsersToState(ProfileLoadFollowersUsers event) async* {
+  Stream<ProfileState> _mapProfileLoadFollowersUsersToState(
+      ProfileLoadFollowersUsers event) async* {
     // query into curr users followers grab first 10. make to users, then yield to state
-    var followersAsUsers = await _userrRepository.followerList(currUserId: state.userr.id, lastStringId: event.lastStringId);
+    var followersAsUsers = await _userrRepository.followerList(
+        currUserId: state.userr.id, lastStringId: event.lastStringId);
     yield state.copyWith(followersUserList: followersAsUsers);
   }
 
-  Stream<ProfileState> _mapProfileLoadFollowingUsersToState(ProfileLoadFollowingUsers event) async* {
+  Stream<ProfileState> _mapProfileLoadFollowingUsersToState(
+      ProfileLoadFollowingUsers event) async* {
     var id = state.userr.id == null ? event.id : state.userr.id;
     log("The id is: " + id.toString());
-    var followingAsUsers = await _userrRepository.followingList(currUserId: state.userr.id, lastStringId: event.lastStringId);
+    var followingAsUsers = await _userrRepository.followingList(
+        currUserId: state.userr.id, lastStringId: event.lastStringId);
     log("The len of the list is now " + followingAsUsers.length.toString());
     yield state.copyWith(followingUserList: followingAsUsers);
   }

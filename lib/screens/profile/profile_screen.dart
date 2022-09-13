@@ -27,7 +27,7 @@ class ProfileScreen extends StatefulWidget {
 
   static const String routeName = '/profileScreen';
 
-  final String? ownerId;
+  final String ownerId;
   const ProfileScreen({
     required this.ownerId,
   });
@@ -44,7 +44,7 @@ class ProfileScreen extends StatefulWidget {
                   postRepository: context.read<PostsRepository>(),
                   chatRepository: context.read<ChatRepository>())
                 ..add(ProfileLoadUserr(
-                    userId: args.userId, vidCtrl: args.vidCtrl)),
+                    userId: args.userId, vidCtrl: null)),
               child: ProfileScreen(
                 ownerId: args.userId,
               ),
@@ -78,11 +78,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (scrollController.position.pixels != 0.0 &&
           scrollController.position.maxScrollExtent ==
               scrollController.position.pixels) {
-        //  const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
-        //  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        snackBar(snackMessage: "yay a snack bar", context: context);
+        log("This is a log");
         context.read<ProfileBloc>()
           ..add(ProfilePaginatePosts(
-              userId: context.read<AuthBloc>().state.user!.uid)); // ----------------- TODO This is why ur pag does not work properly. use a dynamic id. cant pag someone else w/ ur id
+              userId: widget.ownerId)); // ----------------- TODO This is why ur pag does not work properly. use a dynamic id. cant pag someone else w/ ur id
         log("HEY I AM CALLING A PAGINATION MAX!!!");
       }
     }
@@ -119,7 +119,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       case ProfileStatus.initial:
         return CircularProgressIndicator(color: Colors.red[400]);
       default:
-        return RefreshIndicator(
+        return RefreshIndicator( // ---------------- LOOK HERE NEEDS SOME INTERNAL WORK TODO
             onRefresh: () async => context
                 .read<ProfileBloc>()
                 .add(ProfileLoadUserr(userId: state.userr.id)),
@@ -241,6 +241,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       arguments: ProfilePostViewArgs(
                           posts: state.post,
                           startIndex: index,
+                           currUsrId: widget.ownerId,
                           isFromPfpScreen: true)),
                   //Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(startIndex: index, posts: state.post)),
                   child: Container(

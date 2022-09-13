@@ -1,6 +1,8 @@
 // a postview display made for the profile screen!
 // this should eliminate any wierd bugs since data can be given only from one screen
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/cubits/cubits.dart';
@@ -10,37 +12,37 @@ import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 import '../../widgets/post_single_view_pfp.dart';
-
-// class ProfilePostViewArgs {
-//   final List<Post?> posts;
-//   final int? indexAt;
-//   // for likes
-//   final bool isLiked;
-//   final bool recentlyLiked;
-
-//   final VoidCallback onLike;
-//   ProfilePostViewArgs({required this.posts, this.indexAt, required this.isLiked, required this.onLike, required this.recentlyLiked});
-// }
 
 class ProfilePostViewArgs {
   final int startIndex;
   final List<Post?> posts;
   final bool? isFromPfpScreen;
-  ProfilePostViewArgs({required this.startIndex, required this.posts, this.isFromPfpScreen = false});
+  final String? currUsrId;
+  ProfilePostViewArgs(
+      {required this.startIndex,
+      required this.posts,
+      required this.currUsrId,
+      this.isFromPfpScreen = false});
 }
 
 class ProfilePostView extends StatefulWidget {
   final List<Post?> posts;
   final int? startingIndex;
+  final String? currUsrId;
 
   // // for likes
   // final bool isLiked;
   // final bool recentlyLiked;
   // final VoidCallback onLike;
 
-  ProfilePostView({Key? key, required this.posts, required this.startingIndex});
+  ProfilePostView(
+      {Key? key,
+      required this.posts,
+      required this.startingIndex,
+      required this.currUsrId});
 
   static const String routeName = '/profilePostView';
 
@@ -55,10 +57,11 @@ class ProfilePostView extends StatefulWidget {
                 likedPostCubit: context.read<LikedPostCubit>(),
                 postRepository: context.read<PostsRepository>(),
                 userrRepository: context.read<UserrRepository>(),
-              ),
+              )..add(ProfileUpdatePost(post: args.posts)),
               child: ProfilePostView(
                 posts: args.posts,
                 startingIndex: args.startIndex,
+                currUsrId: args.currUsrId,
               ),
             ));
   }
@@ -69,26 +72,18 @@ class ProfilePostView extends StatefulWidget {
 
 class _ProfilePostViewState extends State<ProfilePostView> {
   ItemScrollController itemController = ItemScrollController();
+  late PageController _pageController;
 
   @override
   void initState() {
+    _pageController = PageController(initialPage: widget.startingIndex!);
     super.initState();
-    context.read<ProfileBloc>()..add(ProfileUpdatePost(post: widget.posts));
   }
 
   @override
   void dispose() {
     super.dispose();
   }
-
-  scrollToItem() {
-    itemController.scrollTo(
-        index: widget.startingIndex!, duration: Duration(milliseconds: 1));
-  }
-
-  Future scrollToHelper() async =>
-      await Future.delayed(const Duration(milliseconds: 20))
-          .then((_) => scrollToItem());
 
   bool loaded = false;
   bool showPost = false;
@@ -98,9 +93,14 @@ class _ProfilePostViewState extends State<ProfilePostView> {
     String? lastPostId = context.read<ProfileBloc>().state.post.length > 0
         ? context.read<ProfileBloc>().state.post.last!.id
         : null;
+
     final String userId = context.read<AuthBloc>().state.user!.uid;
-    void paginatePosts() =>
-        context.read<ProfileBloc>()..add(ProfilePaginatePosts(userId: userId));
+    void paginatePosts() {
+      log("this is most def a not a snack bar");
+      snackBar(snackMessage: "This is a snackbar", context: context);
+      context.read<ProfileBloc>()..add(ProfilePaginatePosts(userId: userId));
+    }
+
     updateSeenIds() {
       var p = context.read<ProfileBloc>().state.post;
       var subList = p.sublist(p.length - 8, p.length);
@@ -114,7 +114,6 @@ class _ProfilePostViewState extends State<ProfilePostView> {
       listener: (context, state) {
         if (state.status == ProfileStatus.loaded && loaded == false) {
           loaded = true;
-          scrollToHelper();
         }
       },
       builder: (context, state) {
@@ -123,26 +122,20 @@ class _ProfilePostViewState extends State<ProfilePostView> {
             title: loaded
                 ? Text("${state.post[0]!.author.username}\'s posts")
                 : Text("posts"),
-            actions: [
-              IconButton(
-                icon: Icon(Icons.ac_unit),
-                onPressed: () => scrollToHelper(),
-              )
-            ],
+            actions: [],
           ),
           body: loaded
-              ? ScrollablePositionedList.builder(
-                  itemScrollController: itemController,
+              ? PageView.builder(
+                  scrollDirection: Axis.vertical,
+                  controller: _pageController,
                   itemCount: state.post.length,
-                  itemBuilder: (BuildContext context, int index) {
-                  // TODO check this out. its pag code. think its throwing some bug
-                    // if (index >= (state.post.length) - 1 &&
-                    //     !seenIds.contains(lastPostId)) {
-                    //   paginatePosts();
-                    //   seenIds.add(lastPostId);
-                    //   updateSeenIds();
-                    // }
-
+                  onPageChanged: (pageNum) {
+                    if (pageNum == state.post.length - 1) {
+                      context.read<ProfileBloc>()
+                        ..add(ProfilePaginatePosts(userId: widget.currUsrId!));
+                    }
+                  },
+                  itemBuilder: (context, index) {
                     final Post? post = state.post[index];
                     if (post != null) {
                       final LikedPostState =
@@ -151,7 +144,7 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                           LikedPostState.likedPostsIds.contains(post.id!);
                       final recentlyLiked = LikedPostState.recentlyLikedPostIds
                           .contains(post.id!);
-                      return PostSingleViewPfp(
+                      return PostSingleView(
                         isLiked: isLiked,
                         post: post,
                         recentlyLiked: recentlyLiked,
@@ -176,5 +169,3 @@ class _ProfilePostViewState extends State<ProfilePostView> {
   }
 }
 
-            // this is kinda usefule bc TODO: look at how I had done dynamic posts
-            //ColumnOfPost(posts: posts, post: post, isLiked: isLiked, onLike: onLike, recentlyLiked: recentlyLiked,);
