@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/enums/bottom_nav_items.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
@@ -22,6 +23,7 @@ import 'package:visibility_detector/visibility_detector.dart';
 import '../../models/church_model.dart';
 import '../../models/post_model.dart';
 import '../../models/user_model.dart';
+import '../nav/cubit/bottomnavbar_cubit.dart';
 
 class PostContentArgs {
   final File content;
@@ -134,8 +136,11 @@ class _PostContentScreenState extends State<PostContentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    int popScreens = 0;
     if (success) {
-      Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
+      // Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
+      // Navigator.of(context).popUntil((_) => popScreens++ >= 1); log("we poped $popScreens");
+       Navigator.of(context).pop();
     }
     log("curr user is: " + context.read<ProfileBloc>().state.userr.toString());
     return Scaffold(
@@ -274,7 +279,8 @@ class _PostContentScreenState extends State<PostContentScreen> {
 
       if (imgF != null) {
         final postImageUrl = await StorageRepository().uploadPostImage(image: imgF!);
-
+        var decodedImage = await decodeImageFromList(imgF!.readAsBytesSync());
+        // var heightImgF = decodedImage.height;
         final post = Post(
             author: author,
             quote: null,
@@ -287,6 +293,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
             likes: 0,
             date: Timestamp.now(),
             height: 0, 
+
         );
 
         await PostsRepository().createPost(post: post);

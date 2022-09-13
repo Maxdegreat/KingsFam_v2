@@ -61,7 +61,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 title: "Croping Post");
             if (pickedFile != null) {
               // NavHelper().navToImageEditor(context, File(pickedFile.path));
-              NavHelper().navToPostContent(context, pickedFile, "image");
+              NavHelper().navToPostContent(context, pickedFile, "image").then((_) => Navigator.of(context).pop());
             }
           },
           child: Row(
@@ -93,8 +93,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             final pickedFile = await ImageHelper.pickVideoFromGallery();
             if (pickedFile != null) {
               log("we can see that the picked file is not null, moving to the vid editor");
-              NavHelper().navToVideoEditor(context, pickedFile);
+              // await NavHelper().navToVideoEditor(context, pickedFile) /* .then((value) => Navigator.of(context).pop())  */ ;
               // NavHelper().navToPostContent(context, pickedFile, 'video');
+              await NavHelper().navToPostContent(context, pickedFile, 'video');
+              // await Future.delayed(Duration(seconds: 1));                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+              // Navigator.of(context).pop();
             }
           },
           child: Row(
