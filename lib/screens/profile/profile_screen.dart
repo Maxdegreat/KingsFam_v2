@@ -78,7 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (scrollController.position.pixels != 0.0 &&
           scrollController.position.maxScrollExtent ==
               scrollController.position.pixels) {
-        snackBar(snackMessage: "yay a snack bar", context: context);
+        // snackBar(snackMessage: "yay a snack bar", context: context);
         log("This is a log");
         context.read<ProfileBloc>()
           ..add(ProfilePaginatePosts(
