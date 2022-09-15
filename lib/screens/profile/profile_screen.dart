@@ -13,7 +13,10 @@ import 'package:kingsfam/screens/profile/widgets/commuinity_container.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
+import '../../helpers/navigator_helper.dart';
+import '../../widgets/videos/asset_video.dart';
 import 'widgets/widgets.dart';
 
 class ProfileScreenArgs {
@@ -59,10 +62,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // controllers
 
   ScrollController scrollController = ScrollController();
-
+  late VideoPlayerController _perkedVideoPlayerController;
   @override
   void initState() {
     super.initState();
+    _perkedVideoPlayerController =
+        VideoPlayerController.asset("assets/promo_assets/Perked-2.mp4",
+            videoPlayerOptions: VideoPlayerOptions(
+              mixWithOthers: true,
+            ))
+          ..addListener(() => setState(() {}))
+          ..setLooping(
+              true) // -------------------------------- SET PERKED LOOPING TO TRUE
+          ..initialize().then((_) {
+            _perkedVideoPlayerController.play();
+            _perkedVideoPlayerController.setVolume(0);
+          });
     scrollController.addListener(listenToScrolling);
   }
 
@@ -78,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (scrollController.position.pixels != 0.0 &&
           scrollController.position.maxScrollExtent ==
               scrollController.position.pixels) {
-        // snackBar(snackMessage: "yay a snack bar", context: context);
+        snackBar(snackMessage: "yay a snack bar", context: context);
         log("This is a log");
         context.read<ProfileBloc>()
           ..add(ProfilePaginatePosts(
@@ -132,13 +147,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   title: Text(state.userr.username),
                   actions: [
                     if (state.isCurrentUserr)
-                      IconButton(
-                          icon: Icon(Icons.settings),
-                          //onLongPress: () async => context.read<AuthBloc>().add(AuthLogoutRequested()),
-                          onPressed: () => Navigator.of(context).pushNamed(
-                              EditProfileScreen.routeName,
-                              arguments:
-                                  EditProfileScreenArgs(context: context))),
+                       GestureDetector(
+                    onTap: () => NavHelper().navToSnackBar(context, state.userr.id),
+                    child: VisibilityDetector(
+                      key: ObjectKey(_perkedVideoPlayerController),
+                      onVisibilityChanged: (vis) {
+                        vis.visibleFraction > 0
+                            ? _perkedVideoPlayerController.play()
+                            : _perkedVideoPlayerController.pause();
+                      },
+                      child: Container(
+                          child: AssetVideoPlayer(
+                        controller: _perkedVideoPlayerController,
+                      )),
+                    )),
                   ],
                   // expandedHeight: 200,
                 ),

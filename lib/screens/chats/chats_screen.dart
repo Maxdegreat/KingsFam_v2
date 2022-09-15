@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +29,7 @@ import 'package:rive/rive.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
+// import '../../helpers/permission_helper.dart'; -- used on IOS
 import '../../widgets/show_asset_image.dart';
 
 class ChatsScreen extends StatefulWidget {
@@ -48,7 +48,6 @@ class _ChatsScreenState extends State<ChatsScreen>
   //bool get wantKeepAlive => true;
   // handel permissions for notifications using FCM
 
-
   late BannerAd _bottomBannerAd;
   late BannerAd _inLineBannerAd;
   // ignore: unused_field
@@ -61,6 +60,7 @@ class _ChatsScreenState extends State<ChatsScreen>
     }
     return index;
   }
+
   int _tabIdx = 1;
 
   void _createBottomBannerAd() {
@@ -76,7 +76,6 @@ class _ChatsScreenState extends State<ChatsScreen>
           log("!!!!!!!!!!!!!!!!!! - bottom Ad Error - !!!!!!!!!!!!!!!!!!!!!!!!!");
           log("chatsScreen ad error: ${error.toString()}");
           log("!!!!!!!!!!!!!!!!!! - bottom Ad Error - !!!!!!!!!!!!!!!!!!!!!!!!!");
-
         }),
         request: AdRequest());
     _bottomBannerAd.load();
@@ -102,14 +101,10 @@ class _ChatsScreenState extends State<ChatsScreen>
     if (_tabController.indexIsChanging) {
       if (_tabController.index == 0) {
         log("setting state, idx == 0");
-        setState(() {
-          
-        });
+        setState(() {});
       } else if (_tabController.previousIndex == 0) {
         log("setting state, idx was 0");
-        setState(() {
-          
-        });
+        setState(() {});
       }
     }
   }
@@ -117,7 +112,8 @@ class _ChatsScreenState extends State<ChatsScreen>
   Future<void> setupInteractedMessage() async {
     // Get any messages which caused the application to open from
     // a terminated state.
-    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
 
     // If the message also contains a data property with a "type" of "chat",
     // navigate to a chat screen
@@ -130,67 +126,83 @@ class _ChatsScreenState extends State<ChatsScreen>
     FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
   }
 
-
   Future<void> _handleMessage(RemoteMessage message) async {
     // log("MESSAGE.DATA['TYPE'] IS OF VAL: "  + message.data['type'].toString());
-     if (message.data['type'] == 'kc_type') {
+    if (message.data['type'] == 'kc_type') {
       // type: kc_type has a cmId and a kcId. see cloud functions onMentionedUser for reference
       // var snap = await FirebaseFirestore.instance.collection(Paths.church).doc(message.data['cmId']).collection(Paths.kingsCord).doc(message.data['kcId']).get();
-      var snap = await FirebaseFirestore.instance.collection(Paths.church).doc(message.data['cmId']).get();
+      var snap = await FirebaseFirestore.instance
+          .collection(Paths.church)
+          .doc(message.data['cmId'])
+          .get();
 
-      if (!snap.exists) {log("SNAP DOES NOT EXIST OF TYPE kc_type -> RETURNING"); return;} 
+      if (!snap.exists) {
+        log("SNAP DOES NOT EXIST OF TYPE kc_type -> RETURNING");
+        return;
+      }
       // KingsCord? kc = KingsCord.fromDoc(snap);
       Church? cm = await Church.fromDoc(snap);
       // ignore: unnecessary_null_comparison
       if (cm != null) {
         // log ("PROOF U CAN GET THE KC STILL: " + kc.cordName);
-        Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: cm));
-        return ;
+        Navigator.of(context).pushNamed(CommuinityScreen.routeName,
+            arguments: CommuinityScreenArgs(commuinity: cm));
+        return;
       }
-      return ;
-     } else if (message.data['type'] == 'directMsg_type') {
+      return;
+    } else if (message.data['type'] == 'directMsg_type') {
       log("message type is ${message.data['type']}");
-      var snap = await FirebaseFirestore.instance.collection(Paths.chats).doc(message.data['chatId']).get();
+      var snap = await FirebaseFirestore.instance
+          .collection(Paths.chats)
+          .doc(message.data['chatId'])
+          .get();
 
-      if (!snap.exists) {log("SNAP DOES NOT EXIST OF TYPE directMsg_type -> RETURNING"); return; }
+      if (!snap.exists) {
+        log("SNAP DOES NOT EXIST OF TYPE directMsg_type -> RETURNING");
+        return;
+      }
       Chat? chat = await Chat.fromDoc(snap);
       // ignore: unnecessary_null_comparison
       if (chat != null) {
         log("The chat is not null");
-        Navigator.of(context).pushNamed(ChatRoom.routeName, arguments: ChatRoomArgs(chat: chat));
-        return ;
+        Navigator.of(context)
+            .pushNamed(ChatRoom.routeName, arguments: ChatRoomArgs(chat: chat));
+        return;
       } else {
         log(" The chat is def null Max");
       }
-     } else {
+    } else {
       log("++++++++++++++++++++++++++++++");
       log("Message type did not get cought. see type: ");
       log(message.data['type']);
       log(message.data.toString());
       log("+++++++++++++++++++++++++++++++");
-
-     }
-     return ;
+    }
+    return;
   }
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
-    _perkedVideoPlayerController = VideoPlayerController.asset("assets/promo_assets/Perked-2.mp4", videoPlayerOptions: VideoPlayerOptions( mixWithOthers: true, ))
-      ..addListener(() => setState(() {}))
-      ..setLooping(true) // -------------------------------- SET PERKED LOOPING TO TRUE
-      ..initialize().then((_) {
-        _perkedVideoPlayerController.play();
-        _perkedVideoPlayerController.setVolume(0);
-      });
+    _perkedVideoPlayerController =
+        VideoPlayerController.asset("assets/promo_assets/Perked-2.mp4",
+            videoPlayerOptions: VideoPlayerOptions(
+              mixWithOthers: true,
+            ))
+          ..addListener(() => setState(() {}))
+          ..setLooping(
+              true) // -------------------------------- SET PERKED LOOPING TO TRUE
+          ..initialize().then((_) {
+            _perkedVideoPlayerController.play();
+            _perkedVideoPlayerController.setVolume(0);
+          });
     _tabController.addListener(() => setState(() {}));
     _createBottomBannerAd();
     setupInteractedMessage();
+    // requestPhotoPermission(); -- done on Ios
     //super.build(context);
   }
-
-  
 
   @override
   void dispose() {
@@ -219,7 +231,8 @@ class _ChatsScreenState extends State<ChatsScreen>
                         color: Color(hexcolor.hexcolorCode('#FFC050'))),
                   ),
                   SizedBox(width: 5),
-                  showAssetImage(40, 40, 5, "assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png")
+                  showAssetImage(40, 40, 5,
+                      "assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png")
                   // KFCrownV2()
                 ],
               ),
@@ -231,16 +244,18 @@ class _ChatsScreenState extends State<ChatsScreen>
                     onTap: () => NavHelper().navToCreateSpaces(context),
                     child: KfCrownPadded()),
                 GestureDetector(
-                    onTap: () => null, // NavHelper().navToSnackBar(context),
+                    onTap: () => NavHelper().navToSnackBar(context, context.read<AuthBloc>().state.user!.uid),
                     child: VisibilityDetector(
                       key: ObjectKey(_perkedVideoPlayerController),
                       onVisibilityChanged: (vis) {
-                        vis.visibleFraction > 0 ? _perkedVideoPlayerController.play() : _perkedVideoPlayerController.pause();
+                        vis.visibleFraction > 0
+                            ? _perkedVideoPlayerController.play()
+                            : _perkedVideoPlayerController.pause();
                       },
                       child: Container(
                           child: AssetVideoPlayer(
-                              controller: _perkedVideoPlayerController,
-                              )),
+                        controller: _perkedVideoPlayerController,
+                      )),
                     ))
               ],
             ),
@@ -252,28 +267,31 @@ class _ChatsScreenState extends State<ChatsScreen>
               }
             }, builder: (context, state) {
               return NestedScrollView(
-                  headerSliverBuilder: 
+                  headerSliverBuilder:
                       (BuildContext context, bool isScrollableInnerBox) {
-                    return _tabController.index == 0 ? <Widget> [] : <Widget>[
-                     SliverAppBar(
-                          floating: false,
-                          toolbarHeight:  00,
-                          expandedHeight:   00,
-                          bottom: TabBar(
-                            controller: _tabController,
-                            tabs: [
-                              Tab(text: "Feed"),
-                              Tab(text: "Commuinity\'s"),
-                              Tab(text: "Chats"),
-                            ],
-                          ))
-                    ];
+                    return _tabController.index == 0
+                        ? <Widget>[]
+                        : <Widget>[
+                            SliverAppBar(
+                                floating: false,
+                                toolbarHeight: 00,
+                                expandedHeight: 00,
+                                bottom: TabBar(
+                                  controller: _tabController,
+                                  tabs: [
+                                    Tab(text: "Feed"),
+                                    Tab(text: "Commuinity\'s"),
+                                    Tab(text: "Chats"),
+                                  ],
+                                ))
+                          ];
                   },
                   body: TabBarView(
                     controller: _tabController,
                     children: [
                       ScreensForPageView().feed(context, _tabController),
-                      ScreensForPageView().commuinity_view(userId, context,_bottomBannerAd, _isBottomBannerAdLoaded),
+                      ScreensForPageView().commuinity_view(userId, context,
+                          _bottomBannerAd, _isBottomBannerAdLoaded),
                       ScreensForPageView().chats_view(userId, state, context)
                     ],
                   ));

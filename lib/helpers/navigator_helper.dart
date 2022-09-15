@@ -15,7 +15,7 @@ import '../screens/search/widgets/show_following.dart';
 
 
 class NavHelper {
-  Future<void> navToSnackBar(context) => Navigator.of(context).pushNamed(SnackTimeShopScreen.routeName);
+  Future<void> navToSnackBar(context, String currUserId) => Navigator.of(context).pushNamed(SnackTimeShopScreen.routeName, /* arguments: SnackTimeArgs(currUserId: currUserId) */); //ARGS USED ON IOS BEST TO LEAVE HERE FOR NOW AS SOON WILL BE INTERGRATED
 
   Future<void> navToCreateSpaces(BuildContext context) =>  Navigator.of(context).pushNamed(CreateComuinity.routeName);
 

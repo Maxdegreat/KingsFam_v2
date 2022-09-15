@@ -102,36 +102,24 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     // ignore: unused_local_variable
     final userId = context.read<AuthBloc>().state.user!.uid;
     return BlocConsumer<CommuinityBloc, CommuinityState>(
-      listener: (context, state) {
-        if (state.status == CommuintyStatus.error) {
-          log("commuinityScreenError: ${state.failure.code}");
-          ErrorDialog(
-            content:
-                'hmm, something went worong. check your connection - ecode: commuinityScreenError: ${state.failure.code}',
-          );
-        }
-      },
-      builder: (context, state) {
-        // make a list commuinity_nav using the state's list calls nd commuinities.
-
-        //context.read<BuildchurchCubit>().isCommuinityMember(widget.commuinity);
-
-        if (state.status == CommuintyStatus.loading) {
-          return Container(child: Center(child: CircularProgressIndicator()));
-        } else if (state.status == CommuintyStatus.loaded) {
-          return _loadedDisplay(context, state);
-        } else if (state.status == CommuintyStatus.error) {
-          return Center(
-              child: Text("error: my bad yall, i probably messed up the code"));
-        } else
-          return SizedBox.shrink();
-      },
-    );
+        listener: (context, state) {
+      if (state.status == CommuintyStatus.error) {
+        ErrorDialog(
+          content:
+              'hmm, something went worong. check your connection - ecode: commuinityScreenError: ${state.failure.code}',
+        );
+      }
+    }, builder: (context, state) {
+      return Scaffold(
+          body: SafeArea(
+        child: _mainScrollView(context, state),
+      ));
+    });
   }
 
   Scaffold _loadedDisplay(BuildContext context, CommuinityState state) {
-    var cmMemSet = widget.commuinity.members.keys.map((e) => e.id).toSet();
-    var currId = context.read<AuthBloc>().state.user!.uid;
+    // var cmMemSet = widget.commuinity.members.keys.map((e) => e.id).toSet();
+    // var currId = context.read<AuthBloc>().state.user!.uid;
     return Scaffold(
         body: SafeArea(
       child: _mainScrollView(context, state),
@@ -253,13 +241,22 @@ class _CommuinityScreenState extends State<CommuinityScreen>
               Column(
                 children: state.collapseCordColumn
                     ? [SizedBox.shrink()]
-                    : state.kingCords.map((cord) { 
+                    : state.kingCords.map((cord) {
                         if (cord != null) {
                           return GestureDetector(
                               onTap: () {
                                 // handels the navigation to the kingscord screen and also handels the
                                 // deletion of a noti if it eist. we check if noty eist by through a function insde the bloc.
-                                log("widget.cm for naving to cord: " + widget.commuinity.members[context.read<ProfileBloc>().state.userr].toString(),);
+                                log(
+                                  "widget.cm for naving to cord: " +
+                                      widget
+                                          .commuinity
+                                          .members[context
+                                              .read<ProfileBloc>()
+                                              .state
+                                              .userr]
+                                          .toString(),
+                                );
                                 Navigator.of(context).pushNamed(
                                     KingsCordScreen.routeName,
                                     arguments: KingsCordArgs(
@@ -458,6 +455,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                   userrRepository: ctx.read<UserrRepository>()),
               child: Container(
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextButton(
@@ -479,6 +477,11 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                           "Nevermind, keep ${cord.cordName}",
                           style: TextStyle(color: Colors.green),
                         )),
+                        SizedBox(height: 10,),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                          child: Text("Hey family. hint: You MUST have at least one chat room"),
+                        )
                   ],
                 ),
               )));
@@ -1528,31 +1531,29 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     context
         .read<CommuinityBloc>()
         .onJoinCommuinity(commuinity: widget.commuinity);
-    widget.commuinity.members[context.read<CommuinityBloc>().state.currUserr] = {
+    widget.commuinity.members[context.read<CommuinityBloc>().state.currUserr] =
+        {
       'role': Roles.Member,
       'timestamp': Timestamp.now(),
       'userReference': '...'
     };
     context.read<CommuinityBloc>()
       ..add(CommuinityLoadCommuinity(commuinity: widget.commuinity));
-    log("==== " + widget.commuinity.members[context.read<ProfileBloc>().state.userr].toString() + " ===========");
+    log("==== " +
+        widget.commuinity.members[context.read<ProfileBloc>().state.userr]
+            .toString() +
+        " ===========");
     // snackBar(snackMessage: "JOINED, to have full access refresh your homescreen",context: context);
   }
 
   _onLeaveCommuinity() {
-    log("testing on leave ~ user: ${context.read<CommuinityBloc>().state.currUserr}");
-    context
-        .read<CommuinityBloc>()
-        .onLeaveCommuinity(commuinity: widget.commuinity);
-    widget.commuinity.members.remove(context.read<CommuinityBloc>().state.currUserr);
-    context.read<CommuinityBloc>()
-      ..add(CommuinityLoadCommuinity(commuinity: widget.commuinity));
-    // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("left! you may need to refresh home screen")));
+    //log("testing on leave ~ user: ${context.read<CommuinityBloc>().state.currUserr}");
+    showLeaveCommuinity();
   }
 
   showLeaveCommuinity() => showModalBottomSheet(
       context: context,
-      builder: (context) => Container(
+      builder: (_context) => Container(
             //height: 200,
             color: Colors.black,
             child: Row(
@@ -1560,12 +1561,20 @@ class _CommuinityScreenState extends State<CommuinityScreen>
               children: [
                 Container(
                   //height: 200,
-                  child: ElevatedButton(
+                  // checking for role. a owner must not just leave
+                  
+                  child:  ElevatedButton(
                       style: ElevatedButton.styleFrom(primary: Colors.red),
                       onPressed: () {
-                        _onLeaveCommuinity();
-                        Navigator.popUntil(context,
-                            ModalRoute.withName(Navigator.defaultRouteName));
+                        context
+                            .read<CommuinityBloc>()
+                            .onLeaveCommuinity(commuinity: widget.commuinity);
+                        widget.commuinity.members.remove(
+                            context.read<CommuinityBloc>().state.currUserr);
+                        context.read<CommuinityBloc>()
+                          ..add(CommuinityLoadCommuinity(
+                              commuinity: widget.commuinity));
+                        Navigator.of(_context).pop();
                       },
                       child: Text("... I sad bye")),
                 ),

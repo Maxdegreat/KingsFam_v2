@@ -61,7 +61,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 title: "Croping Post");
             if (pickedFile != null) {
               // NavHelper().navToImageEditor(context, File(pickedFile.path));
-              NavHelper().navToPostContent(context, pickedFile, "image").then((_) => Navigator.of(context).pop());
+              NavHelper().navToPostContent(context, pickedFile, "image");
             }
           },
           child: Row(
@@ -95,7 +95,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               log("we can see that the picked file is not null, moving to the vid editor");
               // await NavHelper().navToVideoEditor(context, pickedFile) /* .then((value) => Navigator.of(context).pop())  */ ;
               // NavHelper().navToPostContent(context, pickedFile, 'video');
-              await NavHelper().navToPostContent(context, pickedFile, 'video');
+              NavHelper().navToPostContent(context, pickedFile, 'video');
               // await Future.delayed(Duration(seconds: 1));                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
               // Navigator.of(context).pop();
             }

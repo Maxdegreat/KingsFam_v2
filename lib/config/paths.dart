@@ -16,7 +16,7 @@ class Paths {
   static const String friendsSub = 'friendsSub';
   static const String noty = 'noty';
   static const String notifications = 'notifications';
-  static const String ring = 'ring'  ;
+  static const String ring = 'ring';
   static const String ringing = 'ringing';
   static const String commuinityCall = 'commuinityCall';
   static const String call = 'callModel';
@@ -24,6 +24,7 @@ class Paths {
   static const String event = 'evnt';
   static const String mention = 'mention';
   static const String permissions = 'permissions';
+  static const String perked = 'perked';
 
   //sub collections
   static const String postsComments = 'postComments';
@@ -34,5 +35,6 @@ class Paths {
 
   //base collections
   static const String usernameSet = 'usernameSet';
-  static const String usernameSetId = 'ox3bGySRvkIIcwb6VWAZ'; //idk what this is for but not tryna break my code...
+  static const String usernameSetId =
+      'ox3bGySRvkIIcwb6VWAZ'; //idk what this is for but not tryna break my code...
 }

@@ -43,10 +43,8 @@ class ChurchRepository extends BaseChurchRepository {
         .where('members.$currId.userReference', isEqualTo: userRef)
         .snapshots()
         .map((snap) {
-     
       List<Future<Church?>> chs = [];
       snap.docs.forEach((doc) async {
-       
         Future<Church> ch = Church.fromDoc(doc);
         chs.add(ch);
       });
@@ -113,19 +111,34 @@ class ChurchRepository extends BaseChurchRepository {
     return [];
   }
 
-  delCord({required KingsCord cord, required Church cmmuinity}) {
-    fb.doc(cmmuinity.id).collection(Paths.kingsCord).doc(cord.id).delete();
-    var messagesToBeDeleated = fb
+  delCord({required KingsCord cord, required Church cmmuinity}) async {
+    
+    await FirebaseFirestore.instance
+        .collection(Paths.church)
         .doc(cmmuinity.id)
         .collection(Paths.kingsCord)
-        .doc(cord.id)
-        .collection(Paths.messages);
-    WriteBatch batch = FirebaseFirestore.instance.batch();
-    var messages = messagesToBeDeleated.get().then((value) {
-      value.docs.forEach((doc) {
-        messagesToBeDeleated.doc(doc.id).delete();
-        //batch.delete(messagesToBeDeleated.doc(doc.id));
-      });
+        .where('tag', isEqualTo: cmmuinity.id)
+        .limit(2)
+        .get()
+        .then((value) {
+      if (value.docs.length < 2) {
+        log("less than 2, not del");
+        return;
+      } else {
+        fb.doc(cmmuinity.id).collection(Paths.kingsCord).doc(cord.id).delete();
+        var messagesToBeDeleated = fb
+            .doc(cmmuinity.id)
+            .collection(Paths.kingsCord)
+            .doc(cord.id)
+            .collection(Paths.messages);
+        WriteBatch batch = FirebaseFirestore.instance.batch();
+        var messages = messagesToBeDeleated.get().then((value) {
+          value.docs.forEach((doc) {
+            messagesToBeDeleated.doc(doc.id).delete();
+            //batch.delete(messagesToBeDeleated.doc(doc.id));
+          });
+        });
+      }
     });
 
     //batch.commit();
@@ -441,7 +454,8 @@ class ChurchRepository extends BaseChurchRepository {
     return;
   }
 
-  Future<Stream<bool>> streamIsCmMember({required Church cm, required String authorId}) async {
+  Future<Stream<bool>> streamIsCmMember(
+      {required Church cm, required String authorId}) async {
     final doc = await fb.doc(cm.id).get();
 
     Set<String> memIds = Church.getCommunityMemberIds(doc);

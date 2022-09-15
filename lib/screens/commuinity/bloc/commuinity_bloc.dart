@@ -90,7 +90,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       final Map<String, bool> mentionedMap = {};
       _streamSubscriptionKingsCord?.cancel();
       _streamSubscriptionKingsCord = _churchRepository
-          .getCommuinityCordsStream(commuinity: event.commuinity, limit: 20)
+          .getCommuinityCordsStream(commuinity: event.commuinity, limit: 100)
           .listen((kcords) async {
           final allCords = await Future.wait(kcords);
            for (var kcAwait in kcords) {
@@ -105,7 +105,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
                  else {
                    mentionedMap[kc.id!] = false
                  },
-                 emit(state.copyWith(mentionedMap: mentionedMap, currUserr: userr))
+                 emit(state.copyWith(mentionedMap: mentionedMap, currUserr: userr, kingCords: allCords))
                });
              }
            }
@@ -205,8 +205,11 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   Future<void> delKc(
       {required KingsCord cord, required Church commuinity}) async {
-    await _churchRepository.delCord(cmmuinity: commuinity, cord: cord);
+        // gives unexpected behavior
+        // should not del kc if only on kc.
+       await _churchRepository.delCord(cmmuinity: commuinity, cord: cord); log("del complete");
   }
+
 
   Future<void> makeNewKc(
       {required Church commuinity,
@@ -214,7 +217,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       required BuildContext ctx,}) async {
 
       Userr currUser = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
-      KingsCord? kc = await _churchRepository.newKingsCord2(ch: commuinity, cordName: formatCordName(cordName), currUser: currUser);
+      await _churchRepository.newKingsCord2(ch: commuinity, cordName: formatCordName(cordName), currUser: currUser);
       // WE DO NOT EMIT TO STATE BECAUSE THERE IS ALREDY A STREAM LISTENING FOR KC'S AND THE STREAM EMITS TO STATE
       // ANY ATTEMPT TO EMIT FROM HERE WHILE THE STREAM IS ACTIVE WILL CAUSE SOME OUT OF RANGE ERRORS.
     

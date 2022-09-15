@@ -23,6 +23,7 @@ import 'package:visibility_detector/visibility_detector.dart';
 import '../../models/church_model.dart';
 import '../../models/post_model.dart';
 import '../../models/user_model.dart';
+import '../../widgets/snackbar.dart';
 import '../nav/cubit/bottomnavbar_cubit.dart';
 
 class PostContentArgs {
@@ -41,11 +42,12 @@ class PostContentScreen extends StatefulWidget {
 
   static const String routeName = '/postContent';
   static Route route({required PostContentArgs args}) => MaterialPageRoute(
-      settings: const RouteSettings(name: routeName),
-      builder: (context) => PostContentScreen(
-              content: args.content,
-              type: args.type,
-            ),);
+        settings: const RouteSettings(name: routeName),
+        builder: (context) => PostContentScreen(
+          content: args.content,
+          type: args.type,
+        ),
+      );
 }
 
 class _PostContentScreenState extends State<PostContentScreen> {
@@ -56,7 +58,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
 
   TextStyle style1 = GoogleFonts.adamina(color: Colors.green);
   TextStyle style2 = GoogleFonts.adamina(color: Colors.grey);
-  
+
   File? imgF;
   File? vidF;
   String caption = "";
@@ -66,7 +68,6 @@ class _PostContentScreenState extends State<PostContentScreen> {
   String? cmIdPostingTo;
   bool submitting = false;
   bool success = false;
-  
 
   @override
   void initState() {
@@ -78,12 +79,13 @@ class _PostContentScreenState extends State<PostContentScreen> {
     if (widget.type == "video") {
       vidCtrl = VideoPlayerController.file(vidF!);
       vidCtrl
-      ..addListener(() => setState(() {}))
-      ..setLooping(true) // -------------------------------- SET PERKED LOOPING TO TRUE
-      ..initialize().then((_) {
-        vidCtrl.play();
-        vidCtrl.setVolume(1);
-      });
+        ..addListener(() => setState(() {}))
+        ..setLooping(
+            true) // -------------------------------- SET PERKED LOOPING TO TRUE
+        ..initialize().then((_) {
+          vidCtrl.play();
+          vidCtrl.setVolume(1);
+        });
     }
     super.initState();
   }
@@ -99,11 +101,13 @@ class _PostContentScreenState extends State<PostContentScreen> {
   void listenToScrolling() async {
     if (scrollCtrl.position.atEdge) {
       if (scrollCtrl.position.pixels != 0.0 &&
-          scrollCtrl.position.maxScrollExtent ==
-              scrollCtrl.position.pixels) {
-                var lst = await ChurchRepository().getCommuinitysUserIn(userrId: context.read<AuthBloc>().state.user!.uid, limit: 10, lastStringId: lastStringId );
-                chs..addAll(lst);
-                setState(() {});
+          scrollCtrl.position.maxScrollExtent == scrollCtrl.position.pixels) {
+        var lst = await ChurchRepository().getCommuinitysUserIn(
+            userrId: context.read<AuthBloc>().state.user!.uid,
+            limit: 10,
+            lastStringId: lastStringId);
+        chs..addAll(lst);
+        setState(() {});
       }
     }
   }
@@ -111,28 +115,28 @@ class _PostContentScreenState extends State<PostContentScreen> {
   void initStateVars() async {
     if (widget.type == "image")
       imgF = widget.content;
-    else if (widget.type == "video")
-      vidF = widget.content;
-    var lst = await ChurchRepository().getCommuinitysUserIn(userrId: context.read<AuthBloc>().state.user!.uid, limit: 10);
+    else if (widget.type == "video") vidF = widget.content;
+    var lst = await ChurchRepository().getCommuinitysUserIn(
+        userrId: context.read<AuthBloc>().state.user!.uid, limit: 10);
     lastStringId = lst.last.id;
     chs..addAll(lst);
     setState(() {});
   }
 
-
-
   Widget submitButton() {
     return TextButton(
-      onPressed: () => submit(), 
+      onPressed: () => submit(),
       child: Row(
         children: [
           Text("POST", style: TextStyle(color: Colors.green)),
-          Icon(Icons.arrow_forward, color: Colors.green,)
+          Icon(
+            Icons.arrow_forward,
+            color: Colors.green,
+          )
         ],
       ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -140,27 +144,38 @@ class _PostContentScreenState extends State<PostContentScreen> {
     if (success) {
       // Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
       // Navigator.of(context).popUntil((_) => popScreens++ >= 1); log("we poped $popScreens");
-       Navigator.of(context).pop();
+      //Navigator.of(context).pop();
     }
     log("curr user is: " + context.read<ProfileBloc>().state.userr.toString());
     return Scaffold(
-      appBar: AppBar(title: Text('Post'), actions: [submitButton()],),
-      body:  SingleChildScrollView(
+        appBar: AppBar(
+          title: Text('Post'),
+          actions: [submitButton()],
+        ),
+        body: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              submitting ? LinearProgressIndicator(color: Colors.amber,) : SizedBox.shrink(),
+              submitting
+                  ? LinearProgressIndicator(
+                      color: Colors.amber,
+                    )
+                  : SizedBox.shrink(),
               txtBox("c"),
-              Center(child: imgF != null ? displayImageWid(imgF!) : vidF != null ? displayVidWid(vidF!) : SizedBox.shrink()),
+              Center(
+                  child: imgF != null
+                      ? displayImageWid(imgF!)
+                      : vidF != null
+                          ? displayVidWid(vidF!)
+                          : SizedBox.shrink()),
               txtBox("h"),
               Text("Hey Fam Wana Include Your Post In A Community?"),
               cmLisView()
             ],
           ),
-        )
-    );
+        ));
   }
 
   Widget txtBox(String s) {
@@ -211,9 +226,8 @@ class _PostContentScreenState extends State<PostContentScreen> {
       height: 300,
       width: 300,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5.0),
-          image: DecorationImage(
-              image: FileImage(imgF), fit: BoxFit.cover)),
+          borderRadius: BorderRadius.circular(5.0),
+          image: DecorationImage(image: FileImage(imgF), fit: BoxFit.cover)),
     );
   }
 
@@ -247,97 +261,123 @@ class _PostContentScreenState extends State<PostContentScreen> {
             onTap: () {
               if (!submitting) {
                 if (ch.id == cmIdPostingTo) {
-                cmIdPostingTo = null;
-                setState(() {});
-              } else {
-                cmIdPostingTo = ch.id;
-                setState(() {});
-              }
+                  cmIdPostingTo = null;
+                  setState(() {});
+                } else {
+                  cmIdPostingTo = ch.id;
+                  setState(() {});
+                }
               }
             },
             child: Container(
               height: 130,
               width: 130,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(7.0),
-                image: DecorationImage( image: CachedNetworkImageProvider(ch.imageUrl), fit: BoxFit.cover)
-              ),
+                  borderRadius: BorderRadius.circular(7.0),
+                  image: DecorationImage(
+                      image: CachedNetworkImageProvider(ch.imageUrl),
+                      fit: BoxFit.cover)),
             ),
           ),
-          Text(ch.name, style: (cmIdPostingTo != null && ch.id == cmIdPostingTo) ? style1 : style2,),
-          Text(ch.location, style: (cmIdPostingTo != null && ch.id == cmIdPostingTo) ? style1 : style2,),
+          Text(
+            ch.name,
+            style: (cmIdPostingTo != null && ch.id == cmIdPostingTo)
+                ? style1
+                : style2,
+          ),
+          Text(
+            ch.location,
+            style: (cmIdPostingTo != null && ch.id == cmIdPostingTo)
+                ? style1
+                : style2,
+          ),
         ],
       ),
     );
   }
 
-    void submit() async {
-      submitting = true;
-      setState(() {});
-      final author = context.read<ProfileBloc>().state.userr;
-      final Church ch = Church(searchPram: [], name: '', location: '', imageUrl: '', members: {}, events: [], about: '', recentMsgTime: Timestamp.now(), boosted: 0, themePack: 'none');
+  void submit() async {
+    if (submitting == true) return;
+    submitting = true;
+    setState(() {});
+    final author = context.read<ProfileBloc>().state.userr;
+    final Church ch = Church(
+        searchPram: [],
+        name: '',
+        location: '',
+        imageUrl: '',
+        members: {},
+        events: [],
+        about: '',
+        recentMsgTime: Timestamp.now(),
+        boosted: 0,
+        themePack: 'none');
 
-      if (imgF != null) {
-        final postImageUrl = await StorageRepository().uploadPostImage(image: imgF!);
-        var decodedImage = await decodeImageFromList(imgF!.readAsBytesSync());
-        // var heightImgF = decodedImage.height;
-        final post = Post(
-            author: author,
-            quote: null,
-            imageUrl: postImageUrl,
-            videoUrl: null,
-            thumbnailUrl: null,
-            commuinity: ch.copyWith(id: cmIdPostingTo),
-            soundTrackUrl: null,
-            caption: caption,
-            likes: 0,
-            date: Timestamp.now(),
-            height: 0, 
+    if (imgF != null) {
+      final postImageUrl =
+          await StorageRepository().uploadPostImage(image: imgF!);
+      var decodedImage = await decodeImageFromList(imgF!.readAsBytesSync());
+      // var heightImgF = decodedImage.height;
+      final post = Post(
+        author: author,
+        quote: null,
+        imageUrl: postImageUrl,
+        videoUrl: null,
+        thumbnailUrl: null,
+        commuinity: ch.copyWith(id: cmIdPostingTo),
+        soundTrackUrl: null,
+        caption: caption,
+        likes: 0,
+        date: Timestamp.now(),
+        height: 0,
+      );
 
-        );
+      PostsRepository().createPost(post: post);
+      snackBar(
+          snackMessage: "working on your post fam",
+          context: context,
+          bgColor: Colors.green);
+      Navigator.popUntil(
+          context, ModalRoute.withName(Navigator.defaultRouteName));
+      log("----------->posted<---------------- from post_content_screen.dart");
+    } else if (vidF != null) {
+      final thumbnail = await VideoThumbnail.thumbnailFile(
+        video: vidF!.path,
+        thumbnailPath: (await getTemporaryDirectory()).path,
+        imageFormat: ImageFormat.PNG,
+        //maxHeight: 64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
+        quality: 80,
+      );
 
-        await PostsRepository().createPost(post: post);
-        success = true;
-        setState(() {});
-        log("----------->posted<---------------- from post_content_screen.dart");
+      final thumbnailUrl = await StorageRepository()
+          .uploadThumbnailVideo(thumbnail: File(thumbnail!));
 
+      final postVideoUrl =
+          await StorageRepository().uploadPostVideo(video: vidF!);
 
-        
-      }  else if (vidF != null) {
+      final post = Post(
+          author: author,
+          quote: null,
+          imageUrl: null,
+          videoUrl: postVideoUrl,
+          thumbnailUrl: thumbnailUrl,
+          commuinity: ch.copyWith(id: cmIdPostingTo),
+          soundTrackUrl: null,
+          caption: caption,
+          likes: 0,
+          date: Timestamp.now(),
+          height: null);
 
-        // make the thumbnail
-        final thumbnail = await VideoThumbnail.thumbnailFile(
-          video: vidF!.path,
-          thumbnailPath: (await getTemporaryDirectory()).path,
-          imageFormat: ImageFormat.PNG,
-          //maxHeight: 64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
-          quality: 100,
-        );
+      PostsRepository().createPost(post: post);
+      snackBar(
+          snackMessage: "working on your post fam",
+          context: context,
+          bgColor: Colors.green);
+      Navigator.popUntil(
+          context, ModalRoute.withName(Navigator.defaultRouteName));
+      //Navigator.of(context).popUntil((_) => popScreens++ >= 1);
 
-        final  thumbnailUrl = await StorageRepository().uploadThumbnailVideo(thumbnail: File(thumbnail!));
-        print("The thumbnail:  $thumbnail");
-        final postVideoUrl = await StorageRepository().uploadPostVideo(video: vidF!);
-
-        final post = Post(
-            author: author,
-            quote: null,
-            imageUrl: null,
-            videoUrl: postVideoUrl,
-            thumbnailUrl: thumbnailUrl,
-            commuinity: ch.copyWith(id: cmIdPostingTo),
-            soundTrackUrl: null,
-            caption: caption,
-            likes: 0,
-            date: Timestamp.now(),
-            height: null
-
-        );
-       
-        await PostsRepository().createPost(post: post);
-        success = true;
-        setState(() {});
-        log("----------->posted<---------------- from post_content_screen.dart");
-      }
+      log("----------->posted<---------------- from post_content_screen.dart");
+    }
   }
-
 }

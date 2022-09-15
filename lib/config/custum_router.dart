@@ -142,8 +142,8 @@ class CustomRoute {
         return CommunityUpdateRoleScreen.route(
             args: settings.arguments as CommunityUpdateRoleArgsScreen);
 
-      case SnackTimeShopScreen.routeName:
-        return SnackTimeShopScreen.route();
+      // case SnackTimeShopScreen.routeName:
+        // return SnackTimeShopScreen.route(settings.arguments as SnackTimeArgs);
 
       case BuyPerkScreen.routeName:
         return BuyPerkScreen.route(settings.arguments as BuyPerkArgs);
