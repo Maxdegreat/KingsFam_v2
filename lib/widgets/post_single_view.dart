@@ -70,16 +70,24 @@ class _PostSingleViewState extends State<PostSingleView> {
     Size size = MediaQuery.of(context).size;
     return Stack(
       children: [
-        contentContainer(post: widget.post, size: size),
+        Align(
+            alignment: Alignment.center,
+            child: contentContainer(post: widget.post, size: size)),
         _visible ? blackOverLay() : SizedBox.shrink(),
-        Positioned.fill(child: userPicAndName(name: widget.post.author.username, imgurl: widget.post.author.profileImageUrl)),
-        Positioned.fill(child: viewCommuinity(commuinity: widget.post.commuinity)),
-        // captionBox(caption: widget.post.caption, size: size),
-        Positioned.fill(child: interactions()),
         Positioned.fill(
+            child: userPicAndName(
+                name: widget.post.author.username,
+                imgurl: widget.post.author.profileImageUrl)),
+        Positioned.fill(
+            child: viewCommuinity(
+                commuinity: widget.post.commuinity,
+                isImage: widget.post.imageUrl != null)),
+        // captionBox(caption: widget.post.caption, size: size),
+        Align(
+            alignment: Alignment.bottomLeft,
             child: showCaptions(
                 caption: widget.post.caption,
-                author: widget.post.author.username))
+                author: widget.post.author.username)),
       ],
     );
   }
@@ -101,50 +109,90 @@ class _PostSingleViewState extends State<PostSingleView> {
     );
   }
 
-  Widget viewCommuinity({required Church? commuinity}) {
+  Widget viewCommuinity({required Church? commuinity, required bool isImage}) {
     return commuinity != null
         ? Stack(children: [
-            _visible
+            !isImage
                 ? Positioned(
-                    top: 90,
-                    right: 30,
-                    left: 0,
+                    top: 0,
+                    right: 0,
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                          top: 7.0, right: 12.0, left: 12.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.white),
-                            borderRadius: BorderRadius.circular(3)),
+                        padding: const EdgeInsets.only(
+                            top: 7.0, right: 12.0, left: 12.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.white),
+                              borderRadius: BorderRadius.circular(3)),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 3),
+                            child: GestureDetector(
+                              onTap: () => Navigator.of(context).pushNamed(
+                                  CommuinityScreen.routeName,
+                                  arguments: CommuinityScreenArgs(
+                                      commuinity: commuinity)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // ok add the commuinity image
+                                  commuinity_pf_img(
+                                      commuinity.imageUrl, 25, 25),
+                                  SizedBox(width: 7),
+                                  // add the commuinity name
+                                  Text(
+                                    commuinity.name,
+                                    style: TextStyle(
+                                        color: Colors.grey[350], fontSize: 17),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        )))
+                : _visible
+                    ? Positioned(
+                        top: 90,
+                        right: 30,
+                        left: 0,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 5, horizontal: 3),
-                          child: GestureDetector(
-                            onTap: () => Navigator.of(context).pushNamed(
-                                CommuinityScreen.routeName,
-                                arguments: CommuinityScreenArgs(
-                                    commuinity: commuinity)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                // ok add the commuinity image
-                                commuinity_pf_img(commuinity.imageUrl, 25, 25),
-                                SizedBox(width: 7),
-                                // add the commuinity name
-                                Text(
-                                  commuinity.name,
-                                  style: TextStyle(
-                                      color: Colors.grey[350], fontSize: 17),
-                                )
-                              ],
+                          padding: const EdgeInsets.only(
+                              top: 7.0, right: 12.0, left: 12.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.white),
+                                borderRadius: BorderRadius.circular(3)),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 3),
+                              child: GestureDetector(
+                                onTap: () => Navigator.of(context).pushNamed(
+                                    CommuinityScreen.routeName,
+                                    arguments: CommuinityScreenArgs(
+                                        commuinity: commuinity)),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // ok add the commuinity image
+                                    commuinity_pf_img(
+                                        commuinity.imageUrl, 25, 25),
+                                    SizedBox(width: 7),
+                                    // add the commuinity name
+                                    Text(
+                                      commuinity.name,
+                                      style: TextStyle(
+                                          color: Colors.grey[350],
+                                          fontSize: 17),
+                                    )
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                  )
-                : SizedBox.shrink()
+                      )
+                    : SizedBox.shrink()
           ])
         : _visible
             ? Stack(
@@ -167,61 +215,43 @@ class _PostSingleViewState extends State<PostSingleView> {
 
   Widget interactions() {
     return Stack(children: [
-      // Positioned.fill(child: child)
-      Positioned(
-          bottom: 310,
-          right: 20,
-          child: Container(
-            width: 80,
+      Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+           
             child: widget.isLiked
-                ? Icon(Icons.thumb_up, color: Colors.green)
-                : Icon(Icons.thumb_up),
-          )),
-      Positioned(
-        bottom: 270,
-        right: 20,
-        child: SizedBox(
-          width: 80,
-          child: Center(
-            child: Container(
-              //margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: .5),
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white),
-                  borderRadius: BorderRadius.circular(7)),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                child: Text(
-                    "${widget.recentlyLiked ? widget.post.likes + 1 : widget.post.likes}"),
-              ),
+                ? Icon(Icons.keyboard_double_arrow_up_sharp,
+                    size: 35, color: Colors.amber)
+                : Icon(
+                    Icons.keyboard_arrow_up_outlined,
+                    size: 30,
+                  ),
+          ),
+          Container(
+            //margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: .5),
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.white),
+                borderRadius: BorderRadius.circular(7)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+              child: Text(
+                  "${widget.recentlyLiked ? widget.post.likes + 1 : widget.post.likes}"),
             ),
           ),
-        ),
-      ),
-      Positioned(
-        bottom: 220,
-        right: 20,
-        child: Container(
-          width: 80,
-          child: IconButton(
-              // onPressed: () => commentSheet(post: widget.post),
-              onPressed: () => Navigator.of(context).pushNamed(
-                  CommentScreen.routeName,
-                  arguments: CommentScreenArgs(post: widget.post)),
-              icon: Icon(Icons.message)),
-        ),
-      ),
-      Positioned(
-          bottom: 180,
-          right: 20,
-          child: Container(
-              //margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: .5),
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white),
-                  borderRadius: BorderRadius.circular(7)),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                child: Text("Comments"),
-              )))
+          Container(
+        
+            child: IconButton(
+                // onPressed: () => commentSheet(post: widget.post),
+                onPressed: () => Navigator.of(context).pushNamed(
+                    CommentScreen.routeName,
+                    arguments: CommentScreenArgs(post: widget.post)),
+                icon: Icon(Icons.message)),
+          ),
+        ],
+      )
     ]);
   }
 
@@ -237,7 +267,8 @@ class _PostSingleViewState extends State<PostSingleView> {
             child: GestureDetector(
               onTap: () => Navigator.of(context).pushNamed(
                   ProfileScreen.routeName,
-                  arguments: ProfileScreenArgs(userId: widget.post.author.id, vidCtrl: vidCtrl)),
+                  arguments: ProfileScreenArgs(
+                      userId: widget.post.author.id, vidCtrl: vidCtrl)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -329,7 +360,7 @@ class _PostSingleViewState extends State<PostSingleView> {
         ),
       );
     } else if (post.videoUrl != null) {
-    // context.read<BottomnavbarCubit>().setVidCtrl(vidCtrl);
+      // context.read<BottomnavbarCubit>().setVidCtrl(vidCtrl);
       return VisibilityDetector(
         key: ObjectKey(widget.post),
         onVisibilityChanged: (vis) {
@@ -339,16 +370,13 @@ class _PostSingleViewState extends State<PostSingleView> {
         },
         child: GestureDetector(
           onDoubleTap: widget.onLike,
-          child: Align(
-            alignment: Alignment.center,
-            child: VideoPostView16_9(
-              tabCtrl: widget.tabCtrl,
-              post: widget.post,
-              userr: widget.post.author,
-              videoUrl: widget.post.videoUrl!,
-              playVidNow: true,
-              controller: vidCtrl,
-            ),
+          child: VideoPostView16_9(
+            tabCtrl: widget.tabCtrl,
+            post: widget.post,
+            userr: widget.post.author,
+            videoUrl: widget.post.videoUrl!,
+            playVidNow: true,
+            controller: vidCtrl,
           ),
         ),
       );
@@ -369,41 +397,48 @@ class _PostSingleViewState extends State<PostSingleView> {
     return _captionTextBox(caption, author, captionContainerSize);
   }
 
-  Container _captionTextBox(String caption, String author, double size) {
+  _captionTextBox(String caption, String author, double size) {
     double width = MediaQuery.of(context).size.width;
     return Container(
-      height: size + 25,
-      width: double.infinity,
-      child: Stack(children: [
-        Positioned(
-          bottom: 10,
-          right: 30,
-          left: 0,
-          child: Container(
-            height: size,
-            width: width,
-            color: Colors.black54,
+      color: Colors.black26,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          interactions(),
+         
+          Container(
+            height: size + 25,
+            width: double.infinity,
+            child: Stack(children: [
+              Positioned(
+                  bottom: 10,
+                  right: 30,
+                  left: 0,
+                  child: RichText(
+                    text: TextSpan(
+                      style: DefaultTextStyle.of(context).style,
+                      children: <TextSpan>[
+                        TextSpan(
+                            text: widget.post.date.timeAgo().toString() + '\n',
+                            style: GoogleFonts.adventPro(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 19,
+                                color: Colors.white)),
+                        TextSpan(
+                            text: author + " ~ " + caption,
+                            style: GoogleFonts.adventPro(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 19,
+                                color: Colors.white)),
+                      ],
+                    ),
+                  ))
+            ]),
           ),
-        ),
-        Positioned(
-            bottom: 10,
-            right: 30,
-            left: 0,
-            child: RichText(
-              text: TextSpan(
-                style: DefaultTextStyle.of(context).style,
-                children: <TextSpan>[
-                  TextSpan(
-                    text: widget.post.date.timeAgo().toString() + '\n',
-                    style: GoogleFonts.adventPro(fontWeight: FontWeight.w700, fontSize: 19, color: Colors.white)
-                  ),
-                  TextSpan(
-                      text:  author + " ~ " + caption,
-                      style: GoogleFonts.adventPro(fontWeight: FontWeight.w900, fontSize: 19, color: Colors.white)),
-                ],
-              ),
-            ))
-      ]),
+        ],
+      ),
     );
   }
 

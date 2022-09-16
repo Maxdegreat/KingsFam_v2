@@ -34,12 +34,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   Widget build(BuildContext context) { 
 
     return widget.controller.value.isInitialized
-      ? ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: double.infinity,
-          minHeight: 900), //size of video player in app
-        child: BuildVideo(controller: this.widget.controller, post: widget.post, user: widget.user,)
-        )
+      ? BuildVideo(controller: this.widget.controller, post: widget.post, user: widget.user,)
       //Container(height: 250, child: BuildVideo(controller: controller))
       : Container(
           height: 250,
