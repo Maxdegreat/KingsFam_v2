@@ -11,6 +11,7 @@ import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/profile/widgets/commuinity_container.dart';
 import 'package:kingsfam/screens/screens.dart';
+import 'package:kingsfam/widgets/prayer/prayer_snipit.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -219,9 +220,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ctxFromPf: context),
 
                         // add a linked list of commuinitys that I am in ... lol im done with this alredy but linked list dont make me laugh
-                        CommuinityContainer(
-                            cms: state.cms, ownerId: widget.ownerId!),
+                        CommuinityContainer(cms: state.cms, ownerId: widget.ownerId),
+                        prayerSnipit("Jesus Help Me To Focus on What You Have Called Me To Do And To Keep To My Words In Jesus Name. Amen", hexcolor.hexcolorCode(state.userr.colorPref)),
+
                       ]),
+                      
                 ),
                 state.loadingPost
                     ? SliverToBoxAdapter(
@@ -246,9 +249,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            crossAxisSpacing: 10.0,
-            mainAxisSpacing: 10.0,
-            mainAxisExtent: 320.0,
+            crossAxisSpacing: 10.0, // x axis
+            mainAxisSpacing: 10.0, // y axis
+            mainAxisExtent: 240.0, // 
           ),
           primary: false,
           shrinkWrap: true,
@@ -267,8 +270,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           isFromPfpScreen: true)),
                   //Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(startIndex: index, posts: state.post)),
                   child: Container(
-                    height: 240,
-                    width: 300,
+                    height: 190,
+                    width: 250,
                     decoration: BoxDecoration(
                         color: Colors.white,
                         image: post!.imageUrl != null

@@ -43,6 +43,10 @@ class EditProfileCubit extends Cubit<EditProfileState> {
     emit(state.copyWith(bio: bio, status: EditProfileStatus.initial));
   }
 
+  void prayerChanged(String prayer) {
+    emit(state.copyWith(prayer: prayer, status: EditProfileStatus.initial));
+  }
+
   void usernameChanged(String username) {
     emit(state.copyWith(username: username, status: EditProfileStatus.initial));
   }

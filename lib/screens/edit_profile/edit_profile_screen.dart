@@ -150,6 +150,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ? 'Bio can\'t be empty'
                                   : null,
                             ),
+                            // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ P R A Y E R ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                             TextFormField(
+                              initialValue: widget.userr.bio,
+                              decoration: InputDecoration(hintText: 'Add a Prayer for the family to see and pray'),
+                              onChanged: (value) => context
+                                  .read<EditProfileCubit>()
+                                  .prayerChanged(value),
+                              validator: (value) {
+                                return null;
+                              }
+                            ),
                             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ C O L O R P R E F ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                             SizedBox(height: 15.0),
                             Center(
