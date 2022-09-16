@@ -57,15 +57,15 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void listenToScrolling() {
-      if (scrollController.position.atEdge) {
-        if (scrollController.position.pixels != 0.0 &&
-            scrollController.position.maxScrollExtent ==
-                scrollController.position.pixels) {
-          context.read<SearchBloc>()
-            ..add(GrabUsersPaginate(
-                currId: context.read<AuthBloc>().state.user!.uid));
-        }
+    if (scrollController.position.atEdge) {
+      if (scrollController.position.pixels != 0.0 &&
+          scrollController.position.maxScrollExtent ==
+              scrollController.position.pixels) {
+        context.read<SearchBloc>()
+          ..add(GrabUsersPaginate(
+              currId: context.read<AuthBloc>().state.user!.uid));
       }
+    }
   }
 
   // this is to make sure the search screen is initalized only once
@@ -159,17 +159,18 @@ class _SearchScreenState extends State<SearchScreen> {
                               color: Color(hexcolor.hexcolorCode('#FFC050')),
                               fontSize: 20)),
                       TextButton(
-                          onPressed: () => NavHelper().navToMoreCm(context, "local", context.read<SearchBloc>()),
+                          onPressed: () => NavHelper().navToMoreCm(
+                              context, "local", context.read<SearchBloc>()),
                           child: Text(
                             "More Cm's",
                             style: Theme.of(context).textTheme.bodyText1,
                           ))
                     ],
                   ),
-                  SizedBox(height: 5.0),
+                  SizedBox(height: 3.0),
                   state.churches.length > 0
                       ? Container(
-                          height: 170,
+                          height: 205,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: state.churches.length,
@@ -186,7 +187,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           height: 170,
                           child: Center(
                               child: Text("You Are In Every Community?!?!"))),
-                  SizedBox(height: 20.0),
+                  SizedBox(height: 10.0),
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -199,7 +200,8 @@ class _SearchScreenState extends State<SearchScreen> {
                             fontSize: 20),
                       ),
                       TextButton(
-                          onPressed: () => NavHelper().navToMoreCm(context, "global", context.read<SearchBloc>()),
+                          onPressed: () => NavHelper().navToMoreCm(
+                              context, "global", context.read<SearchBloc>()),
                           child: Text(
                             "More Cm's",
                             style: Theme.of(context).textTheme.bodyText1,
@@ -210,12 +212,13 @@ class _SearchScreenState extends State<SearchScreen> {
                   SizedBox(height: 5.0),
                   state.chruchesNotEqualLocation.length > 0
                       ? Container(
-                          height: 170,
+                          height: 205,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: state.chruchesNotEqualLocation.length,
                             itemBuilder: (context, index) {
-                              Church church = state.chruchesNotEqualLocation[index];
+                              Church church =
+                                  state.chruchesNotEqualLocation[index];
                               return GestureDetector(
                                   onTap: () => navToChurch(
                                       context: context, commuinity: church),
@@ -228,7 +231,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           child:
                               Center(child: Text("hmm, nothing to see here"))),
 
-                  SizedBox(height: 20.0),
+                  SizedBox(height: 10.0),
                   Text(
                     "Find The Fam",
                     style: TextStyle(
@@ -322,13 +325,14 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget search_Church_container({required Church church}) {
-    return Stack(
-      alignment: AlignmentDirectional.bottomCenter,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
           child: Container(
-            height: 152,
+            height: 135,
             width: MediaQuery.of(context).size.width * .70,
             decoration: BoxDecoration(
                 color: Color.fromARGB(255, 102, 102, 103),
@@ -338,31 +342,13 @@ class _SearchScreenState extends State<SearchScreen> {
                 borderRadius: BorderRadius.circular(5.0)),
           ),
         ),
-        Expanded(
-          flex: 1,
-          child: Container(
-            height: 150 / 1.5, //use parent height / 2,
-            width: MediaQuery.of(context).size.width * .70,
-            decoration: BoxDecoration(color: Colors.black54),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("${church.name}",
-                    style: TextStyle(fontSize: 20),
-                    overflow: TextOverflow.fade),
-                Text("At ${church.location}",
-                    style: TextStyle(fontSize: 20),
-                    overflow: TextOverflow.fade),
-                Text(
-                  "${church.members.length} members",
-                  style: TextStyle(fontSize: 20),
-                  overflow: TextOverflow.fade,
-                ),
-              ],
-            ),
-          ),
-        )
+        Text("${church.name}",
+            style: TextStyle(fontSize: 20), overflow: TextOverflow.fade),
+        Text(
+          "${church.members.length} members ~ ${church.location}",
+          style: TextStyle(fontSize: 20),
+          overflow: TextOverflow.fade,
+        ),
       ],
     );
   }
