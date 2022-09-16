@@ -2,7 +2,7 @@ part of 'commuinity_bloc.dart';
 enum CommuintyStatus {inital, loading, loaded, error}
 
 class CommuinityState extends Equatable {
-  final bool isMember;
+  final bool? isMember;
   final bool collapseCordColumn;
   final bool collapseVvrColumn;
   final List<Post?> postDisplay;
@@ -33,10 +33,10 @@ class CommuinityState extends Equatable {
 });
   
   @override
-  List<Object> get props => [currUserr, mentionedMap, collapseCordColumn, collapseVvrColumn, permissions, calls, kingCords, postDisplay, isMember, status, failure, themePack, boosted];
+  List<Object?> get props => [currUserr, mentionedMap, collapseCordColumn, collapseVvrColumn, permissions, calls, kingCords, postDisplay, isMember, status, failure, themePack, boosted];
   
   factory CommuinityState.inital() {
-    return CommuinityState(currUserr: Userr.empty, mentionedMap: {}, collapseCordColumn: false, collapseVvrColumn: false, permissions: {}, isMember: false, postDisplay: [], kingCords: [], calls: [], status: CommuintyStatus.inital, failure: Failure(), themePack: 'none', boosted: 0);
+    return CommuinityState(currUserr: Userr.empty, mentionedMap: {}, collapseCordColumn: false, collapseVvrColumn: false, permissions: {}, isMember: null, postDisplay: [], kingCords: [], calls: [], status: CommuintyStatus.inital, failure: Failure(), themePack: 'none', boosted: 0);
   }
   CommuinityState copyWith({
     bool? isMember,

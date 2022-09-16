@@ -21,7 +21,8 @@ class Actions {
     /* 4 */ 'cm/addChatRooms',
     /* 5 */ 'cm/addVvr',
     /* 6 */ 'cm/kickMembers',
-    /* 7 */ 'cm/delChatRooms'
+    /* 7 */ 'cm/delChatRooms',
+    /* 8 */ 'cm/leaveCommunity'
   ];
 
   static final communityAdminDefaultActions = [
@@ -31,16 +32,19 @@ class Actions {
     communityActions[3],
     communityActions[4],
     communityActions[5],
-    communityActions[6]
+    communityActions[6],
+    communityActions[8],
   ];
 
   static final communityElderDefaultActions = [
     communityActions[6],
     communityActions[5],
     communityActions[4],
+    communityActions[8],
   ];
 
   static final communityMembersActins = [
-    "none"
+    "none",
+    communityActions[8],
   ];
 }

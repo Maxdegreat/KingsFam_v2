@@ -161,10 +161,30 @@ class _CommuinityScreenState extends State<CommuinityScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  state.isMember
+                  state.isMember == null ? SizedBox.shrink() : state.isMember != null
                       ? ElevatedButton(
                           onPressed: () {
-                            _onLeaveCommuinity();
+                            Userr? currUsr = null;
+                            var lst = widget.commuinity.members.keys.toList();
+                            for (int i = 0;
+                                i < widget.commuinity.members.length;
+                                i++) {
+                              if (lst[i].id ==
+                                  context.read<AuthBloc>().state.user!.uid) {
+                                currUsr = lst[i];
+                                // log("found the informatjion we were looking gor and rhis is me tping ewithout thinkting at all as ig you lweant to see how sgas ttla dcaion tipa rt;his is my true speds");
+                                break;
+                              }
+                            }
+                            String? currRole =
+                                widget.commuinity.members.containsKey(currUsr)
+                                    ? widget.commuinity.members[currUsr]["role"]
+                                    : null;
+                            if (currRole != Roles.Owner) {
+                              _onLeaveCommuinity();
+                            } else {
+                              snackBar(snackMessage: "Owners can not abandon ship", context: context, bgColor: Colors.red);
+                            }
                           },
                           child: Text(
                             "...Leave :(",
@@ -438,7 +458,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
       actions: [
         _settingsBtn(cmBloc: cmBloc),
         _inviteButton(),
-        _themePackButton()
+        // _themePackButton()
       ],
     );
   }
@@ -477,11 +497,14 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                           "Nevermind, keep ${cord.cordName}",
                           style: TextStyle(color: Colors.green),
                         )),
-                        SizedBox(height: 10,),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                          child: Text("Hey family. hint: You MUST have at least one chat room"),
-                        )
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: Text(
+                          "Hey family. hint: You MUST have at least one chat room"),
+                    )
                   ],
                 ),
               )));
@@ -1562,8 +1585,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                 Container(
                   //height: 200,
                   // checking for role. a owner must not just leave
-                  
-                  child:  ElevatedButton(
+
+                  child: ElevatedButton(
                       style: ElevatedButton.styleFrom(primary: Colors.red),
                       onPressed: () {
                         context
