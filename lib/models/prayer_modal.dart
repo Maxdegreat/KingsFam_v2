@@ -25,4 +25,5 @@ class PrayerModal extends Equatable {
         userId: data["userId"] ?? "",
         timestamp: data["timestamp"] ?? Timestamp.now());
   }
+
 }

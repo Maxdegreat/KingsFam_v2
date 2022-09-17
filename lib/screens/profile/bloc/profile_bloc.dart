@@ -157,7 +157,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     // grab any potential prayers
     
     List<PrayerModal> pm = await _prayerRepo.getUsrsPrayers(usrId: userr.id, limit: 1);
-
+    
     if (pm.isNotEmpty) {
       yield(state.copyWith(prayer: pm[0].prayer));
     }

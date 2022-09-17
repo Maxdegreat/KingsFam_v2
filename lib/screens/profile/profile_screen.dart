@@ -11,6 +11,7 @@ import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/profile/widgets/commuinity_container.dart';
+import 'package:kingsfam/screens/profile/widgets/prayer_chunck.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/prayer/prayer_snipit.dart';
 import 'package:kingsfam/widgets/widgets.dart';
@@ -96,7 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (scrollController.position.pixels != 0.0 &&
           scrollController.position.maxScrollExtent ==
               scrollController.position.pixels) {
-        snackBar(snackMessage: "yay a snack bar", context: context);
+        // snackBar(snackMessage: "yay a snack bar", context: context);
         log("This is a log");
         context.read<ProfileBloc>()
           ..add(ProfilePaginatePosts(
@@ -223,7 +224,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                         // add a linked list of commuinitys that I am in ... lol im done with this alredy but linked list dont make me laugh
                         CommuinityContainer(cms: state.cms, ownerId: widget.ownerId),
-                        prayerSnipit(state.prayer, hexcolor.hexcolorCode(state.userr.colorPref)),
+                        GestureDetector(
+                          onTap: () => state.prayer != null ? PrayerChunk(context, state.prayer!, state.userr) : null,
+                          child: prayerSnipit(state.prayer, hexcolor.hexcolorCode(state.userr.colorPref))),
 
                       ]),
                       
