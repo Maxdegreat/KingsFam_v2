@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-Widget prayerSnipit(String prayer, int? passedColor) {
+Widget prayerSnipit(String? prayer, int? passedColor) {
+  if (prayer == null) return SizedBox.shrink();
   if (prayer.length > 70) {
     prayer = prayer.substring(0, 70);
   }

@@ -14,6 +14,7 @@ import 'package:kingsfam/blocs/simple_bloc_observer.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/custum_router.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
+import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/cubit/calls_home_cubit.dart';
@@ -50,11 +51,13 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<KingsCordRepository>(create: (_) => KingsCordRepository()),
         RepositoryProvider<ChatRepository>(create: (_) => ChatRepository()),
         RepositoryProvider<AuthRepository>(create: (_) => AuthRepository()),
+        RepositoryProvider<PrayerRepo>(create: (_) => PrayerRepo()),
         RepositoryProvider<UserrRepository>(create: (_) => UserrRepository()),
         RepositoryProvider<StorageRepository>(create: (_) => StorageRepository()),
         RepositoryProvider<PostsRepository>(create: (_) => PostsRepository()),
         RepositoryProvider<CallRepository>(create: (_) => CallRepository()),
-        RepositoryProvider<NotificationRepository>(create: (_) => NotificationRepository()),
+        RepositoryProvider<NotificationRepository>(create: (_) => NotificationRepository(),
+        ),
         //TODO ADD PERKSREPO
       ],
       child: MultiBlocProvider(
@@ -105,6 +108,7 @@ class MyApp extends StatelessWidget {
                   userrRepository: context.read<UserrRepository>())),
            BlocProvider<ProfileBloc>(
              create: (context) => ProfileBloc(
+              prayerRepo: context.read<PrayerRepo>(),
               chatRepository: context.read<ChatRepository>(),
                  userrRepository: context.read<UserrRepository>(),
                  authBloc: context.read<AuthBloc>(),

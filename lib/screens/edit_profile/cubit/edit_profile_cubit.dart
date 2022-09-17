@@ -7,6 +7,7 @@ import 'package:equatable/equatable.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/extraTools.dart';
+import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 
@@ -17,14 +18,17 @@ class EditProfileCubit extends Cubit<EditProfileState> {
   final UserrRepository _userrRepository;
   final StorageRepository _storageRepository;
   final ProfileBloc _profileBloc;
+  final PrayerRepo _prayerRepo;
 
   EditProfileCubit({
     required UserrRepository userrRepository,
     required StorageRepository storageRepository,
     required ProfileBloc profileBloc,
+    required PrayerRepo prayerRepo,
   })  : _userrRepository = userrRepository,
         _storageRepository = storageRepository,
         _profileBloc = profileBloc,
+        _prayerRepo = prayerRepo,
         super(EditProfileState.initial()) {
     final userr = _profileBloc.state.userr;
     emit(state.copyWith(username: userr.username, bio: userr.bio, colorPref: userr.colorPref));
@@ -106,6 +110,13 @@ class EditProfileCubit extends Cubit<EditProfileState> {
 
       await _userrRepository.updateUserr(userr: updatedUserr);
       _profileBloc.add(ProfileLoadUserr(userId: userr.id));
+
+
+    // upload the prayer
+    if (state.prayer != null) {
+      _prayerRepo.createPrayerShare(prayer: state.prayer!, userId: userr.id);
+    }
+
       emit(state.copyWith(status: EditProfileStatus.success));
     } catch (e) {
       emit(state.copyWith(

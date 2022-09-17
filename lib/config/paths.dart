@@ -26,6 +26,7 @@ class Paths {
   static const String permissions = 'permissions';
   static const String perked = 'perked';
   static const String communityMembers = "community_members";
+  static const String prayer = "prayer";
 
   //sub collections
   static const String postsComments = 'postComments';

@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/models/models.dart';
+import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/profile/widgets/commuinity_container.dart';
@@ -41,6 +42,7 @@ class ProfileScreen extends StatefulWidget {
         settings: const RouteSettings(name: routeName),
         builder: (context) => BlocProvider<ProfileBloc>(
               create: (_) => ProfileBloc(
+                  prayerRepo: context.read<PrayerRepo>(),
                   churchRepository: context.read<ChurchRepository>(),
                   likedPostCubit: context.read<LikedPostCubit>(),
                   userrRepository: context.read<UserrRepository>(),
@@ -133,7 +135,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     var postImgVidSize = MediaQuery.of(context).size.height / 5;
     switch (state.status) {
       case ProfileStatus.initial:
-        return CircularProgressIndicator(color: Colors.red[400]);
+        return Center(child: CircularProgressIndicator(color: Colors.red[400]));
       default:
         return RefreshIndicator( // ---------------- LOOK HERE NEEDS SOME INTERNAL WORK TODO
             onRefresh: () async => context
@@ -221,7 +223,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                         // add a linked list of commuinitys that I am in ... lol im done with this alredy but linked list dont make me laugh
                         CommuinityContainer(cms: state.cms, ownerId: widget.ownerId),
-                        prayerSnipit("Jesus Help Me To Focus on What You Have Called Me To Do And To Keep To My Words In Jesus Name. Amen", hexcolor.hexcolorCode(state.userr.colorPref)),
+                        prayerSnipit(state.prayer, hexcolor.hexcolorCode(state.userr.colorPref)),
 
                       ]),
                       

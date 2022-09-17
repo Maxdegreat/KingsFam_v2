@@ -9,6 +9,8 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/models/models.dart';
+import 'package:kingsfam/models/prayer_modal.dart';
+import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/chat_room/chat_room.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
@@ -24,6 +26,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final LikedPostCubit _likedPostCubit;
   final ChurchRepository _churchRepository;
   final ChatRepository _chatRepository;
+  final PrayerRepo _prayerRepo;
 
   StreamSubscription<List<Future<Post?>>>? _postStreamSubscription;
 
@@ -34,12 +37,14 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     required LikedPostCubit likedPostCubit,
     required ChurchRepository churchRepository,
     required ChatRepository chatRepository,
+    required PrayerRepo prayerRepo
   })  : _userrRepository = userrRepository,
         _authBloc = authBloc,
         _postsRepository = postRepository,
         _likedPostCubit = likedPostCubit,
         _churchRepository = churchRepository,
         _chatRepository = chatRepository,
+        _prayerRepo = prayerRepo,
         super(ProfileState.initial());
 
   @override
@@ -140,15 +145,22 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   Stream<ProfileState> _mapProfileLoadUserToState(
       ProfileLoadUserr event) async* {
-    if (event.vidCtrl != null) {
-      // pause vids coming from other screens TODO look for optimizing
-      event.vidCtrl!.pause();
-    }
     yield state.copyWith(status: ProfileStatus.loading, loadingPost: true);
+   
+
+
     try {
       final userr =
           await _userrRepository.getUserrWithId(userrId: event.userId);
       yield state.copyWith(userr: userr);
+
+    // grab any potential prayers
+    
+    List<PrayerModal> pm = await _prayerRepo.getUsrsPrayers(usrId: userr.id, limit: 1);
+
+    if (pm.isNotEmpty) {
+      yield(state.copyWith(prayer: pm[0].prayer));
+    }
 
       final isCurrentUser = _authBloc.state.user!.uid == event.userId;
 
@@ -208,10 +220,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     List<Post?> posts;
     posts = List<Post?>.from(state.post)..addAll(event.post);
     //_likedPostCubit.updateLikedPosts(postIds: likedPostIds);
-    yield state.copyWith(
-        post: posts, status: ProfileStatus.loaded, likedPostIds: likedPostIds);
-    print(
-        "____________________________________________________________________________________________________");
+    yield state.copyWith(post: posts, status: ProfileStatus.loaded, likedPostIds: likedPostIds);
+    print("____________________________________________________________________________________________________");
   }
 
   Stream<ProfileState> _mapProfileFollowUserToState() async* {

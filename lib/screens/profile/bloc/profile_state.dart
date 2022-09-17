@@ -25,6 +25,7 @@ class ProfileState extends Equatable {
   final List<Userr> followersUserList;
   final List<Userr> followingUserList;
   final bool loadingPost;
+  final String? prayer;
 
   final VideoPlayerController? vidCtrl;
   // step 2 make the constructor
@@ -43,6 +44,7 @@ class ProfileState extends Equatable {
     required this.followersUserList,
     required this.followingUserList,
     required this.loadingPost,
+    required this.prayer,
     this.vidCtrl,
   });
 
@@ -63,6 +65,7 @@ class ProfileState extends Equatable {
       followersUserList: [],
       followingUserList: [],
       vidCtrl: null,
+      prayer: null,
       loadingPost: true,
     );
   }
@@ -83,6 +86,7 @@ class ProfileState extends Equatable {
         cms,
         vidCtrl,
         loadingPost,
+        prayer
       ];
 
   // step 4 make the copy with
@@ -102,6 +106,7 @@ class ProfileState extends Equatable {
     List<Church?>? cms,
     VideoPlayerController? vidCtrl,
     bool? loadingPost,
+    String? prayer,
   }) {
     return ProfileState(
       post: post ?? this.post,
@@ -118,7 +123,8 @@ class ProfileState extends Equatable {
       failure: failure ?? this.failure,
       cms: cms ?? this.cms,
       vidCtrl: vidCtrl ?? vidCtrl,
-      loadingPost: loadingPost ?? this.loadingPost
+      loadingPost: loadingPost ?? this.loadingPost,
+      prayer: prayer ?? this.prayer
     );
   }
 }

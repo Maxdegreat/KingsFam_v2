@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/cubits/cubits.dart';
 import 'package:kingsfam/models/models.dart';
+import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/widgets/widgets.dart';
@@ -51,6 +52,7 @@ class ProfilePostView extends StatefulWidget {
         settings: const RouteSettings(name: routeName),
         builder: (context) => BlocProvider<ProfileBloc>(
               create: (_) => ProfileBloc(
+                prayerRepo: context.read<PrayerRepo>(),
                 chatRepository: context.read<ChatRepository>(),
                 churchRepository: context.read<ChurchRepository>(),
                 authBloc: context.read<AuthBloc>(),

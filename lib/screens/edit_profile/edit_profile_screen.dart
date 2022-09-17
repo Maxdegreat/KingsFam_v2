@@ -9,6 +9,7 @@ import 'package:kingsfam/extensions/locations.dart';
 import 'package:kingsfam/helpers/image_helper.dart';
 
 import 'package:kingsfam/models/models.dart';
+import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/edit_profile/cubit/edit_profile_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
@@ -34,7 +35,8 @@ class EditProfileScreen extends StatefulWidget {
               create: (_) => EditProfileCubit(
                   profileBloc: args.context.read<ProfileBloc>(),
                   storageRepository: context.read<StorageRepository>(),
-                  userrRepository: context.read<UserrRepository>()),
+                  userrRepository: context.read<UserrRepository>(),
+                  prayerRepo: context.read<PrayerRepo>()),
               child: EditProfileScreen(
                 userr: args.context.read<ProfileBloc>().state.userr, 
               ),
@@ -152,7 +154,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ P R A Y E R ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                              TextFormField(
-                              initialValue: widget.userr.bio,
+                              // initialValue: "Add new Prayer",
                               decoration: InputDecoration(hintText: 'Add a Prayer for the family to see and pray'),
                               onChanged: (value) => context
                                   .read<EditProfileCubit>()

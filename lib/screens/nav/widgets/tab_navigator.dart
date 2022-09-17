@@ -8,6 +8,7 @@ import 'package:kingsfam/config/custum_router.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 
 import 'package:kingsfam/enums/bottom_nav_items.dart';
+import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/notification/bloc/noty_bloc.dart';
@@ -83,6 +84,7 @@ class TabNavigator extends StatelessWidget {
       case BottomNavItem.profile:
         return BlocProvider<ProfileBloc>(
           create: (_) => ProfileBloc(
+            prayerRepo: ctx.read<PrayerRepo>(),
             churchRepository: ctx.read<ChurchRepository>(),
             likedPostCubit: ctx.read<LikedPostCubit>(),
             userrRepository: ctx.read<UserrRepository>(),
