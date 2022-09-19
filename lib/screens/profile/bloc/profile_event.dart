@@ -36,6 +36,14 @@ class ProfileUpdatePost extends ProfileEvent {
   List<Object?> get props => [post];
 }
 
+class ProfileListenForNewPost extends ProfileEvent {
+  final String userId;
+  ProfileListenForNewPost({required this.userId});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [userId];
+}
+
 class ProfileLikePost extends ProfileEvent{
   final Post lkedPost;
   const ProfileLikePost({required this.lkedPost});

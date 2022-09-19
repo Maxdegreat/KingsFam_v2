@@ -52,7 +52,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
           userId: _authBloc.state.user!.uid, posts: posts);
       _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
       yield state.copyWith(
-          posts: posts, status: FeedStatus.success, likedPostIds: likedPostIds);
+          posts: posts, modPostLen: state.modPostLen + posts.length, status: FeedStatus.success, likedPostIds: likedPostIds);
     } catch (e) {}
   }
 
@@ -73,7 +73,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
             userId: _authBloc.state.user!.uid, posts: postsGot);
         _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
         List<Post?> posts = List<Post?>.from(state.posts)..addAll(postsGot);
-        yield state.copyWith(posts: posts, status: FeedStatus.success);
+        yield state.copyWith(posts: posts, modPostLen: state.modPostLen + posts.length, status: FeedStatus.success);
       } catch (err) {
         yield state.copyWith(
             status: FeedStatus.error,
@@ -94,7 +94,9 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       final likedPostIds = await _postsRepository.getLikedPostIds(
           userId: _authBloc.state.user!.uid, posts: posts);
       yield state.copyWith(
-          posts: updatedPosts, status: FeedStatus.success);
+          posts: updatedPosts,
+          modPostLen: state.modPostLen + posts.length,
+          status: FeedStatus.success);
       _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
     } catch (e) {
       yield state.copyWith(
@@ -103,5 +105,9 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
               code: e.toString()),
           status: FeedStatus.error);
     }
+  }
+
+  void updatePostLen() {
+    emit(state.copyWith(modPostLen: state.modPostLen + 1));
   }
 }

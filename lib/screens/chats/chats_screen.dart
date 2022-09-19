@@ -49,17 +49,9 @@ class _ChatsScreenState extends State<ChatsScreen>
   // handel permissions for notifications using FCM
 
   late BannerAd _bottomBannerAd;
-  late BannerAd _inLineBannerAd;
+
   // ignore: unused_field
   bool _isBottomBannerAdLoaded = false;
-  bool _isInLineBannerAdLoaded = false;
-  int _inLineAdIndex = 0;
-  int _getListViewIndex(int index) {
-    if (index >= _inLineAdIndex && _isInLineBannerAdLoaded) {
-      return index - 1;
-    }
-    return index;
-  }
 
   int _tabIdx = 1;
 
@@ -81,21 +73,6 @@ class _ChatsScreenState extends State<ChatsScreen>
     _bottomBannerAd.load();
   }
 
-  void _createInlineBannerAd() {
-    _inLineBannerAd = BannerAd(
-        size: AdSize.banner,
-        adUnitId: AdHelper.bannerAdUnitId,
-        listener: BannerAdListener(onAdLoaded: (_) {
-          setState(() {
-            _isInLineBannerAdLoaded = true;
-          });
-        }, onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-          log("chatsScreen ad error: ${error.toString()}");
-        }),
-        request: AdRequest());
-    _inLineBannerAd.load();
-  }
 
   tabControllerListener() {
     if (_tabController.indexIsChanging) {
@@ -279,7 +256,7 @@ class _ChatsScreenState extends State<ChatsScreen>
                                 bottom: TabBar(
                                   controller: _tabController,
                                   tabs: [
-                                    Tab(text: "Feed"),
+                                    Tab(text: "Following"),
                                     Tab(text: "Commuinity\'s"),
                                     Tab(text: "Chats"),
                                   ],

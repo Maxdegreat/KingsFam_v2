@@ -358,20 +358,20 @@ class _SearchScreenState extends State<SearchScreen> {
       onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName,
           arguments: ProfileScreenArgs(userId: user.id)),
       child: Container(
-        height: 100,
+        height: 110,
         width: MediaQuery.of(context).size.width * .70,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ProfileCardTop(
-                pfpImgUrl: user.profileImageUrl, bimgUrl: user.bannerImageUrl),
+            ProfileCardTop(pfpImgUrl: user.profileImageUrl, bimgUrl: user.bannerImageUrl),
             Text(
-              user.username,
+              user.username.length >= 20 ? user.username.substring(0, 20) : user.username,
               style: Theme.of(context).textTheme.bodyText1,
+              overflow: TextOverflow.fade,
+              softWrap: true,
             ),
             SizedBox(height: 3),
-            // Text("") // TODO bio
           ],
         ),
       ),

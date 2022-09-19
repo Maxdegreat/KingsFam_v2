@@ -12,9 +12,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/helpers/ad_helper.dart';
 // import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/helpers.dart';
 import 'package:kingsfam/helpers/navigator_helper.dart';
@@ -88,6 +90,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     _tabController = TabController(vsync: this, length: 2);
   }
 
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -97,8 +100,10 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
+
     // ignore: unused_local_variable
     final userId = context.read<AuthBloc>().state.user!.uid;
     return BlocConsumer<CommuinityBloc, CommuinityState>(
@@ -126,7 +131,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     ));
   }
 
-  CustomScrollView _mainScrollView(
+  CustomScrollView  _mainScrollView(
       BuildContext context, CommuinityState state) {
     Color primaryColor = Colors.white;
     Color secondaryColor = Colors.grey[800]!;
@@ -154,14 +159,14 @@ class _CommuinityScreenState extends State<CommuinityScreen>
             width: double.infinity,
             decoration: BoxDecoration(color: backgoundColor),
           ),
-          //Container(height: MediaQuery.of(context).size.height, width: double.infinity, color: Colors.black38,),
+          // Container(height: MediaQuery.of(context).size.height, width: double.infinity, color: Colors.black38,),
           Column(
             children: [
               SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  state.isMember == null ? SizedBox.shrink() : state.isMember != null
+                  state.isMember == null ? SizedBox.shrink() : state.isMember != false
                       ? ElevatedButton(
                           onPressed: () {
                             Userr? currUsr = null;
@@ -529,12 +534,12 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                     image: post.imageUrl != null
                         ? DecorationImage(
                             image: CachedNetworkImageProvider(post.imageUrl!),
-                            fit: BoxFit.fill)
+                            fit: BoxFit.fitWidth)
                         : post.thumbnailUrl != null
                             ? DecorationImage(
                                 image: CachedNetworkImageProvider(
                                     post.thumbnailUrl!),
-                                fit: BoxFit.fill)
+                                fit: BoxFit.fitWidth)
                             : null,
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(10),

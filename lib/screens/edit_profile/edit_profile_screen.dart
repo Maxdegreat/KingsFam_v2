@@ -137,9 +137,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               onChanged: (value) => context
                                   .read<EditProfileCubit>()
                                   .usernameChanged(value),
-                              validator: (value) => value!.trim().isEmpty
-                                  ? 'Username can\'t be empty'
-                                  : null,
+                              validator: (value) {
+                                if (value != null && value.isEmpty  || value == null) {
+                                    return "Hey fam make sure your username is not empty. Thanks";
+                                }
+                                if (value != null && value.length > 20) {
+                                  return "Hey fam please keep your username under 20 characters";
+                                } 
+                              }
                             ),
                             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ B I O ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                             TextFormField(
@@ -148,9 +153,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               onChanged: (value) => context
                                   .read<EditProfileCubit>()
                                   .bioChanged(value),
-                              validator: (value) => value!.trim().isEmpty
-                                  ? 'Bio can\'t be empty'
-                                  : null,
+                              validator: (value) {
+                                if (value != null && value.length > 350) {
+                                  return "Hey fam please keep your Bio under 350 characters";
+                                } 
+                              }
                             ),
                             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ P R A Y E R ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                              TextFormField(

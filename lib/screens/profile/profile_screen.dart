@@ -256,7 +256,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             crossAxisCount: 2,
             crossAxisSpacing: 10.0, // x axis
             mainAxisSpacing: 10.0, // y axis
-            mainAxisExtent: 240.0, // 
+            mainAxisExtent: 250.0, // 
           ),
           primary: false,
           shrinkWrap: true,
@@ -299,7 +299,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(width: 5),
                     Flexible(
                         child: Text(
-                      post.author.username,
+                      post.author.username.length > 18 ? post.author.username.substring(0, 18) : post.author.username,
                       style: Theme.of(context).textTheme.bodyText1,
                       overflow: TextOverflow.fade,
                     ))

@@ -2,10 +2,8 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 
-
 import 'package:flutter/material.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
@@ -14,6 +12,7 @@ import 'package:kingsfam/screens/screens.dart';
 
 import 'package:kingsfam/widgets/commuinity_pf_image.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
+import 'package:kingsfam/widgets/snackbar.dart';
 import 'package:kingsfam/widgets/videos/videoPostView16_9.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
@@ -42,7 +41,7 @@ class _PostSingleViewState extends State<PostSingleViewPfp> {
   @override
   void initState() {
     if (widget.post.videoUrl != null) {
-       vidCtrl  = VideoPlayerController.network(widget.post.videoUrl!);
+      vidCtrl = VideoPlayerController.network(widget.post.videoUrl!);
     }
     super.initState();
   }
@@ -86,7 +85,9 @@ class _PostSingleViewState extends State<PostSingleViewPfp> {
                       commuinity_pf_img(commuinity.imageUrl, 25, 25),
                       SizedBox(width: 7),
                       // add the commuinity name
-                      Text(commuinity.name, style: TextStyle(color: Colors.grey[350], fontSize: 17))
+                      Text(commuinity.name,
+                          style:
+                              TextStyle(color: Colors.grey[350], fontSize: 17))
                     ],
                   ),
                 ),
@@ -124,7 +125,9 @@ class _PostSingleViewState extends State<PostSingleViewPfp> {
               ),
               IconButton(
                   // onPressed: () => commentSheet(post: widget.post),
-                  onPressed: () => Navigator.of(context).pushNamed(CommentScreen.routeName, arguments: CommentScreenArgs(post: widget.post)),
+                  onPressed: () => Navigator.of(context).pushNamed(
+                      CommentScreen.routeName,
+                      arguments: CommentScreenArgs(post: widget.post)),
                   icon: Icon(Icons.message)),
               SizedBox(width: 5),
               Container(
@@ -149,7 +152,8 @@ class _PostSingleViewState extends State<PostSingleViewPfp> {
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 7),
       child: GestureDetector(
         onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName,
-            arguments: ProfileScreenArgs(userId: widget.post.author.id, vidCtrl: vidCtrl)),
+            arguments: ProfileScreenArgs(
+                userId: widget.post.author.id, vidCtrl: vidCtrl)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -197,7 +201,11 @@ class _PostSingleViewState extends State<PostSingleViewPfp> {
                         context
                             .read<PostsRepository>()
                             .deletePost(post: widget.post);
-            
+                        snackBar(
+                            snackMessage:
+                                "post removed. update will soon be visible",
+                            context: context,
+                            bgColor: Colors.grey[700]);
                       },
                     ),
                   ),
@@ -261,21 +269,20 @@ class _PostSingleViewState extends State<PostSingleViewPfp> {
           } else {
             vidCtrl.pause();
           }
-        } ,
+        },
         child: GestureDetector(
           onDoubleTap: widget.onLike,
           child: AspectRatio(
               aspectRatio: 9 / 16,
-              child:  Align(
+              child: Align(
                 alignment: Alignment.center,
                 child: VideoPostView16_9(
-                post: widget.post,
-                userr: widget.post.author,
-                videoUrl: widget.post.videoUrl!,
-                playVidNow: playNow,
-                controller: vidCtrl,
-                    
-                          ),
+                  post: widget.post,
+                  userr: widget.post.author,
+                  videoUrl: widget.post.videoUrl!,
+                  playVidNow: playNow,
+                  controller: vidCtrl,
+                ),
               )),
         ),
       );

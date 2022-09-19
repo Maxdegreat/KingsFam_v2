@@ -2,15 +2,18 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/cubits/cubits.dart';
+import 'package:kingsfam/helpers/ad_helper.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 class FeedScreenWidget extends StatefulWidget {
-  const FeedScreenWidget({Key? key, required this.tabController}) : super(key: key);
+  const FeedScreenWidget({Key? key, required this.tabController})
+      : super(key: key);
   final TabController tabController;
 
   @override
@@ -52,16 +55,25 @@ class _buildBody extends StatefulWidget {
 }
 
 class __buildBodyState extends State<_buildBody> {
+  // make a ad declared
+  late BannerAd _bannerAd;
+  // make a bool declared
+  bool _isBannerAdLoaded = false;
+  late Size size;
+
   @override
   ScrollController scrollController = ScrollController();
   void initState() {
-    
     scrollController.addListener(listenToScrolling);
+    Future.delayed(Duration.zero, () {
+      size = MediaQuery.of(context).size;
+      _ceateBanneAd();
+    });
     super.initState();
   }
-  
+
   void listenToScrolling() {
-   log("the position of the scroll controller for the feed is: ${scrollController.position.pixels}");
+    log("the position of the scroll controller for the feed is: ${scrollController.position.pixels}");
     // log("The view port of the scroll controller is: ${scrollController.position.viewportDimension}");
     // TODO you need to add this later make it a p1 requirment
     if (scrollController.position.atEdge) {
@@ -76,6 +88,23 @@ class __buildBodyState extends State<_buildBody> {
     }
   }
 
+  void _ceateBanneAd() {
+    _bannerAd = BannerAd(
+        size: AdSize.getLandscapeInlineAdaptiveBannerAdSize(size.width.toInt()),
+        adUnitId: AdHelper.bannerAdUnitId,
+        listener: BannerAdListener(onAdLoaded: (_) {
+          setState(() {
+            _isBannerAdLoaded = true;
+          });
+        }, onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          log("!!!!!!!!!!!!!!!!!! - bottom Ad Error In Cm Feed - !!!!!!!!!!!!!!!!!!!!!!!!!");
+          log("chatsScreen ad error: ${error.toString()}");
+          log("!!!!!!!!!!!!!!!!!! - bottom Ad Error In Cm Feed - !!!!!!!!!!!!!!!!!!!!!!!!!");
+        }),
+        request: AdRequest());
+    _bannerAd.load();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,17 +124,22 @@ class __buildBodyState extends State<_buildBody> {
                   context.read<FeedBloc>().add(FeedFetchPosts());
                   context.read<LikedPostCubit>().clearAllLikedPosts();
                 },
-                child: state.posts.length > 0
-                    ? pageViewForPost(state)// listviewsinglePost(state)
+                child: state.modPostLen > 0
+                    ? pageViewForPost(state) // listviewsinglePost(state)
                     : Center(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text("Follow Some Fam With Post First To Have A Feed"),
-                            IconButton(icon: Icon(Icons.refresh), onPressed: () => context.read<FeedBloc>().add(FeedFetchPosts()),),
-                          ],
-                        )));
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                              "Follow Some Fam With Post First To Have A Feed"),
+                          IconButton(
+                            icon: Icon(Icons.refresh),
+                            onPressed: () =>
+                                context.read<FeedBloc>().add(FeedFetchPosts()),
+                          ),
+                        ],
+                      )));
         }
       },
     );
@@ -116,32 +150,36 @@ class __buildBodyState extends State<_buildBody> {
       scrollDirection: Axis.vertical,
       itemCount: state.posts.length,
       onPageChanged: (pageNum) {
-        if (pageNum == state.posts.length - 1) {
+        if (pageNum == state.modPostLen - 1) {
           context.read<FeedBloc>()..add(FeedPaginatePosts());
         }
       },
       itemBuilder: (context, index) {
-        
-        final Post? post = state.posts[index];
-        if (post != null) {
-          final LikedPostState = context.watch<LikedPostCubit>().state;
-          final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
-          final recentlyLiked =
-              LikedPostState.recentlyLikedPostIds.contains(post.id!);
-              // there is also a PostSingleViewPfp used for the profile screen
-          return PostSingleView(
-            tabCtrl: widget.tabCtrl,
-            isLiked: isLiked,
-            post: post,
-            recentlyLiked: recentlyLiked,
-            onLike: () {
-              if (isLiked) {
-                context.read<LikedPostCubit>().unLikePost(post: post);
-              } else {
-                context.read<LikedPostCubit>().likePost(post: post);
-              }
-            },
-          );
+        if ((index == 2 && _isBannerAdLoaded || index % 5 == 0) && index != 0) {
+          _ceateBanneAd();
+          return Center(child: AdWidget(ad: _bannerAd));
+        } else {
+          final Post? post = state.posts[index];
+          if (post != null) {
+            // ignore: non_constant_identifier_names
+            final LikedPostState = context.watch<LikedPostCubit>().state;
+            final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
+            final recentlyLiked =
+                LikedPostState.recentlyLikedPostIds.contains(post.id!);
+
+            return PostSingleView(
+              isLiked: isLiked,
+              post: post,
+              recentlyLiked: recentlyLiked,
+              onLike: () {
+                if (isLiked) {
+                  context.read<LikedPostCubit>().unLikePost(post: post);
+                } else {
+                  context.read<LikedPostCubit>().likePost(post: post);
+                }
+              },
+            );
+          }
         }
         return SizedBox.shrink();
       },

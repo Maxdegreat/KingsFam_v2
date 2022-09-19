@@ -30,15 +30,15 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   StreamSubscription<List<Future<Post?>>>? _postStreamSubscription;
 
-  ProfileBloc({
-    required UserrRepository userrRepository,
-    required AuthBloc authBloc,
-    required PostsRepository postRepository,
-    required LikedPostCubit likedPostCubit,
-    required ChurchRepository churchRepository,
-    required ChatRepository chatRepository,
-    required PrayerRepo prayerRepo
-  })  : _userrRepository = userrRepository,
+  ProfileBloc(
+      {required UserrRepository userrRepository,
+      required AuthBloc authBloc,
+      required PostsRepository postRepository,
+      required LikedPostCubit likedPostCubit,
+      required ChurchRepository churchRepository,
+      required ChatRepository chatRepository,
+      required PrayerRepo prayerRepo})
+      : _userrRepository = userrRepository,
         _authBloc = authBloc,
         _postsRepository = postRepository,
         _likedPostCubit = likedPostCubit,
@@ -67,6 +67,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       yield* _mapProfilePaginatePost(event);
     } else if (event is ProfileUpdatePost) {
       yield* _mapProfileUpdatePostsToState(event);
+    } else if (event is ProfileListenForNewPost) {
+      yield* _mapProfileNewPostToState(event);
     } else if (event is ProfileFollowUserr) {
       yield* _mapProfileFollowUserToState();
     } else if (event is ProfileUnfollowUserr) {
@@ -146,21 +148,20 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   Stream<ProfileState> _mapProfileLoadUserToState(
       ProfileLoadUserr event) async* {
     yield state.copyWith(status: ProfileStatus.loading, loadingPost: true);
-   
-
 
     try {
       final userr =
           await _userrRepository.getUserrWithId(userrId: event.userId);
       yield state.copyWith(userr: userr);
 
-    // grab any potential prayers
-    
-    List<PrayerModal> pm = await _prayerRepo.getUsrsPrayers(usrId: userr.id, limit: 1);
-    
-    if (pm.isNotEmpty) {
-      yield(state.copyWith(prayer: pm[0].prayer));
-    }
+      // grab any potential prayers
+
+      List<PrayerModal> pm =
+          await _prayerRepo.getUsrsPrayers(usrId: userr.id, limit: 1);
+
+      if (pm.isNotEmpty) {
+        yield (state.copyWith(prayer: pm[0].prayer));
+      }
 
       final isCurrentUser = _authBloc.state.user!.uid == event.userId;
 
@@ -187,6 +188,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           }
         }
         if (postList.contains(beenSeen) && beenSeen != null) return;
+        if (postList.isNotEmpty) {
+          Future.delayed(Duration(seconds: 2), () {
+            _postStreamSubscription?.cancel();
+          });
+        }
         add(ProfileUpdatePost(post: postList));
       });
 
@@ -221,7 +227,30 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     posts = List<Post?>.from(state.post)..addAll(event.post);
     //_likedPostCubit.updateLikedPosts(postIds: likedPostIds);
     yield state.copyWith(post: posts, status: ProfileStatus.loaded, likedPostIds: likedPostIds);
+    add(ProfileListenForNewPost(userId: _authBloc.state.user!.uid));
     print("____________________________________________________________________________________________________");
+  }
+
+  Stream<ProfileState> _mapProfileNewPostToState(event) async* {
+    try {
+      _postStreamSubscription?.cancel();
+      _postStreamSubscription = _postsRepository
+          .getUserPosts(
+              userId: event.userId, limit: 5, lastPostDoc: null)
+          .listen((posts) async {
+        List<Post> allPost = [];
+        for (var p in posts) {
+          var post = await p;
+          if (post!.date.compareTo(state.post.first!.date) > 0)
+            allPost.add(post);
+        }
+        List<Post> statePost = List<Post>.from(state.post);
+        for (int i = 0; i < allPost.length; i++) {
+          statePost..insert(0, allPost[i]);
+        }
+        emit(state.copyWith(post: statePost));
+      });
+    } catch (e) {}
   }
 
   Stream<ProfileState> _mapProfileFollowUserToState() async* {

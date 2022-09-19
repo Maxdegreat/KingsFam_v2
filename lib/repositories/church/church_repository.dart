@@ -177,7 +177,7 @@ class ChurchRepository extends BaseChurchRepository {
 
     var posts = await FirebaseFirestore.instance
         .collection(Paths.posts)
-        .where('commuinity', isEqualTo: cmDocRef)
+        .where('commuinity', isEqualTo: cmDocRef).orderBy("date", descending: true)
         .limit(3)
         .get();
 

@@ -14,6 +14,7 @@ import 'package:kingsfam/extensions/date_time_extension.dart';
 
 import 'package:kingsfam/widgets/commuinity_pf_image.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
+import 'package:kingsfam/widgets/snackbar.dart';
 import 'package:kingsfam/widgets/videos/videoPostView16_9.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
@@ -319,6 +320,7 @@ class _PostSingleViewState extends State<PostSingleView> {
                         context
                             .read<PostsRepository>()
                             .deletePost(post: widget.post);
+                            snackBar(snackMessage: "post removed. update will soon be visible", context: context, bgColor: Colors.grey[700]);
                       },
                     ),
                   ),
