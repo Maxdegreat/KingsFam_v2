@@ -68,45 +68,45 @@ exports.onFollowUserr = functions.firestore
       followedUserrRef.update({ followers: 1 });
     }
 
-    // check if a limiter exist. if not add limiter
+    // // check if a limiter exist. if not add limiter
 
-    const fieldLimiterRef = admin.firestore().collection("feeds").doc(userrId);
-    const fieldLimiterDoc = await fieldLimiterRef.get();
+    // const fieldLimiterRef = admin.firestore().collection("feeds").doc(userrId);
+    // const fieldLimiterDoc = await fieldLimiterRef.get();
 
-    if (fieldLimiterDoc.get("limiter") !== undefined) {
-      if (fieldLimiterDoc.get("limiter") + limiterHelper < 500) {
-        fieldLimiterRef.update({
-          fieldLimiter: fieldLimiterDoc.get("limiter") + limiterHelper,
-        });
-      } else {
-        const query = userFeedRef.orderBy("date").limit(100);
-        const snapshot = await query.get();
-        const batchSize = snapshot.size;
-        if (batchSize === 0) {
-          // When there are no documents flet
-          return;
-        }
-        // Delete documents in a batch
-        const batch = db.batch();
-        snapshot.docs.forEach((doc) => {
-          batch.delete(doc.ref);
-        });
-        await batch.commit();
-        fieldLimiterRef.update({
-          fieldLimiter: fieldLimiterDoc.get("limiter") + limiterHelper,
-        });
-        // TODO PLEASE OPTIMIZE. EVEN IF PAST LIM YOU STLL ADD ALL THE POST THEN GO BACK AND DEL. JUST IN TIME CURNCH. UPDATE
-        //#write
-        fieldLimiterRef.update({
-          fieldLimiter: fieldLimiterDoc.get("limiter") - 100,
-        });
-      }
-    } else {
-      const limiter = { limiter: limiterHelper };
-      fieldLimiterRef.update(limiter);
-    }
+    // if (fieldLimiterDoc.get("limiter") !== undefined) {
+    //   if (fieldLimiterDoc.get("limiter") + limiterHelper < 500) {
+    //     fieldLimiterRef.update({
+    //       fieldLimiter: fieldLimiterDoc.get("limiter") + limiterHelper,
+    //     });
+    //   } else {
+    //     const query = userFeedRef.orderBy("date").limit(100);
+    //     const snapshot = await query.get();
+    //     const batchSize = snapshot.size;
+    //     if (batchSize === 0) {
+    //       // When there are no documents flet
+    //       return;
+    //     }
+    //     // Delete documents in a batch
+    //     const batch = db.batch();
+    //     snapshot.docs.forEach((doc) => {
+    //       batch.delete(doc.ref);
+    //     });
+    //     await batch.commit();
+    //     fieldLimiterRef.update({
+    //       fieldLimiter: fieldLimiterDoc.get("limiter") + limiterHelper,
+    //     });
+    //     // TODO PLEASE OPTIMIZE. EVEN IF PAST LIM YOU STLL ADD ALL THE POST THEN GO BACK AND DEL. JUST IN TIME CURNCH. UPDATE
+    //     //#write
+    //     fieldLimiterRef.update({
+    //       fieldLimiter: fieldLimiterDoc.get("limiter") - 100,
+    //     });
+    //   }
+    // } else {
+    //   const limiter = { limiter: limiterHelper };
+    //   fieldLimiterRef.update(limiter);
+    // }
 
-    fieldLimiter.get("limiter");
+    // fieldLimiter.get("limiter");
   });
 
 //================================================================================

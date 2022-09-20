@@ -219,7 +219,5 @@ class ScreensForPageView {
   }
 
   Widget feed(context, tabController) => FeedScreenWidget(tabController: tabController,);
-
-
   //Container(child: FeedScreenWidget());
 }

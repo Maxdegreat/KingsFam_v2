@@ -1,12 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
-import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 
 import 'package:kingsfam/screens/screens.dart';
 
@@ -21,14 +22,16 @@ import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class PostSingleView extends StatefulWidget {
-  final Post post;
+  final Post? post;
   final bool isLiked;
   final VoidCallback onLike;
   final bool recentlyLiked;
   final ScrollController? scrollController;
   final TabController? tabCtrl;
+  final AdWidget? adWidget;
 
   PostSingleView({
+    this.adWidget,
     this.tabCtrl,
     this.scrollController,
     this.recentlyLiked = false,
@@ -46,7 +49,7 @@ class _PostSingleViewState extends State<PostSingleView> {
   bool _wasEverVisible = false;
   late VideoPlayerController vidCtrl;
   void updateVisibility() {
-    if (widget.post.imageUrl != null) {
+    if (widget.post != null && widget.post!.imageUrl != null) {
       _visible = true;
       _wasEverVisible = true;
     }
@@ -59,8 +62,8 @@ class _PostSingleViewState extends State<PostSingleView> {
 
   @override
   void initState() {
-    if (widget.post.videoUrl != null) {
-      vidCtrl = VideoPlayerController.network(widget.post.videoUrl!);
+    if (widget.post != null && widget.post!.videoUrl != null) {
+      vidCtrl = VideoPlayerController.network(widget.post!.videoUrl!);
     }
     updateVisibility();
     super.initState();
@@ -77,18 +80,18 @@ class _PostSingleViewState extends State<PostSingleView> {
         _visible ? blackOverLay() : SizedBox.shrink(),
         Positioned.fill(
             child: userPicAndName(
-                name: widget.post.author.username,
-                imgurl: widget.post.author.profileImageUrl)),
+                name: widget.post == null ? "Google Admob" : widget.post!.author.username,
+                imgurl: widget.post == null ? "Google Admob" : widget.post!.author.profileImageUrl)),
         Positioned.fill(
-            child: viewCommuinity(
-                commuinity: widget.post.commuinity,
-                isImage: widget.post.imageUrl != null)),
+            child: widget.post == null ? SizedBox.shrink() :  viewCommuinity(
+                commuinity: widget.post!.commuinity,
+                isImage: widget.post!.imageUrl != null)),
         // captionBox(caption: widget.post.caption, size: size),
         Align(
             alignment: Alignment.bottomLeft,
             child: showCaptions(
-                caption: widget.post.caption,
-                author: widget.post.author.username)),
+                caption: widget.post == null ? null : widget.post!.caption,
+                author: widget.post == null ? " Google Admob" : widget.post!.author.username)),
       ],
     );
   }
@@ -215,7 +218,7 @@ class _PostSingleViewState extends State<PostSingleView> {
   }
 
   Widget interactions() {
-    return Stack(children: [
+    return widget.post == null ? SizedBox.shrink() :  Stack(children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -238,8 +241,7 @@ class _PostSingleViewState extends State<PostSingleView> {
                 borderRadius: BorderRadius.circular(7)),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5.0),
-              child: Text(
-                  "${widget.recentlyLiked ? widget.post.likes + 1 : widget.post.likes}"),
+              child: Text("${widget.recentlyLiked ? widget.post!.likes + 1 : widget.post!.likes}"),
             ),
           ),
           Container(
@@ -248,7 +250,7 @@ class _PostSingleViewState extends State<PostSingleView> {
                 // onPressed: () => commentSheet(post: widget.post),
                 onPressed: () => Navigator.of(context).pushNamed(
                     CommentScreen.routeName,
-                    arguments: CommentScreenArgs(post: widget.post)),
+                    arguments: CommentScreenArgs(post: widget.post!)),
                 icon: Icon(Icons.message)),
           ),
         ],
@@ -257,7 +259,7 @@ class _PostSingleViewState extends State<PostSingleView> {
   }
 
   Widget userPicAndName({required String name, required String imgurl}) {
-    return Stack(
+    return widget.post != null ? Stack(
       children: [
         Positioned(
           top: 15,
@@ -269,7 +271,7 @@ class _PostSingleViewState extends State<PostSingleView> {
               onTap: () => Navigator.of(context).pushNamed(
                   ProfileScreen.routeName,
                   arguments: ProfileScreenArgs(
-                      userId: widget.post.author.id, vidCtrl: vidCtrl)),
+                      userId: widget.post!.author.id, vidCtrl: vidCtrl)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -286,10 +288,10 @@ class _PostSingleViewState extends State<PostSingleView> {
                       ),
                     ],
                   ),
-                  widget.post.author.id ==
+                  widget.post!.author.id ==
                           context.read<AuthBloc>().state.user!.uid
                       ? IconButton(
-                          onPressed: () => _postSettings(),
+                          onPressed: () => widget.post != null ?_postSettings() : null,
                           icon: Icon(Icons.more_vert))
                       : SizedBox.shrink()
                 ],
@@ -298,7 +300,7 @@ class _PostSingleViewState extends State<PostSingleView> {
           ),
         ),
       ],
-    );
+    ) : SizedBox.shrink();
   }
 
   _postSettings() {
@@ -319,7 +321,7 @@ class _PostSingleViewState extends State<PostSingleView> {
                       onPressed: () {
                         context
                             .read<PostsRepository>()
-                            .deletePost(post: widget.post);
+                            .deletePost(post: widget.post!);
                             snackBar(snackMessage: "post removed. update will soon be visible", context: context, bgColor: Colors.grey[700]);
                       },
                     ),
@@ -337,8 +339,8 @@ class _PostSingleViewState extends State<PostSingleView> {
         });
   }
 
-  Widget contentContainer({required Post post, required Size size}) {
-    if (post.imageUrl != null) {
+  Widget contentContainer({required Post? post, required Size size}) {
+    if (post != null && post.imageUrl != null) {
       return GestureDetector(
         onTap: () {
           if (_visible)
@@ -361,7 +363,7 @@ class _PostSingleViewState extends State<PostSingleView> {
           ),
         ),
       );
-    } else if (post.videoUrl != null) {
+    } else if (post != null && post.videoUrl != null) {
       // context.read<BottomnavbarCubit>().setVidCtrl(vidCtrl);
       return VisibilityDetector(
         key: ObjectKey(widget.post),
@@ -374,16 +376,16 @@ class _PostSingleViewState extends State<PostSingleView> {
           onDoubleTap: widget.onLike,
           child: VideoPostView16_9(
             tabCtrl: widget.tabCtrl,
-            post: widget.post,
-            userr: widget.post.author,
-            videoUrl: widget.post.videoUrl!,
+            post: widget.post!,
+            userr: widget.post!.author,
+            videoUrl: widget.post!.videoUrl!,
             playVidNow: true,
             controller: vidCtrl,
           ),
         ),
       );
-    } else if (post.quote != null) {
-      return Text("caption ${post.quote}");
+    } else if (widget.adWidget != null ) {
+      return Center(child: widget.adWidget);
     } else {
       return Text("contennt containe is empty???");
     }
@@ -423,7 +425,7 @@ class _PostSingleViewState extends State<PostSingleView> {
                       style: DefaultTextStyle.of(context).style,
                       children: <TextSpan>[
                         TextSpan(
-                            text: widget.post.date.timeAgo().toString() + '\n',
+                            text: widget.post != null ? widget.post!.date.timeAgo().toString() + '\n' : Timestamp.now().timeAgo().toString(),
                             style: GoogleFonts.adventPro(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 19,

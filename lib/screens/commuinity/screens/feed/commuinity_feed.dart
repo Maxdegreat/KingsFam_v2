@@ -29,7 +29,7 @@ class CommuinityFeedScreen extends StatefulWidget {
                   authBloc: context.read<AuthBloc>(),
                   likedPostCubit: context.read<LikedPostCubit>())
                 ..add(FeedCommuinityFetchPosts(
-                    commuinityId: args.commuinity.id!)),
+                    commuinityId: args.commuinity.id!, lastPostId: null)),
               child: CommuinityFeedScreen(
                 commuinity: args.commuinity,
               ),
@@ -49,18 +49,16 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
   late BannerAd _bannerAd;
   // make a bool declared
   bool _isBannerAdLoaded = false;
-  
+
   late Size size;
 
   @override
   void initState() {
     super.initState();
-       Future.delayed(Duration.zero, () {
+    Future.delayed(Duration.zero, () {
       size = MediaQuery.of(context).size;
       _ceateBanneAd();
-
-   });
-    
+    });
   }
 
   @override
@@ -103,13 +101,28 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
                 style: Theme.of(context).textTheme.bodyText1,
               ),
             ),
-            body: state.modPostLen > 0
+            body: state.posts.length > 0
                 ? PageView.builder(
-                    itemCount: state.modPostLen,
+                    onPageChanged: (pageNum) {
+                      if (pageNum == state.posts.length - 1) {
+                        if (state.posts.length != 0) {
+                
+                          context.read<FeedBloc>()
+                            ..add(CommunityFeedPaginatePost(
+                                commuinityId: widget.commuinity.id!));
+                        }
+                      }
+                    },
+                    itemCount: state.posts.length,
                     itemBuilder: (BuildContext context, int index) {
-                      if ((index == 2 && _isBannerAdLoaded || index % 7 == 0) && index != 0) {
-                        _ceateBanneAd();
-                        return Center(child: AdWidget(ad: _bannerAd));
+                      if (state.posts[index]?.author == Post.empty.author) {
+                        return PostSingleView(
+                          isLiked: false,
+                          post: null,
+                          adWidget: AdWidget(ad: _bannerAd),
+                          recentlyLiked: false,
+                          onLike: () {},
+                        );
                       } else {
                         final Post? post = state.posts[index];
                         if (post != null) {
@@ -125,6 +138,7 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
                           return PostSingleView(
                             isLiked: isLiked,
                             post: post,
+                            // adWidget: AdWidget(ad: _bannerAd),
                             recentlyLiked: recentlyLiked,
                             onLike: () {
                               if (isLiked) {
@@ -139,10 +153,9 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
                             },
                           );
                         }
+                        return SizedBox.shrink();
                       }
-                      return SizedBox.shrink();
-                    },
-                  )
+                    })
                 : Center(
                     child: Text("Your Community's post will show here"),
                   ));

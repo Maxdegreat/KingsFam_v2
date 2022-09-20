@@ -29,65 +29,73 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     if (event is FeedFetchPosts) {
       yield* _mapFeedFetchPostToState();
     } else if (event is FeedCommuinityFetchPosts) {
-      yield* _mapFeedCommuinityFetchPostToState(event.commuinityId);
+      yield* _mapFeedCommuinityFetchPostToState(event);
     } else if (event is FeedPaginatePosts) {
       yield* _mapFeedPaginatePosts();
-    } // TODO make a paginate community func
+    } else if (event is CommunityFeedPaginatePost) {
+      yield* _mapCommunityFeedPaginatePosts(event);
+    }
   }
 
   static const int PAGIATIONLIMIT = 4;
 
   Stream<FeedState> _mapFeedCommuinityFetchPostToState(
-      String commuinityId) async* {
+      FeedCommuinityFetchPosts event) async* {
     yield state.copyWith(posts: [], status: FeedStatus.loading);
     try {
-      final posts =
-          await _postsRepository.getCommuinityFeed(commuinityId: commuinityId);
+      final posts = await _postsRepository.getCommuinityFeed(commuinityId: event.commuinityId, lastPostId: event.lastPostId);
+
+      posts.add(Post.empty.copyWith(id: posts.last!.id));
+
+      posts.insert(2, Post.empty);
 
       _likedPostCubit.clearAllLikedPosts();
-      //Set<String?> postIds = posts.map((e) => e != null ? e.id : "").toSet();
-      //_likedPostCubit.updateLikedPosts(postIds: postIds);
 
-      final likedPostIds = await _postsRepository.getLikedPostIds(
-          userId: _authBloc.state.user!.uid, posts: posts);
+      final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: posts);
       _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
       yield state.copyWith(
-          posts: posts, modPostLen: state.modPostLen + posts.length, status: FeedStatus.success, likedPostIds: likedPostIds);
+          posts: posts,
+          status: FeedStatus.success,
+          likedPostIds: likedPostIds);
     } catch (e) {}
   }
 
-  
-
-  
   Stream<FeedState> _mapFeedFetchPostToState() async* {
-   yield state.copyWith(posts: [], status: FeedStatus.loading);
-      try {
-        log("geting the user feed");
-        final postsGot = await _postsRepository.getUserFeed(
-            userId: _authBloc.state.user!.uid, limit: PAGIATIONLIMIT);
+    yield state.copyWith(posts: [], status: FeedStatus.loading);
+    try {
+      log("geting the user feed");
+      final postsGot = await _postsRepository.getUserFeed(
+          userId: _authBloc.state.user!.uid, limit: PAGIATIONLIMIT);
 
-        // log(posts.toString());
-        _likedPostCubit.clearAllLikedPosts();
+      // log(posts.toString());
+      _likedPostCubit.clearAllLikedPosts();
 
-        final likedPostIds = await _postsRepository.getLikedPostIds(
-            userId: _authBloc.state.user!.uid, posts: postsGot);
-        _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
-        List<Post?> posts = List<Post?>.from(state.posts)..addAll(postsGot);
-        yield state.copyWith(posts: posts, modPostLen: state.modPostLen + posts.length, status: FeedStatus.success);
-      } catch (err) {
-        yield state.copyWith(
-            status: FeedStatus.error,
-            failure: Failure(
-                message: "Um, something went wrong when loading the feed???"));
-      }
+      final likedPostIds = await _postsRepository.getLikedPostIds(
+          userId: _authBloc.state.user!.uid, posts: postsGot);
+      _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
+      List<Post?> posts = List<Post?>.from(state.posts)..addAll(postsGot);
+
+      posts.add(Post.empty.copyWith(id: posts.last!.id));
+      posts.insert(2, Post.empty.copyWith(id: null));
+      
+      yield state.copyWith(
+          posts: posts,
+          status: FeedStatus.success);
+    } catch (err) {
+      yield state.copyWith(
+          status: FeedStatus.error,
+          failure: Failure(
+              message: "Um, something went wrong when loading the feed???"));
+    }
   }
 
   Stream<FeedState> _mapFeedPaginatePosts() async* {
-   yield state.copyWith(status: FeedStatus.paginating);
+    yield state.copyWith(status: FeedStatus.paginating);
     try {
       final lastPostId = state.posts.isNotEmpty ? state.posts.last!.id : null;
       final posts = await _postsRepository.getUserFeed(
           userId: _authBloc.state.user!.uid, lastPostId: lastPostId, limit: 8);
+                posts.add(Post.empty.copyWith(id: posts.last!.id));
 
       final updatedPosts = List<Post?>.from(state.posts)..addAll(posts);
 
@@ -95,7 +103,6 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
           userId: _authBloc.state.user!.uid, posts: posts);
       yield state.copyWith(
           posts: updatedPosts,
-          modPostLen: state.modPostLen + posts.length,
           status: FeedStatus.success);
       _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
     } catch (e) {
@@ -107,7 +114,28 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     }
   }
 
-  void updatePostLen() {
-    emit(state.copyWith(modPostLen: state.modPostLen + 1));
+   Stream<FeedState> _mapCommunityFeedPaginatePosts(CommunityFeedPaginatePost event) async* {
+    yield state.copyWith(status: FeedStatus.paginating);
+    try {
+      final lastPostId = state.posts.isNotEmpty ? state.posts.last!.id : null;
+
+      final posts = await _postsRepository.getCommuinityFeed(commuinityId: event.commuinityId, lastPostId: lastPostId);
+      posts.add(Post.empty.copyWith(id: posts.last!.id));
+
+      final updatedPosts = List<Post?>.from(state.posts)..addAll(posts);
+
+      final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: posts);
+      yield state.copyWith(
+          posts: updatedPosts,
+          status: FeedStatus.success);
+      _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
+    } catch (e) {
+      yield state.copyWith(
+          failure: Failure(
+              message: "dang, max messed up you're pagination code...",
+              code: e.toString()),
+          status: FeedStatus.error);
+    }
   }
+
 }
