@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -25,6 +26,7 @@ import 'package:kingsfam/widgets/chats_view_widgets/screens_for_page_view.dart';
 import 'package:kingsfam/widgets/kf_crown_v2.dart';
 import 'package:kingsfam/widgets/videos/asset_video.dart';
 import 'package:kingsfam/widgets/widgets.dart';
+import 'package:new_version/new_version.dart';
 import 'package:rive/rive.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -161,6 +163,7 @@ class _ChatsScreenState extends State<ChatsScreen>
   @override
   void initState() {
     super.initState();
+    _checkNewVersion();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
     _perkedVideoPlayerController =
         VideoPlayerController.asset("assets/promo_assets/Perked-2.mp4",
@@ -179,6 +182,26 @@ class _ChatsScreenState extends State<ChatsScreen>
     setupInteractedMessage();
     // requestPhotoPermission(); -- done on Ios
     //super.build(context);
+  }
+
+  _checkNewVersion() async {
+    final nv = NewVersion(
+      androidId: "com.kingbiz.kingsfam",
+      iOSId: "com.kingbiz.kingsfam",
+    );
+    final status = await nv.getVersionStatus();
+    
+    nv.showUpdateDialog(
+      context: context,
+      versionStatus: status!,
+      allowDismissal: false,
+      dialogTitle: "whats Up Fam, An Update Is Available",
+      dialogText: "Please update KingsFam to the latest version in order to avoid compatibility errors",
+      dismissAction: null,
+      updateButtonText: "update!"
+    );
+    log("local" + status.localVersion);
+    log("store" + status.storeVersion);
   }
 
   @override

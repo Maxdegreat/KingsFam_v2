@@ -85,11 +85,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     scrollController.addListener(listenToScrolling);
   }
 
-  @override
-  void dispose() {
-    scrollController.dispose();
-    super.dispose();
-  }
 
   void listenToScrolling() {
     //TODO you need to add this later make it a p1 requirment
@@ -133,7 +128,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   //---------------------------------------------------------body widget extracted
   Widget _bodyBabbyyyy(ProfileState state) {
-    var postImgVidSize = MediaQuery.of(context).size.height / 5;
+
     switch (state.status) {
       case ProfileStatus.initial:
         return Center(child: CircularProgressIndicator(color: Colors.red[400]));

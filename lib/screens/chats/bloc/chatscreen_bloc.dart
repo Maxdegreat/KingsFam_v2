@@ -70,7 +70,6 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
       final Userr currUserr = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
       final Map<String, bool> mentionedMap = {};
       final List<Church> allChs = [];
-      final preferences = await StreamingSharedPreferences.instance;
       _churchStreamSubscription?.cancel();
       _churchStreamSubscription = _churchRepository
           .getCmsStream(currId: currUserr.id)

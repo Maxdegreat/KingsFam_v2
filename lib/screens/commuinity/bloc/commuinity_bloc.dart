@@ -195,12 +195,15 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   }
 
   void onBoostCm({required String cmId}) {
-    _churchRepository.onBoostCm(cmId: cmId);
+    if (state.boosted != 1) {
+      _churchRepository.onBoostCm(cmId: cmId);
+    }
     emit(state.copyWith(boosted: 1));
   }
 
   void setTheme({required String cmId, required String theme}) {
     _churchRepository.setTheme(cmId: cmId, theme: theme);
+    emit(state.copyWith(themePack: theme));
   }
 
   Future<void> delKc(

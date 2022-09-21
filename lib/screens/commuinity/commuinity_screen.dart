@@ -42,6 +42,7 @@ import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
 import '../profile/bloc/profile_bloc.dart';
+import 'helper.dart';
 
 class CommuinityScreenArgs {
   final Church commuinity;
@@ -82,14 +83,17 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late TextEditingController _txtController;
+  Map<String, dynamic> accessMap = {};
+  String? currRole;
 
   @override
   void initState() {
+    currRole = getAccessCmHelp(
+        widget.commuinity, context.read<AuthBloc>().state.user!.uid);
     super.initState();
     _txtController = TextEditingController();
     _tabController = TabController(vsync: this, length: 2);
   }
-
 
   @override
   void dispose() {
@@ -100,10 +104,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     // ignore: unused_local_variable
     final userId = context.read<AuthBloc>().state.user!.uid;
     return BlocConsumer<CommuinityBloc, CommuinityState>(
@@ -131,7 +133,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     ));
   }
 
-  CustomScrollView  _mainScrollView(
+  CustomScrollView _mainScrollView(
       BuildContext context, CommuinityState state) {
     Color primaryColor = Colors.white;
     Color secondaryColor = Colors.grey[800]!;
@@ -166,47 +168,40 @@ class _CommuinityScreenState extends State<CommuinityScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  state.isMember == null ? SizedBox.shrink() : state.isMember != false
-                      ? ElevatedButton(
-                          onPressed: () {
-                            Userr? currUsr = null;
-                            var lst = widget.commuinity.members.keys.toList();
-                            for (int i = 0;
-                                i < widget.commuinity.members.length;
-                                i++) {
-                              if (lst[i].id ==
-                                  context.read<AuthBloc>().state.user!.uid) {
-                                currUsr = lst[i];
-                                // log("found the informatjion we were looking gor and rhis is me tping ewithout thinkting at all as ig you lweant to see how sgas ttla dcaion tipa rt;his is my true speds");
-                                break;
-                              }
-                            }
-                            String? currRole =
-                                widget.commuinity.members.containsKey(currUsr)
-                                    ? widget.commuinity.members[currUsr]["role"]
-                                    : null;
-                            if (currRole != Roles.Owner) {
-                              _onLeaveCommuinity();
-                            } else {
-                              snackBar(snackMessage: "Owners can not abandon ship", context: context, bgColor: Colors.red);
-                            }
-                          },
-                          child: Text(
-                            "...Leave :(",
-                            style: TextStyle(color: Colors.red),
-                          ),
-                          style: ButtonStyle(
-                              foregroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.white),
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.transparent),
-                              shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.zero,
-                                      side: BorderSide(color: Colors.red)))),
-                        )
-                      : joinBtn(state),
+                  state.isMember == null
+                      ? SizedBox.shrink()
+                      : state.isMember != false
+                          ? ElevatedButton(
+                              onPressed: () {
+                                if (currRole != Roles.Owner) {
+                                  _onLeaveCommuinity();
+                                } else {
+                                  snackBar(
+                                      snackMessage:
+                                          "Owners can not abandon ship",
+                                      context: context,
+                                      bgColor: Colors.red);
+                                }
+                              },
+                              child: Text(
+                                "...Leave :(",
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              style: ButtonStyle(
+                                  foregroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.white),
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.transparent),
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.zero,
+                                          side:
+                                              BorderSide(color: Colors.red)))),
+                            )
+                          : joinBtn(state),
                   SizedBox(width: 10),
                   Text("${widget.commuinity.size} members")
                 ],
@@ -588,7 +583,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
           height: 40,
           child: TextButton(
             child: Text(
-              "JOINNN",
+              "JOIN!",
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () => _onJoinCommuinity(),
@@ -670,24 +665,11 @@ class _CommuinityScreenState extends State<CommuinityScreen>
 
   Widget _new_call() {
     cmActions.Actions actions = cmActions.Actions();
-    Userr? currUsr = null;
-    var lst = widget.commuinity.members.keys.toList();
-    for (int i = 0; i < widget.commuinity.members.length; i++) {
-      if (lst[i].id == context.read<AuthBloc>().state.user!.uid) {
-        currUsr = lst[i];
-        // log("found the informatjion we were looking gor and rhis is me tping ewithout thinkting at all as ig you lweant to see how sgas ttla dcaion tipa rt;his is my true speds");
-        break;
-      }
-    }
-    String? currRole = widget.commuinity.members.containsKey(currUsr)
-        ? widget.commuinity.members[currUsr]["role"]
-        : null;
-    // log("cur role is: $currRole");
-    // log("users info is: ${widget.commuinity.members[currUsr]}");
+
     if ((currRole != null && currRole == Roles.Owner) ||
         (currRole != null &&
             actions.hasAccess(
-                role: currRole,
+                role: currRole!,
                 action: cmActions.Actions.communityActions[4]))) {
       return GestureDetector(
           onTap: () => snackBar(
@@ -782,23 +764,10 @@ class _CommuinityScreenState extends State<CommuinityScreen>
 
   Widget new_kingscord({required CommuinityBloc cmBloc}) {
     cmActions.Actions actions = cmActions.Actions();
-    Userr? currUsr;
-    var lst = widget.commuinity.members.keys.toList();
-    for (int i = 0; i < widget.commuinity.members.length; i++) {
-      if (lst[i].id == context.read<AuthBloc>().state.user!.uid) {
-        currUsr = lst[i];
-        break;
-      }
-    }
-    String? currRole = widget.commuinity.members.containsKey(currUsr)
-        ? widget.commuinity.members[currUsr]["role"]
-        : null;
-    // log("cur role is: $currRole usr Id is ${currUsr!.id}");
-    // log("users info is: ${widget.commuinity.members[currUsr]}");
     if ((currRole != null && currRole == Roles.Owner) ||
         (currRole != null &&
             actions.hasAccess(
-                role: currRole,
+                role: currRole!,
                 action: cmActions.Actions.communityActions[4]))) {
       return GestureDetector(
           onTap: () => new_kingsCord_sheet(cmBloc),
@@ -918,7 +887,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                               commuinity: widget.commuinity,
                               buildchurchCubit:
                                   context.read<BuildchurchCubit>(),
-                              communitiyBloc: context.read<CommuinityBloc>())
+                              communitiyBloc: context.read<CommuinityBloc>(),
+                              currRole: currRole)
                         ]),
                       )
                     ],
@@ -1140,73 +1110,88 @@ class _CommuinityScreenState extends State<CommuinityScreen>
       {required CommuinityBloc cmBloc,
       required Church commuinity,
       required BuildchurchCubit buildchurchCubit,
-      required CommuinityBloc communitiyBloc}) {
-    String assetNameForTheme = communitiyBloc.state.themePack == "none"
-        ? "assets/cm_backgrounds/2.svg"
-        : communitiyBloc.state.themePack;
-    return Column(children: [
-      ListTile(
-          title: Text("Update the Community name",
+      required CommuinityBloc communitiyBloc,
+      required String? currRole}) {
+    if (currRole != null &&
+        (currRole == Roles.Admin || currRole == Roles.Owner)) {
+      String assetNameForTheme = communitiyBloc.state.themePack == "none"
+          ? "assets/cm_backgrounds/2.svg"
+          : communitiyBloc.state.themePack;
+      return Column(children: [
+        ListTile(
+            title: Text("Update the Community name",
+                style: Theme.of(context).textTheme.bodyText1),
+            onTap: () async => _updateCommuinityName(
+                commuinity: commuinity,
+                buildchurchCubit: context.read<BuildchurchCubit>())),
+        ListTile(
+          title: Text("Update Community ImageUrl",
+              overflow: TextOverflow.fade,
               style: Theme.of(context).textTheme.bodyText1),
-          onTap: () async => _updateCommuinityName(
-              commuinity: commuinity,
-              buildchurchCubit: context.read<BuildchurchCubit>())),
-      ListTile(
-        title: Text("Update Community ImageUrl",
-            overflow: TextOverflow.fade,
-            style: Theme.of(context).textTheme.bodyText1),
-        trailing: ProfileImage(radius: 25, pfpUrl: commuinity.imageUrl),
-        onTap: () => _updateCommuinityImage(
-            commuinity: commuinity, buildchurchCubit: buildchurchCubit),
-      ),
-      ListTile(
-        title: Text(
-          "Update the community Theme Pack",
-          style: GoogleFonts.getFont('Montserrat'),
-          overflow: TextOverflow.fade,
+          trailing: ProfileImage(radius: 25, pfpUrl: commuinity.imageUrl),
+          onTap: () => _updateCommuinityImage(
+              commuinity: commuinity, buildchurchCubit: buildchurchCubit),
         ),
-        trailing: Container(
-          height: 50,
-          width: 50,
-          child: SvgPicture.asset(
-            assetNameForTheme,
-            fit: BoxFit.fill,
-            allowDrawingOutsideViewBox: false,
-            clipBehavior: Clip.hardEdge,
-          ),
-          decoration: BoxDecoration(
-              color: Colors.grey[700], borderRadius: BorderRadius.circular(50)),
-        ),
-        onTap: () => NavHelper().navToUpdateCmTheme(
-            context, cmBloc, commuinity.name, commuinity.id!),
-      ),
-      ListTile(
-        title: Text(
-          "Update The About",
-          style: Theme.of(context).textTheme.bodyText1,
-          overflow: TextOverflow.fade,
-        ),
-        onTap: () async => _updateTheAbout(
-            commuinity: commuinity,
-            buildchurchCubit: context.read<BuildchurchCubit>()),
-      ),
-      ListTile(
+        ListTile(
           title: Text(
-            "Manage & Update Roles",
+            "Update the community Theme Pack",
+            style: GoogleFonts.getFont('Montserrat'),
+            overflow: TextOverflow.fade,
+          ),
+          trailing: Container(
+            height: 50,
+            width: 50,
+            child: SvgPicture.asset(
+              assetNameForTheme,
+              fit: BoxFit.fill,
+              allowDrawingOutsideViewBox: false,
+              clipBehavior: Clip.hardEdge,
+            ),
+            decoration: BoxDecoration(
+                color: Colors.grey[700],
+                borderRadius: BorderRadius.circular(50)),
+          ),
+          onTap: () => NavHelper().navToUpdateCmTheme(
+              context, cmBloc, commuinity.name, commuinity.id!),
+        ),
+        ListTile(
+          title: Text(
+            "Update The About",
             style: Theme.of(context).textTheme.bodyText1,
             overflow: TextOverflow.fade,
           ),
-          onTap: () {
-            Church ch = Church.empty;
-            Navigator.of(context).pushNamed(RolesScreen.routeName,
-                arguments: RoleScreenArgs(
-                    community: ch.copyWith(
-                  id: commuinity.id,
-                  members: commuinity.members,
-                  name: commuinity.name,
-                )));
-          })
-    ]);
+          onTap: () async => _updateTheAbout(
+              commuinity: commuinity,
+              buildchurchCubit: context.read<BuildchurchCubit>()),
+        ),
+        ListTile(
+            title: Text(
+              "Manage & Update Roles",
+              style: Theme.of(context).textTheme.bodyText1,
+              overflow: TextOverflow.fade,
+            ),
+            onTap: () {
+              Church ch = Church.empty;
+              Navigator.of(context).pushNamed(RolesScreen.routeName,
+                  arguments: RoleScreenArgs(
+                      community: ch.copyWith(
+                    id: commuinity.id,
+                    members: commuinity.members,
+                    name: commuinity.name,
+                  )));
+            })
+      ]);
+    } else
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Text(
+              "Hey Fam you must be a Owner or Admin Role to access these settings"),
+          Text("with great power comes a lot of responsibility yk yk")
+        ],
+      );
   }
 
   void _updateEditView(BuildContext context, Church commuinity) {
@@ -1555,7 +1540,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   }
 
   _onJoinCommuinity() {
-    log("testing on join ~ user: ${context.read<ProfileBloc>().state.userr}");
+    // log("testing on join ~ user: ${context.read<ProfileBloc>().state.userr}");
     context
         .read<CommuinityBloc>()
         .onJoinCommuinity(commuinity: widget.commuinity);
@@ -1604,7 +1589,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                               commuinity: widget.commuinity));
                         Navigator.of(_context).pop();
                       },
-                      child: Text("... I sad bye")),
+                      child: Text("... I said bye")),
                 ),
                 Container(
                   child: ElevatedButton(

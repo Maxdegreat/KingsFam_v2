@@ -78,15 +78,9 @@ class _UpdateCmThemePackState extends State<UpdateCmThemePack> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text("btw New Theme Packs released bi-weekly", style: style),
-            Text(
-              "Theme Packs r free while " + widget.cmName + " is boosted",
-              style: style,
-            ),
-            SizedBox(height: 7),
-            Text("Now behold ... cm packs", style: style),
+            Text("Now behold ... cm packs (narrator voice)", style: style),
             Container(
-              height: MediaQuery.of(context).size.height / 3.7,
+              height: MediaQuery.of(context).size.height / 2,
               width: double.infinity,
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
@@ -103,54 +97,42 @@ class _UpdateCmThemePackState extends State<UpdateCmThemePack> {
             ),
             SizedBox(height: 10),
             widget.cmBloc.state.boosted != 1
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Container(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                          onPressed: () async {
-                            // widget.cmBloc.onBoostCm(cmId: widget.cmId);
-                            await _stripePayCardWidget();
-                            // snackBar(snackMessage: "BOOSTED, may have to refesh home screen to view", context: context, bgColor: Colors.green);
-                          },
-                          child: Text(
-                            "BOOST ${widget.cmName.toUpperCase()}",
-                            style: styleBoostBtn,
-                          )),
-                    ),
-                  )
-                : SizedBox.shrink(),
-            SizedBox(height: 7),
-            Container(
-              width: MediaQuery.of(context).size.width / 1.2,
-              child: Column(
-                children: [
-                  Container(
-                    height: 50,
-                    color: (Colors.blue[700]),
-                    child: Center(child: Text("Perks When Boosting CM")),
-                  ),
-                  Container(
-                    height: 300,
-                    color: Colors.blue[400],
-                    child: Column(
-                      children: [
-                        _paddedText(
-                          text: "More Than 105 Community Members",
-                        ),
-                        _paddedText(text: "More Than 5 KC's"),
-                        _paddedText(text: "More Than 2 Admins"),
-                        _paddedText(text: "Theme Packs!!!"),
-                        _paddedText(
-                            text: "More Coming Soon, be on the look out ")
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            )
+                ? boostBtn(context, true) // needs to be boosted then true
+                : boostBtn(context, false),
+            SizedBox(height: 7)
           ],
         ),
+      ),
+    );
+  }
+
+  Padding boostBtn(BuildContext context, bool b) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Container(
+        width: double.infinity,
+        child: ElevatedButton(
+            onPressed: () async {
+              if (b) {
+                widget.cmBloc.onBoostCm(cmId: widget.cmId);
+                snackBar(
+                    snackMessage:
+                        "BOOSTED, may have to refesh home screen to view",
+                    context: context,
+                    bgColor: Colors.green);
+                    setState(() {
+                      
+                    });
+              } else {
+                
+              }
+
+              // await _stripePayCardWidget();
+            },
+            child: b ? Text(
+              "BOOST ${widget.cmName.toUpperCase()}",
+              style: styleBoostBtn,
+            ): Text("Boosted ")),
       ),
     );
   }
@@ -184,6 +166,7 @@ class _UpdateCmThemePackState extends State<UpdateCmThemePack> {
                   bgColor: Colors.red[400]);
             } else {
               widget.cmBloc.setTheme(cmId: widget.cmId, theme: svgPath);
+              snackBar(snackMessage: "Nice, check out the Community page home now!", context: context, bgColor: Colors.green);
             }
           },
         ),
@@ -260,13 +243,12 @@ class _UpdateCmThemePackState extends State<UpdateCmThemePack> {
 
   makePaymentIntent(String amount, String currency) async {
     try {
-     
       Map<String, dynamic> body = {
         'amount': getAmount(amount),
         'currency': currency,
         'payment_method_types[]': 'card'
       };
-    
+
       var response = await http.post(
         Uri.parse('https://api.stripe.com/v1/payment_intents'),
         headers: {

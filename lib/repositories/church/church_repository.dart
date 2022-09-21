@@ -33,10 +33,24 @@ class ChurchRepository extends BaseChurchRepository {
     });
   }
 
+  // if in any cm returns true
+  Future<bool> isInCm(String currId) async {
+    final userRef = FirebaseFirestore.instance.collection(Paths.users).doc(currId);
+    final cmRef = await FirebaseFirestore.instance
+        .collection(Paths.church)
+        .limit(1)
+        .where('members.$currId.userReference', isEqualTo: userRef).get();
+    if (cmRef.docs.isNotEmpty) {
+      if (cmRef.docs.first.exists) {
+        return true;
+      }
+    } 
+    return false;
+  }
+
   Stream<List<Future<Church?>>> getCmsStream({required String currId}) {
     log("we are now in the getCmsStream");
-    final userRef =
-        FirebaseFirestore.instance.collection(Paths.users).doc(currId);
+    final userRef = FirebaseFirestore.instance.collection(Paths.users).doc(currId);
     return FirebaseFirestore.instance
         .collection(Paths.church)
         .limit(10)
