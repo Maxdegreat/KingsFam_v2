@@ -16,6 +16,8 @@ import 'package:kingsfam/screens/profile/profile_screen.dart';
 
 import 'package:kingsfam/widgets/widgets.dart';
 
+import '../../widgets/church_display_column.dart';
+
 class SearchScreen extends StatefulWidget {
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -180,7 +182,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   onTap: () => navToChurch(
                                       context: context, commuinity: church),
                                   child:
-                                      search_Church_container(church: church));
+                                      search_Church_container(church: church, context: context));
                             },
                           ))
                       : Container(
@@ -223,7 +225,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   onTap: () => navToChurch(
                                       context: context, commuinity: church),
                                   child:
-                                      search_Church_container(church: church));
+                                      search_Church_container(church: church, context: context));
                             },
                           ))
                       : Container(
@@ -324,34 +326,7 @@ class _SearchScreenState extends State<SearchScreen> {
         arguments: CreateNewGroupArgs(typeOf: 'Virtural Church'));
   }
 
-  Widget search_Church_container({required Church church}) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
-          child: Container(
-            height: 135,
-            width: MediaQuery.of(context).size.width * .70,
-            decoration: BoxDecoration(
-                color: Color.fromARGB(255, 102, 102, 103),
-                image: DecorationImage(
-                    image: CachedNetworkImageProvider(church.imageUrl),
-                    fit: BoxFit.cover),
-                borderRadius: BorderRadius.circular(5.0)),
-          ),
-        ),
-        Text("${church.name}",
-            style: TextStyle(fontSize: 20), overflow: TextOverflow.fade),
-        Text(
-          "${church.members.length} members ~ ${church.location}",
-          style: TextStyle(fontSize: 20),
-          overflow: TextOverflow.fade,
-        ),
-      ],
-    );
-  }
+  
 
   Widget ProfileCard(Userr user) {
     return GestureDetector(

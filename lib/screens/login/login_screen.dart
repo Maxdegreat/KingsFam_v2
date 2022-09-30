@@ -103,30 +103,30 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             // ------------------------------------------------------ manuel sign in methods
-            // SizedBox(height: 20),
-            // Container(
-            //   width: size.width / 1.2,
-            //   child: TextButton(
-            //       onPressed: () {
-            //         //push route to sign up screen
-            //         Navigator.of(context).pushNamed(SignupFormScreen.routeName);
-            //       },
-            //       child: Text('Sign Up',
-            //           style: Theme.of(context).textTheme.bodyText1),
-            //       style: TextButton.styleFrom(backgroundColor: Colors.amber[400])),
-            // ),
-            // SizedBox(height: 20.0),
-            // Container(
-            //   width: size.width / 1.2,
-            //   child: TextButton(
-            //       onPressed: () {
-            //         //push named route to login screen
-            //         Navigator.of(context).pushNamed(LoginFormScren.routeName);
-            //       },
-            //       child: Text('Login In',
-            //           style: Theme.of(context).textTheme.bodyText1),
-            //       style: TextButton.styleFrom(backgroundColor: Colors.amber[400])),
-            // ),
+             SizedBox(height: 20),
+             Container(
+               width: size.width / 1.2,
+               child: TextButton(
+                   onPressed: () {
+                     //push route to sign up screen
+                     Navigator.of(context).pushNamed(SignupFormScreen.routeName);
+                   },
+                   child: Text('Sign Up',
+                       style: Theme.of(context).textTheme.bodyText1),
+                   style: TextButton.styleFrom(backgroundColor: Colors.amber[400])),
+             ),
+             SizedBox(height: 20.0),
+             Container(
+               width: size.width / 1.2,
+               child: TextButton(
+                   onPressed: () {
+                     //push named route to login screen
+                     Navigator.of(context).pushNamed(LoginFormScren.routeName);
+                   },
+                   child: Text('Login In',
+                       style: Theme.of(context).textTheme.bodyText1),
+                   style: TextButton.styleFrom(backgroundColor: Colors.amber[400])),
+             ),
             // ----------------------------------------------------------------------------------------------
             SizedBox(height: 20),
             Platform.isIOS ? Container(

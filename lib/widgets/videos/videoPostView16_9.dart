@@ -83,7 +83,7 @@ class _VideoPostView16_9State extends State<VideoPostView16_9> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 0.0),
-        child: VideoPlayerWidget(controller: widget.controller, post: widget.post, user: widget.userr,),
+        child: Center(child: VideoPlayerWidget(controller: widget.controller, post: widget.post, user: widget.userr,)),
       ),
     );
   }

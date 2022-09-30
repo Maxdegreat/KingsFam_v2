@@ -75,7 +75,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             videoPlayerOptions: VideoPlayerOptions(
               mixWithOthers: true,
             ))
-          ..addListener(() => setState(() {}))
+          ..addListener(() {
+            if (this.mounted) {
+              setState(() {
+                
+              });
+            }
+          })
           ..setLooping(
               true) // -------------------------------- SET PERKED LOOPING TO TRUE
           ..initialize().then((_) {

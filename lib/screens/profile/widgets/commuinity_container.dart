@@ -61,6 +61,7 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
     padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0,),
     child: GestureDetector(
       onTap: () => showModalBottomSheet(context: context, builder: (context) {
+        
                 final _churchRepo = context.read<ChurchRepository>();
                 
                 return FutureBuilder(

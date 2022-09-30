@@ -47,13 +47,13 @@ class FancyListTile extends StatelessWidget {
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
-                flex: 1,
-                child: Text('$username.',
-                    overflow: TextOverflow.fade,
-                    style: newNotification == null  || newNotification == false ? TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.white) :  TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.amber[200])),
-              ),
+              Text('$username.',
+                  overflow: TextOverflow.fade,
+                  style: newNotification == null  || newNotification == false ? TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.white) :  TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.amber[200])), 
+              SizedBox(height: 3),
               location != null || location == "" ? Text('$location.', overflow: TextOverflow.fade,
                   style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w600, color: Colors.grey[700])) : Text('Remote.', overflow: TextOverflow.fade,
                   style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w600, color: Colors.grey[700])),

@@ -43,6 +43,31 @@
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
 </head>
 <body style="position: fixed; inset: 0px; overflow: hidden; padding: 0px; margin: 0px; user-select: none; touch-action: none; font: 14px sans-serif; color: red;">
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyCXVic9bfTfwv77hjChsGvCTeg6rvVlMkE",
+      authDomain: "kingsfam-9b1f8.firebaseapp.com",
+      projectId: "kingsfam-9b1f8",
+      storageBucket: "kingsfam-9b1f8.appspot.com",
+      messagingSenderId: "628805532994",
+      appId: "1:628805532994:web:7a5aa12ebebdc26aca1cdb",
+      measurementId: "G-CQNSLF1EBH"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script>
+
   <script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js

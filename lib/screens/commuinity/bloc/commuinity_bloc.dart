@@ -14,6 +14,8 @@ import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/widgets/snackbar.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../../roles/role_types.dart';
+
 part 'commuinity_event.dart';
 part 'commuinity_state.dart';
 
@@ -68,48 +70,56 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   String failed = 'failed to load commuinty screen';
 
-  
-
-  Stream<CommuinityState> _mapCommuinityLoadCommuinityToState(CommuinityLoadCommuinity event) async* {
-    if(event.vidCtrl != null) {
-      event.vidCtrl!.pause();
-    }
+  Stream<CommuinityState> _mapCommuinityLoadCommuinityToState(
+      CommuinityLoadCommuinity event) async* {
     emit(state.copyWith(status: CommuintyStatus.loading));
     try {
-      
-      final Userr userr = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
+      final Userr userr = await _userrRepository.getUserrWithId(
+          userrId: _authBloc.state.user!.uid);
 
-      
-      emit(state.copyWith(themePack: event.commuinity.themePack, boosted: event.commuinity.boosted));
+      emit(state.copyWith(
+          themePack: event.commuinity.themePack,
+          boosted: event.commuinity.boosted));
 
       // update the usr timestamp for the cm when they open the cm
-      Church cm = Church.empty.copyWith(id: event.commuinity.id, members: event.commuinity.members, );
+      Church cm = Church.empty.copyWith(
+        id: event.commuinity.id,
+        members: event.commuinity.members,
+      );
 
-      _churchRepository.updateUserTimestampOnOpenCm(cm, _authBloc.state.user!.uid);
+      _churchRepository.updateUserTimestampOnOpenCm(
+          cm, _authBloc.state.user!.uid);
       final List<KingsCord> allCords = [];
       final Map<String, bool> mentionedMap = {};
       _streamSubscriptionKingsCord?.cancel();
       _streamSubscriptionKingsCord = _churchRepository
           .getCommuinityCordsStream(commuinity: event.commuinity, limit: 100)
           .listen((kcords) async {
-          final allCords = await Future.wait(kcords);
-           for (var kcAwait in kcords) {
-             final kc = await kcAwait;
-             if (kc!=null) {
-               //allCords.add(kc);
-               var docRef = await FirebaseFirestore.instance.collection(Paths.mention).doc(_authBloc.state.user!.uid).collection(event.commuinity.id!).doc(kc.id);
-               docRef.get().then((value) => {
-                 if (value.exists) {
-                   mentionedMap[kc.id!] = true,
-                 }
-                 else {
-                   mentionedMap[kc.id!] = false
-                 },
-                 emit(state.copyWith(mentionedMap: mentionedMap, currUserr: userr, kingCords: allCords))
-               });
-             }
-           }
-          
+        final allCords = await Future.wait(kcords);
+        for (var kcAwait in kcords) {
+          final kc = await kcAwait;
+          if (kc != null) {
+            //allCords.add(kc);
+            var docRef = await FirebaseFirestore.instance
+                .collection(Paths.mention)
+                .doc(_authBloc.state.user!.uid)
+                .collection(event.commuinity.id!)
+                .doc(kc.id);
+            docRef.get().then((value) => {
+                  if (value.exists)
+                    {
+                      mentionedMap[kc.id!] = true,
+                    }
+                  else
+                    {mentionedMap[kc.id!] = false},
+                  emit(state.copyWith(
+                      mentionedMap: mentionedMap,
+                      currUserr: userr,
+                      kingCords: allCords))
+                });
+          }
+        }
+
         add(ComuinityLoadingCords(
             commuinity: event.commuinity, cords: allCords));
       });
@@ -127,7 +137,8 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     // also add this.event to loaded yield ... now has both list (this event has the cord and cm)
     // STILL LOAFDING SO NO YIELD YET
     try {
-      List<Post?> posts = await _churchRepository.getCommuinityPosts(cm: event.commuinity);
+      List<Post?> posts =
+          await _churchRepository.getCommuinityPosts(cm: event.commuinity);
       _streamSubscriptionCalls?.cancel();
       _streamSubscriptionCalls = _callRepository
           .getCommuinityCallsStream(
@@ -151,26 +162,25 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     try {
       //var cmIds = event.commuinity.members.keys.map((e) => e.id).toList();
       late bool isMem;
-  
-      var ism = await _churchRepository
-          .streamIsCmMember(cm: event.commuinity, authorId: _authBloc.state.user!.uid);
+
+      var ism = await _churchRepository.streamIsCmMember(
+          cm: event.commuinity, authorId: _authBloc.state.user!.uid);
       _streamSubscriptionIsMember = ism.listen((isMemStream) async {
-        for (var kc in event.kcs) 
+        for (var kc in event.kcs)
 
           //log("from bloc kc recentSenderInfo is: ${kc!.recentSender}");
-        
-        isMem = await isMemStream;
+
+          isMem = await isMemStream;
         emit(state.copyWith(
-            calls: event.calls,
-            isMember: isMem,
-            kingCords: event.kcs,
-            postDisplay: event.posts,
-            status: CommuintyStatus.loaded,
-            ));
+          calls: event.calls,
+          isMember: isMem,
+          kingCords: event.kcs,
+          postDisplay: event.posts,
+          status: CommuintyStatus.loaded,
+        ));
       });
 
-    // checking for perks
-    
+      // checking for perks
 
     } catch (e) {
       emit(state.copyWith(
@@ -183,15 +193,85 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   Future<void> onLeaveCommuinity({required Church commuinity}) async {
     final userrId = _authBloc.state.user!.uid;
-    _churchRepository.leaveCommuinity(commuinity: commuinity, leavingUserId: userrId);
+    _churchRepository.leaveCommuinity(
+        commuinity: commuinity, leavingUserId: userrId);
     emit(state.copyWith(isMember: false));
   }
 
-  Future<void> onJoinCommuinity({required Church commuinity}) async {
-    final userrId = _authBloc.state.user!.uid;
-    final user = await _userrRepository.getUserrWithId(userrId: userrId);
-    _churchRepository.onJoinCommuinity(commuinity: commuinity, user: user);
-    emit(state.copyWith(isMember: true));
+  Future<void> onJoinCommuinity(
+      {required Church commuinity, required BuildContext context}) async {
+    bool isBan = await _churchRepository.isBaned(
+        usrId: _authBloc.state.user!.uid, cmId: commuinity.id!);
+    log("the val of is ban: " + isBan.toString());
+    emit(state.copyWith(isBaned: isBan));
+    await Future.delayed(Duration(seconds: 1));
+
+    if (isBan == false) {
+      log("we are in the conditional, is ban is false");
+      final userrId = _authBloc.state.user!.uid;
+      final user = await _userrRepository.getUserrWithId(userrId: userrId);
+      _churchRepository.onJoinCommuinity(commuinity: commuinity, user: user);
+      commuinity.members[state.currUserr] = {
+        'role': Roles.Member,
+        'timestamp': Timestamp.now(),
+        'userReference': '...'
+      };
+      add(CommuinityLoadCommuinity(commuinity: commuinity));
+      emit(state.copyWith(isMember: true));
+      
+    } else {
+      log("we are in the true, is ban is true");
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.cancel_outlined,
+                    color: Colors.red,
+                  ),
+                  FittedBox(
+                    child: Text("You Are not allowed"),
+                  ),
+                  FittedBox(
+                    child: Text("to join this community"),
+                  ),
+                  FittedBox(child: Text("at this moment.")),
+                  FittedBox(
+                    child: Text("Possibly due to a ban"),
+                  )
+                ],
+              ),
+            );
+          });
+    }
+  }
+
+  Future<void> banedUsers({required String communityId}) async {
+    String? lastDocId =
+        state.banedUsers.length > 0 ? state.banedUsers.last.id : null;
+    if (state.banedUsers.length > 0 && lastDocId == null) {
+      return;
+    }
+    log("Getting band users");
+    List<Userr> banedUsers = await _churchRepository.getBanedUsers(
+        cmId: communityId, lastDocId: lastDocId);
+    log("len of get ban users: " + banedUsers.length.toString());
+    List<Userr> updatedBanedUsers = List<Userr>.from(state.banedUsers)
+      ..addAll(banedUsers);
+    log("val of baned users is: " + updatedBanedUsers.length.toString());
+    emit(state.copyWith(banedUsers: updatedBanedUsers));
+  }
+
+  void unBan({required String cmId, required Userr usr}) {
+    _churchRepository.unBan(cmId: cmId, usrId: usr.id);
+    var x = state.banedUsers;
+    x.remove(usr);
+    emit(state.copyWith(banedUsers: x));
   }
 
   void onBoostCm({required String cmId}) {
@@ -208,22 +288,23 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   Future<void> delKc(
       {required KingsCord cord, required Church commuinity}) async {
-        // gives unexpected behavior
-        // should not del kc if only on kc.
-       await _churchRepository.delCord(cmmuinity: commuinity, cord: cord); log("del complete");
+    // gives unexpected behavior
+    // should not del kc if only on kc.
+    await _churchRepository.delCord(cmmuinity: commuinity, cord: cord);
+    log("del complete");
   }
 
-
-  Future<void> makeNewKc(
-      {required Church commuinity,
-      required String cordName,
-      required BuildContext ctx,}) async {
-
-      Userr currUser = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
-      await _churchRepository.newKingsCord2(ch: commuinity, cordName: formatCordName(cordName), currUser: currUser);
-      // WE DO NOT EMIT TO STATE BECAUSE THERE IS ALREDY A STREAM LISTENING FOR KC'S AND THE STREAM EMITS TO STATE
-      // ANY ATTEMPT TO EMIT FROM HERE WHILE THE STREAM IS ACTIVE WILL CAUSE SOME OUT OF RANGE ERRORS.
-    
+  Future<void> makeNewKc({
+    required Church commuinity,
+    required String cordName,
+    required BuildContext ctx,
+  }) async {
+    Userr currUser = await _userrRepository.getUserrWithId(
+        userrId: _authBloc.state.user!.uid);
+    await _churchRepository.newKingsCord2(
+        ch: commuinity, cordName: formatCordName(cordName), currUser: currUser);
+    // WE DO NOT EMIT TO STATE BECAUSE THERE IS ALREDY A STREAM LISTENING FOR KC'S AND THE STREAM EMITS TO STATE
+    // ANY ATTEMPT TO EMIT FROM HERE WHILE THE STREAM IS ACTIVE WILL CAUSE SOME OUT OF RANGE ERRORS.
   }
 
   String formatCordName(String cordName) {
@@ -238,9 +319,14 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     return newName;
   }
 
-
   dispose() {
-    state.copyWith(calls: [], failure: Failure(), isMember: false, kingCords: [], postDisplay: [], status: CommuintyStatus.inital);
+    state.copyWith(
+        calls: [],
+        failure: Failure(),
+        isMember: false,
+        kingCords: [],
+        postDisplay: [],
+        status: CommuintyStatus.inital);
   }
 
   void onCollapsedCord() {
@@ -253,8 +339,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   void onCollapsedVvrColumn() {
     if (state.collapseVvrColumn)
       emit(state.copyWith(collapseVvrColumn: false));
-    else 
+    else
       emit(state.copyWith(collapseVvrColumn: true));
   }
-
 }

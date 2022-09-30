@@ -66,34 +66,44 @@ late BannerAd _bottomBannerAd;
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.height / 1.5,
-              child: ListView(
-                children: [
-                  //for a new gc
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(primary: Colors.deepPurple[200]),
-                      child: Text("✨ Make A Chat / Group Chat"),
-                      onPressed: () => Navigator.of(context).pushNamed(AddUsers.routeName, arguments: CreateNewGroupArgs(typeOf: 'chat')),
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+             
+                    //for a new gc
+                    Container(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(primary: Color.fromARGB(255, 255, 193, 7)),
+                        child: Text("✨ Share A Post ✨"),
+                        onPressed: () => Navigator.of(context).pushNamed(CreatePostScreen.routeName),
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 10.0),
-                  //for a new commuinity
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(primary: Colors.red[400]),
-                      child: Text('Create A Commuinity 👑'),
-                      onPressed: () => Navigator.of(context).pushNamed( AddUsers.routeName, arguments:CreateNewGroupArgs(typeOf: 'Virtural Church'))),
-                  ),
-                  Container(height: 400,child: RiveAnimation.asset('assets/phone_idle/phone_idle.riv')) 
-                ],
-              ),
-            ),
-          ],
+                    
+                    SizedBox(height: 10.0),
+                    //for a new commuinity
+                    Container(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(primary: Colors.red[400]),
+                        child: Text('Create A Commuinity 👑'),
+                        onPressed: () => Navigator.of(context).pushNamed( AddUsers.routeName, arguments:CreateNewGroupArgs(typeOf: 'Virtural Church'))),
+                    ),
+                    // Container(height: 400,child: RiveAnimation.asset('assets/phone_idle/phone_idle.riv')) 
+                    SizedBox(height: 10.0),
+                    Container(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(primary: Colors.deepPurple[200]),
+                        child: Text("✨ Make A Chat / Group Chat"),
+                        onPressed: () => Navigator.of(context).pushNamed(AddUsers.routeName, arguments: CreateNewGroupArgs(typeOf: 'chat')),
+                      ),
+                    ),
+                  ],
+      
+          ),
         ),
       ),
     );

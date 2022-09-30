@@ -14,7 +14,7 @@ Future<void> helpDialog(BuildContext context) async {
 }
 
 Widget howToBox() {
-  int buildDotLen = 3;
+  int buildDotLen = 4;
   int currentIndex = 0;
   return StatefulBuilder(
     builder: (BuildContext context, setState) {
@@ -45,6 +45,31 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
   HexColor hexcolor = HexColor();
   return [
     // ---------------------------------------------------------------- THIS IS DOT  1 --- WHAT IS KF
+    Column(
+      children: [
+        Text(
+          " Hey Fam, Find A Commuinity or ... Create One! \n"
+          " Talk About Whatever But Keep Jesus At the Center! \n"
+          " Yeherdd! ",
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 25),
+        Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+                buildDotLen, (index) => buildDot(index, currIdx, hexcolor)),
+          ),
+        ),
+        SizedBox(height: 15),
+        ElevatedButton(
+          onPressed: () {}, 
+          child: Text("Swipe ->"),
+          style: ElevatedButton.styleFrom(primary: Color(hexcolor.hexcolorCode('#FFC050'))),
+        )
+      ],
+    ),
 
     // --------------------------------> child 2 ------------------------------- ---------- THIS IS DOT 2 ---- MAIN FUNCTIONALITY OF KF HOW TO
     Column(
@@ -109,9 +134,9 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
     Column(
       children: [
         Text(
-          " Great! Thank You For Joining KF Beta"
-          " Keep Spreading The Gosple On All Platforms! "
-          " Come Here Chill With The Fam :) ",
+          " Great! KF Has more Fetures And More To Come "
+          "Right Now We Are Still In Bata Mode "
+          " To Help Or Be Hired Email Maximusagub@gmail.com ",
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),

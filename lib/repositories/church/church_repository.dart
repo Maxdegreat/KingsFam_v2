@@ -5,6 +5,7 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/base_church_repository.dart';
+import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/roles/role_types.dart';
 import 'package:kingsfam/screens/commuinity/actions.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
@@ -33,24 +34,10 @@ class ChurchRepository extends BaseChurchRepository {
     });
   }
 
-  // if in any cm returns true
-  Future<bool> isInCm(String currId) async {
-    final userRef = FirebaseFirestore.instance.collection(Paths.users).doc(currId);
-    final cmRef = await FirebaseFirestore.instance
-        .collection(Paths.church)
-        .limit(1)
-        .where('members.$currId.userReference', isEqualTo: userRef).get();
-    if (cmRef.docs.isNotEmpty) {
-      if (cmRef.docs.first.exists) {
-        return true;
-      }
-    } 
-    return false;
-  }
-
   Stream<List<Future<Church?>>> getCmsStream({required String currId}) {
     log("we are now in the getCmsStream");
-    final userRef = FirebaseFirestore.instance.collection(Paths.users).doc(currId);
+    final userRef =
+        FirebaseFirestore.instance.collection(Paths.users).doc(currId);
     return FirebaseFirestore.instance
         .collection(Paths.church)
         .limit(10)
@@ -78,6 +65,70 @@ class ChurchRepository extends BaseChurchRepository {
   //   log("p: ${p}");
   //   return p;
   // }
+
+  Future<bool> isBaned({
+    required String usrId,
+    required String cmId,
+  }) async {
+    DocumentSnapshot docSnap = await fire
+        .collection(Paths.communityBan)
+        .doc(cmId)
+        .collection(Paths.bans)
+        .doc(usrId)
+        .get();
+    return docSnap.exists;
+  }
+
+  Future<List<Userr>> getBanedUsers(
+      {required String cmId, required String? lastDocId}) async {
+    List<Userr> bucket = [];
+
+    if (lastDocId == null) {
+      final usrSnaps = await fire
+          .collection(Paths.communityBan)
+          .doc(cmId)
+          .collection(Paths.bans)
+          .limit(10)
+          .get();
+
+      for (var x in usrSnaps.docs) {
+        if (x.exists) {
+          Userr u = await UserrRepository().getUserrWithId(userrId: x.id);
+          bucket.add(u);
+        }
+      }
+      log("The len of the bucket is " + bucket.length.toString());
+      return bucket;
+    } else {
+      DocumentSnapshot docSnap =
+          await fire.collection(Paths.users).doc(lastDocId).get();
+
+      final usrSnaps = await fire
+          .collection(Paths.communityBan)
+          .doc(cmId)
+          .collection(Paths.bans)
+          .limit(20)
+          .startAfterDocument(docSnap)
+          .get();
+
+      for (var x in usrSnaps.docs) {
+        if (x.exists) {
+          Userr? u = Userr.fromDoc(x);
+          bucket.add(u);
+        }
+      }
+      return bucket;
+    }
+  }
+
+  void unBan({required String cmId, required String usrId}) {
+    fire
+        .collection(Paths.communityBan)
+        .doc(cmId)
+        .collection(Paths.bans)
+        .doc(usrId)
+        .delete();
+  }
 
   Future<List<Church>> getCommuinitysUserIn(
       {required String userrId,
@@ -125,34 +176,19 @@ class ChurchRepository extends BaseChurchRepository {
     return [];
   }
 
-  delCord({required KingsCord cord, required Church cmmuinity}) async {
-    
-    await FirebaseFirestore.instance
-        .collection(Paths.church)
+  delCord({required KingsCord cord, required Church cmmuinity}) {
+    fb.doc(cmmuinity.id).collection(Paths.kingsCord).doc(cord.id).delete();
+    var messagesToBeDeleated = fb
         .doc(cmmuinity.id)
         .collection(Paths.kingsCord)
-        .where('tag', isEqualTo: cmmuinity.id)
-        .limit(2)
-        .get()
-        .then((value) {
-      if (value.docs.length < 2) {
-        log("less than 2, not del");
-        return;
-      } else {
-        fb.doc(cmmuinity.id).collection(Paths.kingsCord).doc(cord.id).delete();
-        var messagesToBeDeleated = fb
-            .doc(cmmuinity.id)
-            .collection(Paths.kingsCord)
-            .doc(cord.id)
-            .collection(Paths.messages);
-        WriteBatch batch = FirebaseFirestore.instance.batch();
-        var messages = messagesToBeDeleated.get().then((value) {
-          value.docs.forEach((doc) {
-            messagesToBeDeleated.doc(doc.id).delete();
-            //batch.delete(messagesToBeDeleated.doc(doc.id));
-          });
-        });
-      }
+        .doc(cord.id)
+        .collection(Paths.messages);
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    var messages = messagesToBeDeleated.get().then((value) {
+      value.docs.forEach((doc) {
+        messagesToBeDeleated.doc(doc.id).delete();
+        //batch.delete(messagesToBeDeleated.doc(doc.id));
+      });
     });
 
     //batch.commit();
@@ -191,7 +227,8 @@ class ChurchRepository extends BaseChurchRepository {
 
     var posts = await FirebaseFirestore.instance
         .collection(Paths.posts)
-        .where('commuinity', isEqualTo: cmDocRef).orderBy("date", descending: true)
+        .orderBy("date", descending: true)
+        .where('commuinity', isEqualTo: cmDocRef)
         .limit(3)
         .get();
 
@@ -231,21 +268,26 @@ class ChurchRepository extends BaseChurchRepository {
 
   Future<KingsCord?> newKingsCord2(
       {required Church ch, required String cordName, Userr? currUser}) async {
-    KingsCord kc = KingsCord(
-        tag: ch.id!,
-        cordName: cordName,
-        recentMessage: "Welcome To $cordName!",
-        recentSender: [
-          currUser != null ? currUser.id : '000',
-          currUser != null ? currUser.username.substring(0, 5) : 'A-Member'
-        ],
-        recentTimestamp: Timestamp.now());
-    var kcPath = await FirebaseFirestore.instance
-        .collection(Paths.church)
-        .doc(ch.id)
-        .collection(Paths.kingsCord)
-        .add(kc.toDoc());
-    return kc;
+    try {
+      KingsCord kc = KingsCord(
+          tag: ch.id!,
+          cordName: cordName,
+          recentMessage: "Welcome To $cordName!",
+          recentSender: [
+            currUser != null ? currUser.id : '000',
+            currUser != null ? currUser.username.substring(0, 5) : 'A-Member'
+          ],
+          recentTimestamp: Timestamp.now());
+      var kcPath = await FirebaseFirestore.instance
+          .collection(Paths.church)
+          .doc(ch.id)
+          .collection(Paths.kingsCord)
+          .add(kc.toDoc());
+      return kc;
+    } catch (e) {
+      log("error: " + e.toString());
+    }
+    return null;
   }
 
   @override
@@ -257,6 +299,22 @@ class ChurchRepository extends BaseChurchRepository {
         .doc(church.id)
         .collection(Paths.kingsCord)
         .add(kingsCord.toDoc());
+  }
+
+  Future<bool> isInCm(String currId) async {
+    final userRef =
+        FirebaseFirestore.instance.collection(Paths.users).doc(currId);
+    final cmRef = await FirebaseFirestore.instance
+        .collection(Paths.church)
+        .limit(1)
+        .where('members.$currId.userReference', isEqualTo: userRef)
+        .get();
+    if (cmRef.docs.isNotEmpty) {
+      if (cmRef.docs.first.exists) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @override
@@ -273,6 +331,41 @@ class ChurchRepository extends BaseChurchRepository {
     }
     return bucket;
     // return churchSnap.docs.map((snap) async =>  Church.fromDoc(snap)).toList();
+  }
+
+  Future<List<Church>> grabChurchs({required int limit, lastPostId}) async {
+    final QuerySnapshot<Map<String, dynamic>> churches;
+    if (lastPostId == null) {
+      churches = await FirebaseFirestore.instance
+          .collection(Paths.church)
+          .limit(limit)
+          .get();
+      List<Church> bucket = [];
+      for (var x in churches.docs) {
+        var ch = await Church.fromDoc(x);
+        bucket.add(ch);
+      }
+      return bucket;
+    } else if (lastPostId != null) {
+      final lastDocSnap = await FirebaseFirestore.instance
+          .collection(Paths.church)
+          .doc(lastPostId)
+          .get();
+
+      churches = await FirebaseFirestore.instance
+          .collection(Paths.church)
+          .limit(limit)
+          .startAfterDocument(lastDocSnap)
+          .get();
+
+      List<Church> bucket = [];
+      for (var x in churches.docs) {
+        var ch = await Church.fromDoc(x);
+        bucket.add(ch);
+      }
+      return bucket;
+    }
+    return [];
   }
 
   @override
@@ -405,10 +498,26 @@ class ChurchRepository extends BaseChurchRepository {
           .doc(cmId)
           .update({'members': memInfo});
 
+  Future<void> banFromCommunity({
+    required Church community,
+    required String baningUserId,
+  }) async {
+    leaveCommuinity(commuinity: community, leavingUserId: baningUserId);
+    log("left the cm");
+    fire
+        .collection(Paths.communityBan)
+        .doc(community.id!)
+        .collection(Paths.bans)
+        .doc(baningUserId)
+        .set({});
+    log("baned the user");
+  }
+
   Future<void> leaveCommuinity(
       {required Church commuinity, required String leavingUserId}) async {
     final docRef = fb.doc(commuinity.id);
     final docSnap = await docRef.get();
+
     var cmIds = Church.getCommunityMemberIds(docSnap);
     if (!cmIds.contains(leavingUserId)) return;
 

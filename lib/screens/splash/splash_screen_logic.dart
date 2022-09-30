@@ -28,14 +28,7 @@ class SplashScreen extends StatelessWidget {
           //go to login Screen
           Navigator.pushNamed(context, LoginScreen.routeName);
         } else if (state.status == AuthStatus.authenticated) {
-          // if (state.user != null && state.userr!.username[0] == "!") {
-          //   log("Working intergration of new user checking +=================================");
-          //   log(state.userr!.username);
-          // } else {
-          //   log("SO NOT A WORKING MODAL???? -=================================");
-          //   log(state.userr.toString());
-          // }
-          //go to Nav screen
+
           Navigator.pushNamed(context, NavScreen.routeName);
         } 
       },

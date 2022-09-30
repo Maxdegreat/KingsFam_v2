@@ -4,7 +4,7 @@ import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 
 class BottomNavBar extends StatelessWidget {
-  final Map<BottomNavItem, IconData> items;
+  final Map<BottomNavItem, Widget> items;
   final BottomNavItem selectedItem;
   final Function(int) onTap;
 
@@ -32,7 +32,7 @@ class BottomNavBar extends StatelessWidget {
         item.toString(), 
         BottomNavigationBarItem(
           label: '',
-          icon:  Icon(icon, size:25.0),
+          icon:  Container(child: icon),
         ))).values.toList(),
     );
   }

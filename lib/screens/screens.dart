@@ -29,7 +29,7 @@ export '../widgets/url_view.dart'; // granted this is in the widgets folder howe
 export 'snack_time/snack_time.dart';
 export 'snack_time/buy_perk.dart';
 export 'package:kingsfam/screens/create_post/post_content_screen.dart';
-
+export 'commuinity/screens/show_baned_users.dart';
 
 
 // switch to modle sheet when u get the chance

@@ -142,26 +142,32 @@ class CustomRoute {
         return CommunityUpdateRoleScreen.route(
             args: settings.arguments as CommunityUpdateRoleArgsScreen);
 
-      // case SnackTimeShopScreen.routeName:
-        // return SnackTimeShopScreen.route(settings.arguments as SnackTimeArgs);
+      case SnackTimeShopScreen.routeName:
+        return SnackTimeShopScreen.route(settings.arguments as SnackTimeArgs);
 
       case BuyPerkScreen.routeName:
         return BuyPerkScreen.route(settings.arguments as BuyPerkArgs);
-      
+
       case UpdateCmThemePack.routeName:
-        return UpdateCmThemePack.route(settings.arguments as UpdateCmThemePackArgs);
-      
+        return UpdateCmThemePack.route(
+            settings.arguments as UpdateCmThemePackArgs);
+
       case MoreCm.routeName:
         return MoreCm.route(settings.arguments as MoreCmArgs);
-      
+
       case ShowFollowingList.routeName:
-        return ShowFollowingList.route(settings.arguments as ShowFollowingListArgs);
+        return ShowFollowingList.route(
+            settings.arguments as ShowFollowingListArgs);
 
       case PostContentScreen.routeName:
-        return PostContentScreen.route(args: settings.arguments as PostContentArgs);
-      
+        return PostContentScreen.route(
+            args: settings.arguments as PostContentArgs);
+
       case VideoEditor.routeName:
         return VideoEditor.route(settings.arguments as VideoEditorArgs);
+
+      case ShowBanedUsers.routeName:
+        return ShowBanedUsers.route(settings.arguments as ShowBanedUsersArgs);
 
       default:
         return _errorRoute();

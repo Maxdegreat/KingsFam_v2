@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/type_of.dart';
 import 'package:kingsfam/helpers/helpers.dart';
 import 'package:kingsfam/models/models.dart';
@@ -30,6 +31,7 @@ class ChatRoomSettings extends StatelessWidget {
         settings: const RouteSettings(name: routeName),
         builder: (context) => BlocProvider(
               create: (context) => RoomsettingsCubit(
+                  authBloc: context.read<AuthBloc>(),
                   storageRepository: context.read<StorageRepository>(),
                   chatRepository: context.read<ChatRepository>(),
                   userrRepository: context.read<UserrRepository>()),
@@ -53,9 +55,8 @@ class ChatRoomSettings extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          context
-              .read<RoomsettingsCubit>()
-              .memberList(chat.readStatus.keys.toList(), chat.readStatus.keys.length);
+          context.read<RoomsettingsCubit>().memberList(
+              chat.readStatus.keys.toList(), chat.readStatus.keys.length);
           return SafeArea(
             child: CustomScrollView(
               slivers: <Widget>[
@@ -165,7 +166,13 @@ class ChatRoomSettings extends StatelessWidget {
                               color: Colors.red[400],
                               borderRadius: BorderRadius.circular(10.0)),
                           child: TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              context
+                                  .read<RoomsettingsCubit>()
+                                  .leaveChat(chatId: chat.id!);
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            },
                             child: Text(
                               'Leave ${chat.chatName}\'s room?',
                               overflow: TextOverflow.fade,
@@ -177,7 +184,7 @@ class ChatRoomSettings extends StatelessWidget {
                           height: 10.0,
                         ),
                       ],
-                    ),  
+                    ),
                   ),
                 )
               ],
@@ -192,7 +199,7 @@ class ChatRoomSettings extends StatelessWidget {
     if (_key.currentState!.validate() && !isSubmitting) {
       //submit changes
       _key.currentState!.save();
-      context.read<RoomsettingsCubit>().submit(chat.id!);
+      context.read<RoomsettingsCubit>().submit(chat_: chat);
       Navigator.of(context).pop();
     }
   }

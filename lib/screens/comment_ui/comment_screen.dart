@@ -118,8 +118,8 @@ class _CommentScreenState extends State<CommentScreen> {
         ),
         Row(
          children: [
-           Expanded(
-            flex: 1,
+           Container(
+            height: MediaQuery.of(context).size.height,
              child: Container(
               height: 50,
                child: Padding(

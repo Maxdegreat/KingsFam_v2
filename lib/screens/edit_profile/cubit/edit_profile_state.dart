@@ -8,7 +8,6 @@ class EditProfileState extends Equatable {
   final String username;
   final String location;
   final String bio;
-  final String? prayer;
   final String colorPref;
   final EditProfileStatus status;
   final Failure failure;
@@ -19,7 +18,6 @@ class EditProfileState extends Equatable {
     required this.username,
     required this.location,
     required this.bio,
-    required this.prayer,
     required this.colorPref,
     required this.status,
     required this.failure,
@@ -32,7 +30,6 @@ class EditProfileState extends Equatable {
       username: '',
       location: '',
       bio: '',
-      prayer: null,
       colorPref: '', // Would Like This To Be What Ever The User Had B4
       status: EditProfileStatus.initial,
       failure: Failure(),
@@ -46,7 +43,6 @@ class EditProfileState extends Equatable {
         username,
         location,
         bio,
-        prayer,
         colorPref,
         status,
         failure,
@@ -58,7 +54,6 @@ class EditProfileState extends Equatable {
     String? username,
     String? location,
     String? bio,
-    String? prayer,
     String? colorPref,
     EditProfileStatus? status,
     Failure? failure,
@@ -69,10 +64,10 @@ class EditProfileState extends Equatable {
       username: username ?? this.username,
       location: location ?? this.location,
       bio: bio ?? this.bio,
-      prayer: prayer ?? this.prayer,
       colorPref: colorPref ?? this.colorPref,
       status: status ?? this.status,
       failure: failure ?? this.failure,
+
     );
   }
 }

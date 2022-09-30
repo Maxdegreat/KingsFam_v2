@@ -14,6 +14,8 @@ class KingscordState extends Equatable {
   final Failure failure;
   final List<Message?> msgs;
   final Queue<File> filesToBePosted;
+  final Message? replyMessage;
+  final bool replying;
   //gen constructor
   KingscordState({
     required this.isTyping,
@@ -25,10 +27,12 @@ class KingscordState extends Equatable {
     required this.fileShareStatus,
     required this.failure,
     required this.filesToBePosted,
+    required this.replyMessage,
+    required this.replying,
   });
   // props
   List<Object?> get props =>
-      [isTyping, txtImgUrl, txtMsg, msgs, txtVidUrl, status, fileShareStatus, filesToBePosted, failure];
+      [isTyping, txtImgUrl, txtMsg, msgs, txtVidUrl, status, fileShareStatus, filesToBePosted, failure, replyMessage, replying];
   //copy with
     KingscordState copyWith({
       bool? isTyping,
@@ -40,6 +44,8 @@ class KingscordState extends Equatable {
       FileShareStatus? fileShareStatus,
       Queue<File>? filesToBePosted,
       Failure? failure,
+      Message? replyMessage,
+      bool? replying,
     }) {
       return KingscordState(
         isTyping: isTyping ?? this.isTyping,
@@ -51,6 +57,8 @@ class KingscordState extends Equatable {
         fileShareStatus: fileShareStatus ?? this.fileShareStatus,
         failure: failure ?? this.failure,
         filesToBePosted: filesToBePosted ?? this.filesToBePosted,
+        replying: replying ?? this.replying,
+        replyMessage: replyMessage ?? this.replyMessage,
       );
     }
   //make the init phase
@@ -64,7 +72,9 @@ class KingscordState extends Equatable {
         status: KingsCordStatus.initial,
         fileShareStatus: FileShareStatus.inital,
         filesToBePosted: Queue<File>(),
-        failure: Failure()
+        failure: Failure(),
+        replyMessage: null,
+        replying: true,
       );
   }
 

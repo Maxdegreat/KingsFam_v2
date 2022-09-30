@@ -9,11 +9,10 @@ abstract class CommuinityEvent extends Equatable {
 
 class CommuinityLoadCommuinity extends CommuinityEvent {
   final Church commuinity;
-  final VideoPlayerController? vidCtrl;
-  CommuinityLoadCommuinity({required this.commuinity, this.vidCtrl});
+  CommuinityLoadCommuinity({required this.commuinity});
   @override
 
-  List<Object?> get props => [commuinity, vidCtrl];
+  List<Object?> get props => [commuinity];
 }
 
 class ComuinityLoadingCords extends CommuinityEvent {

@@ -70,6 +70,9 @@ class TabNavigator extends StatelessWidget {
       // removed the chain operator that ads the init user
       case BottomNavItem.search:
         return SearchScreen();
+
+      case BottomNavItem.add:
+        return CreateComuinity();
         
 
       case BottomNavItem.notifications:

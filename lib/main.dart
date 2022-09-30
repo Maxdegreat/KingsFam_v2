@@ -17,12 +17,13 @@ import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
-import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/cubit/calls_home_cubit.dart';
+
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/theme_club_house/theme_info.dart';
 
+import 'firebase_options.dart';
 import 'screens/build_church/cubit/buildchurch_cubit.dart';
 import 'screens/screens.dart';
 
@@ -30,7 +31,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // lets keep the splash till app is one initializing
   MobileAds.instance.initialize();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp( options: DefaultFirebaseOptions.currentPlatform,);
 
   EquatableConfig.stringify = kDebugMode;
   Bloc.observer = SimpleBlocObserver();
@@ -77,12 +78,7 @@ class MyApp extends StatelessWidget {
                 postsRepository: context.read<PostsRepository>(),
                 authBloc: context.read<AuthBloc>()),
           ),
-          BlocProvider<CallshomeCubit>(
-              create: (context) => CallshomeCubit(
-                    callRepository: context.read<CallRepository>(),
-                    userrRepository: context.read<UserrRepository>(),
-                    authBloc: context.read<AuthBloc>(),
-                  )),
+          
            BlocProvider<BuildchurchCubit>( // TODO                                        PLEASE NOTE THIS DOES NOT NEED TO BE A GLOBAL THING. NOTE IT IS USED IN CM SCREEN ON A GLOBAL SCOPE BUT IT CAN BE REFACTORED.
                create: (context) => BuildchurchCubit(
                    callRepository: context.read<CallRepository>(),

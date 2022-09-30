@@ -50,7 +50,7 @@ class _ChatRoomState extends State<ChatRoom> {
   // THE STREAM FOR THE MESSAGES
   _buildMessageStream(List<Message?> msgs) {
     return Expanded(
-      flex: 1,
+      
       child: GestureDetector(
         onTap: () => Focus.of(context).unfocus(),
         child: ListView(

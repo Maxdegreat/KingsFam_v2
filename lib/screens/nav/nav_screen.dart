@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/nav/widgets/widgets.dart';
+import 'package:rive/rive.dart';
 
 class NavScreen extends StatelessWidget {
   static const String routeName = '/nav';
@@ -18,15 +19,17 @@ class NavScreen extends StatelessWidget {
   final Map<BottomNavItem, GlobalKey<NavigatorState>> navigatorKeys = {
     BottomNavItem.chats: GlobalKey<NavigatorState>(),
     BottomNavItem.search: GlobalKey<NavigatorState>(),
+    BottomNavItem.add: GlobalKey<NavigatorState>(),
     BottomNavItem.notifications: GlobalKey<NavigatorState>(),
     BottomNavItem.profile: GlobalKey<NavigatorState>(),
   };
 
-  final Map<BottomNavItem, IconData> items = const {
-    BottomNavItem.chats: Icons.home,
-    BottomNavItem.search: Icons.search,
-    BottomNavItem.notifications: Icons.favorite_border,
-    BottomNavItem.profile: Icons.account_circle
+  final Map<BottomNavItem, Widget> items = const {
+    BottomNavItem.chats: Icon(Icons.home),
+    BottomNavItem.search: Icon(Icons.search),
+    BottomNavItem.add: SizedBox(height: 27, width: 27, child:  RiveAnimation.asset("assets/icons/add_icon.riv"),),
+    BottomNavItem.notifications: Icon(Icons.favorite_border),
+    BottomNavItem.profile: Icon(Icons.account_circle)
   };
 
   @override
@@ -45,7 +48,7 @@ class NavScreen extends StatelessWidget {
                   .values
                   .toList(),
             ),
-            bottomNavigationBar: BottomNavBar(
+            bottomNavigationBar: context.read<BottomnavbarCubit>().state.showBottomNav ? BottomNavBar(
               
               onTap: (index) {
                 final selectedItem = BottomNavItem.values[index];
@@ -53,7 +56,7 @@ class NavScreen extends StatelessWidget {
               },
               items: items,
               selectedItem: state.selectedItem,
-            ),
+            ) : SizedBox.shrink(),
           );
         },
       ),

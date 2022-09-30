@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/extensions/extensions.dart';
+import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:bloc/bloc.dart';
@@ -18,8 +21,9 @@ class MessageLines extends StatelessWidget {
   final Message message;
   final String kcId;
   final String cmId;
+  final BuildContext inhearatedCtx;
 
-  MessageLines({required this.message, required this.cmId, required this.kcId, this.previousSenderAsUid});
+  MessageLines({required this.message, required this.cmId, required this.kcId, this.previousSenderAsUid, required  this.inhearatedCtx});
 
   showLinkPicker(List<String> links, BuildContext context) {
     return showModalBottomSheet(
@@ -105,94 +109,117 @@ class MessageLines extends StatelessWidget {
     if (messageReactions == null) {
       messageReactions = {};
     }
+
     return showModalBottomSheet(
         context: context,
         builder: (context) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                        onTap: () {
-                          uploadReaction('💖', messageId, messageReactions!);
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(
-                          '💖',
-                          style: TextStyle(fontSize: 27),
-                        )),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                        onTap: () {
-                          uploadReaction('😁', messageId, messageReactions!);
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('😁', style: TextStyle(fontSize: 27))),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                        onTap: () {
-                          uploadReaction('😭', messageId, messageReactions!);
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('😭', style: TextStyle(fontSize: 27))),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                        onTap: () {
-                          uploadReaction('👀', messageId, messageReactions!);
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('👀', style: TextStyle(fontSize: 27))),
-                  ),
-                ],
-              ),
-              SizedBox(height: 7),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // TODO add a reply capability
-                  // GestureDetector(
-                  //   onTap: () {},
-                  //   child: Container(
-                  //     child: Text("Reply", style: Theme.of(context).textTheme.bodyMedium),
-                  //   ),
-                  // ),
-                  // SizedBox(width: 5,),
-                    GestureDetector(
-                      onTap: () {
-                        if (message.sender!.id == context.read<AuthBloc>().state.user!.uid) {
-                          if (message.text != null && message.text == "CTRL+ALT+DEL ... the message was deleted") {
-                            snackBar(snackMessage: "You can\'t del this fam", context: context, bgColor: Colors.red[400]!);
-                          } else {
-                            Message messageForDel = message.copyWith(text: "CTRL+ALT+DEL ... the message was deleted", imageUrl: null, mentionedIds: null, thumbnailUrl: null, videoUrl: null,);
-                        FirebaseFirestore.instance.collection(Paths.church).doc(this.cmId).collection(Paths.kingsCord).doc(this.kcId).collection(Paths.messages).doc(this.message.id).update(messageForDel.ToDoc(senderId: message.sender!.id));
-                          }
-                      } else
-                        snackBar(snackMessage: "hmm, can't del a message that is not yours fam", context: context, bgColor: Colors.red[400]!);
-                      },
-                      child: Container(
-                        child: Text("Unsend", style: Theme.of(context).textTheme.bodyMedium),
-                      ),
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                          onTap: () {
+                            uploadReaction('💖', messageId, messageReactions!);
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            '💖',
+                            style: TextStyle(fontSize: 27),
+                          )),
                     ),
-                ],
-              ),
-              
-            ],
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                          onTap: () {
+                            uploadReaction('😁', messageId, messageReactions!);
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('😁', style: TextStyle(fontSize: 27))),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                          onTap: () {
+                            uploadReaction('😭', messageId, messageReactions!);
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('😭', style: TextStyle(fontSize: 27))),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                          onTap: () {
+                            uploadReaction('👀', messageId, messageReactions!);
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('👀', style: TextStyle(fontSize: 27))),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 7),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    
+                    //  GestureDetector(
+                    //    onTap: () {
+                    //     // tell ui that this is a replyed message
+                    //       log("the inhearatedCtx is not null");
+                    //       inhearatedCtx.read<KingscordCubit>().onReplyMessage(replyingToMessage: message,);
+                    //       Navigator.of(context).pop();
+                    //     // add the og msg sender id in data / payload on onbackend
+                        
+                    //     // send a notification to to og sender onbackend
+
+                    //    },
+                    //    child: Container(
+                    //      child: Text("Reply", style: Theme.of(context).textTheme.bodyMedium),
+                    //    ),
+                    //  ),
+                    //  SizedBox(width: 5,),
+                      GestureDetector(
+                        onTap: () {
+                          if (message.sender!.id == context.read<AuthBloc>().state.user!.uid) {
+                            if (message.text != null && message.text == "(code:unsent 10987345)") {
+                              snackBar(snackMessage: "You can\'t del this fam", context: context, bgColor: Colors.red[400]!);
+                            } else {
+                              Message messageForDel = message.copyWith(text: "(code:unsent 10987345)", imageUrl: null, mentionedIds: null, thumbnailUrl: null, videoUrl: null,);
+                          FirebaseFirestore.instance.collection(Paths.church).doc(this.cmId).collection(Paths.kingsCord).doc(this.kcId).collection(Paths.messages).doc(this.message.id).update(messageForDel.ToDoc(senderId: message.sender!.id));
+                            }
+                        } else
+                          snackBar(snackMessage: "hmm, can't del a message that is not yours fam", context: context, bgColor: Colors.red[400]!);
+                        },
+                        child: Container(
+                          child: Text("Unsend", style: Theme.of(context).textTheme.bodyMedium),
+                        ),
+                      ),
+                  ],
+                ),
+                
+              ],
+            ),
           );
         });
   }
 
+   _showReplyBarUi(String? reply) {
+    return reply != null ? Container(
+      height: 25,
+      width: double.infinity,
+      child: Text(reply, style: TextStyle(fontStyle: FontStyle.italic, fontSize: 15)),
+      decoration: BoxDecoration(
+        color: Color.fromARGB(120, 255, 145, 0)
+      ),
+    ) : SizedBox.shrink();
+  }
   // if i send the message.
   _buildText(BuildContext context) {
     if (message.reactions == {}) {
@@ -202,8 +229,16 @@ class MessageLines extends StatelessWidget {
     var msgAsList = message.text!.split(' ').forEach((element) {
       if (element.startsWith('https://') || element.startsWith('Https://')) {
         links.add(element);
-      }
+      } 
     });
+
+    if (message.text == "(code:unsent 10987345)") {
+        return Text("deleted", style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 17.0,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w800, ));
+      }
 
     return GestureDetector(
       onTap: () {
@@ -216,11 +251,12 @@ class MessageLines extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          _showReplyBarUi(message.replyed),
           Padding(
             padding: const EdgeInsets.only(left: 7),
             child: Text(message.text!,
                 style: TextStyle(
-                    color: Colors.amber[100],
+                    color: Colors.white,
                     fontSize: 17.0,
                     fontWeight: FontWeight.w800)),
           ),

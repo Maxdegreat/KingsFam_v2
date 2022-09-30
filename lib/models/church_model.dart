@@ -4,11 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/roles/role_types.dart';
 import 'package:kingsfam/screens/commuinity/actions.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:kingsfam/widgets/chats_view_widgets/chats_screen_widgets.dart';
 
 @JsonSerializable()
 class Church extends Equatable {
@@ -134,7 +132,7 @@ class Church extends Equatable {
       'events': events,
       'size': size,
       'boosted': boosted,
-      'themePack': themePack,
+      'themePack' : themePack,
       'recentMsgTime': Timestamp.now(),
     };
   }
@@ -187,8 +185,7 @@ class Church extends Equatable {
   static Future<Church> fromDoc(DocumentSnapshot doc) async {
     final data = doc.data() as Map<String, dynamic>;
     Map<Userr, dynamic> members = {};
-    final memRefs =
-        Map<String, dynamic>.from(data['members']); //data['members'];
+    final memRefs = Map<String, dynamic>.from(data['members']); //data['members'];
 
     // log("about to show you data in the mems ref");
     // for (var id in memRefs.keys) {
@@ -201,43 +198,34 @@ class Church extends Equatable {
       if (idFromDoc.isNotEmpty && idFromDoc != null) {
         var docRef = memRefs[idFromDoc]['userReference'] as DocumentReference;
         var snap = await docRef.get();
-        if (snap.exists) {
-          Userr? user = Userr.fromDoc(snap);
-          //end goal is to have <user, time>
-          // ignore: unnecessary_null_comparison
-          if (user != null) {
-            members[user] = {
-              'timestamp': memRefs[idFromDoc]['timestamp'],
-              'role': memRefs[idFromDoc]['role'],
-            };
-          }
-        } else {
-         // ChurchRepository().leaveCommuinity(commuinity: Church.empty.copyWith(id: doc.id), leavingUserId: idFromDoc);
-        }
+        Userr user = Userr.fromDoc(snap);
+        //end goal is to have <user, time>
+        members[user] = {
+          'timestamp': memRefs[idFromDoc]['timestamp'],
+          'role': memRefs[idFromDoc]['role'],
+        };
       }
     }
 
-    String location = data['location'] == " " || data['location'] == ""
-        ? "Reomte"
-        : data['location'];
+    String location = data['location'] == " " || data['location']  == "" ? "Reomte" : data['location'];
 
     return Church(
-      members: members,
-      id: doc.id,
-      size: data['size'] ?? 0,
-      searchPram: List<String>.from(data['searchPram'] ?? []),
-      hashTags: List<String>.from(data['hashTags'] ?? []),
-      name: data['name'] ?? 'name',
-      location: location,
-      about: data['about'] ?? 'bio',
-      imageUrl: data['imageUrl'] ?? '',
-      recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0),
-      boosted: data['boosted'] ?? 0,
-      themePack: data['themePack'] ?? "none",
-      events: List<String>.from(
-        data['events'] ?? [],
-      ),
-    );
+        members: members,
+        id: doc.id,
+        size: data['size'] ?? 0,
+        searchPram: List<String>.from(data['searchPram'] ?? []),
+        hashTags: List<String>.from(data['hashTags'] ?? []),
+        name: data['name'] ?? 'name',
+        location: location,
+        about: data['about'] ?? 'bio',
+        imageUrl: data['imageUrl'] ?? '',
+        recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0),
+        boosted: data['boosted'] ?? 0,
+        themePack: data['themePack'] ?? "none",
+        events: List<String>.from(
+          data['events'] ?? [],
+        ),
+        );
   }
 
   static Map<String, dynamic> fromDocMemRefs(DocumentSnapshot doc) {
@@ -247,23 +235,24 @@ class Church extends Equatable {
 
   static Church fromJson(var data) {
     return Church(
-      members: data['members'],
-      id: data['id'],
-      size: data['size'] ?? 0,
-      searchPram: List<String>.from(data['searchPram'] ?? []),
-      hashTags: List<String>.from(data['hashTags'] ?? []),
-      name: data['name'] ?? 'name',
-      location: data['location'] ?? 'Heaven',
-      about: data['about'] ?? 'bio',
-      imageUrl: data['imageUrl'] ?? '',
-      recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0),
-      boosted: data['boosted'] ?? 0,
-      themePack: data['themePack'] ?? "none",
-      events: List<String>.from(
-        data['events'] ?? [],
-      ),
-    );
+        members: data['members'],
+        id: data['id'],
+        size: data['size'] ?? 0,
+        searchPram: List<String>.from(data['searchPram'] ?? []),
+        hashTags: List<String>.from(data['hashTags'] ?? []),
+        name: data['name'] ?? 'name',
+        location: data['location'] ?? 'Heaven',
+        about: data['about'] ?? 'bio',
+        imageUrl: data['imageUrl'] ?? '',
+        recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0),
+        boosted: data['boosted'] ?? 0,
+        themePack: data['themePack'] ?? "none",
+        events: List<String>.from(
+          data['events'] ?? [],
+        ),
+      );
   }
+
 
   //7 church. empty
   static Church empty = Church(
@@ -277,7 +266,6 @@ class Church extends Equatable {
     recentMsgTime: Timestamp(0, 0),
     boosted: 0,
     hashTags: [],
-    size: 0,
-    themePack: 'none',
+    size: 0, themePack: 'none',
   );
 }

@@ -30,15 +30,15 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   StreamSubscription<List<Future<Post?>>>? _postStreamSubscription;
 
-  ProfileBloc({
-    required UserrRepository userrRepository,
-    required AuthBloc authBloc,
-    required PostsRepository postRepository,
-    required LikedPostCubit likedPostCubit,
-    required ChurchRepository churchRepository,
-    required ChatRepository chatRepository,
-    required PrayerRepo prayerRepo
-  })  : _userrRepository = userrRepository,
+  ProfileBloc(
+      {required UserrRepository userrRepository,
+      required AuthBloc authBloc,
+      required PostsRepository postRepository,
+      required LikedPostCubit likedPostCubit,
+      required ChurchRepository churchRepository,
+      required ChatRepository chatRepository,
+      required PrayerRepo prayerRepo})
+      : _userrRepository = userrRepository,
         _authBloc = authBloc,
         _postsRepository = postRepository,
         _likedPostCubit = likedPostCubit,
@@ -146,21 +146,20 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   Stream<ProfileState> _mapProfileLoadUserToState(
       ProfileLoadUserr event) async* {
     yield state.copyWith(status: ProfileStatus.loading, loadingPost: true);
-   
-
 
     try {
       final userr =
           await _userrRepository.getUserrWithId(userrId: event.userId);
       yield state.copyWith(userr: userr);
 
-    // grab any potential prayers
-    
-    List<PrayerModal> pm = await _prayerRepo.getUsrsPrayers(usrId: userr.id, limit: 1);
-    
-    if (pm.isNotEmpty) {
-      yield(state.copyWith(prayer: pm[0].prayer));
-    }
+      // grab any potential prayers
+
+      List<PrayerModal> pm =
+          await _prayerRepo.getUsrsPrayers(usrId: userr.id, limit: 1);
+
+      if (pm.isNotEmpty) {
+        yield (state.copyWith(prayer: pm[0].prayer));
+      }
 
       final isCurrentUser = _authBloc.state.user!.uid == event.userId;
 
@@ -220,8 +219,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     List<Post?> posts;
     posts = List<Post?>.from(state.post)..addAll(event.post);
     //_likedPostCubit.updateLikedPosts(postIds: likedPostIds);
-    yield state.copyWith(post: posts, status: ProfileStatus.loaded, likedPostIds: likedPostIds);
-    print("____________________________________________________________________________________________________");
+    yield state.copyWith(
+        post: posts, status: ProfileStatus.loaded, likedPostIds: likedPostIds);
+    print(
+        "____________________________________________________________________________________________________");
   }
 
   Stream<ProfileState> _mapProfileFollowUserToState() async* {
@@ -254,19 +255,21 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   Stream<ProfileState> _mapProfileDmToState(ProfileDm event) async* {
     try {
+      var user1Id = _authBloc.state.user!.uid;
+      var user2Id = event.profileOwnersId;
+      DocumentReference docRef1 =
+          FirebaseFirestore.instance.collection(Paths.users).doc(user1Id);
+      DocumentReference docRef2 =
+          FirebaseFirestore.instance.collection(Paths.users).doc(user2Id);
+
       QueryDocumentSnapshot<Map<String, dynamic>>? chatDoc;
       var chatRef = await FirebaseFirestore.instance
           .collection(Paths.chats)
-          .where('memRefs', isEqualTo: [
-        FirebaseFirestore.instance
-            .collection(Paths.users)
-            .doc(_authBloc.state.user!.uid),
-        FirebaseFirestore.instance
-            .collection(Paths.users)
-            .doc(event.profileOwnersId),
-      ]).get();
+          .where('memRefs', arrayContainsAny: [docRef1, docRef2]).get();
 
       if (chatRef.docs.length > 0) {
+        log("!!!!!!!!!!!!!!!!");
+        log("The chat ref exist");
         chatDoc = chatRef.docs[0];
         Chat chat = await Chat.fromDoc(chatDoc);
         if (chat.id != null)
@@ -275,7 +278,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         else
           yield state.copyWith(
               status: ProfileStatus.error,
-              failure: Failure(message: "The chat.id was null"));
+              failure: Failure(message: "Ops Something Went Wrong"));
       } else {
         log("in the else statement, meaning that the chat doc does not exist");
         final currUser = await _userrRepository.getUserrWithId(

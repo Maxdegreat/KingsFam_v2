@@ -9,7 +9,6 @@ import 'package:kingsfam/extensions/locations.dart';
 import 'package:kingsfam/helpers/image_helper.dart';
 
 import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/edit_profile/cubit/edit_profile_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
@@ -35,8 +34,7 @@ class EditProfileScreen extends StatefulWidget {
               create: (_) => EditProfileCubit(
                   profileBloc: args.context.read<ProfileBloc>(),
                   storageRepository: context.read<StorageRepository>(),
-                  userrRepository: context.read<UserrRepository>(),
-                  prayerRepo: context.read<PrayerRepo>()),
+                  userrRepository: context.read<UserrRepository>()),
               child: EditProfileScreen(
                 userr: args.context.read<ProfileBloc>().state.userr, 
               ),
@@ -137,14 +135,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               onChanged: (value) => context
                                   .read<EditProfileCubit>()
                                   .usernameChanged(value),
-                              validator: (value) {
-                                if (value != null && value.isEmpty  || value == null) {
-                                    return "Hey fam make sure your username is not empty. Thanks";
-                                }
-                                if (value != null && value.length > 20) {
-                                  return "Hey fam please keep your username under 20 characters";
-                                } 
-                              }
+                              validator: (value) => value!.trim().isEmpty
+                                  ? 'Username can\'t be empty'
+                                  : null,
                             ),
                             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ B I O ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                             TextFormField(
@@ -153,22 +146,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               onChanged: (value) => context
                                   .read<EditProfileCubit>()
                                   .bioChanged(value),
-                              validator: (value) {
-                                if (value != null && value.length > 350) {
-                                  return "Hey fam please keep your Bio under 350 characters";
-                                } 
-                              }
-                            ),
-                            // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ P R A Y E R ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                             TextFormField(
-                              // initialValue: "Add new Prayer",
-                              decoration: InputDecoration(hintText: 'Add a Prayer for the family to see and pray'),
-                              onChanged: (value) => context
-                                  .read<EditProfileCubit>()
-                                  .prayerChanged(value),
-                              validator: (value) {
-                                return null;
-                              }
+                              validator: (value) => value!.trim().isEmpty
+                                  ? 'Bio can\'t be empty'
+                                  : null,
                             ),
                             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ C O L O R P R E F ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                             SizedBox(height: 15.0),

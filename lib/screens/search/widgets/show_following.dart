@@ -122,8 +122,8 @@ class _ShowFollowingListState extends State<ShowFollowingList> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Expanded(
-                      flex: 1,
+                    Container(
+                      height: MediaQuery.of(context).size.height,
                       child: ListView.builder(
                           controller: _scrollController,
                           itemCount: widget.type == Paths.following ? state.following.length : state.followers.length,

@@ -23,6 +23,6 @@ showImageFromAssetsPNG(
         width: width,
         decoration: BoxDecoration(
             image:
-                DecorationImage(image: AssetImage("assets/coin/KFcoin.png")))),
+                DecorationImage(image: AssetImage(path)))),
   );
 }

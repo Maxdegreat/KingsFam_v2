@@ -2,16 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kingsfam/config/type_of.dart';
 import 'package:kingsfam/helpers/navigator_helper.dart';
+import 'package:kingsfam/widgets/show_asset_image.dart';
+
+class SnackTimeArgs {
+  final String currUserId;
+  SnackTimeArgs({required this.currUserId});
+}
 
 class SnackTimeShopScreen extends StatefulWidget {
-  const SnackTimeShopScreen({Key? key}) : super(key: key);
-
+  const SnackTimeShopScreen({Key? key, required this.currId}) : super(key: key);
+  final String currId;
   static const String routeName = "/snackTime";
 
-  static Route route() {
+  static Route route(SnackTimeArgs args) {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
-        builder: (_) => SnackTimeShopScreen());
+        builder: (_) => SnackTimeShopScreen(currId: args.currUserId,));
   }
 
   static TextStyle tStyle = TextStyle(
@@ -49,17 +55,17 @@ class _SnackTimeShopScreenState extends State<SnackTimeShopScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text("Boot Your Communitys!!!",
+              Text("Get KFCoins",
                   style: SnackTimeShopScreen.tStyle),
               SizedBox(height: 5),
-              vipDisplay(display: "cmBoosting"),
+              vipDisplay(display: "KFCoins"),
               SizedBox(height: 10),
               Text("Post Promos", style: SnackTimeShopScreen.tStyle),
               vipDisplay(display: "postPromo"),
-              SizedBox(height: 10),
-              Text("Get Turbo Charged!", style: SnackTimeShopScreen.tStyle),
-              SizedBox(height: 5),
-              vipDisplay(display: "Turbo"),
+              // SizedBox(height: 10),
+              // Text("Buy Themes", style: SnackTimeShopScreen.tStyle),
+              // SizedBox(height: 5),
+              // vipDisplay(display: "Turbo"),
             ],
           ),
         ));
@@ -67,12 +73,10 @@ class _SnackTimeShopScreenState extends State<SnackTimeShopScreen> {
 
   Widget vipDisplay({required String display}) {
     int buildDots = 0;
-    if (display == "cmBoosting")
-      buildDots = 3;
+    if (display == "KFCoins")
+      buildDots = 1;
     else if (display == "postPromo")
-      buildDots = 2;
-    else
-      buildDots = 2;
+      buildDots = 1;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
@@ -87,15 +91,15 @@ class _SnackTimeShopScreenState extends State<SnackTimeShopScreen> {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                       onTap: () {
-                        if (display == "cmBoosting") {
+                        if (display == "KFCoins") {
                           NavHelper().navToBuyPerk(
-                              context, typeOf.cmBoosting.toString());
+                              context, typeOf.KFCoins.toString());
                         } else if (display == "postPromo") {
                           NavHelper().navToBuyPerk(
                               context, typeOf.postPromo.toString());
                         } else {
-                          NavHelper().navToBuyPerk(
-                              context, typeOf.turbo.toString());
+                          NavHelper()
+                              .navToBuyPerk(context, typeOf.turbo.toString());
                         }
                       },
                       child: vipDisplayContent(display, buildDots)[index]);
@@ -110,55 +114,27 @@ class _SnackTimeShopScreenState extends State<SnackTimeShopScreen> {
   List<Widget> vipDisplayContent(String display, int buildDots) {
     if (display == "cmBoosting") {
       return [
-        Container(
+         Container(
             height: 95,
             width: double.infinity,
-            child: SvgPicture.asset(
-                "assets/promo_banners/boosted_cm_banners_480x200/1.svg"),
-            decoration: BoxDecoration(color: Colors.transparent)),
-        Container(
-            height: 95,
-            width: double.infinity,
-            child: SvgPicture.asset(
-                "assets/promo_banners/boosted_cm_banners_480x200/2.svg"),
-            decoration: BoxDecoration(color: Colors.transparent)),
-        Container(
-            height: 95,
-            width: double.infinity,
-            child: SvgPicture.asset(
-                "assets/promo_banners/boosted_cm_banners_480x200/3.svg"),
-            decoration: BoxDecoration(color: Colors.transparent)),
+            child: showAssetImage(500, 300, 5, "assets/promo_banners/boosted_480_200_px/1.png"),),
+            // SvgPicture.asset("assets/promo_banners/boosted_cm_banners_480x200/1.svg"),
+            // decoration: BoxDecoration(color: Colors.transparent)
       ];
     } else if (display == "postPromo") {
       return [
-        Container(
+                 Container(
             height: 95,
             width: double.infinity,
-            child: Center(
-                child: Text(
-              "So You Want To Advertise? Get a Post Promo and Post!",
-              textAlign: TextAlign.center,
-            )),
-            decoration: BoxDecoration(color: Colors.blue[100])),
-        Container(
-            height: 95,
-            width: double.infinity,
-            child: Center(
-                child: Text(
-              "Make your way into the fams feed",
-              textAlign: TextAlign.center,
-            )),
-            decoration: BoxDecoration(color: Colors.blue[100])),
+            child: showAssetImage(500, 300, 5, "assets/promo_banners/boosted_480_200_px/2.png"),),
       ];
-    } else { 
+    } else {
       // when display is == Turbo
       return [
-        Container(
+                Container(
             height: 95,
             width: double.infinity,
-            child: SvgPicture.asset(
-                "assets/promo_banners/turbo_ad_banner.svg"),
-            decoration: BoxDecoration(color: Colors.transparent)),
+            child: showAssetImage(500, 300, 5, "assets/promo_banners/boosted_480_200_px/1.png"),),
       ];
     }
   }

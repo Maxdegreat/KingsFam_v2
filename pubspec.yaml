@@ -99,6 +99,8 @@ dependencies:
   helpers: ^1.1.4
   flutter_stripe: ^5.0.0
   new_version: ^0.3.1
+  agora_rtc_engine: ^5.3.0
+  carousel_slider: ^4.1.1
   
 
 

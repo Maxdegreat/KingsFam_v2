@@ -1,4 +1,3 @@
-
 // check if video is longer than 60 seconds. return bool. only allow up to 120 if user has turbo
 import 'dart:developer';
 import 'dart:io';

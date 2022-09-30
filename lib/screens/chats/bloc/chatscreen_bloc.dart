@@ -23,9 +23,8 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   final UserrRepository _userrRepository;
 
   StreamSubscription<List<Future<Chat?>>>? _chatsStreamSubscription;
-   StreamSubscription<List<Future<Church?>>>? _churchStreamSubscription;
+  StreamSubscription<List<Future<Church?>>>? _churchStreamSubscription;
   // StreamSubscription<List<Church?>>? _churchStreamSubscription; // a stream form shared preerences
-
 
   ChatscreenBloc({
     required ChatRepository chatRepository,
@@ -55,8 +54,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   ) async* {
     if (event is LoadChats) {
       yield* _mapLoadChatsToState(event);
-    }
-    else if (event is LoadCms) {
+    } else if (event is LoadCms) {
       yield* _mapLoadCmsToState();
     }
   }
@@ -67,24 +65,38 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
     try {
       log("in get the crr cms and load to state");
       // geting the currUserr for later use
-      final Userr currUserr = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
+      final Userr currUserr = await _userrRepository.getUserrWithId(
+          userrId: _authBloc.state.user!.uid);
+      // ignore: unused_local_variable
+      List<Church> chsToJoin = [];
+      bool isInCm = await _churchRepository.isInCm(_authBloc.state.user!.uid);
+      if (!isInCm) {
+        chsToJoin = await _churchRepository.grabChurchs(limit: 15);
+        emit(state.copyWith(chsToJoin: chsToJoin));
+      }
       final Map<String, bool> mentionedMap = {};
       final List<Church> allChs = [];
+      final preferences = await StreamingSharedPreferences.instance;
       _churchStreamSubscription?.cancel();
       _churchStreamSubscription = _churchRepository
           .getCmsStream(currId: currUserr.id)
           .listen((churchs) async {
-            log("in cm stream");
+        log("in cm stream");
         final allChs = await Future.wait(churchs);
         for (var ch in churchs) {
           var church = await ch;
           // if (church != null)
           //   allChs.add(church);
-          var hasSnap = await FirebaseFirestore.instance.collection(Paths.mention).doc(_authBloc.state.user!.uid).collection(church!.id!).limit(1).get();
+          var hasSnap = await FirebaseFirestore.instance
+              .collection(Paths.mention)
+              .doc(_authBloc.state.user!.uid)
+              .collection(church!.id!)
+              .limit(1)
+              .get();
           var snaps = hasSnap.docs;
           if (snaps.length > 0)
             mentionedMap[church.id!] = true;
-          else 
+          else
             mentionedMap[church.id!] = false;
         }
         emit(state.copyWith(chs: allChs));
@@ -97,7 +109,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   // This is the maping of chats to state, (this is currently not being used, rather a streamblder in UI is
   // this needs to be addressed)
 
-    //jesus
+  //jesus
   Stream<ChatscreenState> _mapLoadChatsToState(event) async* {
     try {
       state.copyWith(status: ChatStatus.loading);

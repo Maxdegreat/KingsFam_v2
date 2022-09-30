@@ -56,6 +56,14 @@ class KingscordCubit extends Cubit<KingscordState> {
   }
   // time for some methods babby
 
+  // onReply
+  // void onReplyMessage({required Message? replyingToMessage}) {
+  //   if (replyingToMessage == null) {
+  //     replyingToMessage = Message.empty();
+  //   }
+  //   log("val of replymsg is: " + replyingToMessage.toString());
+  //   emit(state.copyWith(replyMessage: replyingToMessage, replying: replyingToMessage == Message.empty() ? false : true));
+  // }
   // is typing
   void onIsTyping(bool isTyping) {
     emit(state.copyWith(isTyping: isTyping, status: KingsCordStatus.initial));
@@ -75,9 +83,9 @@ class KingscordCubit extends Cubit<KingscordState> {
     // This should tell the cloud that the mentioned id was mentioned through the cloud
     // I have added the function to send a noti to the users phone. the update for this to happen is in the
     // functions index.js file
-
     for (var id in mentionedInfo.keys) {
-      if (txtMsgBodyWithSymbolsForParcing.length > 1 && txtMsgBodyWithSymbolsForParcing.length < 250) {
+      
+      if (txtMsgBodyWithSymbolsForParcing.length > 1 && txtMsgBodyWithSymbolsForParcing.length < 450) {
         FirebaseFirestore.instance
             .collection(Paths.mention)
             .doc(id)
@@ -198,5 +206,15 @@ class KingscordCubit extends Cubit<KingscordState> {
       fileShareStatus = FileShareStatus.imgSharing;
 
     emit(state.copyWith(status: KingsCordStatus.initial, fileShareStatus: fileShareStatus, filesToBePosted: state.filesToBePosted));
+  }
+
+  String getShortReply(String? txt) {
+    if (txt == null) {
+      return " Shared something ";
+    } else if (txt.length > 16) {
+      return txt.substring(0, 15);
+    } else {
+      return txt;
+    }
   }
 }

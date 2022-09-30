@@ -101,7 +101,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     }
 
     return Expanded(
-        flex: 1,
         child: ListView(
           padding: EdgeInsets.symmetric(horizontal: 7.0),
           physics: AlwaysScrollableScrollPhysics(),
@@ -123,12 +122,14 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           cmId: widget.commuinity.id!,
           kcId: widget.kingsCord.id!,
           message: sms,
+          inhearatedCtx: context,
         );
         } else {
           messageLine = MessageLines(
           cmId: widget.commuinity.id!,
           kcId: widget.kingsCord.id!,
           message: sms,
+          inhearatedCtx: context,
         );
         }
         messageLines.add(messageLine);
@@ -235,8 +236,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                   .containsKey(mentionedUserName)) {
                                 messageWithsSmbolesForParsing += '{{b-$msg}} ';
                                 // mentioned info will be passed to cubit. info will be used in notification
-                                mentionedInfo[membersMapWithUsernameAsKey[
-                                    mentionedUserName]['id']] = {
+
+                                // map<id, dynamic>
+                                mentionedInfo[membersMapWithUsernameAsKey[mentionedUserName]['id']] = {
                                   'username': mentionedUserName,
                                   'token': membersMapWithUsernameAsKey[
                                       mentionedUserName]['token'],
@@ -429,6 +431,22 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                           ),
                         )
                       : SizedBox.shrink(),
+                      // state.replying ?
+                      // SizedBox.shrink() : 
+                      // Column(
+                      //   mainAxisAlignment: MainAxisAlignment.start,
+                      //   crossAxisAlignment: CrossAxisAlignment.start,
+                      //   children: [
+                      //     IconButton(onPressed: () {
+                      //       context.read<KingscordCubit>().onReplyMessage(replyingToMessage: null,);
+                      //       setState(() {});
+                      //     }, icon: Icon(Icons.cancel_outlined),),
+                  
+                      //     Container(height: 50, width: double.infinity, child: Text(
+                      //       "replying to " + state.replyMessage!.sender!.username, style: TextStyle(fontStyle: FontStyle.italic),
+                      //     ),),
+                      //   ],
+                      // ),
                   memIds.contains(context.read<AuthBloc>().state.user!.uid)
                       ? _buildBottomTF(state, context)
                       : _permissionDenied(

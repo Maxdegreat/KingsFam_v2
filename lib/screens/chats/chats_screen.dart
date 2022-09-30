@@ -1,11 +1,11 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
@@ -26,13 +26,13 @@ import 'package:kingsfam/widgets/chats_view_widgets/screens_for_page_view.dart';
 import 'package:kingsfam/widgets/kf_crown_v2.dart';
 import 'package:kingsfam/widgets/videos/asset_video.dart';
 import 'package:kingsfam/widgets/widgets.dart';
-import 'package:new_version/new_version.dart';
 import 'package:rive/rive.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-// import '../../helpers/permission_helper.dart'; -- used on IOS
+import '../../helpers/permission_helper.dart';
 import '../../widgets/show_asset_image.dart';
+import 'chats_widget/tab_dropdown.dart';
 
 class ChatsScreen extends StatefulWidget {
   const ChatsScreen({
@@ -50,43 +50,9 @@ class _ChatsScreenState extends State<ChatsScreen>
   //bool get wantKeepAlive => true;
   // handel permissions for notifications using FCM
 
-  late BannerAd _bottomBannerAd;
-
-  // ignore: unused_field
-  bool _isBottomBannerAdLoaded = false;
-
   int _tabIdx = 1;
 
-  void _createBottomBannerAd() {
-    _bottomBannerAd = BannerAd(
-        size: AdSize.banner,
-        adUnitId: AdHelper.bannerAdUnitId,
-        listener: BannerAdListener(onAdLoaded: (_) {
-          setState(() {
-            _isBottomBannerAdLoaded = true;
-          });
-        }, onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-          log("!!!!!!!!!!!!!!!!!! - bottom Ad Error - !!!!!!!!!!!!!!!!!!!!!!!!!");
-          log("chatsScreen ad error: ${error.toString()}");
-          log("!!!!!!!!!!!!!!!!!! - bottom Ad Error - !!!!!!!!!!!!!!!!!!!!!!!!!");
-        }),
-        request: AdRequest());
-    _bottomBannerAd.load();
-  }
 
-
-  tabControllerListener() {
-    if (_tabController.indexIsChanging) {
-      if (_tabController.index == 0) {
-        log("setting state, idx == 0");
-        setState(() {});
-      } else if (_tabController.previousIndex == 0) {
-        log("setting state, idx was 0");
-        setState(() {});
-      }
-    }
-  }
 
   Future<void> setupInteractedMessage() async {
     // Get any messages which caused the application to open from
@@ -163,8 +129,7 @@ class _ChatsScreenState extends State<ChatsScreen>
   @override
   void initState() {
     super.initState();
-    _checkNewVersion();
-    _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
+    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
     _perkedVideoPlayerController =
         VideoPlayerController.asset("assets/promo_assets/Perked-2.mp4",
             videoPlayerOptions: VideoPlayerOptions(
@@ -178,36 +143,14 @@ class _ChatsScreenState extends State<ChatsScreen>
             _perkedVideoPlayerController.setVolume(0);
           });
     _tabController.addListener(() => setState(() {}));
-    _createBottomBannerAd();
     setupInteractedMessage();
-    // requestPhotoPermission(); -- done on Ios
+    requestPhotoPermission();
     //super.build(context);
-  }
-
-  _checkNewVersion() async {
-    final nv = NewVersion(
-      androidId: "com.kingbiz.kingsfam",
-      iOSId: "com.kingbiz.kingsfam",
-    );
-    final status = await nv.getVersionStatus();
-    
-    nv.showUpdateDialog(
-      context: context,
-      versionStatus: status!,
-      allowDismissal: false,
-      dialogTitle: "whats Up Fam, An Update Is Available",
-      dialogText: "Please update KingsFam to the latest version in order to avoid compatibility errors",
-      dismissAction: null,
-      updateButtonText: "update!"
-    );
-    log("local" + status.localVersion);
-    log("store" + status.storeVersion);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    _bottomBannerAd.dispose();
     _perkedVideoPlayerController.dispose();
     super.dispose();
   }
@@ -220,78 +163,57 @@ class _ChatsScreenState extends State<ChatsScreen>
     bool showKfCrown = false;
     final userId = context.read<AuthBloc>().state.user!.uid;
     return DefaultTabController(
-        length: 3,
+        length: 2,
         child: Scaffold(
             appBar: AppBar(
               title: Row(
                 children: [
-                  Text(
-                    'KING\'S FAM',
-                    style: TextStyle(
-                        color: Color(hexcolor.hexcolorCode('#FFC050'))),
-                  ),
+                  Text('KING\'SFAM',
+                      style: GoogleFonts.cedarvilleCursive(
+                          color: Color(hexcolor.hexcolorCode('#FFC050')))),
                   SizedBox(width: 5),
-                  showAssetImage(40, 40, 5,
-                      "assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png")
-                  // KFCrownV2()
+                  // showAssetImage(40, 40, 5,
+                  //     "assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png")
                 ],
               ),
               actions: [
-                IconButton(
-                    onPressed: () => NavHelper().navToCreatePost(context),
-                    icon: FaIcon(FontAwesomeIcons.images)),
-                GestureDetector(
-                    onTap: () => NavHelper().navToCreateSpaces(context),
-                    child: KfCrownPadded()),
-                GestureDetector(
-                    onTap: () => NavHelper().navToSnackBar(context, context.read<AuthBloc>().state.user!.uid),
-                    child: VisibilityDetector(
-                      key: ObjectKey(_perkedVideoPlayerController),
-                      onVisibilityChanged: (vis) {
-                        vis.visibleFraction > 0
-                            ? _perkedVideoPlayerController.play()
-                            : _perkedVideoPlayerController.pause();
-                      },
-                      child: Container(
-                          child: AssetVideoPlayer(
-                        controller: _perkedVideoPlayerController,
-                      )),
-                    ))
+                ChatsDropDownButton(tabctrl: _tabController),
+
+                // IconButton(
+                //     onPressed: () => NavHelper().navToCreatePost(context),
+                //     icon: FaIcon(FontAwesomeIcons.images)),
+                // GestureDetector(
+                //     onTap: () => NavHelper().navToCreateSpaces(context),
+                //     child: KfCrownPadded()),
+                // GestureDetector(
+                //     onTap: () => NavHelper().navToSnackBar(
+                //         context, context.read<AuthBloc>().state.user!.uid),
+                //     child: VisibilityDetector(
+                //       key: ObjectKey(_perkedVideoPlayerController),
+                //       onVisibilityChanged: (vis) {
+                //         vis.visibleFraction > 0
+                //             ? _perkedVideoPlayerController.play()
+                //             : _perkedVideoPlayerController.pause();
+                //       },
+                //       child: Container(
+                //           child: AssetVideoPlayer(
+                //         controller: _perkedVideoPlayerController,
+                //       )),
+                //     ))
               ],
             ),
             body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
                 listener: (context, state) {
               if (state.status == ChatStatus.error) {
                 ErrorDialog(
-                    content: 'chat_screen e-code: ${state.failure.code}');
+                    content: 'chat_screen e-code: ${state.failure.message}');
               }
             }, builder: (context, state) {
-              return NestedScrollView(
-                  headerSliverBuilder:
-                      (BuildContext context, bool isScrollableInnerBox) {
-                    return _tabController.index == 0
-                        ? <Widget>[]
-                        : <Widget>[
-                            SliverAppBar(
-                                floating: false,
-                                toolbarHeight: 00,
-                                expandedHeight: 00,
-                                bottom: TabBar(
-                                  controller: _tabController,
-                                  tabs: [
-                                    Tab(text: "Following"),
-                                    Tab(text: "Commuinity\'s"),
-                                    Tab(text: "Chats"),
-                                  ],
-                                ))
-                          ];
-                  },
+              return Scaffold(
                   body: TabBarView(
                     controller: _tabController,
                     children: [
-                      ScreensForPageView().feed(context, _tabController),
-                      ScreensForPageView().commuinity_view(userId, context,
-                          _bottomBannerAd, _isBottomBannerAdLoaded),
+                      ScreensForPageView().commuinity_view(userId, context),
                       ScreensForPageView().chats_view(userId, state, context)
                     ],
                   ));

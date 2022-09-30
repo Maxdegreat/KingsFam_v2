@@ -98,6 +98,7 @@ class Chat extends Equatable {
     activeMems: List<String>.from(data['activeMems']),
     imageUrl: data['imageUrl'] ?? null, 
     members: members,
+    memRefs: List<DocumentReference>.from(data['memRefs']),
     chatName: data['chatName'] ?? 'not named?', 
     readStatus: Map<String, bool>.from(data['readStatus'] ?? {}), 
     recentMessage: Map<String, dynamic>.from(data['recentMessage']),  

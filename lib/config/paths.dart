@@ -25,8 +25,9 @@ class Paths {
   static const String mention = 'mention';
   static const String permissions = 'permissions';
   static const String perked = 'perked';
-  static const String communityMembers = "community_members";
   static const String prayer = "prayer";
+  static const String communityBan = "communityBan";
+  static const String bans = "bans";
 
   //sub collections
   static const String postsComments = 'postComments';
@@ -34,7 +35,6 @@ class Paths {
   static const String userrFollowing = 'userrFollowing';
   static const String userFeed = 'userFeed';
   static const String postLikes = 'postLikes';
-  static const String ids = "ids";
 
   //base collections
   static const String usernameSet = 'usernameSet';
