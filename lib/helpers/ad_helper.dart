@@ -9,7 +9,7 @@ class AdHelper {
     const String testAdUnitId = "ca-app-pub-3940256099942544/6300978111";
     if (Platform.isAndroid) {
       // ignore: dead_code
-      return testAdUnitId ;
+      return prodAdUnitIdB ;
     } else if (Platform.isIOS) {
       return "ca-app-pub-3940256099942544/2934735716";
     } else {

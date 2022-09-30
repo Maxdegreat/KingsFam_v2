@@ -66,28 +66,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // controllers
 
   ScrollController scrollController = ScrollController();
-  late VideoPlayerController _perkedVideoPlayerController;
+ // late VideoPlayerController _perkedVideoPlayerController;
   @override
   void initState() {
     super.initState();
-    _perkedVideoPlayerController =
-        VideoPlayerController.asset("assets/promo_assets/Perked-2.mp4",
-            videoPlayerOptions: VideoPlayerOptions(
-              mixWithOthers: true,
-            ))
-          ..addListener(() {
-            if (this.mounted) {
-              setState(() {
+    //_perkedVideoPlayerController =
+        // VideoPlayerController.asset("assets/promo_assets/Perked-2.mp4",
+        //     videoPlayerOptions: VideoPlayerOptions(
+        //       mixWithOthers: true,
+        //     ))
+        //   ..addListener(() {
+        //     if (this.mounted) {
+        //       setState(() {
                 
-              });
-            }
-          })
-          ..setLooping(
-              true) // -------------------------------- SET PERKED LOOPING TO TRUE
-          ..initialize().then((_) {
-            _perkedVideoPlayerController.play();
-            _perkedVideoPlayerController.setVolume(0);
-          });
+        //       });
+        //     }
+        //   })
+        //   ..setLooping(
+        //       true) // -------------------------------- SET PERKED LOOPING TO TRUE
+        //   ..initialize().then((_) {
+        //     _perkedVideoPlayerController.play();
+        //     _perkedVideoPlayerController.setVolume(0);
+        //   });
     scrollController.addListener(listenToScrolling);
   }
 
@@ -151,21 +151,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   pinned: true,
                   title: Text(state.userr.username),
                   actions: [
-                    if (state.isCurrentUserr)
-                       GestureDetector(
-                    onTap: () => NavHelper().navToSnackBar(context, state.userr.id),
-                    child: VisibilityDetector(
-                      key: ObjectKey(_perkedVideoPlayerController),
-                      onVisibilityChanged: (vis) {
-                        vis.visibleFraction > 0
-                            ? _perkedVideoPlayerController.play()
-                            : _perkedVideoPlayerController.pause();
-                      },
-                      child: Container(
-                          child: AssetVideoPlayer(
-                        controller: _perkedVideoPlayerController,
-                      )),
-                    )),
+                    // if (state.isCurrentUserr)
+                    //    GestureDetector(
+                    // onTap: () => NavHelper().navToSnackBar(context, state.userr.id),
+                    // child: VisibilityDetector(
+                    //   key: ObjectKey(_perkedVideoPlayerController),
+                    //   onVisibilityChanged: (vis) {
+                    //     vis.visibleFraction > 0
+                    //         ? _perkedVideoPlayerController.play()
+                    //         : _perkedVideoPlayerController.pause();
+                    //   },
+                    //   child: Container(
+                    //       child: AssetVideoPlayer(
+                    //     controller: _perkedVideoPlayerController,
+                    //   )),
+                    // )),
                   ],
                   // expandedHeight: 200,
                 ),
@@ -196,7 +196,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             Positioned(
                               top: 105,
-                              right: state.isCurrentUserr ? 40 : 10,
+                              right: state.isCurrentUserr ? 0 : 10,
                               child: ProfileButton(
                                 isCurrentUserr: state.isCurrentUserr,
                                 isFollowing: state.isFollowing,

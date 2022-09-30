@@ -61,7 +61,7 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
     padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0,),
     child: GestureDetector(
       onTap: () => showModalBottomSheet(context: context, builder: (context) {
-        
+
                 final _churchRepo = context.read<ChurchRepository>();
                 
                 return FutureBuilder(
@@ -86,7 +86,7 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
                 );
               }),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal:7 , vertical: 7),
+        padding: EdgeInsets.symmetric(horizontal:10 , vertical: 7),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -95,9 +95,10 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
               children: [
                 Text("See More", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),),
                 SizedBox(width: 10),
-                Text(" Commuintys",  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),)
+                Text(" communites",  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),)
               ],
-            ),
+            ), 
+            SizedBox(height: 5,),
             Container(
               child: !moreBtn ? Container() : greaterThan2 ? twoCommuinitys : oneCommuinitys,
             ),

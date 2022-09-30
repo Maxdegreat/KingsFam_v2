@@ -130,18 +130,7 @@ class _ChatsScreenState extends State<ChatsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
-    _perkedVideoPlayerController =
-        VideoPlayerController.asset("assets/promo_assets/Perked-2.mp4",
-            videoPlayerOptions: VideoPlayerOptions(
-              mixWithOthers: true,
-            ))
-          ..addListener(() => setState(() {}))
-          ..setLooping(
-              true) // -------------------------------- SET PERKED LOOPING TO TRUE
-          ..initialize().then((_) {
-            _perkedVideoPlayerController.play();
-            _perkedVideoPlayerController.setVolume(0);
-          });
+   
     _tabController.addListener(() => setState(() {}));
     setupInteractedMessage();
     requestPhotoPermission();
@@ -151,12 +140,11 @@ class _ChatsScreenState extends State<ChatsScreen>
   @override
   void dispose() {
     _tabController.dispose();
-    _perkedVideoPlayerController.dispose();
     super.dispose();
   }
 
   late TabController _tabController;
-  late VideoPlayerController _perkedVideoPlayerController;
+  
   @override
   Widget build(BuildContext context) {
     HexColor hexcolor = HexColor();
@@ -178,28 +166,6 @@ class _ChatsScreenState extends State<ChatsScreen>
               ),
               actions: [
                 ChatsDropDownButton(tabctrl: _tabController),
-
-                // IconButton(
-                //     onPressed: () => NavHelper().navToCreatePost(context),
-                //     icon: FaIcon(FontAwesomeIcons.images)),
-                // GestureDetector(
-                //     onTap: () => NavHelper().navToCreateSpaces(context),
-                //     child: KfCrownPadded()),
-                // GestureDetector(
-                //     onTap: () => NavHelper().navToSnackBar(
-                //         context, context.read<AuthBloc>().state.user!.uid),
-                //     child: VisibilityDetector(
-                //       key: ObjectKey(_perkedVideoPlayerController),
-                //       onVisibilityChanged: (vis) {
-                //         vis.visibleFraction > 0
-                //             ? _perkedVideoPlayerController.play()
-                //             : _perkedVideoPlayerController.pause();
-                //       },
-                //       child: Container(
-                //           child: AssetVideoPlayer(
-                //         controller: _perkedVideoPlayerController,
-                //       )),
-                //     ))
               ],
             ),
             body: BlocConsumer<ChatscreenBloc, ChatscreenState>(

@@ -6,6 +6,8 @@ import 'package:kingsfam/screens/edit_profile/edit_profile_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 
+import '../../search/search_screen.dart';
+
 class ProfileButton extends StatelessWidget {
   final bool isCurrentUserr;
   final bool isFollowing;
@@ -40,7 +42,7 @@ class ProfileButton extends StatelessWidget {
                             .read<ProfileBloc>()
                             .add(ProfileUnfollowUserr())
                         : context.read<ProfileBloc>().add(ProfileFollowUserr());
-                  }),
+                  }, colorpref: colorPref,),
               SizedBox(width: 7.0),
               _btnRow(
                 label: 'Message',
@@ -52,7 +54,7 @@ class ProfileButton extends StatelessWidget {
                         .add(ProfileDm(profileOwnersId: profileOwnersId!, ctx: context));
                   }
                 },
-                icon_: null,
+                icon_: null, colorpref: colorPref,
               ),
             ],
           );
@@ -62,25 +64,11 @@ class ProfileButton extends StatelessWidget {
     //HexColor hexcolor = HexColor();
     return Container(
       width: MediaQuery.of(context).size.width / 3,
-      child: ElevatedButton(
+      child: IconButton(
         onPressed: () => Navigator.of(context).pushNamed(
             EditProfileScreen.routeName,
             arguments: EditProfileScreenArgs(context: context)),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Edit Profile', style: style),
-            SizedBox(width: 5),
-            Icon(
-              Icons.settings,
-              size: 15,
-            )
-          ],
-        ),
-        style: ElevatedButton.styleFrom(
-            elevation: 3.5,
-            shadowColor: Colors.white,
-            primary: Colors.red[600]),
+        icon: Icon(Icons.settings_rounded),
       ),
     );
   }
@@ -91,12 +79,14 @@ class _btnRow extends StatelessWidget {
   final TextStyle style;
   final VoidCallback onP;
   final Icon? icon_;
+  final String colorpref;
   const _btnRow({
     Key? key,
     required this.label,
     required this.style,
     required this.onP,
     this.icon_,
+    required this.colorpref,
   }) : super(key: key);
 
   @override
@@ -116,7 +106,7 @@ class _btnRow extends StatelessWidget {
         style: ElevatedButton.styleFrom(
             elevation: 3.5,
             shadowColor: Colors.white,
-            primary: Colors.red[600]),
+            primary: Color(hexcolor.hexcolorCode(colorpref))),
       ),
     );
   }
