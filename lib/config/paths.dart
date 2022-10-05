@@ -5,6 +5,7 @@ class Paths {
   static const String messages = 'messages';
   static const String posts = 'posts';
   static const String comments = 'comments';
+  static const String commentReply = 'commentReply';
   static const String following = 'following';
   static const String followers = 'followers';
   static const String church = 'church';

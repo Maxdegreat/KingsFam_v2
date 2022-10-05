@@ -119,4 +119,52 @@ class ChatRepository extends BaseChatRepository {
       transaction.update(chatDocRef, {"memRefs": updatedMemRefs});
     });
   }
+
+  Future<void> updateUserActivity({required String chatId, required String usrId, required bool isActive}) async {
+
+    final chatDocRef = _firebaseFirestore.collection(Paths.chats).doc(chatId);
+
+    if (isActive) {
+      
+    _firebaseFirestore.runTransaction((transaction) async {
+      DocumentSnapshot chatSnap = await transaction.get(chatDocRef);
+
+      if (!chatSnap.exists) {
+        throw Exception("chatSnap does not exist! in chatRepo updateUserActivity");
+      }
+
+      // make curr docRef to remove
+      DocumentReference currDocRef =
+          _firebaseFirestore.collection(Paths.users).doc(usrId);
+
+      Map<String, dynamic> data = chatSnap.data() as Map<String, dynamic>;
+      List<String> activeMems = List.from(data['activeMems']);
+      if (!activeMems.contains(usrId)) {
+        activeMems.add(usrId);
+      }
+
+      transaction.update(chatDocRef, {"activeMems": activeMems});
+    });
+    } else {
+      _firebaseFirestore.runTransaction((transaction) async {
+      DocumentSnapshot chatSnap = await transaction.get(chatDocRef);
+
+      if (!chatSnap.exists) {
+        throw Exception("chatSnap does not exist! in chatRepo updateUserActivity");
+      }
+
+      // make curr docRef to remove
+      DocumentReference currDocRef =
+          _firebaseFirestore.collection(Paths.users).doc(usrId);
+
+      Map<String, dynamic> data = chatSnap.data() as Map<String, dynamic>;
+      List<String> activeMems = List.from(data['activeMems']);
+      if (activeMems.contains(usrId)) {
+        activeMems.remove(usrId);
+      }
+
+      transaction.update(chatDocRef, {"activeMems": activeMems});
+    });
+    }
+  }
 }

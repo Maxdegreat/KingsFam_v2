@@ -43,8 +43,14 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       FeedCommuinityFetchPosts event) async* {
     yield state.copyWith(posts: [], status: FeedStatus.loading);
     try {
-      final posts = await _postsRepository.getCommuinityFeed(
+      List<Post?> posts = [];
+      if (event.passedPost != null) {
+        posts = event.passedPost!;
+      } else {
+        posts = await _postsRepository.getCommuinityFeed(
           commuinityId: event.commuinityId, lastPostId: event.lastPostId);
+      }
+      
       log("The length of the post is ${posts.length}");
       if (posts.length > 5) {
         posts.add(Post.empty.copyWith(id: posts.last!.id));

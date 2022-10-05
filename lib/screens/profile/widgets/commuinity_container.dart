@@ -48,7 +48,7 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(padding: const EdgeInsets.only(bottom: 10),
+          Padding(padding: const EdgeInsets.only(bottom: 5),
           child: FancyListTile(username: commuinity1.name, imageUrl: commuinity1.imageUrl, onTap: null, isBtn: false, BR: 12, height: 12 , width: 12),),
           greaterThan2 ? FancyListTile(username: commuinity2!.name, imageUrl: commuinity2.imageUrl, onTap: null, isBtn: false, BR: 12, height: 12 , width: 12) : SizedBox.shrink() ,
         ],
@@ -86,7 +86,7 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
                 );
               }),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal:10 , vertical: 7),
+        padding: EdgeInsets.symmetric(horizontal:10 , vertical: 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,

@@ -24,21 +24,22 @@ class ChatscreenState extends Equatable {
   final Set<String?> likedPostIds;
 
   //2 make the constructor
-  const ChatscreenState(
-      {required this.chat,
-      required this.currUserr,
-      required this.chs,
-      required this.chsToJoin,
-      required this.inAChat,
-      required this.isToggle,
-      required this.status,
-      required this.mentionedMap,
-      required this.failure,
-      required this.preferences,
-      //==== feed half ====
-      required this.posts,
-      required this.fstatus,
-      required this.likedPostIds});
+  const ChatscreenState({
+    required this.chat,
+    required this.currUserr,
+    required this.chs,
+    required this.chsToJoin,
+    required this.inAChat,
+    required this.isToggle,
+    required this.status,
+    required this.mentionedMap,
+    required this.failure,
+    required this.preferences,
+    //==== feed half ====
+    required this.posts,
+    required this.fstatus,
+    required this.likedPostIds,
+  });
 
   //5 make the init
   factory ChatscreenState.initial() {
@@ -74,7 +75,7 @@ class ChatscreenState extends Equatable {
         chsToJoin,
         inAChat,
         status,
-        failure
+        failure,
       ];
 
   //4 gen the copy with

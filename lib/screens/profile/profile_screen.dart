@@ -209,7 +209,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
 
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          padding: state.userr.bio.isNotEmpty ? EdgeInsets.symmetric(vertical: 10) : EdgeInsets.symmetric(vertical: 0),
                           child: BigBoyBio(
                               username: state.userr.username,
                               bio: state.userr.bio),
@@ -235,7 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 state.loadingPost
                     ? SliverToBoxAdapter(
                         child: LinearProgressIndicator(
-                        color: Colors.amber,
+                        color: Colors.blue,
                       ))
                     : state.post.length > 0
                         ? imageGrids(state: state)
@@ -252,63 +252,66 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // eternal life. Amen.
 
   imageGrids({required ProfileState state}) => SliverToBoxAdapter(
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10.0, // x axis
-            mainAxisSpacing: 10.0, // y axis
-            mainAxisExtent: 250.0, // 
-          ),
-          primary: false,
-          shrinkWrap: true,
-          itemCount: state.post.length,
-          itemBuilder: (BuildContext context, int index) {
-            Post? post = state.post[index];
-            return Column(
-              children: [
-                GestureDetector(
-                  onTap: () => Navigator.of(context).pushNamed(
-                      ProfilePostView.routeName,
-                      arguments: ProfilePostViewArgs(
-                          posts: state.post,
-                          startIndex: index,
-                           currUsrId: widget.ownerId,
-                          isFromPfpScreen: true)),
-                  //Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(startIndex: index, posts: state.post)),
-                  child: Container(
-                    height: 190,
-                    width: 250,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        image: post!.imageUrl != null
-                            ? DecorationImage(
-                                image:
-                                    CachedNetworkImageProvider(post.imageUrl!),
-                                fit: BoxFit.cover)
-                            : DecorationImage(
-                                image: CachedNetworkImageProvider(
-                                    post.thumbnailUrl!),
-                                fit: BoxFit.cover),
-                        borderRadius: BorderRadius.circular(18)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10.0, // x axis
+              mainAxisSpacing: 10.0, // y axis
+              mainAxisExtent: 205.0, // -> 230
+            ),
+            primary: false,
+            shrinkWrap: true,
+            itemCount: state.post.length,
+            itemBuilder: (BuildContext context, int index) {
+              Post? post = state.post[index];
+              return Column(
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pushNamed(
+                        ProfilePostView.routeName,
+                        arguments: ProfilePostViewArgs(
+                            posts: state.post,
+                            startIndex: index,
+                             currUsrId: widget.ownerId,
+                            isFromPfpScreen: true)),
+                    //Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(startIndex: index, posts: state.post)),
+                    child: Container(
+                      height: 150,
+                      width: 250,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          image: post!.imageUrl != null
+                              ? DecorationImage(
+                                  image:
+                                      CachedNetworkImageProvider(post.imageUrl!),
+                                  fit: BoxFit.cover)
+                              : DecorationImage(
+                                  image: CachedNetworkImageProvider(
+                                      post.thumbnailUrl!),
+                                  fit: BoxFit.cover),
+                          borderRadius: BorderRadius.circular(18)),
+                    ),
                   ),
-                ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    commuinity_pf_img(post.author.profileImageUrl, 35, 35),
-                    SizedBox(width: 5),
-                    Flexible(
-                        child: Text(
-                      post.author.username.length > 18 ? post.author.username.substring(0, 18) : post.author.username,
-                      style: Theme.of(context).textTheme.bodyText1,
-                      overflow: TextOverflow.fade,
-                    ))
-                  ],
-                )
-              ],
-            );
-          },
+                   SizedBox(height: 10),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      commuinity_pf_img(post.author.profileImageUrl, 35, 35),
+                      SizedBox(width: 5),
+                      Flexible(
+                          child: Text(
+                        post.author.username.length > 18 ? post.author.username.substring(0, 18) : post.author.username,
+                        style: Theme.of(context).textTheme.bodyText1,
+                        overflow: TextOverflow.fade,
+                      ))
+                    ],
+                  )
+                ],
+              );
+            },
+          ),
         ),
       );
 }

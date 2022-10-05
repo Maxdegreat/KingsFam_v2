@@ -63,7 +63,6 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
-      log("in get the crr cms and load to state");
       // geting the currUserr for later use
       final Userr currUserr = await _userrRepository.getUserrWithId(
           userrId: _authBloc.state.user!.uid);
@@ -74,9 +73,10 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
         chsToJoin = await _churchRepository.grabChurchs(limit: 15);
         emit(state.copyWith(chsToJoin: chsToJoin));
       }
+
       final Map<String, bool> mentionedMap = {};
       final List<Church> allChs = [];
-      final preferences = await StreamingSharedPreferences.instance;
+    
       _churchStreamSubscription?.cancel();
       _churchStreamSubscription = _churchRepository
           .getCmsStream(currId: currUserr.id)
@@ -85,8 +85,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
         final allChs = await Future.wait(churchs);
         for (var ch in churchs) {
           var church = await ch;
-          // if (church != null)
-          //   allChs.add(church);
+
           var hasSnap = await FirebaseFirestore.instance
               .collection(Paths.mention)
               .doc(_authBloc.state.user!.uid)
@@ -113,9 +112,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   Stream<ChatscreenState> _mapLoadChatsToState(event) async* {
     try {
       state.copyWith(status: ChatStatus.loading);
-
       _chatsStreamSubscription?.cancel();
-
       _chatsStreamSubscription = _chatRepository
           .getUserChats(userId: _authBloc.state.user!.uid)
           .listen((chat) async {

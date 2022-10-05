@@ -30,14 +30,88 @@ class PostsRepository extends BasePostsRepository {
     print("deleated");
   }
 
+  Future<void> onAddReply(
+      {required Comment comment,
+      required Post post,
+      required String content}) async {
+    String path = comment.highId == null ? comment.id! : comment.highId!;
+    Comment newComment = Comment(
+        postId: post.id!,
+        author: comment.author,
+        content: content,
+        date: Timestamp.now(),
+        highId: path);
+
+    final postDoc =
+        await _firebaseFirestore.collection(Paths.posts).doc(post.id!);
+
+    _firebaseFirestore.runTransaction((transaction) async {
+      DocumentSnapshot postSnap_ = await transaction.get(postDoc);
+
+      if (!postSnap_.exists) {
+        throw Exception("postSnap does not exist, can not update post");
+      }
+
+      Map<String, dynamic> data = postSnap_.data() as Map<String, dynamic>;
+      int updatedCount = data['commentCount'] ?? 0;
+      updatedCount += 1;
+
+      transaction.update(postDoc, {"CommentCount": updatedCount});
+    });
+
+    // to have correct top level comment
+    // highId is a copy of the id. used to detect original comment so that nesting of
+    // comments does not get lost.
+
+      _firebaseFirestore
+          .collection(Paths.comments)
+          .doc(post.id)
+          .collection(Paths.postsComments)
+          .doc(path)
+          .collection(Paths.commentReply)
+          .add(newComment.toDoc());
+    
+
+    if (post.id != null) {
+      final notification = NotificationKF(
+          fromUser: comment.author,
+          notificationType: Notification_type.comment_post,
+          date: Timestamp.now());
+
+      _firebaseFirestore
+          .collection(Paths.noty)
+          .doc(post.author.id)
+          .collection(Paths.notifications)
+          .add(notification.toDoc());
+    }
+  }
+
   @override
-  Future<void> createComment(
-      {required Comment comment, required Post? post}) async {
+  Future<void> createComment({required Comment comment, required Post? post}) async {
     await _firebaseFirestore
         .collection(Paths.comments)
         .doc(comment.postId)
         .collection(Paths.postsComments)
         .add(comment.toDoc());
+
+    final postDoc =
+        await _firebaseFirestore.collection(Paths.posts).doc(post!.id);
+
+    _firebaseFirestore.runTransaction((transaction) async {
+      DocumentSnapshot postSnap_ = await transaction.get(postDoc);
+
+      if (!postSnap_.exists) {
+        throw Exception("postSnap does not exist, can not update post");
+      }
+
+      Map<String, dynamic> data = postSnap_.data() as Map<String, dynamic>;
+      int updatedCount = data['commentCount'] ?? 0;
+      updatedCount += 1;
+
+      transaction.update(postDoc, {"CommentCount": updatedCount});
+    });
+
+    // ignore: unnecessary_null_comparison
     if (post != null) {
       final notification = NotificationKF(
           fromUser: comment.author,
@@ -50,6 +124,57 @@ class PostsRepository extends BasePostsRepository {
           .collection(Paths.notifications)
           .add(notification.toDoc());
     }
+  }
+
+  Future<List<Comment>> getCommentReplys(Comment comment, String postId, lastCommentid) async {
+    String path = comment.highId == null ? comment.id! : comment.highId!;
+    final List<Comment> bucket = [];
+    if (lastCommentid != null) {
+      final lastCommentDoc = await _firebaseFirestore
+          .collection(Paths.comments)
+          .doc(postId)
+          .collection(Paths.postsComments)
+          .doc(path)
+          .collection(Paths.commentReply)
+          .doc(lastCommentid)
+          .get();
+
+      var c = await _firebaseFirestore
+          .collection(Paths.comments)
+          .doc(postId)
+          .collection(Paths.postsComments)
+          .doc(path)
+          .collection(Paths.commentReply)
+          .limit(5)
+          .orderBy('date')
+          .startAfterDocument(lastCommentDoc)
+          .get();
+
+      for (var x in c.docs) {
+        var z = await Comment.fromDoc(x);
+        bucket.add(z!);
+      }
+
+      return bucket;
+    } else {
+      var c = await _firebaseFirestore
+          .collection(Paths.comments)
+          .doc(postId)
+          .collection(Paths.postsComments)
+          .doc(path)
+          .collection(Paths.commentReply)
+          .limit(5)
+          .orderBy('date')
+          .get();
+
+      for (var x in c.docs) {
+        var z = await Comment.fromDoc(x);
+        bucket.add(z!);
+      }
+      return bucket;
+    }
+
+    return [];
   }
 
   Future<DocumentSnapshot<Map<String, dynamic>>?> getUserPostHelper(
@@ -93,6 +218,7 @@ class PostsRepository extends BasePostsRepository {
         .collection(Paths.comments)
         .doc(postId)
         .collection(Paths.postsComments)
+        .limit(17)
         .orderBy('date', descending: false)
         .snapshots()
         .map((snap) => snap.docs.map((doc) => Comment.fromDoc(doc)).toList());
@@ -122,7 +248,7 @@ class PostsRepository extends BasePostsRepository {
           .collection(Paths.userFeed)
           .doc(lastPostId)
           .get();
-      
+
       if (!lastPostDoc.exists)
         return []; // meaning we are at the end of users posts
 
@@ -146,18 +272,20 @@ class PostsRepository extends BasePostsRepository {
   }
 
   // GET THE COMMUINITY FEED
-  Future<List<Post?>> getCommuinityFeed({required String commuinityId, String? lastPostId}) async {
+  Future<List<Post?>> getCommuinityFeed(
+      {required String commuinityId, String? lastPostId, int? limit}) async {
     // Build a reference catagori. this is used so i can query for a reference.
-    var commuinityRef = _firebaseFirestore.collection(Paths.church).doc(commuinityId);
+    var commuinityRef =
+        _firebaseFirestore.collection(Paths.church).doc(commuinityId);
     QuerySnapshot postSnap;
-
+    limit = limit == null ? 7 : limit;
     if (lastPostId == null) {
       // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       postSnap = await _firebaseFirestore
           .collection(Paths.posts)
           .where('commuinity', isEqualTo: commuinityRef)
           .orderBy('date', descending: true)
-          .limit(7)
+          .limit(limit)
           .get();
 
       final posts =
@@ -171,21 +299,23 @@ class PostsRepository extends BasePostsRepository {
           .get();
       // where we able to get the actuall doc?
       if (!lastPostDoc.exists) {
-        print("************** lastpost doc not exist in get church post pag. exiziting********************");
+        print(
+            "************** lastpost doc not exist in get church post pag. exiziting********************");
         return [];
       }
 
       //recall the querry but use start after
-        postSnap = await _firebaseFirestore
+      postSnap = await _firebaseFirestore
           .collection(Paths.posts)
           .where('commuinity', isEqualTo: commuinityRef)
           .orderBy('date', descending: true)
           .startAfterDocument(lastPostDoc)
-          .limit(7)
+          .limit(limit)
           .get();
     }
-          final posts = Future.wait(postSnap.docs.map((doc) => Post.fromDoc(doc)).toList());
-      return posts;
+    final posts =
+        Future.wait(postSnap.docs.map((doc) => Post.fromDoc(doc)).toList());
+    return posts;
   }
 
   //CREATE LIKES FOR POSTS

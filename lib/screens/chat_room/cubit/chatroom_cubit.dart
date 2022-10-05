@@ -31,10 +31,12 @@ class ChatroomCubit extends Cubit<ChatroomState> {
   @override
   Future<void> close() {
     _msgStreamSubscription!.cancel();
+    updateUsrActivity(chatId: state.chatId, isActive: false);
     return super.close();
   }
 
   void onLoadInit({required String chatId, required int limit}) async {
+    emit(state.copyWith(chatId: chatId));
     int limit = 45;
     _msgStreamSubscription?.cancel();
     _msgStreamSubscription = _chatRepository
@@ -44,6 +46,7 @@ class ChatroomCubit extends Cubit<ChatroomState> {
       log("The length of messages is ${messages.length}");
       emit(state.copyWith(msgs: msgs));
     });
+    updateUsrActivity(chatId: chatId, isActive: true);
   }
 
   void onUploadImage(File image) {
@@ -80,5 +83,10 @@ class ChatroomCubit extends Cubit<ChatroomState> {
     );
     _chatRepository.sendChatMessage(
         chat: chatId, message: message, senderId: _authBloc.state.user!.uid);
+  }
+
+  void updateUsrActivity({required String chatId, required bool isActive}) {
+    String usrId = _authBloc.state.user!.uid;
+    _chatRepository.updateUserActivity(chatId: chatId, usrId: usrId, isActive: isActive);
   }
 }

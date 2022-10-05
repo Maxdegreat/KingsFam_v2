@@ -109,15 +109,7 @@ class _kfLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.bottomLeft,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text("KingsFam", style: Theme.of(context).textTheme.bodyText1),
-          SizedBox(width: 10),          showImageFromAssetsPNG(
-              80, 80, 10, "assets/KINGSFAM_LOGO_black_bg.png"),
-        ],
-      ),
+      child: Text("KingsFam", style: Theme.of(context).textTheme.bodyText1),
     );
   }
 }

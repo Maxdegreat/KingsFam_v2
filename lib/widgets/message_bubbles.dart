@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/extensions/extensions.dart';
@@ -11,13 +12,15 @@ class MessageBubble extends StatelessWidget {
   //we need chat for collection location and message to know what we are writing and maybe where to
   final Chat chat;
   final Message message;
+  final Color? passedColor;
   const MessageBubble({
     Key? key,
     required this.chat,
     required this.message,
+    this.passedColor,
   }) : super(key: key);
 
-  _buildText(bool isMe) {
+  _buildText() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
       child: Text(message.text!,
@@ -40,8 +43,10 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isMe =
+    HexColor hc = HexColor();
+     bool isMe =
         context.read<AuthBloc>().state.user!.uid == message.sender!.id;
+    if (passedColor != null) isMe = false;
     return Padding(
         padding: const EdgeInsets.all(10.0),
         child: Row(
@@ -59,8 +64,8 @@ class MessageBubble extends StatelessWidget {
                           : const EdgeInsets.only(left: 12.0),
                       child: Text(
                         isMe
-                            ? '${message.date.timeAgo()}'//.timeAgo()
-                            : '${message.sender!.username} ${message.date.timeAgo()}',//.timeAgo()
+                            ? '${message.date.timeAgo()}' //.timeAgo()
+                            : '${message.sender!.username} ${message.date.timeAgo()}', //.timeAgo()
                         style: TextStyle(
                           fontSize: 12.0,
                           color: Colors.white,
@@ -74,14 +79,16 @@ class MessageBubble extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                             color: message.imageUrl == null
-                                ? isMe
-                                    ? Colors.red[400]
-                                    : Colors.deepPurple[200]
+                                ? passedColor != null
+                                    ? passedColor
+                                    : isMe
+                                        ? Color(hc.hexcolorCode('#042b6e'))
+                                        : Color(hc.hexcolorCode('#a11dde'))
                                 : Colors.transparent,
                             borderRadius:
-                                BorderRadius.all(Radius.circular(20.0))),
+                                BorderRadius.all(Radius.circular(10.0))),
                         child: message.text != null
-                            ? _buildText(isMe)
+                            ? _buildText()
                             : _buildImage(context))
                   ])
             ]));

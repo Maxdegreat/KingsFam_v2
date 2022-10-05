@@ -79,7 +79,7 @@ class showJoinedCms extends StatelessWidget {
                       isBtn: false,
                       BR: 12.0,
                       height: 12.0,
-                      width: 12.0)),
+                      width: 12.0,)),
             );
           },
         ));

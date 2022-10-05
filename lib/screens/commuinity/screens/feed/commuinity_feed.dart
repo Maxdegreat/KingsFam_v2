@@ -13,7 +13,8 @@ import 'package:kingsfam/widgets/widgets.dart';
 
 class CommuinityFeedScreenArgs {
   final Church commuinity;
-  CommuinityFeedScreenArgs({required this.commuinity});
+  final List<Post>? passedPost;
+  CommuinityFeedScreenArgs({required this.commuinity, this.passedPost});
 }
 
 class CommuinityFeedScreen extends StatefulWidget {
@@ -28,7 +29,7 @@ class CommuinityFeedScreen extends StatefulWidget {
                   postsRepository: context.read<PostsRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   likedPostCubit: context.read<LikedPostCubit>())
-                ..add(FeedCommuinityFetchPosts(
+                ..add(FeedCommuinityFetchPosts(passedPost: args.passedPost,
                     commuinityId: args.commuinity.id!, lastPostId: null)),
               child: CommuinityFeedScreen(
                 commuinity: args.commuinity,
@@ -38,6 +39,7 @@ class CommuinityFeedScreen extends StatefulWidget {
 
   // class data
   final Church commuinity;
+
   const CommuinityFeedScreen({required this.commuinity});
 
   @override
@@ -104,61 +106,60 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
             ),
             body: state.posts.length > 0
                 ? SafeArea(
-                  child: PageView.builder(
-                      onPageChanged: (pageNum) {
-                        if (pageNum == state.posts.length - 1) {
-                          if (state.posts.length != 0) {
-                  
-                            context.read<FeedBloc>()
-                              ..add(CommunityFeedPaginatePost(
-                                  commuinityId: widget.commuinity.id!));
+                    child: PageView.builder(
+                        onPageChanged: (pageNum) {
+                          if (pageNum == state.posts.length - 1) {
+                            if (state.posts.length != 0) {
+                              context.read<FeedBloc>()
+                                ..add(CommunityFeedPaginatePost(
+                                    commuinityId: widget.commuinity.id!));
+                            }
                           }
-                        }
-                      },
-                      itemCount: state.posts.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        if (state.posts[index]?.author == Post.empty.author) {
-                          return PostSingleView(
-                            isLiked: false,
-                            post: null,
-                            adWidget: AdWidget(ad: _bannerAd),
-                            recentlyLiked: false,
-                            onLike: () {},
-                          );
-                        } else {
-                          final Post? post = state.posts[index];
-                          if (post != null) {
-                            // ignore: non_constant_identifier_names
-                            final LikedPostState =
-                                context.watch<LikedPostCubit>().state;
-                            final isLiked =
-                                LikedPostState.likedPostsIds.contains(post.id!);
-                            final recentlyLiked = LikedPostState
-                                .recentlyLikedPostIds
-                                .contains(post.id!);
-                
+                        },
+                        itemCount: state.posts.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (state.posts[index]?.author == Post.empty.author) {
                             return PostSingleView(
-                              isLiked: isLiked,
-                              post: post,
-                              // adWidget: AdWidget(ad: _bannerAd),
-                              recentlyLiked: recentlyLiked,
-                              onLike: () {
-                                if (isLiked) {
-                                  context
-                                      .read<LikedPostCubit>()
-                                      .unLikePost(post: post);
-                                } else {
-                                  context
-                                      .read<LikedPostCubit>()
-                                      .likePost(post: post);
-                                }
-                              },
+                              isLiked: false,
+                              post: null,
+                              adWidget: AdWidget(ad: _bannerAd),
+                              recentlyLiked: false,
+                              onLike: () {},
                             );
+                          } else {
+                            final Post? post = state.posts[index];
+                            if (post != null) {
+                              // ignore: non_constant_identifier_names
+                              final LikedPostState =
+                                  context.watch<LikedPostCubit>().state;
+                              final isLiked = LikedPostState.likedPostsIds
+                                  .contains(post.id!);
+                              final recentlyLiked = LikedPostState
+                                  .recentlyLikedPostIds
+                                  .contains(post.id!);
+
+                              return PostSingleView(
+                                isLiked: isLiked,
+                                post: post,
+                                // adWidget: AdWidget(ad: _bannerAd),
+                                recentlyLiked: recentlyLiked,
+                                onLike: () {
+                                  if (isLiked) {
+                                    context
+                                        .read<LikedPostCubit>()
+                                        .unLikePost(post: post);
+                                  } else {
+                                    context
+                                        .read<LikedPostCubit>()
+                                        .likePost(post: post);
+                                  }
+                                },
+                              );
+                            }
+                            return SizedBox.shrink();
                           }
-                          return SizedBox.shrink();
-                        }
-                      }),
-                )
+                        }),
+                  )
                 : Center(
                     child: Text("Your Community's post will show here"),
                   ));

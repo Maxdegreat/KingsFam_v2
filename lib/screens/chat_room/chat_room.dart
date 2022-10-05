@@ -156,9 +156,7 @@ class _ChatRoomState extends State<ChatRoom> {
    @override
    void initState() {
      super.initState();
-     context
-         .read<ChatroomCubit>()
-         .onLoadInit(chatId: widget.chat.id!, limit: 45);
+     context.read<ChatroomCubit>().onLoadInit(chatId: widget.chat.id!, limit: 30);
    }
   // WIDGET BUILD
 

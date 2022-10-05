@@ -25,6 +25,7 @@ class Church extends Equatable {
   final Timestamp recentMsgTime;
   final int boosted; // 0 none 1 basic, 2 if I ever add more versions
   final String themePack;
+  final int? lock;
   // 2 gen the constructor
   Church({
     required this.searchPram,
@@ -41,6 +42,7 @@ class Church extends Equatable {
     required this.boosted,
     required this.themePack,
     this.size,
+    this.lock,
   });
   // 3 make the props
   @override
@@ -59,6 +61,7 @@ class Church extends Equatable {
         boosted,
         themePack,
         size,
+        lock,
       ];
   //generate the copy with
   Church copyWith({
@@ -76,6 +79,7 @@ class Church extends Equatable {
     int? boosted,
     String? themePack,
     Map<String, List<dynamic>>? permissions,
+    int? lock
   }) {
     return Church(
       id: id ?? this.id,
@@ -92,6 +96,7 @@ class Church extends Equatable {
       boosted: boosted ?? this.boosted,
       themePack: themePack ?? this.themePack,
       permissions: permissions ?? this.permissions,
+      lock: lock ?? this.lock,
     );
   }
 
@@ -132,8 +137,9 @@ class Church extends Equatable {
       'events': events,
       'size': size,
       'boosted': boosted,
-      'themePack' : themePack,
+      'themePack': themePack,
       'recentMsgTime': Timestamp.now(),
+      'lock': lock,
     };
   }
 
@@ -170,6 +176,7 @@ class Church extends Equatable {
       'boosted': boosted,
       'themePack': themePack,
       'recentMsgTime': Timestamp.now(),
+      'lock': lock,
     };
   }
 
@@ -185,7 +192,8 @@ class Church extends Equatable {
   static Future<Church> fromDoc(DocumentSnapshot doc) async {
     final data = doc.data() as Map<String, dynamic>;
     Map<Userr, dynamic> members = {};
-    final memRefs = Map<String, dynamic>.from(data['members']); //data['members'];
+    final memRefs =
+        Map<String, dynamic>.from(data['members']); //data['members'];
 
     // log("about to show you data in the mems ref");
     // for (var id in memRefs.keys) {
@@ -207,25 +215,28 @@ class Church extends Equatable {
       }
     }
 
-    String location = data['location'] == " " || data['location']  == "" ? "Reomte" : data['location'];
+    String location = data['location'] == " " || data['location'] == ""
+        ? "Reomte"
+        : data['location'];
 
     return Church(
-        members: members,
-        id: doc.id,
-        size: data['size'] ?? 0,
-        searchPram: List<String>.from(data['searchPram'] ?? []),
-        hashTags: List<String>.from(data['hashTags'] ?? []),
-        name: data['name'] ?? 'name',
-        location: location,
-        about: data['about'] ?? 'bio',
-        imageUrl: data['imageUrl'] ?? '',
-        recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0),
-        boosted: data['boosted'] ?? 0,
-        themePack: data['themePack'] ?? "none",
-        events: List<String>.from(
-          data['events'] ?? [],
-        ),
-        );
+      members: members,
+      id: doc.id,
+      size: data['size'] ?? 0,
+      searchPram: List<String>.from(data['searchPram'] ?? []),
+      hashTags: List<String>.from(data['hashTags'] ?? []),
+      name: data['name'] ?? 'name',
+      location: location,
+      about: data['about'] ?? 'bio',
+      imageUrl: data['imageUrl'] ?? '',
+      recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0),
+      boosted: data['boosted'] ?? 0,
+      themePack: data['themePack'] ?? "none",
+      lock: data['lock'] ?? 0,
+      events: List<String>.from(data['events'] ?? [],
+      
+      ),
+    );
   }
 
   static Map<String, dynamic> fromDocMemRefs(DocumentSnapshot doc) {
@@ -235,24 +246,23 @@ class Church extends Equatable {
 
   static Church fromJson(var data) {
     return Church(
-        members: data['members'],
-        id: data['id'],
-        size: data['size'] ?? 0,
-        searchPram: List<String>.from(data['searchPram'] ?? []),
-        hashTags: List<String>.from(data['hashTags'] ?? []),
-        name: data['name'] ?? 'name',
-        location: data['location'] ?? 'Heaven',
-        about: data['about'] ?? 'bio',
-        imageUrl: data['imageUrl'] ?? '',
-        recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0),
-        boosted: data['boosted'] ?? 0,
-        themePack: data['themePack'] ?? "none",
-        events: List<String>.from(
-          data['events'] ?? [],
-        ),
-      );
+      members: data['members'],
+      id: data['id'],
+      size: data['size'] ?? 0,
+      searchPram: List<String>.from(data['searchPram'] ?? []),
+      hashTags: List<String>.from(data['hashTags'] ?? []),
+      name: data['name'] ?? 'name',
+      location: data['location'] ?? 'Heaven',
+      about: data['about'] ?? 'bio',
+      imageUrl: data['imageUrl'] ?? '',
+      recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0),
+      boosted: data['boosted'] ?? 0,
+      themePack: data['themePack'] ?? "none",
+      events: List<String>.from(
+        data['events'] ?? [],
+      ),
+    );
   }
-
 
   //7 church. empty
   static Church empty = Church(
@@ -266,6 +276,8 @@ class Church extends Equatable {
     recentMsgTime: Timestamp(0, 0),
     boosted: 0,
     hashTags: [],
-    size: 0, themePack: 'none',
+    size: 0,
+    themePack: 'none',
+    lock: 0,
   );
 }
