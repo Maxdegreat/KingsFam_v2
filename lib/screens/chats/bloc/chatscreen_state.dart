@@ -16,6 +16,7 @@ class ChatscreenState extends Equatable {
   final bool isToggle;
   final ChatStatus status;
   final Failure failure;
+  final bool unreadChats;
 
   // ===== feed half =====
 
@@ -35,6 +36,7 @@ class ChatscreenState extends Equatable {
     required this.mentionedMap,
     required this.failure,
     required this.preferences,
+    required this.unreadChats,
     //==== feed half ====
     required this.posts,
     required this.fstatus,
@@ -57,6 +59,7 @@ class ChatscreenState extends Equatable {
       posts: [],
       likedPostIds: {},
       fstatus: FeedStatus_chats.inital,
+      unreadChats: false,
     );
   }
 
@@ -76,6 +79,7 @@ class ChatscreenState extends Equatable {
         inAChat,
         status,
         failure,
+        unreadChats,
       ];
 
   //4 gen the copy with
@@ -93,6 +97,7 @@ class ChatscreenState extends Equatable {
     StreamingSharedPreferences? preferences,
     FeedStatus_chats? fstatus,
     Failure? failure,
+    bool? unreadChats,
   }) {
     return ChatscreenState(
       posts: posts ?? this.posts,
@@ -108,6 +113,7 @@ class ChatscreenState extends Equatable {
       inAChat: inAChat ?? this.inAChat,
       status: status ?? this.status,
       failure: failure ?? this.failure,
+      unreadChats: unreadChats ?? this.unreadChats,
     );
   }
 }

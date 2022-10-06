@@ -144,11 +144,12 @@ class _ChatsScreenState extends State<ChatsScreen>
   }
 
   late TabController _tabController;
+  bool chatScreenStateUnReadChats = false;
   
   @override
   Widget build(BuildContext context) {
     HexColor hexcolor = HexColor();
-    bool showKfCrown = false;
+    
     final userId = context.read<AuthBloc>().state.user!.uid;
     return DefaultTabController(
         length: 2,
@@ -165,16 +166,24 @@ class _ChatsScreenState extends State<ChatsScreen>
                 ],
               ),
               actions: [
-                ChatsDropDownButton(tabctrl: _tabController),
+                ChatsDropDownButton(tabctrl: _tabController, stateUnreadChats: chatScreenStateUnReadChats),
               ],
             ),
             body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
+              
                 listener: (context, state) {
               if (state.status == ChatStatus.error) {
-                ErrorDialog(
-                    content: 'chat_screen e-code: ${state.failure.message}');
+                ErrorDialog(content: 'chat_screen e-code: ${state.failure.message}');
+              }
+
+              if (state.unreadChats != false) {
+                chatScreenStateUnReadChats = state.unreadChats;
+                setState(() {});
               }
             }, builder: (context, state) {
+              
+              
+              log(state.unreadChats.toString() + "That is the val of stateUnreadChats");
               return Scaffold(
                   body: TabBarView(
                     controller: _tabController,
@@ -186,6 +195,7 @@ class _ChatsScreenState extends State<ChatsScreen>
             })));
   }
 
+  // ignore: non_constant_identifier_names
   Padding KfCrownPadded() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5),

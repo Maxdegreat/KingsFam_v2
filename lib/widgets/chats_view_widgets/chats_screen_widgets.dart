@@ -59,7 +59,9 @@ Widget KFStarAmination(BuildContext context) {
 }
 
 Widget buildChat({BuildContext? context, Chat? chat, String? userId}) {
+  
   if (chat == null) return SizedBox.shrink();
+  bool unread = chat.readStatus[context!.read<AuthBloc>().state.user!.uid] == false;
   Timestamp chatTimestamp = chat.recentMessage['timestamp'];
   var chatTimestampStr = chatTimestamp.timeAgo();
   return Container(
@@ -73,10 +75,20 @@ Widget buildChat({BuildContext? context, Chat? chat, String? userId}) {
         SizedBox(
           height: 7,
         ),
-        Text(
-          chat.chatName,
-          style: Theme.of(context!).textTheme.bodyText1,
-          overflow: TextOverflow.ellipsis,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            !unread ? SizedBox.shrink() :
+            CircleAvatar(
+              radius: 3,
+              backgroundColor: unread ? Colors.amber : Colors.transparent,
+            ), SizedBox(width: 3),
+            Text(
+              chat.chatName,
+              style: Theme.of(context).textTheme.bodyText1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
         SizedBox(
           height: 3,

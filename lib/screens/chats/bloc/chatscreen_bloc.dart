@@ -111,13 +111,30 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   //jesus
   Stream<ChatscreenState> _mapLoadChatsToState(event) async* {
     try {
+      bool unreadChats = false;
+      Set<String> seen = {};
+      var currId = _authBloc.state.user!.uid;
+      List<Chat> allChats = [];
       state.copyWith(status: ChatStatus.loading);
       _chatsStreamSubscription?.cancel();
       _chatsStreamSubscription = _chatRepository
           .getUserChats(userId: _authBloc.state.user!.uid)
           .listen((chat) async {
-        final allChats = await Future.wait(chat);
-        emit(state.copyWith(chat: allChats));
+            for (var c in chat) { 
+              Chat? ch = await c;
+              if (ch != null) {
+                if (ch.readStatus.containsKey(currId)) {
+                  if (ch.readStatus[currId] == false) {
+                    unreadChats = true;
+                  }
+                }
+                if (!seen.contains(ch.id)) {
+                  allChats.add(ch);
+                  seen.add(ch.id!);
+                }
+              }
+            }
+          emit(state.copyWith(chat: allChats, unreadChats: unreadChats));
       });
       add(LoadCms());
       // state.copyWith(status: ChatStatus.sccuess);

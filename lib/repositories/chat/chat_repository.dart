@@ -121,7 +121,8 @@ class ChatRepository extends BaseChatRepository {
   }
 
   Future<void> updateUserActivity({required String chatId, required String usrId, required bool isActive}) async {
-
+try {
+  
     final chatDocRef = _firebaseFirestore.collection(Paths.chats).doc(chatId);
 
     if (isActive) {
@@ -166,5 +167,10 @@ class ChatRepository extends BaseChatRepository {
       transaction.update(chatDocRef, {"activeMems": activeMems});
     });
     }
+} catch (e) {
+  log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  log(e.toString());
+  log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+}
   }
 }

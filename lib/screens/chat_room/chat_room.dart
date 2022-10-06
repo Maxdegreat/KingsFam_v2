@@ -10,6 +10,7 @@ import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/chat_room/cubit/chatroom_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/widgets/message_bubbles.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 import '../screens.dart';
 
@@ -44,7 +45,7 @@ class ChatRoom extends StatefulWidget {
   _ChatRoomState createState() => _ChatRoomState();
 }
 
-class _ChatRoomState extends State<ChatRoom> {
+class _ChatRoomState extends State<ChatRoom>  with WidgetsBindingObserver {
   final TextEditingController _messageController = TextEditingController();
   double textHeight = 35;
   // THE STREAM FOR THE MESSAGES
@@ -152,12 +153,38 @@ class _ChatRoomState extends State<ChatRoom> {
           ],
         ));
   }
-
+  
    @override
    void initState() {
      super.initState();
+      WidgetsBinding.instance.addObserver(this);
      context.read<ChatroomCubit>().onLoadInit(chatId: widget.chat.id!, limit: 30);
    }
+
+  //  @override
+  // void dispose() {
+  //   context.read<ChatroomCubit>().close();
+  //   super.dispose();
+  // }
+
+  //    @override
+  // void didChangeAppLifecycleState(AppLifecycleState appState) {
+  //   switch (appState) {
+  //     case AppLifecycleState.detached: 
+  //        context.read<ChatroomCubit>().updateUsrActivity(chatId: widget.chat.id!, isActive: false);
+  //     break;
+  //     case AppLifecycleState.inactive:
+  //       context.read<ChatroomCubit>().updateUsrActivity(chatId: widget.chat.id!, isActive: false);
+  //       break;
+  //     case AppLifecycleState.paused:
+  //       context.read<ChatroomCubit>().updateUsrActivity(chatId: widget.chat.id!, isActive: false);
+  //       break;
+  //     case AppLifecycleState.resumed:
+  //       context.read<ChatroomCubit>().updateUsrActivity(chatId: widget.chat.id!, isActive: true);
+  //       break;
+  //   }
+   
+  // }
   // WIDGET BUILD
 
   @override
@@ -180,15 +207,25 @@ class _ChatRoomState extends State<ChatRoom> {
           },
           builder: (context, state) {
             return SafeArea(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildMessageStream(state.msgs),
-                Divider(height: 1.0),
-                _buildMessageTF(state, context),
-              ],
-            ));
+                child: VisibilityDetector(
+                  key: ObjectKey(this),
+                  onVisibilityChanged: (vis) {
+                    if (vis.visibleFraction == 1) {
+                       context.read<ChatroomCubit>().updateUsrActivity(chatId: widget.chat.id!, isActive: true);
+                    } else if (vis.visibleFraction == 0) {
+                       context.read<ChatroomCubit>().updateUsrActivity(chatId: widget.chat.id!, isActive: false);
+                    }
+                  },
+                  child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                  _buildMessageStream(state.msgs),
+                  Divider(height: 1.0),
+                  _buildMessageTF(state, context),
+                              ],
+                            ),
+                ));
           },
         ));
   }

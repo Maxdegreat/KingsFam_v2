@@ -46,7 +46,7 @@ class ChatroomCubit extends Cubit<ChatroomState> {
       log("The length of messages is ${messages.length}");
       emit(state.copyWith(msgs: msgs));
     });
-    updateUsrActivity(chatId: chatId, isActive: true);
+    // updateUsrActivity(chatId: chatId, isActive: true);
   }
 
   void onUploadImage(File image) {
@@ -86,6 +86,7 @@ class ChatroomCubit extends Cubit<ChatroomState> {
   }
 
   void updateUsrActivity({required String chatId, required bool isActive}) {
+    log("in the updateUsrActivity via cubit");
     String usrId = _authBloc.state.user!.uid;
     _chatRepository.updateUserActivity(chatId: chatId, usrId: usrId, isActive: isActive);
   }

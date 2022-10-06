@@ -5,7 +5,8 @@ import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 
 class ChatsDropDownButton extends StatefulWidget {
   final TabController tabctrl;
-  const ChatsDropDownButton({Key? key, required this.tabctrl})
+  final bool stateUnreadChats;
+  const ChatsDropDownButton({Key? key, required this.tabctrl, required this.stateUnreadChats})
       : super(key: key);
 
   @override
@@ -31,36 +32,53 @@ class _ChatsDropDownButtonState extends State<ChatsDropDownButton> {
   @override
   Widget build(BuildContext context) {
     HexColor hc = HexColor();
-    return Container(
-      width: 140,
-      height: 10,
-      decoration: BoxDecoration(
-          color: Color(hc.hexcolorCode('#141829')),
-          borderRadius: BorderRadius.circular(7)),
-      child: Center(
-        child: DropdownButton(
-          underline: SizedBox.shrink(),
-          value: defaultValue,
-          items: [
-            DropdownMenuItem(
-              child: Text(
-                "Communitys",
-                style: TextStyle(fontWeight: FontWeight.w500),
-              ),
-              value: 0,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        width: 155,
+        height: 30,
+        decoration: BoxDecoration(
+            color: Color(hc.hexcolorCode('#141829')),
+            borderRadius: BorderRadius.circular(7)),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 7,
             ),
-            DropdownMenuItem(
-              child: Text("Chats"),
-              value: 1,
-            )
+            CircleAvatar(
+              radius: 3,
+              backgroundColor: widget.stateUnreadChats ? Colors.amber : Colors.transparent,
+            ),
+            SizedBox(
+              width: 7,
+            ),
+            Center(
+              child: DropdownButton(
+                underline: SizedBox.shrink(),
+                value: defaultValue,
+                items: [
+                  DropdownMenuItem(
+                    child: Text(
+                      "Communitys",
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    value: 0,
+                  ),
+                  DropdownMenuItem(
+                    child: Text("Chats"),
+                    value: 1,
+                  )
+                ],
+                onChanged: (int? value) {
+                  if (value != null && value <= widget.tabctrl.length - 1) {
+                    widget.tabctrl.index = value;
+                    defaultValue = widget.tabctrl.index;
+                    setState(() {});
+                  }
+                },
+              ),
+            ),
           ],
-          onChanged: (int? value) {
-            if (value != null && value <= widget.tabctrl.length - 1) {
-              widget.tabctrl.index = value;
-              defaultValue = widget.tabctrl.index;
-              setState(() {});
-            }
-          },
         ),
       ),
     );
