@@ -373,6 +373,20 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                           }).toList(),
                   ),
                   SizedBox(height: 15),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                          "About This Community",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontSize: 21,
+                            fontWeight: FontWeight.w800,
+                          ),
+                          overflow: TextOverflow.fade,
+                        ),
+                  ),
+                  SizedBox(height: 5),
                   ConstrainedBox(constraints: BoxConstraints(
                     minHeight: 75,
                     minWidth: double.infinity,
@@ -380,7 +394,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                     margin: Margin.all(10),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text(widget.commuinity.about, textAlign: TextAlign.center,),
+                      child: widget.commuinity.about.isNotEmpty ? Text(widget.commuinity.about, textAlign: TextAlign.center) : Text("Nothing To See Here ..."),
                     ),
                     decoration: BoxDecoration(
                       color: Color(hc.hexcolorCode('#141829')),

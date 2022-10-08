@@ -90,6 +90,16 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:20.1.0'
 
     //add firebase dependices
+
+   // For apps targeting Android 12, add WorkManager dependency. !!! issue fullty fixed in 2.1.7
+  constraints {
+    implementation('androidx.work:work-runtime:2.7.0') {
+      because '''androidx.work:work-runtime:2.1.0 pulled from
+      play-services-ads has a bug using PendingIntent without
+      FLAG_IMMUTABLE or FLAG_MUTABLE and will fail in Apps
+      targeting S+.'''
+    }
+  }
 }
 
 configurations.all { 

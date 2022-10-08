@@ -216,7 +216,7 @@ class Church extends Equatable {
     }
 
     String location = data['location'] == " " || data['location'] == ""
-        ? "Reomte"
+        ? "Remote"
         : data['location'];
 
     return Church(

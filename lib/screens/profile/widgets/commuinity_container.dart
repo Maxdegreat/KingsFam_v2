@@ -60,29 +60,35 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
   return Padding(
     padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0,),
     child: GestureDetector(
-      onTap: () => showModalBottomSheet(context: context, builder: (context) {
+      onTap: () => showModalBottomSheet(
+        
+        backgroundColor: Color(hc.hexcolorCode('#141829')),
+        context: context, builder: (context) {
 
                 final _churchRepo = context.read<ChurchRepository>();
                 
-                return FutureBuilder(
-                  future: _churchRepo.getCommuinitysUserIn(userrId: ownerId , limit: 7),
-                  builder: (BuildContext context, AsyncSnapshot<List<Church>> snapshot) {
-                    if (snapshot.hasData && snapshot.data != null) {
-                      return ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        Church ch = snapshot.data![index];
-                        return GestureDetector(
-                          onTap: () => Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: ch)),
-                          child: ListTile(
-                            leading: ProfileImage(pfpUrl: ch.imageUrl, radius: 25,),
-                            title: Text(ch.name),
-                          ),
-                        );
-                      },
-                    );
-                    } else return SizedBox.shrink();
-                  },
+                return Container(
+                  height: 200,
+                  child: FutureBuilder(
+                    future: _churchRepo.getCommuinitysUserIn(userrId: ownerId , limit: 7),
+                    builder: (BuildContext context, AsyncSnapshot<List<Church>> snapshot) {
+                      if (snapshot.hasData && snapshot.data != null) {
+                        return ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          Church ch = snapshot.data![index];
+                          return GestureDetector(
+                            onTap: () => Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: ch)),
+                            child: ListTile(
+                              leading: ProfileImage(pfpUrl: ch.imageUrl, radius: 25,),
+                              title: Text(ch.name),
+                            ),
+                          );
+                        },
+                      );
+                      } else return SizedBox.shrink();
+                    },
+                  ),
                 );
               }),
       child: Padding(

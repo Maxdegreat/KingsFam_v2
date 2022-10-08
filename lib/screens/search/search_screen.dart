@@ -64,8 +64,7 @@ class _SearchScreenState extends State<SearchScreen> {
           scrollController.position.maxScrollExtent ==
               scrollController.position.pixels) {
         context.read<SearchBloc>()
-          ..add(GrabUsersPaginate(
-              currId: context.read<AuthBloc>().state.user!.uid));
+          ..add(GrabUsersPaginate(currId: context.read<AuthBloc>().state.user!.uid));
       }
     }
   }
@@ -85,6 +84,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    bool loading = false;
     if (initSearchScreen == false) initializeSeachScreen(context);
 
     return RefreshIndicator(
@@ -98,12 +99,20 @@ class _SearchScreenState extends State<SearchScreen> {
           child: Scaffold(
               body: BlocConsumer<SearchBloc, SearchState>(
             listener: (context, state) {
-              if (state.status == SearchStatus.error) {
+              if (state.status == SearchStatus.pag) {
+                loading = true;
+                setState(() {
+                  
+                });
+              } else if (state.status == SearchStatus.error) {
+                loading = false;
                 //show error Dialog
                 showDialog(
                     context: context,
                     builder: (context) =>
                         ErrorDialog(content: state.failure.message));
+              } else {
+                loading = false;
               }
             },
             builder: (context, state) {

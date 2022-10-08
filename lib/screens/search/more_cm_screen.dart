@@ -50,27 +50,35 @@ class _MoreCmState extends State<MoreCm> {
     });
     super.initState();
   }
+  
 
   void addListenerToScrollCtrl() {
     if (controller.position.atEdge) {
       if (controller.position.pixels != 0.0 &&
-          controller.position.maxScrollExtent - 100 == controller.position.pixels - 100) {
+          controller.position.maxScrollExtent - 100 ==
+              controller.position.pixels - 100) {
         setState(() {});
         if (widget.type == "global") {
-
-          
           setState(() {
-            snackBar(snackMessage: "", context: context, showLoading: true, bgColor: Colors.blue);
+            snackBar(
+                snackMessage: "",
+                context: context,
+                showLoading: true,
+                bgColor: Colors.blue);
             widget.bloc
-            ..add(PaginateChListNotEqualToLocation(
-                currId: context.read<AuthBloc>().state.user!.uid));
+              ..add(PaginateChListNotEqualToLocation(
+                  currId: context.read<AuthBloc>().state.user!.uid));
           });
         } else {
           setState(() {
-            snackBar(snackMessage: "", context: context, showLoading: true, bgColor: Colors.blue);
+            snackBar(
+                snackMessage: "",
+                context: context,
+                showLoading: true,
+                bgColor: Colors.blue);
             widget.bloc
-            ..add(PaginateChList1(
-                currId: context.read<AuthBloc>().state.user!.uid));
+              ..add(PaginateChList1(
+                  currId: context.read<AuthBloc>().state.user!.uid));
           });
         }
       }
@@ -79,35 +87,63 @@ class _MoreCmState extends State<MoreCm> {
 
   @override
   Widget build(BuildContext context) {
+    bool loading = false;
     return Scaffold(
       appBar: AppBar(
         title: Text("${widget.type} Communities"),
       ),
-      body: SafeArea(
-          child: Container(
-        height: MediaQuery.of(context).size.height,
-        width: double.infinity,
-        child: Stack(
-          children: 
-            [ListView.builder(
-              controller: controller,
-              itemCount: widget.type == "global"
-                  ? widget.bloc.state.chruchesNotEqualLocation.length
-                  : widget.bloc.state.churches.length,
-              itemBuilder: (BuildContext context, int index) {
-                Church cm = widget.type == "global"
-                    ? widget.bloc.state.chruchesNotEqualLocation[index]
-                    : widget.bloc.state.churches[index];
-                return _cmDisplay(
-                    bgImgUrl: cm.imageUrl,
-                    name: cm.name,
-                    location: cm.location,
-                    count: cm.members.length.toString());
-              },
-            ),
-          ],
+      body: BlocProvider.value(
+        value: widget.bloc,
+        child: BlocConsumer<SearchBloc, SearchState>(
+          listener: (context, state) {
+            if (state.status == SearchStatus.pag) {
+              loading = true;
+              setState(() {
+                
+              });
+            } else {
+              loading = false;
+              setState(() {
+                
+              });
+            }
+          },
+          builder: (context, state) {
+            return SafeArea(
+                child: Container(
+              height: MediaQuery.of(context).size.height,
+              width: double.infinity,
+              child: Stack(
+                children: [
+                  
+                  ListView.builder(
+                    controller: controller,
+                    itemCount: widget.type == "global"
+                        ? state.chruchesNotEqualLocation.length
+                        : state.churches.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      Church cm = widget.type == "global"
+                          ? state.chruchesNotEqualLocation[index]
+                          : state.churches[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: _cmDisplay(
+                            bgImgUrl: cm.imageUrl,
+                            name: cm.name,
+                            location: cm.location,
+                            count: cm.members.length.toString()),
+                      );
+                    },
+                  ),
+                  Positioned(
+                    child: state.status == SearchStatus.pag ? LinearProgressIndicator() : SizedBox.shrink(),
+                  ),
+                ],
+              ),
+            ));
+          },
         ),
-      )),
+      ),
     );
   }
 
