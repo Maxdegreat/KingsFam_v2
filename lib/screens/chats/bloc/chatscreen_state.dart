@@ -8,7 +8,7 @@ class ChatscreenState extends Equatable {
   //1 make class data
   final List<Chat?> chat;
   final Userr currUserr;
-  final List<Church?> chs;
+  final List<Church?>? chs;
   final List<Church> chsToJoin;
   final Map<String, dynamic> mentionedMap;
   final StreamingSharedPreferences? preferences;
@@ -47,7 +47,7 @@ class ChatscreenState extends Equatable {
   factory ChatscreenState.initial() {
     return ChatscreenState(
       chat: [],
-      chs: [],
+      chs: null,
       chsToJoin: [],
       inAChat: false,
       isToggle: true,

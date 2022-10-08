@@ -23,11 +23,11 @@ class showJoinedCms extends StatelessWidget {
     return Expanded(
         flex: 1,
         child: ListView.builder(
-          itemCount: state.chs.length,
+          itemCount: state.chs!.length,
           itemBuilder: (context, index) {
             // check if the path userid, church, kc ezist if so flag with a @ symbole
 
-            Church? commuinity = state.chs[index];
+            Church? commuinity = state.chs![index];
             bool isMentioned = false;
             FirebaseFirestore.instance
                 .collection(Paths.mention)

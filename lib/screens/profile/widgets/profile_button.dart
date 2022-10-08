@@ -44,18 +44,18 @@ class ProfileButton extends StatelessWidget {
                         : context.read<ProfileBloc>().add(ProfileFollowUserr());
                   }, colorpref: colorPref,),
               SizedBox(width: 7.0),
-              _btnRow(
-                label: 'Message',
-                style: style,
-                onP: () async {
-                  if (profileOwnersId != null) {
-                    context
-                        .read<ProfileBloc>()
-                        .add(ProfileDm(profileOwnersId: profileOwnersId!, ctx: context));
-                  }
-                },
-                icon_: null, colorpref: colorPref,
-              ),
+              // _btnRow(
+              //   label: 'Message',
+              //   style: style,
+              //   onP: () async {
+              //     if (profileOwnersId != null) {
+              //       context
+              //           .read<ProfileBloc>()
+              //           .add(ProfileDm(profileOwnersId: profileOwnersId!, ctx: context));
+              //     }
+              //   },
+              //   icon_: null, colorpref: colorPref,
+              // ),
             ],
           );
   }
@@ -105,7 +105,7 @@ class _btnRow extends StatelessWidget {
         ),
         style: ElevatedButton.styleFrom(
             elevation: 3.5,
-            shadowColor: Colors.white,
+            shadowColor: Color.fromARGB(255, 36, 39, 90),
             primary: Color(hexcolor.hexcolorCode(colorpref))),
       ),
     );

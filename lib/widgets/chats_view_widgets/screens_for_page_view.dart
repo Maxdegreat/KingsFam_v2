@@ -40,7 +40,8 @@ class ScreensForPageView {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        state.chs.length == 0
+                        state.chs == null ? CircularProgressIndicator() :
+                        state.chs!.length == 0
                             ? GettingStarted(
                                 bloc: context.read<ChatscreenBloc>(),
                                 state: state,

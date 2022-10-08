@@ -80,8 +80,8 @@ class _PostSingleViewState extends State<PostSingleView> {
         _visible ? blackOverLay() : SizedBox.shrink(),
         Positioned.fill(
             child: userPicAndName(
-                name: widget.post == null ? "Google Admob" : widget.post!.author.username,
-                imgurl: widget.post == null ? "Google Admob" : widget.post!.author.profileImageUrl)),
+                name: widget.post == null ? "Ad" : widget.post!.author.username,
+                imgurl: widget.post == null ? "Ad" : widget.post!.author.profileImageUrl)),
         Positioned.fill(
             child: widget.post == null ? SizedBox.shrink() :  viewCommuinity(
                 commuinity: widget.post!.commuinity,
@@ -91,7 +91,7 @@ class _PostSingleViewState extends State<PostSingleView> {
             alignment: Alignment.bottomLeft,
             child: showCaptions(
                 caption: widget.post == null ? null : widget.post!.caption,
-                author: widget.post == null ? " Google Admob" : widget.post!.author.username)),
+                author: widget.post == null ? "Ad" : widget.post!.author.username)),
       ],
     );
   }
