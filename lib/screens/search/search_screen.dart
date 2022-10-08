@@ -205,19 +205,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   state.chruchesList3.length > 0
                       ? Container(
                           height: 170,
-                          child: ListView.builder(
-                            controller: ,
-                            scrollDirection: Axis.horizontal,
-                            itemCount: state.chruchesList3.length,
-                            itemBuilder: (context, index) {
-                              Church church = state.chruchesList3[index];
-                              return GestureDetector(
-                                  onTap: () => navToChurch(
-                                      context: context, commuinity: church),
-                                  child:
-                                      search_Church_container(church: church));
-                            },
-                          ))
+                          child: Text("PlaceHolder"))
                       : Container(
                           height: 170,
                           child: Center(
