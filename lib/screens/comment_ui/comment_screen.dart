@@ -77,110 +77,113 @@ class _CommentScreenState extends State<CommentScreen> {
 
   Widget commentLoadedWidget(List<Comment?> comments, CommentState state) {
     TextStyle style = TextStyle(color: Colors.grey);
-    return Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-      state.status == CommentStatus.loading
-          ? LinearProgressIndicator()
-          : SizedBox.shrink(),
-      Expanded(
-        child: ListView.builder(
-          physics: AlwaysScrollableScrollPhysics(),
-          reverse: true,
-          itemCount: comments.length,
-          itemBuilder: (BuildContext context, int index) {
-            Comment? comment = comments[index];
-            return comment != null
-                ? Column(
-                    children: [
-                      CommentLines(comment: comment),
-                      _replyBtns(comment: comment, postId: widget.post.id!),
-                      _showReplys(state: state, comment: comment),
-                    ],
-                  )
-                : Text("ops, something went wrong");
-          },
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+        state.status == CommentStatus.loading
+            ? LinearProgressIndicator()
+            : SizedBox.shrink(),
+        Expanded(
+          child: ListView.builder(
+            physics: AlwaysScrollableScrollPhysics(),
+            reverse: true,
+            itemCount: comments.length,
+            itemBuilder: (BuildContext context, int index) {
+              Comment? comment = comments[index];
+              return comment != null
+                  ? Column(
+                      children: [
+                        CommentLines(comment: comment),
+                        _replyBtns(comment: comment, postId: widget.post.id!),
+                        _showReplys(state: state, comment: comment),
+                      ],
+                    )
+                  : Text("ops, something went wrong");
+            },
+          ),
         ),
-      ),
-      Column(
-        children: [
-          commentReplyingTo == null
-              ? SizedBox.shrink()
-              : Container(
-                  child: Text(
-                    "replying to ~ " + commentReplyingTo!.author.username,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  color: Color(hc.hexcolorCode('#141829')),
-                  height: 15,
-                  width: double.infinity),
-          Row(children: [
-            Expanded(
-                child: Container(
-              height: 50,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: TextFormField(
-                    validator: (val) {
-                      if (val != null && val.length > 200) {
-                        return "Keep each comment to less than 200 chars. Thanks fam.";
-                      }
-                    },
-                    controller: _messageController,
-                    textAlignVertical: TextAlignVertical.center,
-                    style: TextStyle(fontSize: 18),
-                    keyboardType: TextInputType.multiline,
-                    decoration:
-                        InputDecoration(hintText: "Add A Comment Fam..."),
-                    maxLines: null,
-                    expands: true,
-                    textCapitalization: TextCapitalization.sentences,
-                    onChanged: (messageText) {
-                      if (messageText.length >= 29)
-                        setState(() => textHeight = 50.0);
-                      else if (messageText.length >= 87)
-                        setState(() => textHeight = 65.0);
-                      else
-                        setState(() => textHeight = 30.0);
-                    },
+        Column(
+          children: [
+            commentReplyingTo == null
+                ? SizedBox.shrink()
+                : Container(
+                    child: Text(
+                      "replying to ~ " + commentReplyingTo!.author.username,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    color: Color(hc.hexcolorCode('#141829')),
+                    height: 15,
+                    width: double.infinity),
+            Row(children: [
+              Expanded(
+                  child: Container(
+                height: 50,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: TextFormField(
+                      validator: (val) {
+                        if (val != null && val.length > 200) {
+                          return "Keep each comment to less than 200 chars. Thanks fam.";
+                        }
+                      },
+                      controller: _messageController,
+                      textAlignVertical: TextAlignVertical.center,
+                      style: TextStyle(fontSize: 18),
+                      keyboardType: TextInputType.multiline,
+                      decoration:
+                          InputDecoration(hintText: "Add A Comment Fam..."),
+                      maxLines: null,
+                      expands: true,
+                      textCapitalization: TextCapitalization.sentences,
+                      onChanged: (messageText) {
+                        if (messageText.length >= 29)
+                          setState(() => textHeight = 50.0);
+                        else if (messageText.length >= 87)
+                          setState(() => textHeight = 65.0);
+                        else
+                          setState(() => textHeight = 30.0);
+                      },
+                    ),
                   ),
                 ),
-              ),
-            )),
-            IconButton(
-                onPressed: () {
-                  String content = _messageController.text.trim();
-                  if (content.isNotEmpty) {
-                    if (commentReplyingTo != null) {
-                      content = "@" +
-                          commentReplyingTo!.author.username +
-                          " " +
-                          _messageController.text.trim();
-
-                      context.read<CommentBloc>().onAddReply(
-                          comment: commentReplyingTo!,
-                          content: content,
-                          post: widget.post);
-                      context
-                          .read<CommentBloc>()
-                          .onViewReplys(commentReplyingTo!, widget.post.id!)
-                          .then((_) => setState(() {}));
-                      commentReplyingTo = null;
-                      setState(() {});
-                    } else {
-                      context.read<CommentBloc>().add(CommentPostComment(
-                          comments: comments,
-                          content: content,
-                          post: widget.post));
+              )),
+              IconButton(
+                  onPressed: () {
+                    String content = _messageController.text.trim();
+                    if (content.isNotEmpty) {
+                      if (commentReplyingTo != null) {
+                        content = "@" +
+                            commentReplyingTo!.author.username +
+                            " " +
+                            _messageController.text.trim();
+    
+                        context.read<CommentBloc>().onAddReply(
+                            comment: commentReplyingTo!,
+                            content: content,
+                            post: widget.post);
+                        context
+                            .read<CommentBloc>()
+                            .onViewReplys(commentReplyingTo!, widget.post.id!)
+                            .then((_) => setState(() {}));
+                        commentReplyingTo = null;
+                        setState(() {});
+                      } else {
+                        context.read<CommentBloc>().add(CommentPostComment(
+                            comments: comments,
+                            content: content,
+                            post: widget.post));
+                      }
+                      _messageController.clear();
                     }
-                    _messageController.clear();
-                  }
-                },
-                icon: Icon(Icons.send))
-          ]),
-        ],
-      )
-    ]);
+                  },
+                  icon: Icon(Icons.send))
+            ]),
+          ],
+        )
+      ]),
+    );
   }
 
   replyBtn(Comment comment) {

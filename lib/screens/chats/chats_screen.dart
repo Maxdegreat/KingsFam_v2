@@ -133,7 +133,6 @@ class _ChatsScreenState extends State<ChatsScreen>
    
     _tabController.addListener(() => setState(() {}));
     setupInteractedMessage();
-    requestPhotoPermission();
     //super.build(context);
   }
 

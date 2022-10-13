@@ -65,13 +65,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             }
           },
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 height: 25,
                 width: 75,
                 child: Icon(Icons.image),
                 decoration: (BoxDecoration(
-                    color: Colors.black45,
+                    color: Colors.transparent,
                     borderRadius: BorderRadius.circular(5))),
               ),
               Text(
@@ -90,7 +91,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         ),
         GestureDetector(
           onTap: () async {
-            final pickedFile = await ImageHelper.pickVideoFromGallery();
+            final pickedFile = await ImageHelper.pickVideoFromGallery(context);
             if (pickedFile != null) {
               log("we can see that the picked file is not null, moving to the vid editor");
               // await NavHelper().navToVideoEditor(context, pickedFile) /* .then((value) => Navigator.of(context).pop())  */ ;
@@ -101,13 +102,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             }
           },
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 height: 25,
                 width: 75,
                 child: Icon(Icons.video_library),
                 decoration: (BoxDecoration(
-                    color: Colors.black45,
+                    color: Colors.transparent,
                     borderRadius: BorderRadius.circular(5))),
               ),
               Text("Upload Video From Gallery",

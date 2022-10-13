@@ -16,3 +16,27 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+
+Driving user engagment
+- flutter local notifications - start
+- when following posts send noti asking to check out post use time stamp 
+- if acc created and no activity ask to come post or check out a cm thred
+- send noty come make a convo
+
+Create native ads
+- place ads at start of chats
+- push ads into convos
+- make an ad cm for list view
+
+
+
+
+
+
+
+app tweeks
+- allow share 
+- like comments
+- share post
+

@@ -287,8 +287,7 @@ class MessageLines extends StatelessWidget {
               _showReactionsBar(message.id!, message.reactions, context),
           onTap: () => Navigator.of(context).pushNamed(UrlViewScreen.routeName,
               arguments: UrlViewArgs(
-                  urlMain: message.imageUrl!,
-                  urlSub: '',
+                  urlImg: message.imageUrl!,
                   heroTag: 'Message/${message.imageUrl}/')),
           child: Container(
             height: size.height * 0.2,
@@ -325,8 +324,8 @@ class MessageLines extends StatelessWidget {
                 onTap: () => Navigator.of(context).pushNamed(
                     UrlViewScreen.routeName,
                     arguments: UrlViewArgs(
-                        urlMain: message.videoUrl!,
-                        urlSub: message.thumbnailUrl!,
+                        urlVid: message.videoUrl!,
+                        urlImg: message.thumbnailUrl!,
                         heroTag:
                             'Message/${message.videoUrl}/${message.thumbnailUrl}')),
                 child: Container(

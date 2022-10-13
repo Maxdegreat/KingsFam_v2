@@ -50,7 +50,7 @@ class AuthRepository extends BaseAuthRepository {
       exit(-1);
     }
     await FirebaseFirestore.instance.collection('users').doc(userId).update({
-      'token': FieldValue.arrayUnion([token])
+      'token': [token] //FieldValue.arrayUnion([token])
     });
   }
 
@@ -157,7 +157,6 @@ class AuthRepository extends BaseAuthRepository {
 
       if (userCredential.additionalUserInfo != null && userCredential.additionalUserInfo!.isNewUser) {
        
-        String? token = await _messaging.getToken();
         _firebaseFirestore.collection(Paths.users).doc(user!.uid).set({
           'profileImage': user.photoURL,
           // 'username': "!" + formatUsername(user.displayName, user.uid),
@@ -166,7 +165,7 @@ class AuthRepository extends BaseAuthRepository {
           'email': user.email,
           'followers': 0,
           'following': 0,
-          'token': [token],
+          'token': [],
           'colorPref': '#9814F4',
         });
       }

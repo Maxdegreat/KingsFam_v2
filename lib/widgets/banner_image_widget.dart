@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../config/constants.dart';
+
 class BannerImage extends StatelessWidget {
   final String? bannerImageUrl;
   final File? bannerImage; //comes form phone gallery
@@ -21,7 +23,7 @@ class BannerImage extends StatelessWidget {
             width: double.infinity,
             height: passedheight != null ? passedheight :  MediaQuery.of(context).size.height / 8,
             decoration: BoxDecoration(
-              color: Colors.grey[900],
+              color: Color(hc.hexcolorCode('#141829')),
               image: bannerImage != null
                   ? DecorationImage(
                       image: FileImage(bannerImage!), fit: BoxFit.fitWidth)

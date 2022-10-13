@@ -85,11 +85,15 @@ class _ShowFollowingListState extends State<ShowFollowingList> {
               }
             }
           } else {
-            if (!seen.contains(context.read<FollowCubit>().state.followers.last.id)) {
-        if (context.read<FollowCubit>().state.followers.length > 0) {
-          context.read<FollowCubit>().getFollowing(userId: widget.currUsrId, lastStringId: context.read<FollowCubit>().state.followers.last.id);
-        }
-      }
+            if (!seen.contains(
+                context.read<FollowCubit>().state.followers.last.id)) {
+              if (context.read<FollowCubit>().state.followers.length > 0) {
+                context.read<FollowCubit>().getFollowing(
+                    userId: widget.currUsrId,
+                    lastStringId:
+                        context.read<FollowCubit>().state.followers.last.id);
+              }
+            }
           }
         }
       }
@@ -100,35 +104,39 @@ class _ShowFollowingListState extends State<ShowFollowingList> {
   Widget build(BuildContext context) {
     if (widget.type == Paths.following) {
       context
-        .read<FollowCubit>()
-        .getFollowing(userId: widget.currUsrId, lastStringId: null);
-    } else{
+          .read<FollowCubit>()
+          .getFollowing(userId: widget.currUsrId, lastStringId: null);
+    } else {
       context
-        .read<FollowCubit>()
-        .getFollowers(userId: widget.currUsrId, lastStringId: null);
+          .read<FollowCubit>()
+          .getFollowers(userId: widget.currUsrId, lastStringId: null);
     }
     return Scaffold(
         appBar: AppBar(
-            title: Text(widget.bloc.state.userr.username + "\'s ${widget.type}")),
+            title:
+                Text(widget.bloc.state.userr.username + "\'s ${widget.type}")),
         body: SafeArea(
             child: BlocConsumer<FollowCubit, FollowState>(
           listener: (context, state) {
             // TODO: implement listener
           },
           builder: (context, state) {
-            return Container(
-                height: MediaQuery.of(widget.ctxFromPf).size.height,
+            return Expanded(
+                flex: 1,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height,
+                    Expanded(
                       child: ListView.builder(
                           controller: _scrollController,
-                          itemCount: widget.type == Paths.following ? state.following.length : state.followers.length,
+                          itemCount: widget.type == Paths.following
+                              ? state.following.length
+                              : state.followers.length,
                           itemBuilder: (BuildContext _, int index) {
-                            final Userr user = widget.type == Paths.following ? state.following[index] : state.followers[index];
+                            final Userr user = widget.type == Paths.following
+                                ? state.following[index]
+                                : state.followers[index];
                             log("does seen contatin the last String id? ${seen.contains(lastStringId)}");
 
                             return Column(

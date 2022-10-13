@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../config/constants.dart';
+
 
 class ProfileImage extends StatelessWidget {
   final double radius;
@@ -19,7 +21,7 @@ class ProfileImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return CircleAvatar(
       radius: radius,
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Color(hc.hexcolorCode('#141829')),
       backgroundImage: pfpImage != null
           ? FileImage(pfpImage!) as ImageProvider
           : pfpUrl.isNotEmpty
@@ -31,7 +33,7 @@ class ProfileImage extends StatelessWidget {
 
   Icon? _noProfileIcon() {
     if (pfpImage == null && pfpUrl.isEmpty) {
-      return Icon(Icons.account_circle, color: Colors.black, size: radius * 1.5);
+      return Icon(Icons.account_circle, color: Color(hc.hexcolorCode('#141829')), size: radius * 1.5);
     }
     return null;
   }

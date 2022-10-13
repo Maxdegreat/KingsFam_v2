@@ -375,85 +375,88 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 kcId: widget.kingsCord.id!,
                 limit: 30,
               );
-          return Stack(
-            children: 
-              [
-                Container(
-            alignment: Alignment.topCenter,
-            child: SvgPicture.asset(
-              widget.commuinity.themePack,
+          return GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Stack(
+              children: 
+                [
+                  Container(
               alignment: Alignment.topCenter,
-            ),
-            height: MediaQuery.of(context).size.height,
-            width: double.infinity,
-            decoration: BoxDecoration(color: Colors.black45),
-          ),
-                
-                Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // bulid message stream
-                  _buildMessageStream(
-                      commuinity: widget.commuinity,
-                      kingsCord: widget.kingsCord,
-                      msgs: state.msgs),
-                  //divider of a height 1
-                  Divider(height: 1.0),
-          
-                  _mentionUserContainer(username: _mentionedController),
-          
-                  // this is can only ocour if the user is apart of the commuinity. in this case they can share
-                  // content
-                  state.fileShareStatus != FileShareStatus.inital
-                      ? Container(
-                          height: 90,
-                          width: double.infinity,
-                          color: Colors.transparent,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Sharing Files Fam, Sit Tight...",
-                                overflow: TextOverflow.fade,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.max,
-                                children: state.filesToBePosted
-                                    .map((file) => ProfileImage(
-                                          radius: 27,
-                                          pfpUrl: '',
-                                          pfpImage: file,
-                                        ))
-                                    .toList(),
-                              ),
-                            ],
-                          ),
-                        )
-                      : SizedBox.shrink(),
-                      // state.replying ?
-                      // SizedBox.shrink() : 
-                      // Column(
-                      //   mainAxisAlignment: MainAxisAlignment.start,
-                      //   crossAxisAlignment: CrossAxisAlignment.start,
-                      //   children: [
-                      //     IconButton(onPressed: () {
-                      //       context.read<KingscordCubit>().onReplyMessage(replyingToMessage: null,);
-                      //       setState(() {});
-                      //     }, icon: Icon(Icons.cancel_outlined),),
-                  
-                      //     Container(height: 50, width: double.infinity, child: Text(
-                      //       "replying to " + state.replyMessage!.sender!.username, style: TextStyle(fontStyle: FontStyle.italic),
-                      //     ),),
-                      //   ],
-                      // ),
-                  memIds.contains(context.read<AuthBloc>().state.user!.uid)
-                      ? _buildBottomTF(state, context)
-                      : _permissionDenied(
-                          messasge: "Join Commuinity To say whats up")
-                ],
+              child: SvgPicture.asset(
+                widget.commuinity.themePack,
+                alignment: Alignment.topCenter,
               ),
-            ],
+              height: MediaQuery.of(context).size.height,
+              width: double.infinity,
+              decoration: BoxDecoration(color: Colors.black45),
+            ),
+                  
+                  Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // bulid message stream
+                    _buildMessageStream(
+                        commuinity: widget.commuinity,
+                        kingsCord: widget.kingsCord,
+                        msgs: state.msgs),
+                    //divider of a height 1
+                    Divider(height: 1.0),
+            
+                    _mentionUserContainer(username: _mentionedController),
+            
+                    // this is can only ocour if the user is apart of the commuinity. in this case they can share
+                    // content
+                    state.fileShareStatus != FileShareStatus.inital
+                        ? Container(
+                            height: 90,
+                            width: double.infinity,
+                            color: Colors.transparent,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Sharing Files Fam, Sit Tight...",
+                                  overflow: TextOverflow.fade,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: state.filesToBePosted
+                                      .map((file) => ProfileImage(
+                                            radius: 27,
+                                            pfpUrl: '',
+                                            pfpImage: file,
+                                          ))
+                                      .toList(),
+                                ),
+                              ],
+                            ),
+                          )
+                        : SizedBox.shrink(),
+                        // state.replying ?
+                        // SizedBox.shrink() : 
+                        // Column(
+                        //   mainAxisAlignment: MainAxisAlignment.start,
+                        //   crossAxisAlignment: CrossAxisAlignment.start,
+                        //   children: [
+                        //     IconButton(onPressed: () {
+                        //       context.read<KingscordCubit>().onReplyMessage(replyingToMessage: null,);
+                        //       setState(() {});
+                        //     }, icon: Icon(Icons.cancel_outlined),),
+                    
+                        //     Container(height: 50, width: double.infinity, child: Text(
+                        //       "replying to " + state.replyMessage!.sender!.username, style: TextStyle(fontStyle: FontStyle.italic),
+                        //     ),),
+                        //   ],
+                        // ),
+                    memIds.contains(context.read<AuthBloc>().state.user!.uid)
+                        ? _buildBottomTF(state, context)
+                        : _permissionDenied(
+                            messasge: "Join Commuinity To say whats up")
+                  ],
+                ),
+              ],
+            ),
           );
         },
       ),

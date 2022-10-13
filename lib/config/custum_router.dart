@@ -163,8 +163,8 @@ class CustomRoute {
         return PostContentScreen.route(
             args: settings.arguments as PostContentArgs);
 
-      case VideoEditor.routeName:
-        return VideoEditor.route(settings.arguments as VideoEditorArgs);
+      // case VideoEditor.routeName:
+      //   return VideoEditor.route(settings.arguments as VideoEditorArgs);
 
       case ShowBanedUsers.routeName:
         return ShowBanedUsers.route(settings.arguments as ShowBanedUsersArgs);

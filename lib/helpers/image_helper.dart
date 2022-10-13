@@ -6,11 +6,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kingsfam/helpers/permission_helper.dart';
 import 'package:video_editor/video_editor.dart';
 
 class ImageHelper {
   //IF WE ARE SELECTING A VIDEO FROM GALLERY
-  static Future<File?> pickVideoFromGallery() async {
+  static Future<File?> pickVideoFromGallery(BuildContext context) async {
+    requestPhotoPermission(context);
     final pickedFileVideo =
         await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (pickedFileVideo != null) {
@@ -29,7 +31,7 @@ class ImageHelper {
     required String title,
   }) async {
     //image helper works here
-
+    requestPhotoPermission(context);
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
 
@@ -61,6 +63,7 @@ class ImageHelper {
     required CropStyle cropStyle,
     required String title,
   }) async {
+    
     //imageHelper works here
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.camera);

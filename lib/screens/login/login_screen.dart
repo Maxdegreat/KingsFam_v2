@@ -119,17 +119,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   //  style: TextButton.styleFrom(backgroundColor: Colors.amber[400])),
             //  ),
             //  SizedBox(height: 20.0),
-            //  Container(
-              //  width: size.width / 1.2,
-              //  child: TextButton(
-                  //  onPressed: () {
+              Container(
+                width: size.width / 1.2,
+                child: TextButton(
+                    onPressed: () {
 
-                    //  Navigator.of(context).pushNamed(LoginFormScren.routeName);
-                  //  },
-                  //  child: Text('Login In',
-                      //  style: Theme.of(context).textTheme.bodyText1),
-                  //  style: TextButton.styleFrom(backgroundColor: Colors.amber[400])),
-            //  ),
+                      Navigator.of(context).pushNamed(LoginFormScren.routeName);
+                    },
+                    child: Text('Login In',
+                        style: Theme.of(context).textTheme.bodyText1),
+                    style: TextButton.styleFrom(backgroundColor: Colors.amber[400])),
+              ),
             // ----------------------------------------------------------------------------------------------
             SizedBox(height: 20),
             Platform.isIOS ? Container(

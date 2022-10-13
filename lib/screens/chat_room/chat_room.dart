@@ -52,14 +52,11 @@ class _ChatRoomState extends State<ChatRoom>  with WidgetsBindingObserver {
   _buildMessageStream(List<Message?> msgs) {
     return Expanded(
       
-      child: GestureDetector(
-        onTap: () => Focus.of(context).unfocus(),
-        child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            physics: AlwaysScrollableScrollPhysics(),
-            reverse: true,
-            children: _buidlMessageBubbles(msgs)),
-      ),
+      child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          physics: AlwaysScrollableScrollPhysics(),
+          reverse: true,
+          children: _buidlMessageBubbles(msgs)),
     );
   }
 
@@ -216,15 +213,18 @@ class _ChatRoomState extends State<ChatRoom>  with WidgetsBindingObserver {
                        context.read<ChatroomCubit>().updateUsrActivity(chatId: widget.chat.id!, isActive: false);
                     }
                   },
-                  child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                  _buildMessageStream(state.msgs),
-                  Divider(height: 1.0),
-                  _buildMessageTF(state, context),
-                              ],
-                            ),
+                  child: GestureDetector(
+                    onTap: () => FocusScope.of(context).unfocus(),
+                    child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                    _buildMessageStream(state.msgs),
+                    Divider(height: 1.0),
+                    _buildMessageTF(state, context),
+                                ],
+                              ),
+                  ),
                 ));
           },
         ));

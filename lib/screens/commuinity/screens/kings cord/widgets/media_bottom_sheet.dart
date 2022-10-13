@@ -28,16 +28,12 @@ mediaBottomSheet(
                   child: ElevatedButton(
                     onPressed: () async {
                       final pickedFile =
-                          await ImageHelper.pickVideoFromGallery();
+                          await ImageHelper.pickVideoFromGallery(context);
                       if (pickedFile != null) {
                         kingscordCubit.onUploadVideo(
                             videoFile: pickedFile, cmId: cmId, kcId: kcId, senderUsername: seenderUsername);
                       } else {
-                        snackBar(
-                            snackMessage:
-                                "Sup Fam, vids can't be longer than 60 seconds",
-                            context: context,
-                            bgColor: Colors.red[400]!);
+                        
                       }
                     },
                     style: ElevatedButton.styleFrom(primary: Colors.amber),

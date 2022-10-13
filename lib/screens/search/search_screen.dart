@@ -118,28 +118,34 @@ class _SearchScreenState extends State<SearchScreen> {
             builder: (context, state) {
               return Scaffold(
                 appBar: AppBar(
-                  title: TextField(
-                    controller: _textEditingController,
-                    decoration: InputDecoration(
-                        fillColor: Colors.black87,
-                        filled: true,
-                        border: InputBorder.none,
-                        hintText: 'Search For The Fam',
-                        suffixIcon: IconButton(
-                            onPressed: () {
-                              context.read<SearchBloc>().clearSearch();
-                              _textEditingController.clear();
-                            },
-                            icon: Icon(Icons.clear))),
-                    textInputAction: TextInputAction.search,
-                    textAlignVertical: TextAlignVertical.center,
-                    onChanged: (value) {
-                      context
-                          .read<SearchBloc>()
-                          .searchUserAdvanced(value.trim());
-                      //context.read<SearchBloc>().searchChurch(value.trim());
-                    },
+                  title: Column(
+                    children: [
+                      TextField(
+                        controller: _textEditingController,
+                        decoration: InputDecoration(
+                            fillColor: Colors.black87,
+                            filled: true,
+                            border: InputBorder.none,
+                            hintText: 'Search For The Fam',
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  context.read<SearchBloc>().clearSearch();
+                                  _textEditingController.clear();
+                                },
+                                icon: Icon(Icons.clear))),
+                        textInputAction: TextInputAction.search,
+                        textAlignVertical: TextAlignVertical.center,
+                        onChanged: (value) {
+                          context
+                              .read<SearchBloc>()
+                              .searchUserAdvanced(value.trim());
+                          //context.read<SearchBloc>().searchChurch(value.trim());
+                        },
+                      ),
+                      state.status == SearchStatus.pag ? LinearProgressIndicator() : SizedBox.shrink()
+                    ],
                   ),
+                  
                 ),
                 body: _builBody(state: state, context: context),
               );

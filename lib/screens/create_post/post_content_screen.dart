@@ -13,6 +13,7 @@ import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:bloc/bloc.dart';
+import 'package:kingsfam/screens/screens.dart';
 
 import 'package:kingsfam/widgets/videos/videoPostView16_9.dart';
 import 'package:path_provider/path_provider.dart';
@@ -53,7 +54,6 @@ class PostContentScreen extends StatefulWidget {
 class _PostContentScreenState extends State<PostContentScreen> {
   late VideoPlayerController vidCtrl;
   late TextEditingController txtCtrlC;
-  late TextEditingController txtCtrlH;
   late ScrollController scrollCtrl;
 
   TextStyle style1 = GoogleFonts.adamina(color: Colors.green);
@@ -68,25 +68,16 @@ class _PostContentScreenState extends State<PostContentScreen> {
   String? cmIdPostingTo;
   bool submitting = false;
   bool success = false;
+  String? thumbnailPath;
 
   @override
   void initState() {
     initStateVars();
+    initVid();
     txtCtrlC = TextEditingController();
-    txtCtrlH = TextEditingController();
     scrollCtrl = ScrollController();
     scrollCtrl.addListener(listenToScrolling);
-    if (widget.type == "video") {
-      vidCtrl = VideoPlayerController.file(vidF!);
-      vidCtrl
-        ..addListener(() => setState(() {}))
-        ..setLooping(
-            true) // -------------------------------- SET PERKED LOOPING TO TRUE
-        ..initialize().then((_) {
-          vidCtrl.play();
-          vidCtrl.setVolume(1);
-        });
-    }
+
     super.initState();
   }
 
@@ -94,8 +85,19 @@ class _PostContentScreenState extends State<PostContentScreen> {
   void dispose() {
     txtCtrlC.dispose();
     vidCtrl.dispose();
-    txtCtrlH.dispose();
     super.dispose();
+  }
+
+  initVid() async {
+    vidCtrl = VideoPlayerController.file(vidF!);
+    thumbnailPath = await VideoThumbnail.thumbnailFile(
+      video: vidF!.path,
+      thumbnailPath: (await getTemporaryDirectory()).path,
+      imageFormat: ImageFormat.PNG,
+      //maxHeight: 64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
+      quality: 80,
+    );
+    setState(() {});
   }
 
   void listenToScrolling() async {
@@ -125,7 +127,9 @@ class _PostContentScreenState extends State<PostContentScreen> {
 
   Widget submitButton() {
     return TextButton(
-      onPressed: () => submit(),
+      onPressed: () {
+        if (submitting != true) submit();
+      },
       child: Row(
         children: [
           Text("POST", style: TextStyle(color: Colors.green)),
@@ -152,28 +156,39 @@ class _PostContentScreenState extends State<PostContentScreen> {
           title: Text('Post'),
           actions: [submitButton()],
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              submitting
-                  ? LinearProgressIndicator(
-                      color: Colors.amber,
-                    )
-                  : SizedBox.shrink(),
-              txtBox("c"),
-              Center(
-                  child: imgF != null
-                      ? displayImageWid(imgF!)
-                      : vidF != null
-                          ? displayVidWid(vidF!)
-                          : SizedBox.shrink()),
-              txtBox("h"),
-              Text("Hey Fam Wana Include Your Post In A Community?"),
-              cmLisView()
-            ],
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                submitting
+                    ? LinearProgressIndicator(
+                        color: Colors.amber,
+                      )
+                    : SizedBox.shrink(),
+                Align(
+                  alignment: Alignment.centerLeft,
+                    child: imgF != null
+                        ? displayImageWid(imgF!)
+                        : vidF != null
+                            ? displayVidThumbnail()
+                            : SizedBox.shrink()),
+                txtBox("c"),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text("Add Your Post To A Community",textAlign: TextAlign.left,),
+                  )),
+                cmLisView(),
+                SizedBox(
+                  height: 10,
+                ),
+              ],
+            ),
           ),
         ));
   }
@@ -199,35 +214,53 @@ class _PostContentScreenState extends State<PostContentScreen> {
     );
   }
 
-  Container displayVidWid(File vidF) {
-    return Container(
-      height: 250,
-      child: VisibilityDetector(
-        key: ObjectKey(widget.content),
-        onVisibilityChanged: (vis) {
-          if (vis.visibleFraction == 0) {
-            vidCtrl.dispose();
-            Navigator.of(context).pop();
-          }
+  Widget displayVidThumbnail() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context).pushNamed(UrlViewScreen.routeName,
+              arguments: UrlViewArgs(
+                  heroTag: 'heroTag',
+                  fileImg: File(thumbnailPath!),
+                  fileVid: vidF!,
+                  urlImg: null));
         },
-        child: VideoPostView16_9(
-          controller: vidCtrl,
-          post: Post.empty,
-          userr: Userr.empty,
-          videoUrl: "",
-          playVidNow: true,
+        child: Stack(
+          children: [
+            Container(
+              height: 250,
+              width: 250,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5.0),
+                  image: DecorationImage(
+                      image: FileImage(File(thumbnailPath!)), fit: BoxFit.cover)),
+            ),
+            Positioned.fill(
+                child: Container(
+              color: Colors.black26,
+            )),
+            Positioned.fill(
+                child: Icon(
+              Icons.play_circle_outline_outlined,
+              size: 50,
+            ))
+          ],
         ),
       ),
     );
   }
 
-  Container displayImageWid(File imgF) {
-    return Container(
-      height: 300,
-      width: 300,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5.0),
-          image: DecorationImage(image: FileImage(imgF), fit: BoxFit.cover)),
+  Widget displayImageWid(File imgF) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        height: 250,
+        width: 250,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5.0),
+            image: DecorationImage(image: FileImage(imgF), fit: BoxFit.cover)),
+      ),
     );
   }
 
@@ -236,7 +269,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
     // grab 15 cms curr id is a part of
     // if scroll ctrl hits bottom then grab next 15
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      padding: EdgeInsets.only(top: 15, left: 10, right: 10, bottom: 5),
       child: Container(
         height: 220,
         width: double.infinity,
@@ -254,7 +287,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
 
   Widget chBox(Church ch) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+      padding: EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 0),
       child: Column(
         children: [
           GestureDetector(
@@ -270,7 +303,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
               }
             },
             child: Container(
-              height: 130,
+              height: 115,
               width: 130,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(7.0),

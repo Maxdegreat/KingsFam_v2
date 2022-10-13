@@ -5,6 +5,7 @@ import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/extensions/extensions.dart';
+import 'package:kingsfam/screens/screens.dart';
 
 class MessageBubble extends StatelessWidget {
   //class data
@@ -30,14 +31,17 @@ class MessageBubble extends StatelessWidget {
 
   _buildImage(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Container(
-      height: size.height * 0.2,
-      width: size.width * 0.6,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.0),
-          image: DecorationImage(
-              fit: BoxFit.cover,
-              image: CachedNetworkImageProvider(message.imageUrl!))),
+    return GestureDetector(
+      onTap: (() => Navigator.of(context).pushNamed(UrlViewScreen.routeName, arguments: UrlViewArgs(urlImg: message.imageUrl, heroTag: 'heroTag'))),
+      child: Container(
+        height: size.height * 0.2,
+        width: size.width * 0.6,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20.0),
+            image: DecorationImage(
+                fit: BoxFit.cover,
+                image: CachedNetworkImageProvider(message.imageUrl!))),
+      ),
     );
   }
 

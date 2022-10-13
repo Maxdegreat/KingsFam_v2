@@ -1,26 +1,43 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:kingsfam/models/post_model.dart';
+import 'package:kingsfam/models/user_model.dart';
 
 import 'package:kingsfam/widgets/basic_overlay_widget.dart';
+import 'package:kingsfam/widgets/videos/videoPostView16_9.dart';
 
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class UrlViewArgs {
-  final String urlMain;
-  final String urlSub;
-  final String heroTag;
+  final String? urlVid;
+  final String? urlImg;
+  final String? heroTag;
+  final File? fileVid;
+  final File? fileImg;
 
   UrlViewArgs(
-      {required this.urlMain, required this.urlSub, required this.heroTag});
+      {this.urlVid,
+      required this.urlImg,
+      required this.heroTag,
+      this.fileImg,
+      this.fileVid});
 }
 
 class UrlViewScreen extends StatefulWidget {
   const UrlViewScreen(
-      {required this.url, required this.heroTag, required this.subUrl});
-  final String url;
-  final String subUrl;
-  final String heroTag;
+      {this.urlVid,
+      required this.urlImg,
+      required this.heroTag,
+      required this.fileVid,
+      required this.fileImg});
+  final String? urlVid;
+  final String? urlImg;
+  final String? heroTag;
+  final File? fileVid;
+  final File? fileImg;
 
   static const String routeName = 'UrlViewScreen';
 
@@ -28,7 +45,12 @@ class UrlViewScreen extends StatefulWidget {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
         builder: (context) => UrlViewScreen(
-            url: args.urlMain, heroTag: args.heroTag, subUrl: args.urlSub));
+              heroTag: args.heroTag,
+              urlVid: args.urlVid,
+              urlImg: args.urlImg,
+              fileVid: args.fileVid,
+              fileImg: args.fileImg,
+            ));
   }
 
   @override
@@ -36,67 +58,100 @@ class UrlViewScreen extends StatefulWidget {
 }
 
 class _FileViewScreenState extends State<UrlViewScreen> {
-  late VideoPlayerController vidController;
+  bool flagWhichVidPlayer = true;
+  VideoPlayerController? vidController;
   @override
   void initState() {
-    vidController = VideoPlayerController.network(widget.url)
-      ..addListener(() {
-        setState(() {});
-      })
-      ..setLooping(false)
-      ..initialize().then((value) => vidController.play());
+    if (widget.fileVid != null) {
+      vidController = VideoPlayerController.file(widget.fileVid!);
+    } else if (widget.urlVid != null) {
+      vidController = VideoPlayerController.network(widget.urlVid!);
+    }
+    if (vidController != null && !flagWhichVidPlayer)
+      vidController!
+        ..addListener(() {
+          setState(() {});
+        })
+        ..setLooping(false)
+        ..initialize().then((value) => vidController!.play());
     super.initState();
   }
 
   @override
   void dispose() {
-    vidController.dispose();
+    if (vidController != null) vidController!.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Vid view"),),
-      body: Hero(tag: widget.heroTag, child: _viewPort()),
+      appBar: AppBar(
+        title: Text(getTitle()),
+      ),
+      body: Hero(tag: widget.heroTag!, child: _viewPort()),
     );
   }
 
   Widget _viewPort() => VisibilityDetector(
-    key: ObjectKey(vidController),
-    onVisibilityChanged: (vis) {
-      if (vis.visibleFraction == 0 && this.mounted) {
-        Navigator.of(context).pop();
-        vidController.dispose();
-      }
-    },
-    child: Expanded(
-      child: AspectRatio(
-        aspectRatio: 9 / 16,
-        child: Center(
-          child: Container(
-                child: widget.subUrl.isNotEmpty ? _videoPortFromMessage() : null,
-                // ignore: unnecessary_null_comparison
-                decoration: widget.subUrl.isEmpty || widget.subUrl == null
-                    ? BoxDecoration(
-                        image: DecorationImage(
-                            image: CachedNetworkImageProvider(widget.url),
-                            fit: BoxFit.fitWidth))
+        key: ObjectKey(vidController),
+        onVisibilityChanged: (vis) {
+          if (vis.visibleFraction == 0 && this.mounted) {
+            Navigator.of(context).pop();
+            if (vidController != null) vidController!.dispose();
+          }
+        },
+        child: flagWhichVidPlayer
+            ? Container(
+                child: vidController != null
+                    ? VideoPostView16_9(
+                        controller: vidController!,
+                        videoUrl: "",
+                        post: Post.empty,
+                        userr: Userr.empty,
+                      )
                     : null,
+                decoration: widget.urlImg != null || widget.fileImg != null
+                    ? BoxDecoration(
+                        image: widget.urlImg != null
+                            ? DecorationImage(
+                                image:
+                                    CachedNetworkImageProvider(widget.urlImg!),
+                                fit: BoxFit.fitWidth)
+                            : DecorationImage(
+                                image: FileImage(widget.fileImg!)))
+                    : null,
+              )
+            : Expanded(
+                child: Center(
+                  child: Container(
+                    child: widget.urlVid != null || widget.fileVid != null
+                        ? _videoPortFromMessage()
+                        : null,
+                    // ignore: unnecessary_null_comparison
+                    decoration: widget.urlImg != null || widget.fileImg != null
+                        ? BoxDecoration(
+                            image: widget.urlImg != null
+                                ? DecorationImage(
+                                    image: CachedNetworkImageProvider(
+                                        widget.urlImg!),
+                                    fit: BoxFit.fitWidth)
+                                : DecorationImage(
+                                    image: FileImage(widget.fileImg!)))
+                        : null,
+                  ),
+                ),
               ),
-        ),
-      ),
-    ),
-  );
+      );
 
   Widget _videoPortFromMessage() => Padding(
-        padding: EdgeInsets.symmetric(vertical: 5.0),
+        padding: EdgeInsets.symmetric(vertical: 0),
         child: Center(
           child: _videoPlayer(),
         ),
       );
 
-  Widget _videoPlayer() => vidController.value.isInitialized
+  Widget _videoPlayer() => vidController!.value.isInitialized
       ? ConstrainedBox(
           constraints: BoxConstraints(
               maxWidth: double.infinity,
@@ -106,17 +161,21 @@ class _FileViewScreenState extends State<UrlViewScreen> {
           height: 250,
           child: Center(
               child: CircularProgressIndicator(
-            color: Colors.red[400],
+            color: Colors.amber,
           )));
 
-    Widget _buildVideo()  => Stack(
+  Widget _buildVideo() => Stack(
         children: [
           buildVideoPlayer(),
-          Positioned.fill(child: BasicOverlayWidget(controller: vidController))
+          Positioned.fill(child: BasicOverlayWidget(controller: vidController!))
           //add btn that will allow fill of video on width
         ],
       );
-  Widget buildVideoPlayer() =>
-      AspectRatio(aspectRatio: vidController.value.aspectRatio, child: VideoPlayer(vidController));
+  Widget buildVideoPlayer() => AspectRatio(
+      aspectRatio: vidController!.value.aspectRatio,
+      child: VideoPlayer(vidController!));
 
+  getTitle() {
+    return "";
+  }
 }
