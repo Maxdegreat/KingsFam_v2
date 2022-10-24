@@ -5,7 +5,7 @@ import 'package:kingsfam/models/event_model.dart';
 import 'package:kingsfam/repositories/event/base_event_repo.dart';
 
 class EventRepository extends BaseEventRepository {
-  final _fb = FirebaseFirestore.instance.collection(Paths.event);
+  final _fb = FirebaseFirestore.instance.collection(Paths.events);
 
   @override
   void createEvent({required Event event, required String currId}) {

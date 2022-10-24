@@ -2,15 +2,12 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/roles/role_types.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
-import 'package:kingsfam/screens/create_chat/create_chat_screen.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 
@@ -40,17 +37,23 @@ class CreateRoom extends StatefulWidget {
 }
 
 class _CreateRoomState extends State<CreateRoom>
-    with SingleTickerProviderStateMixin {
+    with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
+
+  @override
+  bool get wantKeepAlive => true;
+  
   late TextEditingController _txtController;
   late TabController _tabController;
 
   String selectedMode = "chat";
   String rollesAllowed = Roles.Member;
 
+  // ---------------- state ------------------
   late TextEditingController _eTitle;
   late TextEditingController _eDiscription;
   Timestamp? startTimeStamp;
   Timestamp? endTimestamp;
+  bool submitting = false;
 
   @override
   void initState() {
@@ -142,50 +145,63 @@ class _CreateRoomState extends State<CreateRoom>
                                   timeLabelText: "Hour",
                                   onChanged: (val) {
                                     DateTime? time;
-                                    print(val);
                                     //          year                 month                day                    hour                   second
                                     var timelst = [val.substring(0, 4), val.substring(5,7), val.substring(8, 10), val.substring(11, 13), val.substring(14, 16)];
                                     time = DateTime( int.parse(timelst[0]),     int.parse(timelst[1]),   int.parse(timelst[2]), int.parse(timelst[3]), int.parse(timelst[4]));
                                     
-                                    startTimeStamp = Timestamp.fromDate(time.toUtc());
-                                    //log("start timestamp plain in utc: " + DateTime(year));
-                                    log("start timestamp in utc: " + DateTime.fromMicrosecondsSinceEpoch(startTimeStamp!.microsecondsSinceEpoch).toString());
+                                    startTimeStamp = Timestamp.fromDate(time.toLocal());
+                                    log("start timestamp plain in UTC: " + time.toUtc().toString());
+                                    log("start timestamp plain in local: " + time.toLocal().toString());
+                                    log("start timestamp plain in ____: " + time.toString());
+                                    log("start timestamp from UTC: " + DateTime.fromMicrosecondsSinceEpoch(startTimeStamp!.microsecondsSinceEpoch).toString());
                                     // Timestamp.fromDate(DateTime(year))
-
-                                    // keep start time and end time
-                                    // do timestamp.fromdate
-                                    // after 1 day form the start date del
-                                    // the event
-                                    // can order by date
                                   },
                                   validator: (val) {
-                                    print(val);
-                                    print("Timestmap" +
-                                        Timestamp.now().toString());
                                     return null;
                                   },
-                                  onSaved: (val) => print(val),
+                                  onSaved: (val) {}
                                 ),
-                                DateTimePicker(
+                               
+                                 DateTimePicker(
+                                  type: DateTimePickerType.dateTimeSeparate,
+                                  dateMask: 'd MMM, yyyy',
                                   initialValue: '',
                                   firstDate: DateTime(2000),
                                   lastDate: DateTime(2100),
+                                  icon: Icon(Icons.event),
                                   dateLabelText: 'End Date',
-                                  onChanged: (val) => print(val),
+                                  timeLabelText: "Hour",
+                                  onChanged: (val) {
+                                    DateTime? time;
+                                    //          year                 month                day                    hour                   second
+                                    var timelst = [val.substring(0, 4), val.substring(5,7), val.substring(8, 10), val.substring(11, 13), val.substring(14, 16)];
+                                    time = DateTime( int.parse(timelst[0]),     int.parse(timelst[1]),   int.parse(timelst[2]), int.parse(timelst[3]), int.parse(timelst[4]));
+                                    
+                                    endTimestamp = Timestamp.fromDate(time.toLocal());
+                                    log("start timestamp plain in UTC: " + time.toUtc().toString());
+                                    log("start timestamp plain in local: " + time.toLocal().toString());
+                                    log("start timestamp plain in ____: " + time.toString());
+                                    log("start timestamp from UTC: " + DateTime.fromMicrosecondsSinceEpoch(startTimeStamp!.microsecondsSinceEpoch).toString());
+                                    // Timestamp.fromDate(DateTime(year))
+                                  },
                                   validator: (val) {
-                                    // endTimestamp = val;
                                     return null;
                                   },
-                                  onSaved: (val) => print(val),
+                                  onSaved: (val) {}
                                 ),
+
                                 SizedBox(height: 10),
                                 ElevatedButton(
                                     onPressed: () {
-                                      // if (_eDiscription.value.text.isNotEmpty && _eTitle.value.text.isNotEmpty && startTimeStamp != null && endTimestamp != null) {
-                                      //   Event event = Event(
-                                      //     eventTitle: _eTitle.value.text, eventDecription: _eDiscription.value.text, startDate: startDate, endDate: endDate)
-                                      //   FirebaseFirestore.instance.collection(Paths.church).doc(widget.cm.id).collection(Paths.event).add(data)
-                                      // }
+                                      submitting = true;
+                                       if (_eDiscription.value.text.isNotEmpty && _eTitle.value.text.isNotEmpty && startTimeStamp != null && endTimestamp != null) {
+                                         Event event = Event(
+                                           eventTitle: _eTitle.value.text, eventDecription: _eDiscription.value.text, startDate: startTimeStamp!, endDate: endTimestamp!);
+                                          FirebaseFirestore.instance.collection(Paths.church).doc(widget.cm.id).collection(Paths.events).add(event.toDoc());
+                                          snackBar(snackMessage: "Creating your Event", context: context, bgColor: Colors.white);
+                                          widget.cmBloc.onAddEvent(event: event);
+                                          Future.delayed(Duration(seconds: 1,)).then((value) => Navigator.of(context).pop());
+                                       }
                                     },
                                     child: Text("Create Event"))
                               ],

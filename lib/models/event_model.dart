@@ -5,8 +5,8 @@ class Event extends Equatable {
   final String? id;
   final String eventTitle;
   final String eventDecription;
-  final String startDate;
-  final String endDate;
+  final Timestamp startDate;
+  final Timestamp endDate;
 
   Event(
       {this.id,
@@ -23,8 +23,8 @@ class Event extends Equatable {
     String? id,
     String? eventTitle,
     String? eventDecription,
-    String? startDate,
-    String? endDate,
+    Timestamp? startDate,
+    Timestamp? endDate,
   }) {
     return Event(
       id: id ?? this.id,

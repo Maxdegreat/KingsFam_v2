@@ -22,7 +22,7 @@ class Paths {
   static const String commuinityCall = 'commuinityCall';
   static const String call = 'callModel';
   static const String activeInCall = 'activeInCall';
-  static const String event = 'evnt';
+  static const String events = 'events';
   static const String mention = 'mention';
   static const String permissions = 'permissions';
   static const String perked = 'perked';

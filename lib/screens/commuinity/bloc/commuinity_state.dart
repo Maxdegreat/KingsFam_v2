@@ -7,7 +7,7 @@ class CommuinityState extends Equatable {
   final bool collapseCordColumn;
   final bool collapseVvrColumn;
   final List<Post?> postDisplay;
-  final List<Event> events;
+  final List<Event?> events;
   final List<KingsCord?> kingCords;
   final CommuintyStatus status;
   final Failure failure;
@@ -77,7 +77,7 @@ class CommuinityState extends Equatable {
     CommuintyStatus? status,
     Failure? failure,
     Map<String, bool>? mentionedMap,
-    List<Event>? events,
+    List<Event?>? events,
     bool? collapseCordColumn,
     bool? collapseVvrColumn,
     Userr? currUserr,

@@ -32,7 +32,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   // three stream subscriptions used for listening to new values of each
   // respectivly
   StreamSubscription<List<Future<KingsCord?>>>? _streamSubscriptionKingsCord;
-  StreamSubscription<List<Future<CallModel>>>? _streamSubscriptionCalls;
   StreamSubscription<bool>? _streamSubscriptionIsMember;
 
   CommuinityBloc({
@@ -50,7 +49,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   @override
   Future<void> close() {
-    _streamSubscriptionCalls!.cancel();
     _streamSubscriptionKingsCord!.cancel();
     _streamSubscriptionIsMember!.cancel();
     return super.close();
@@ -90,10 +88,12 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
         members: event.commuinity.members,
       );
 
-      _churchRepository.updateUserTimestampOnOpenCm(
-          cm, _authBloc.state.user!.uid);
+      _churchRepository.updateUserTimestampOnOpenCm(cm, _authBloc.state.user!.uid);
+
       final List<KingsCord> allCords = [];
       final Map<String, bool> mentionedMap = {};
+
+      // stream subscription for community cords
       _streamSubscriptionKingsCord?.cancel();
       _streamSubscriptionKingsCord = _churchRepository
           .getCommuinityCordsStream(commuinity: event.commuinity, limit: 100)
@@ -122,6 +122,11 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
                 });
           }
         }
+
+        QuerySnapshot eventSnaps = await FirebaseFirestore.instance.collection(Paths.church).doc(event.commuinity.id).collection(Paths.events).limit(5).get();
+        List<Event?> initEvents = eventSnaps.docs.map((doc) => Event.formDoc(doc)).toList();
+        log("The events that were picked up from the event snap is len: " + initEvents.length.toString());
+        emit(state.copyWith(events: initEvents));
 
         add(ComuinityLoadingCords(
             commuinity: event.commuinity, cords: allCords));
@@ -341,6 +346,12 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       emit(state.copyWith(collapseVvrColumn: false));
     else
       emit(state.copyWith(collapseVvrColumn: true));
+  }
+
+  void onAddEvent({required Event event}) {
+    List<Event?> events = state.events;
+    events.add(event);
+    emit(state.copyWith(events: events));
   }
 
   // KINGSCORD METHODS

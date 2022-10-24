@@ -246,16 +246,13 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                   width: double.infinity,
                   child: state.postDisplay.length > 0
                       ? ListView.builder(
-                          itemCount: widget.commuinity.events.length,
-                          scrollDirection: Axis.horizontal,
+                          itemCount: state.events.length,
+                          scrollDirection: Axis.vertical,
                           itemBuilder: (context, index) {
-                            Post? post = state.postDisplay[index];
-                            if (post != null) {
-                              return contentPreview(post);
-                            } else {
-                              return SizedBox.shrink();
+                            Event? event = state.events[index];
+                              return Text("som rand");
                             }
-                          })
+                          )
                       : Center(
                           child: state.status == CommuintyStatus.loading
                               ? Text("One Second ...")
