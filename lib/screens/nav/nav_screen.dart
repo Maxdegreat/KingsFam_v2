@@ -53,6 +53,7 @@ class NavScreen extends StatelessWidget {
               onTap: (index) {
                 final selectedItem = BottomNavItem.values[index];
                 _selectBottomNavItem(context, selectedItem, selectedItem == state.selectedItem);
+                //context.read<BottomnavbarCubit>().showBottomNav(true);
               },
               items: items,
               selectedItem: state.selectedItem,

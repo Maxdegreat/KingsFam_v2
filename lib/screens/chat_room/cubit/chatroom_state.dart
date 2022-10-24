@@ -5,7 +5,6 @@ enum ChatRoomStatus { inital, loading, success, failure }
 class ChatroomState extends Equatable {
   //1 class data
   final bool isTyping;
-  final String chatId;
   final String? textMesage;
   final File? chatImage;
   final List<Message?> msgs;
@@ -14,7 +13,6 @@ class ChatroomState extends Equatable {
   ChatroomState(
       {required this.isTyping,
       required this.chatImage,
-      required this.chatId,
       required this.status,
       required this.textMesage,
       required this.msgs});
@@ -24,7 +22,6 @@ class ChatroomState extends Equatable {
     return ChatroomState(
         textMesage: null,
         isTyping: false,
-        chatId: "",
         chatImage: null,
         status: ChatRoomStatus.inital,
         msgs: [],
@@ -32,7 +29,7 @@ class ChatroomState extends Equatable {
   }
 //3 the props
   @override
-  List<Object?> get props => [isTyping, textMesage, chatImage, status, msgs, chatId];
+  List<Object?> get props => [isTyping, textMesage, chatImage, status, msgs];
 
   //4 the copy with
   ChatroomState copyWith(
@@ -40,14 +37,12 @@ class ChatroomState extends Equatable {
       bool? isTyping,
       File? chatImage,
       ChatRoomStatus? status,
-      String? chatId,
       List<Message?>? msgs,
       }) {
     return ChatroomState(
       textMesage: textMesage ?? this.textMesage,
       isTyping: isTyping ?? this.isTyping,
       chatImage: chatImage ?? this.chatImage,
-      chatId: chatId ?? this.chatId,
       status: status ?? this.status,
       msgs: msgs ?? this.msgs,
     );

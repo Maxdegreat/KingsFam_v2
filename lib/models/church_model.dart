@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:kingsfam/blocs/cm_type/cm_type.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/roles/role_types.dart';
@@ -13,6 +14,7 @@ class Church extends Equatable {
   //1 make the church class data
   final String? id;
   final String name;
+  final String cmType;
   final String location;
   final List<String>? hashTags;
   final String imageUrl;
@@ -25,11 +27,11 @@ class Church extends Equatable {
   final Timestamp recentMsgTime;
   final int boosted; // 0 none 1 basic, 2 if I ever add more versions
   final String themePack;
-  final int? lock;
   // 2 gen the constructor
   Church({
     required this.searchPram,
     this.id,
+    required this.cmType,
     required this.name,
     required this.location,
     required this.imageUrl,
@@ -42,15 +44,16 @@ class Church extends Equatable {
     required this.boosted,
     required this.themePack,
     this.size,
-    this.lock,
   });
   // 3 make the props
   @override
   List<Object?> get props => [
         id,
         searchPram,
+        cmType,
         name,
         location,
+        cmType,
         hashTags,
         imageUrl,
         about,
@@ -61,7 +64,6 @@ class Church extends Equatable {
         boosted,
         themePack,
         size,
-        lock,
       ];
   //generate the copy with
   Church copyWith({
@@ -72,6 +74,7 @@ class Church extends Equatable {
     String? location,
     String? imageUrl,
     String? about,
+    String? cmType,
     Timestamp? recentMsgTime,
     Map<Userr, dynamic>? members,
     List<String>? events,
@@ -79,9 +82,9 @@ class Church extends Equatable {
     int? boosted,
     String? themePack,
     Map<String, List<dynamic>>? permissions,
-    int? lock
   }) {
     return Church(
+      cmType: cmType ?? this.cmType,
       id: id ?? this.id,
       recentMsgTime: recentMsgTime ?? this.recentMsgTime,
       searchPram: searchPram ?? this.searchPram,
@@ -96,7 +99,6 @@ class Church extends Equatable {
       boosted: boosted ?? this.boosted,
       themePack: themePack ?? this.themePack,
       permissions: permissions ?? this.permissions,
-      lock: lock ?? this.lock,
     );
   }
 
@@ -127,6 +129,7 @@ class Church extends Equatable {
     }
 
     return {
+      'cmType': cmType,
       'name': name,
       'location': location,
       'searchPram': searchPram,
@@ -139,7 +142,6 @@ class Church extends Equatable {
       'boosted': boosted,
       'themePack': themePack,
       'recentMsgTime': Timestamp.now(),
-      'lock': lock,
     };
   }
 
@@ -164,6 +166,7 @@ class Church extends Equatable {
     }
 
     return {
+      'cmType' : cmType,
       'name': name,
       'location': location,
       'searchPram': searchPram,
@@ -176,7 +179,6 @@ class Church extends Equatable {
       'boosted': boosted,
       'themePack': themePack,
       'recentMsgTime': Timestamp.now(),
-      'lock': lock,
     };
   }
 
@@ -216,7 +218,7 @@ class Church extends Equatable {
     }
 
     String location = data['location'] == " " || data['location'] == ""
-        ? "Remote"
+        ? "Reomte"
         : data['location'];
 
     return Church(
@@ -232,10 +234,9 @@ class Church extends Equatable {
       recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0),
       boosted: data['boosted'] ?? 0,
       themePack: data['themePack'] ?? "none",
-      lock: data['lock'] ?? 0,
-      events: List<String>.from(data['events'] ?? [],
-      
-      ),
+      events: List<String>.from(
+        data['events'] ?? [],
+      ), cmType: data['cmType'] ?? CmType.regular,
     );
   }
 
@@ -261,6 +262,7 @@ class Church extends Equatable {
       events: List<String>.from(
         data['events'] ?? [],
       ),
+      cmType: data['cmType'] ?? CmType.regular,
     );
   }
 
@@ -278,6 +280,6 @@ class Church extends Equatable {
     hashTags: [],
     size: 0,
     themePack: 'none',
-    lock: 0,
+    cmType: CmType.regular,
   );
 }

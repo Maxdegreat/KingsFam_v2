@@ -11,7 +11,6 @@ class ChatscreenState extends Equatable {
   final List<Church?>? chs;
   final List<Church> chsToJoin;
   final Map<String, dynamic> mentionedMap;
-  final StreamingSharedPreferences? preferences;
   final bool inAChat;
   final bool isToggle;
   final ChatStatus status;
@@ -35,7 +34,6 @@ class ChatscreenState extends Equatable {
     required this.status,
     required this.mentionedMap,
     required this.failure,
-    required this.preferences,
     required this.unreadChats,
     //==== feed half ====
     required this.posts,
@@ -54,7 +52,6 @@ class ChatscreenState extends Equatable {
       mentionedMap: {},
       currUserr: Userr.empty,
       status: ChatStatus.initial,
-      preferences: null,
       failure: Failure(),
       posts: [],
       likedPostIds: {},
@@ -67,7 +64,6 @@ class ChatscreenState extends Equatable {
   @override
   List<Object?> get props => [
         posts,
-        preferences,
         currUserr,
         likedPostIds,
         mentionedMap,
@@ -94,7 +90,6 @@ class ChatscreenState extends Equatable {
     List<Post?>? posts,
     Set<String?>? likedPostIds,
     Map<String, dynamic>? mentionedMap,
-    StreamingSharedPreferences? preferences,
     FeedStatus_chats? fstatus,
     Failure? failure,
     bool? unreadChats,
@@ -109,7 +104,6 @@ class ChatscreenState extends Equatable {
       chat: chat ?? this.chat,
       mentionedMap: mentionedMap ?? this.mentionedMap,
       isToggle: isToggle ?? this.isToggle,
-      preferences: preferences ?? preferences,
       inAChat: inAChat ?? this.inAChat,
       status: status ?? this.status,
       failure: failure ?? this.failure,

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
+import 'package:kingsfam/models/says_model.dart';
 import 'package:kingsfam/repositories/church_kings_cord_repository/base_kingscord_repository.dart';
 
 class KingsCordRepository extends BaseKingsCordRepository {
@@ -22,6 +23,19 @@ class KingsCordRepository extends BaseKingsCordRepository {
         .add(kingsCord.toDoc());
   }
 
+  Future<void> postSays(
+      {required Says says, 
+      required Church cm, 
+      required String kcId}) async {
+    _firebaseFirestore
+        .collection(Paths.church)
+        .doc(cm.id)
+        .collection(Paths.kingsCord)
+        .doc(kcId)
+        .collection(Paths.says)
+        .add(says.toDoc());
+  }
+
   //sneding a message
   @override
   Future<void> sendMsgTxt(
@@ -37,5 +51,4 @@ class KingsCordRepository extends BaseKingsCordRepository {
         .collection(Paths.messages)
         .add(message.ToDoc(senderId: senderId));
   }
-
 }

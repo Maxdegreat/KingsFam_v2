@@ -76,7 +76,6 @@ class Chat extends Equatable {
       'searchPram': searchPram,
       'memberTokens': memberTokens
       //'timestamp': timestamp just use the time stamp from recent message
-
     };
   }
 

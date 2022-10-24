@@ -9,7 +9,6 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
-import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 part 'chatscreen_event.dart';
 part 'chatscreen_state.dart';

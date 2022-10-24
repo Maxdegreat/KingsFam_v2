@@ -55,6 +55,17 @@ class _ChatsScreenState extends State<ChatsScreen>
 
 
   Future<void> setupInteractedMessage() async {
+    
+    await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
     // Get any messages which caused the application to open from
     // a terminated state.
     RemoteMessage? initialMessage =
@@ -129,6 +140,7 @@ class _ChatsScreenState extends State<ChatsScreen>
   @override
   void initState() {
     super.initState();
+    
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
    
     _tabController.addListener(() => setState(() {}));

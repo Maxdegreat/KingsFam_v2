@@ -30,6 +30,7 @@ import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 import 'package:kingsfam/extensions/date_time_extension.dart';
+import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/widgets.dart';
@@ -41,6 +42,7 @@ import 'package:video_player/video_player.dart';
 
 import '../profile/bloc/profile_bloc.dart';
 import 'helper.dart';
+import 'screens/says_room/says_room.dart';
 
 HexColor hc = HexColor();
 
@@ -90,6 +92,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   void initState() {
     currRole = getAccessCmHelp(
         widget.commuinity, context.read<AuthBloc>().state.user!.uid);
+    context.read<BottomnavbarCubit>().showBottomNav(true);
     super.initState();
     _txtController = TextEditingController();
     _tabController = TabController(vsync: this, length: 2);
@@ -124,8 +127,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     });
   }
 
-  Padding _mainScrollView(
-      BuildContext context, CommuinityState state) {
+  Padding _mainScrollView(BuildContext context, CommuinityState state) {
     Color primaryColor = Colors.white;
     Color secondaryColor = Color(hc.hexcolorCode('#141829'));
     Color backgoundColor = Color(hc.hexcolorCode('#20263c'));
@@ -140,36 +142,45 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: CustomScrollView(slivers: <Widget>[
-        cmSliverAppBar(context: context, cmBloc: context.read<CommuinityBloc>()),
+        cmSliverAppBar(
+            context: context, cmBloc: context.read<CommuinityBloc>()),
         SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 10.0),
-              child: Stack(
+            child: Stack(
           children: [
-              Container(
+            Container(
+              alignment: Alignment.topCenter,
+              child: SvgPicture.asset(
+                state.themePack,
                 alignment: Alignment.topCenter,
-                child: SvgPicture.asset(
-                  state.themePack,
-                  alignment: Alignment.topCenter,
-                ),
-                height: MediaQuery.of(context).size.height,
-                width: double.infinity,
-                decoration: BoxDecoration(color: backgoundColor),
               ),
-              // Container(height: MediaQuery.of(context).size.height, width: double.infinity, color: Colors.black38,),
-              Column(
-                children: [
-                  state.status == CommuintyStatus.loading
-                      ? LinearProgressIndicator()
-                      : SizedBox.shrink(),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      state.isMember == null
-                          ? SizedBox.shrink()
-                          : state.isMember != false
-                              ? ElevatedButton(
+              height: 200, //MediaQuery.of(context).size.height / 2,
+              width: double.infinity,
+              decoration: BoxDecoration(color: backgoundColor),
+            ),
+            // Container(height: MediaQuery.of(context).size.height, width: double.infinity, color: Colors.black38,),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                state.status == CommuintyStatus.loading
+                    ? LinearProgressIndicator()
+                    : SizedBox.shrink(),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2.5),
+                  child: Text(widget.commuinity.cmType,
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic, color: Colors.grey)),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    state.isMember == null
+                        ? SizedBox.shrink()
+                        : state.isMember != false
+                            ? Container(
+                                height: 30,
+                                width: 200,
+                                child: ElevatedButton(
                                   onPressed: () {
                                     if (currRole != Roles.Owner) {
                                       _onLeaveCommuinity();
@@ -182,11 +193,10 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                     }
                                   },
                                   child: Text(
-                                    "...Leave ",
+                                    "...Leave",
                                     style: TextStyle(color: Colors.red),
                                   ),
                                   style: ButtonStyle(
-              
                                       foregroundColor:
                                           MaterialStateProperty.all<Color>(
                                               Colors.white),
@@ -197,87 +207,122 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                               RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
                                               borderRadius: BorderRadius.zero,
-                                              side:
-                                                  BorderSide(color: Colors.red)))),
-                                )
-                              : joinBtn(state),
-                      SizedBox(width: 10),
-                      Text("${widget.commuinity.size} members")
-                    ],
-                  ),
-                  SizedBox(height: 25),
-                  //TODO remove row below?
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "${widget.commuinity.name}\'s Content",
-                        style: TextStyle(
-                          color: primaryColor,
-                          fontSize: 21,
-                          fontWeight: FontWeight.w800,
-                        ),
-                        overflow: TextOverflow.fade,
+                                              side: BorderSide(
+                                                  color: Colors.red)))),
+                                ),
+                              )
+                            : joinBtn(state),
+                    SizedBox(width: 10),
+                    Text("${widget.commuinity.size} members")
+                  ],
+                ),
+                SizedBox(height: 25),
+                Row(
+                  children: [
+                    Text(
+                      "~ Events ~",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 21,
+                        fontWeight: FontWeight.w800,
                       ),
-                    ],
+                      overflow: TextOverflow.fade,
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          Navigator.of(context).pushNamed(CreateRoom.routeName,
+                              arguments: CreateRoomArgs(
+                                  cmBloc: context.read<CommuinityBloc>(),
+                                  cm: widget.commuinity)).then((value) {
+                                    // TODO setState and read the events again.
+                                  });
+                        },
+                        icon: Icon(Icons.add))
+                  ],
+                ),
+                Container(
+                  height: 85,
+                  width: double.infinity,
+                  child: state.postDisplay.length > 0
+                      ? ListView.builder(
+                          itemCount: widget.commuinity.events.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            Post? post = state.postDisplay[index];
+                            if (post != null) {
+                              return contentPreview(post);
+                            } else {
+                              return SizedBox.shrink();
+                            }
+                          })
+                      : Center(
+                          child: state.status == CommuintyStatus.loading
+                              ? Text("One Second ...")
+                              : Text("Your Community Post Will Show Here")),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                //TODO remove row below?
+                Text(
+                  "${widget.commuinity.name}\'s Content",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 21,
+                    fontWeight: FontWeight.w800,
                   ),
-                  Container(
-                    height: 85,
-                    width: double.infinity,
-                    child: state.postDisplay.length > 0
-                        ? ListView.builder(
-                            itemCount: state.postDisplay.length,
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              Post? post = state.postDisplay[index];
-                              if (post != null) {
-                                return contentPreview(post);
-                              } else {
-                                return SizedBox.shrink();
-                              }
-                            })
-                        : Center(
-                            child: state.status == CommuintyStatus.loading
-                                ? Text("One Second ...")
-                                : Text("Your Community Post Will Show Here")),
-                  ),
-                  //ContentContaner(context),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Chat Rooms",
-                        style: TextStyle(
-                          color: primaryColor,
-                          fontSize: 21,
-                          fontWeight: FontWeight.w800,
-                        ),
-                        overflow: TextOverflow.fade,
+                  overflow: TextOverflow.fade,
+                ),
+                Container(
+                  height: 85,
+                  width: double.infinity,
+                  child: state.postDisplay.length > 0
+                      ? ListView.builder(
+                          itemCount: state.postDisplay.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            Post? post = state.postDisplay[index];
+                            if (post != null) {
+                              return contentPreview(post);
+                            } else {
+                              return SizedBox.shrink();
+                            }
+                          })
+                      : Center(
+                          child: state.status == CommuintyStatus.loading
+                              ? Text("One Second ...")
+                              : Text("Your Community Post Will Show Here")),
+                ),
+                //ContentContaner(context),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Rooms",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 21,
+                        fontWeight: FontWeight.w800,
                       ),
-                      collapseOrExpand(context.read<CommuinityBloc>(), 'cord'),
-                      new_kingscord(cmBloc: context.read<CommuinityBloc>()),
-                    ],
-                  ),
-                  //TODO below should work if change name else use lib?
-                  Column(
-                    children: state.collapseCordColumn
-                        ? [SizedBox.shrink()]
-                        : state.kingCords.map((cord) {
-                            if (cord != null) {
-                              return GestureDetector(
-                                  onTap: () {
+                      overflow: TextOverflow.fade,
+                    ),
+                    collapseOrExpand(context.read<CommuinityBloc>(), 'cord'),
+                    new_kingscord(cmBloc: context.read<CommuinityBloc>()),
+                  ],
+                ),
+                //TODO below should work if change name else use lib?
+                Column(
+                  children: state.collapseCordColumn
+                      ? [SizedBox.shrink()]
+                      : state.kingCords.map((cord) {
+                          if (cord != null) {
+                            return GestureDetector(
+                                onTap: () {
+                                  if (cord.mode == "chat") {
                                     // handels the navigation to the kingscord screen and also handels the
                                     // deletion of a noti if it eist. we check if noty eist by through a function insde the bloc.
-                                    log(
-                                      "widget.cm for naving to cord: " +
-                                          widget
-                                              .commuinity
-                                              .members[context
-                                                  .read<ProfileBloc>()
-                                                  .state
-                                                  .userr]
-                                              .toString(),
-                                    );
+
                                     Navigator.of(context).pushNamed(
                                         KingsCordScreen.routeName,
                                         arguments: KingsCordArgs(
@@ -286,8 +331,11 @@ class _CommuinityScreenState extends State<CommuinityScreen>
 
                                     if (state.mentionedMap[cord.id] != false) {
                                       // del the @ notification (del the mention)
-                                      String currId =
-                                          context.read<AuthBloc>().state.user!.uid;
+                                      String currId = context
+                                          .read<AuthBloc>()
+                                          .state
+                                          .user!
+                                          .uid;
                                       FirebaseFirestore.instance
                                           .collection(Paths.mention)
                                           .doc(currId)
@@ -295,25 +343,33 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                           .doc(cord.id)
                                           .delete();
                                     }
-                                  },
-                                  onLongPress: () => _delKcDialog(
-                                      cord: cord, commuinity: widget.commuinity),
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                        top: 7,
-                                        bottom: 7,
-                                        left:
-                                            MediaQuery.of(context).size.width / 7),
-                                    child: Container(
-                                      height: 55,
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                          color: secondaryColor,
-                                          borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(5),
-                                              bottomLeft: Radius.circular(5))),
-                                      child: Center(
-                                          child: Padding(
+                                  } else {
+                                    Navigator.of(context).pushNamed(
+                                        SaysRoom.routeName,
+                                        arguments: SaysRoomArgs(
+                                            currUsr: state.currUserr,
+                                            cm: widget.commuinity,
+                                            kcName: cord.cordName,
+                                            kcId: cord.id!));
+                                  }
+                                },
+                                onLongPress: () => _delKcDialog(
+                                    cord: cord, commuinity: widget.commuinity),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    cord.mode == "chat"
+                                        ? Text(
+                                            "#",
+                                            style: TextStyle(fontSize: 21),
+                                          )
+                                        : Icon(Icons.record_voice_over_rounded),
+                                    SizedBox(width: 3),
+                                    Container(
+                                      height: 30,
+                                      width: MediaQuery.of(context).size.width -
+                                          50,
+                                      child: Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 7),
                                         child: Column(
@@ -326,86 +382,68 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                               cord.cordName,
                                               overflow: TextOverflow.fade,
                                               style: TextStyle(
-                                                  color:
-                                                      state.mentionedMap[cord.id] ==
-                                                              true
-                                                          ? Colors.amber
-                                                          : Colors.white,
+                                                  color: state.mentionedMap[
+                                                              cord.id] ==
+                                                          true
+                                                      ? Colors.amber
+                                                      : Colors.white,
                                                   fontWeight:
-                                                      state.mentionedMap[cord.id] ==
+                                                      state.mentionedMap[
+                                                                  cord.id] ==
                                                               true
                                                           ? FontWeight.w900
                                                           : FontWeight.w700),
                                             ),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  cord.recentSender[1].length >= 10
-                                                      ? cord.recentSender[1]
-                                                          .substring(0, 10)
-                                                      : cord.recentSender[1],
-                                                  style: TextStyle(
-                                                      color: primaryColor,
-                                                      fontSize: 17),
-                                                  overflow: TextOverflow.fade,
-                                                ),
-                                                SizedBox(
-                                                  width: 7,
-                                                ),
-                                                Text(
-                                                  cord.recentTimestamp.timeAgo(),
-                                                  style: TextStyle(
-                                                      color: Colors.grey[300],
-                                                      fontSize: 20,
-                                                      fontWeight: FontWeight.bold),
-                                                  overflow: TextOverflow.fade,
-                                                ),
-                                              ],
-                                            )
                                           ],
                                         ),
-                                      )),
+                                      ),
                                     ),
-                                  ));
-                            } else {
-                              return SizedBox.shrink();
-                            }
-                          }).toList(),
+                                  ],
+                                ));
+                          } else {
+                            return SizedBox.shrink();
+                          }
+                        }).toList(),
+                ),
+                SizedBox(height: 15),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "About This Community",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 21,
+                      fontWeight: FontWeight.w800,
+                    ),
+                    overflow: TextOverflow.fade,
                   ),
-                  SizedBox(height: 15),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                          "About This Community",
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            color: primaryColor,
-                            fontSize: 21,
-                            fontWeight: FontWeight.w800,
-                          ),
-                          overflow: TextOverflow.fade,
-                        ),
-                  ),
-                  SizedBox(height: 5),
-                  ConstrainedBox(constraints: BoxConstraints(
+                ),
+                SizedBox(height: 5),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
                     minHeight: 75,
                     minWidth: double.infinity,
-                  ), child: Container(
+                  ),
+                  child: Container(
                     margin: Margin.all(10),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: widget.commuinity.about.isNotEmpty ? Text(widget.commuinity.about, textAlign: TextAlign.center) : Text("Nothing To See Here ..."),
+                      child: widget.commuinity.about.isNotEmpty
+                          ? Text(widget.commuinity.about,
+                              textAlign: TextAlign.center)
+                          : Text("Nothing To See Here ..."),
                     ),
                     decoration: BoxDecoration(
                       color: Color(hc.hexcolorCode('#141829')),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                  ),)
-                ],
-              ),
+                  ),
+                )
+              ],
+            ),
           ],
-        ),
-            ))
+        ))
       ]),
     );
   }
@@ -413,7 +451,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   SliverAppBar cmSliverAppBar(
       {required BuildContext context, required CommuinityBloc cmBloc}) {
     return SliverAppBar(
-      expandedHeight: MediaQuery.of(context).size.height / 3,
+      expandedHeight: MediaQuery.of(context).size.height / 4,
       flexibleSpace: FlexibleSpaceBar(
         title: Text(widget.commuinity.name),
         background: Stack(
@@ -422,26 +460,13 @@ class _CommuinityScreenState extends State<CommuinityScreen>
               padding: const EdgeInsets.all(10.0),
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(15),
                     image: DecorationImage(
                         image: CachedNetworkImageProvider(
                             widget.commuinity.imageUrl),
                         fit: BoxFit.cover)),
               ),
             ),
-            Container(
-                height: MediaQuery.of(context).size.height / 2,
-                padding: EdgeInsets.symmetric(horizontal: 5.0),
-                alignment: Alignment.bottomCenter,
-                decoration: const BoxDecoration(
-                  gradient: paint.LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: <Color>[], 
-                    // Gradient from https://learnui.design/tools/gradient-generator.html
-                    tileMode: TileMode.mirror,
-                  ),
-                ))
           ],
         ),
       ),
@@ -565,35 +590,27 @@ class _CommuinityScreenState extends State<CommuinityScreen>
 
   // Widget leaveBtn(bool isMemberGetter) =>
 
-  Stack joinBtn(CommuinityState state) {
-    return Stack(
-      children: [
-        Container(
-          width: 100,
-          height: 40,
-          child: TextButton(
-            child: Text(
-              "JOIN!",
-              style: TextStyle(color: Colors.white),
-            ),
-            onPressed: () => _onJoinCommuinity(),
-          ),
-          decoration: BoxDecoration(
-              color: Colors.grey[800], borderRadius: BorderRadius.circular(10)),
+  Widget joinBtn(CommuinityState state) {
+    return Container(
+      height: 30,
+      width: 200,
+      child: ElevatedButton(
+        onPressed: () {
+          _onJoinCommuinity();
+        },
+        child: Text(
+          "Join",
+          style: TextStyle(color: Colors.white),
         ),
-        PositionedDirectional(
-          start: 0,
-          child: Container(
-            width: 5,
-            height: 40,
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    bottomLeft: Radius.circular(10))),
-          ),
-        )
-      ],
+        style: ButtonStyle(
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            backgroundColor:
+                MaterialStateProperty.all<Color>(Colors.transparent),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
+                    side: BorderSide(color: Colors.white)))),
+      ),
     );
   }
 
@@ -609,52 +626,6 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     );
   }
 
-  Padding callTile(BuildContext context, CallModel call) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Stack(
-        children: [
-          Container(
-            height: 43,
-            decoration: BoxDecoration(
-                color: Colors.grey[900],
-                borderRadius: BorderRadius.circular(5.0)),
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(width: 10.0),
-                  SizedBox(
-                    width: (MediaQuery.of(context).size.width / 1.8),
-                    child: Text(
-                      call.name,
-                      style: Theme.of(context).textTheme.bodyText1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  SizedBox(width: 5.0),
-                  Text("${call.allMembersIds.length.toString()}/5 In Call")
-                ],
-              ),
-            ),
-          ),
-          PositionedDirectional(
-              end: 0,
-              child: Container(
-                height: 50,
-                width: 30,
-                decoration: BoxDecoration(
-                    color: call.hasDilled ? Colors.green[400] : Colors.red[700],
-                    borderRadius: BorderRadius.circular(5.0)),
-              ))
-        ],
-      ),
-    );
-  }
-
-  
-
   Widget new_kingscord({required CommuinityBloc cmBloc}) {
     cmActions.Actions actions = cmActions.Actions();
     if ((currRole != null && currRole == Roles.Owner) ||
@@ -663,7 +634,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                 role: currRole!,
                 action: cmActions.Actions.communityActions[4]))) {
       return GestureDetector(
-          onTap: () => new_kingsCord_sheet(cmBloc),
+          onTap: () => Navigator.of(context).pushNamed(CreateRoom.routeName,
+              arguments: CreateRoomArgs(cmBloc: cmBloc, cm: widget.commuinity)),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
             child: Container(
@@ -675,65 +647,6 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     } else
       return SizedBox.shrink();
   }
-
-  new_kingsCord_sheet(CommuinityBloc cmBloc) => showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          width: double.infinity,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: 8.0),
-              Center(
-                  child: Text(
-                "Name For New Chat Room",
-                style: TextStyle(color: Colors.blue[300]),
-              )),
-              SizedBox(height: 8.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: TextField(
-                    decoration: InputDecoration(hintText: "Enter a name"),
-                    onChanged: (value) => _txtController.text = value),
-              ),
-              SizedBox(height: 8.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Container(
-                    width: (double.infinity * .70),
-                    child: ElevatedButton(
-                        style:
-                            ElevatedButton.styleFrom(primary: Colors.blue[300]),
-                        onPressed: () {
-                          if (_txtController.value.text.length == 0) {
-                            snackBar(
-                                snackMessage:
-                                    "be sure you add a name for the Chat Room you are making",
-                                context: context,
-                                bgColor: Colors.red[400]);
-                          } else if (_txtController.value.text.length > 17) {
-                            snackBar(
-                                snackMessage:
-                                    "Yo, Fam less than or equal to 17 chars please nd thanks",
-                                context: context,
-                                bgColor: Colors.red[400]);
-                          } else {
-                            // make a new channel
-                            cmBloc.makeNewKc(
-                                commuinity: widget.commuinity,
-                                cordName: _txtController.value.text,
-                                ctx: context);
-                            Navigator.of(context).pop();
-                          }
-                        },
-                        child: Text("Done"))),
-              )
-            ],
-          ),
-        );
-      });
 
   _settingsBtn({required CommuinityBloc cmBloc}) {
     return Padding(
@@ -776,7 +689,9 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                     widget.commuinity.members.keys.toList(),
                                     widget.commuinity.members,
                                     currUserr)
-                                : SizedBox.shrink(),
+                                : Center(
+                                  child: Text("Must be apart of this community to view the members"),
+                                ),
                             _editView(
                                 cmBloc: cmBloc,
                                 commuinity: widget.commuinity,
@@ -806,18 +721,6 @@ class _CommuinityScreenState extends State<CommuinityScreen>
             _inviteBottomSheet(following);
           }),
     );
-  }
-
-  Widget _themePackButton() {
-    return TextButton(
-        onPressed: () {
-          NavHelper().navToUpdateCmTheme(
-              context,
-              context.read<CommuinityBloc>(),
-              widget.commuinity.name,
-              widget.commuinity.id!);
-        },
-        child: Text("ThemePack"));
   }
 
   //TODO ADMIN WHERE 2==2
@@ -874,7 +777,6 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     );
   }
 
-  //TODO THE ADMIN
   Widget _moreOptinos(
       {required Userr participant,
       required Map<Userr, dynamic> memberInfo,
@@ -1436,7 +1338,9 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                     pfpUrl: user.profileImageUrl, radius: 25),
                                 title: Text(user.username),
                                 trailing: IconButton(
-                                  icon: Icon(Icons.add),
+                                  icon: Icon(
+                                    Icons.add,
+                                  ),
                                   onPressed: () => _showInviteDialog(user),
                                 ),
                               ),

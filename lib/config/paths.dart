@@ -29,6 +29,7 @@ class Paths {
   static const String prayer = "prayer";
   static const String communityBan = "communityBan";
   static const String bans = "bans";
+  static const String says = "says";
 
   //sub collections
   static const String postsComments = 'postComments';

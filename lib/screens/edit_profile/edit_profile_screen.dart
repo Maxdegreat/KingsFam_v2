@@ -101,20 +101,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   children: [
                     GestureDetector(
                       onTap: () => _pickBannerImage(context),
-                      child: Stack(
-                        children: [
-                          BannerImage(
-                            isOpasaty: false,
-                            bannerImageUrl: widget.userr.bannerImageUrl,
-                            bannerImage: state.bannerImage,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 35.0),
-                            child: Center(child: Align(
-                              alignment: Alignment.center,
-                              child: Icon(Icons.camera_alt_outlined))),
-                          )
-                        ],
+                      child: BannerImage(
+                        isOpasaty: false,
+                        bannerImageUrl: widget.userr.bannerImageUrl,
+                        bannerImage: state.bannerImage,
                       ),
                     ),
                     Positioned(

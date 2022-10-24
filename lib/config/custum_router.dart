@@ -5,6 +5,8 @@ import 'package:kingsfam/helpers/vid_helper.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
+import 'package:kingsfam/screens/commuinity/screens/says_room/says_room.dart';
+import 'package:kingsfam/screens/commuinity/screens/says_room/screens/create_says.dart';
 import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
 
 import 'package:kingsfam/screens/screens.dart';
@@ -163,11 +165,23 @@ class CustomRoute {
         return PostContentScreen.route(
             args: settings.arguments as PostContentArgs);
 
+      case CreateRoom.routeName:
+        return CreateRoom.route(args: settings.arguments as CreateRoomArgs);
+
+      case SaysRoom.routeName:
+        return SaysRoom.route(args: settings.arguments as SaysRoomArgs);
+
+      case SaysPopUp.routeName:
+        return SaysPopUp.route(args: settings.arguments as SaysPopUpArgs);
+
       // case VideoEditor.routeName:
       //   return VideoEditor.route(settings.arguments as VideoEditorArgs);
 
       case ShowBanedUsers.routeName:
         return ShowBanedUsers.route(settings.arguments as ShowBanedUsersArgs);
+
+      case CreateSays.routeName:
+        return CreateSays.route(args: settings.arguments as CreateSaysArgs);
 
       default:
         return _errorRoute();

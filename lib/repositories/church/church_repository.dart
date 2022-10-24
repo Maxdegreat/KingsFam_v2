@@ -8,7 +8,6 @@ import 'package:kingsfam/repositories/church/base_church_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/roles/role_types.dart';
 import 'package:kingsfam/screens/commuinity/actions.dart';
-import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 class ChurchRepository extends BaseChurchRepository {
   final fb = FirebaseFirestore.instance.collection(Paths.church);
@@ -210,7 +209,7 @@ class ChurchRepository extends BaseChurchRepository {
             tag: doc.id,
             cordName: "Welcome To ${church.name}!",
             recentMessage: "whats good Gods People!",
-            recentSender: [recentSender.id, recentSender.username],
+            // recentSender: [recentSender.id, recentSender.username],
             recentTimestamp: Timestamp.now());
 
         //send off the repo
@@ -229,7 +228,7 @@ class ChurchRepository extends BaseChurchRepository {
         .collection(Paths.posts)
         .orderBy("date", descending: true)
         .where('commuinity', isEqualTo: cmDocRef)
-        .limit(3)
+        .limit(2)
         .get();
 
     List<Post?> bucket = [];
@@ -266,24 +265,34 @@ class ChurchRepository extends BaseChurchRepository {
     return firebaseCommuinites.docs.map((e) => KingsCord.fromDoc(e)).toList();
   }
 
-  Future<KingsCord?> newKingsCord2(
-      {required Church ch, required String cordName, Userr? currUser}) async {
+  Future<KingsCord?> newKingsCord2({
+    required Church ch,
+    required String cordName,
+    Userr? currUser,
+    required String mode,
+    required String? rolesAllowed,
+  }) async {
     try {
+      log("making kc");
       KingsCord kc = KingsCord(
           tag: ch.id!,
           cordName: cordName,
+          mode: mode,
+          rolesAllowed: rolesAllowed,
           recentMessage: "Welcome To $cordName!",
-          recentSender: [
-            currUser != null ? currUser.id : '000',
-            currUser != null ? currUser.username.substring(0, 5) : 'A-Member'
-          ],
+          // recentSender: [
+          //   currUser != null ? currUser.id : '000',
+          //   currUser != null ? currUser.username.substring(0, 5) : 'A-Member'
+          // ],
           recentTimestamp: Timestamp.now());
-      var kcPath = await FirebaseFirestore.instance
+      log("sending to db");
+      await FirebaseFirestore.instance
           .collection(Paths.church)
           .doc(ch.id)
           .collection(Paths.kingsCord)
           .add(kc.toDoc());
-      return kc;
+      log("done");
+      
     } catch (e) {
       log("error: " + e.toString());
     }

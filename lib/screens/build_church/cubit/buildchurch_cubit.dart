@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:kingsfam/blocs/cm_type/cm_type.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:get/get_connect/http/src/interceptors/get_modifiers.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
@@ -60,23 +61,12 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       CommuinityBloc? cmBloc}) async {
   
       Userr currUser = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
-      KingsCord? kc = await _churchRepository.newKingsCord2(ch: commuinity, cordName: cordName, currUser: currUser);
+      KingsCord? kc = await _churchRepository.newKingsCord2(ch: commuinity, cordName: cordName, currUser: currUser, mode: "chat", rolesAllowed: Roles.Member);
       var lst = state.kingsCords;
       lst.add(kc);
       emit(state.copyWith(kingsCords: lst));
     }
 
-
-  Future<void> makeCallModel(
-      {required Church commuinity, required String callName}) async {
-    if (state.calls.length < 7) {
-      CallModel call = await _callRepository.createCall2(
-          commuinity: commuinity, callName: callName);
-      var lst = state.calls;
-      lst.add(call);
-      emit(state.copyWith(calls: lst));
-    }
-  }
 
   // get commuinity posts
   Future<void> getCommuinityPosts(Church cm) async {
@@ -90,6 +80,8 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
     emit(state.copyWith(imageFile: image, status: BuildChurchStatus.initial));
   }
 
+
+
   //void function to update name
   void onNameChanged(String name) {
     emit(state.copyWith(name: name, status: BuildChurchStatus.initial));
@@ -100,10 +92,8 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
     emit(state.copyWith(about: about, status: BuildChurchStatus.initial));
   }
 
-  //void function to upadte hashTags list
-  void onHashTag(String hashTags) {
-    emit(state.copyWith(
-        initHashTag: hashTags, status: BuildChurchStatus.initial));
+  void onCmTypeChanged(String newType) {
+    emit(state.copyWith(cmType: newType));
   }
 
   //void function to update location
@@ -243,6 +233,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       //===========================================================
       //the build of the initial church
       final commuinity = Church(
+          cmType: state.cmType,
           searchPram: state.caseSearchList!,
           hashTags: state.hashTags ?? null,
           name: state.name,

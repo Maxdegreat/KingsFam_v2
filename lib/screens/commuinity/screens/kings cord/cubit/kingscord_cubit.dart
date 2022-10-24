@@ -100,7 +100,7 @@ class KingscordCubit extends Cubit<KingscordState> {
           'type_id': kingsCordData.id!,
           'type_tag': kingsCordData.tag,
           'type_cordName': kingsCordData.cordName,
-          'type_recentSender': kingsCordData.recentSender,
+          //'type_recentSender': kingsCordData.recentSender,
           'type_recentMessage': kingsCordData.recentMessage,
           'type_members': kingsCordData.members,
         });

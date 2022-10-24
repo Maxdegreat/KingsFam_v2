@@ -7,9 +7,8 @@ class CommuinityState extends Equatable {
   final bool collapseCordColumn;
   final bool collapseVvrColumn;
   final List<Post?> postDisplay;
+  final List<Event> events;
   final List<KingsCord?> kingCords;
-  final Map<String, List<String>> permissions;
-  final List<CallModel> calls;
   final CommuintyStatus status;
   final Failure failure;
   final Map<String, bool> mentionedMap;
@@ -25,10 +24,9 @@ class CommuinityState extends Equatable {
     required this.collapseVvrColumn,
     required this.postDisplay,
     required this.kingCords,
-    required this.calls,
     required this.status,
     required this.failure,
-    required this.permissions,
+    required this.events,
     required this.mentionedMap,
     required this.currUserr,
     required this.themePack,
@@ -43,8 +41,7 @@ class CommuinityState extends Equatable {
         mentionedMap,
         collapseCordColumn,
         collapseVvrColumn,
-        permissions,
-        calls,
+        events,
         kingCords,
         postDisplay,
         isMember,
@@ -62,11 +59,10 @@ class CommuinityState extends Equatable {
         mentionedMap: {},
         collapseCordColumn: false,
         collapseVvrColumn: false,
-        permissions: {},
+        events: [],
         isMember: null,
         postDisplay: [],
         kingCords: [],
-        calls: [],
         status: CommuintyStatus.inital,
         failure: Failure(),
         themePack: 'none',
@@ -78,11 +74,10 @@ class CommuinityState extends Equatable {
     bool? isMember,
     List<Post?>? postDisplay,
     List<KingsCord?>? kingCords,
-    List<CallModel>? calls,
     CommuintyStatus? status,
     Failure? failure,
     Map<String, bool>? mentionedMap,
-    Map<String, List<String>>? permissions,
+    List<Event>? events,
     bool? collapseCordColumn,
     bool? collapseVvrColumn,
     Userr? currUserr,
@@ -92,21 +87,19 @@ class CommuinityState extends Equatable {
     List<Userr>? banedUsers,
   }) {
     return CommuinityState(
-      permissions: permissions ?? this.permissions,
-      isMember: isMember ?? this.isMember,
-      postDisplay: postDisplay ?? this.postDisplay,
-      kingCords: kingCords ?? this.kingCords,
-      calls: calls ?? this.calls,
-      failure: failure ?? this.failure,
-      status: status ?? this.status,
-      mentionedMap: mentionedMap ?? this.mentionedMap,
-      collapseCordColumn: collapseCordColumn ?? this.collapseCordColumn,
-      collapseVvrColumn: collapseVvrColumn ?? this.collapseVvrColumn,
-      currUserr: currUserr ?? this.currUserr,
-      themePack: themePack ?? this.themePack,
-      boosted: boosted ?? this.boosted,
-      isBaned: isBaned ?? this.isBaned,
-      banedUsers: banedUsers ?? this.banedUsers
-    );
+        events: events ?? this.events,
+        isMember: isMember ?? this.isMember,
+        postDisplay: postDisplay ?? this.postDisplay,
+        kingCords: kingCords ?? this.kingCords,
+        failure: failure ?? this.failure,
+        status: status ?? this.status,
+        mentionedMap: mentionedMap ?? this.mentionedMap,
+        collapseCordColumn: collapseCordColumn ?? this.collapseCordColumn,
+        collapseVvrColumn: collapseVvrColumn ?? this.collapseVvrColumn,
+        currUserr: currUserr ?? this.currUserr,
+        themePack: themePack ?? this.themePack,
+        boosted: boosted ?? this.boosted,
+        isBaned: isBaned ?? this.isBaned,
+        banedUsers: banedUsers ?? this.banedUsers);
   }
 }

@@ -19,6 +19,9 @@ import '../../../roles/role_types.dart';
 part 'commuinity_event.dart';
 part 'commuinity_state.dart';
 
+// FOR NAVIGATION OF THIS FILE READ BELOW
+// new kingscord info: KINGSCORD METHODS
+
 class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   final ChurchRepository _churchRepository;
   final StorageRepository _storageRepository;
@@ -139,18 +142,9 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     try {
       List<Post?> posts =
           await _churchRepository.getCommuinityPosts(cm: event.commuinity);
-      _streamSubscriptionCalls?.cancel();
-      _streamSubscriptionCalls = _callRepository
-          .getCommuinityCallsStream(
-              commuinityId: event.commuinity.id!, limit: 7)
-          .listen((calls) async {
-        final allCalls = await Future.wait(calls);
-        add(CommuinityLoadedEvent(
-            calls: allCalls,
-            kcs: event.cords,
-            posts: posts,
-            commuinity: event.commuinity));
-      });
+
+      add(CommuinityLoadedEvent(
+          kcs: event.cords, posts: posts, commuinity: event.commuinity));
     } catch (e) {
       emit(state.copyWith(
           failure: Failure(message: failed, code: e.toString())));
@@ -166,13 +160,13 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       var ism = await _churchRepository.streamIsCmMember(
           cm: event.commuinity, authorId: _authBloc.state.user!.uid);
       _streamSubscriptionIsMember = ism.listen((isMemStream) async {
-        for (var kc in event.kcs)
+        // for (var kc in event.kcs)
 
           //log("from bloc kc recentSenderInfo is: ${kc!.recentSender}");
-
-          isMem = await isMemStream;
+        
+        isMem = await isMemStream;
         emit(state.copyWith(
-          calls: event.calls,
+          events: [],
           isMember: isMem,
           kingCords: event.kcs,
           postDisplay: event.posts,
@@ -218,7 +212,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       };
       add(CommuinityLoadCommuinity(commuinity: commuinity));
       emit(state.copyWith(isMember: true));
-      
     } else {
       log("we are in the true, is ban is true");
       showDialog(
@@ -298,11 +291,19 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     required Church commuinity,
     required String cordName,
     required BuildContext ctx,
+    required String mode,
+    String? rolesAllowed,
   }) async {
     Userr currUser = await _userrRepository.getUserrWithId(
         userrId: _authBloc.state.user!.uid);
+    log("awaiting ch msg");
     await _churchRepository.newKingsCord2(
-        ch: commuinity, cordName: formatCordName(cordName), currUser: currUser);
+      ch: commuinity,
+      cordName: formatCordName(cordName),
+      currUser: currUser,
+      mode: mode,
+      rolesAllowed: rolesAllowed,
+    );
     // WE DO NOT EMIT TO STATE BECAUSE THERE IS ALREDY A STREAM LISTENING FOR KC'S AND THE STREAM EMITS TO STATE
     // ANY ATTEMPT TO EMIT FROM HERE WHILE THE STREAM IS ACTIVE WILL CAUSE SOME OUT OF RANGE ERRORS.
   }
@@ -321,7 +322,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   dispose() {
     state.copyWith(
-        calls: [],
         failure: Failure(),
         isMember: false,
         kingCords: [],
@@ -342,4 +342,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     else
       emit(state.copyWith(collapseVvrColumn: true));
   }
+
+  // KINGSCORD METHODS
+
 }

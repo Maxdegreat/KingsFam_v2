@@ -64,7 +64,8 @@ class _SearchScreenState extends State<SearchScreen> {
           scrollController.position.maxScrollExtent ==
               scrollController.position.pixels) {
         context.read<SearchBloc>()
-          ..add(GrabUsersPaginate(currId: context.read<AuthBloc>().state.user!.uid));
+          ..add(GrabUsersPaginate(
+              currId: context.read<AuthBloc>().state.user!.uid));
       }
     }
   }
@@ -84,8 +85,6 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
-    bool loading = false;
     if (initSearchScreen == false) initializeSeachScreen(context);
 
     return RefreshIndicator(
@@ -99,53 +98,39 @@ class _SearchScreenState extends State<SearchScreen> {
           child: Scaffold(
               body: BlocConsumer<SearchBloc, SearchState>(
             listener: (context, state) {
-              if (state.status == SearchStatus.pag) {
-                loading = true;
-                setState(() {
-                  
-                });
-              } else if (state.status == SearchStatus.error) {
-                loading = false;
+              if (state.status == SearchStatus.error) {
                 //show error Dialog
                 showDialog(
                     context: context,
                     builder: (context) =>
                         ErrorDialog(content: state.failure.message));
-              } else {
-                loading = false;
               }
             },
             builder: (context, state) {
               return Scaffold(
                 appBar: AppBar(
-                  title: Column(
-                    children: [
-                      TextField(
-                        controller: _textEditingController,
-                        decoration: InputDecoration(
-                            fillColor: Colors.black87,
-                            filled: true,
-                            border: InputBorder.none,
-                            hintText: 'Search For The Fam',
-                            suffixIcon: IconButton(
-                                onPressed: () {
-                                  context.read<SearchBloc>().clearSearch();
-                                  _textEditingController.clear();
-                                },
-                                icon: Icon(Icons.clear))),
-                        textInputAction: TextInputAction.search,
-                        textAlignVertical: TextAlignVertical.center,
-                        onChanged: (value) {
-                          context
-                              .read<SearchBloc>()
-                              .searchUserAdvanced(value.trim());
-                          //context.read<SearchBloc>().searchChurch(value.trim());
-                        },
-                      ),
-                      state.status == SearchStatus.pag ? LinearProgressIndicator() : SizedBox.shrink()
-                    ],
+                  title: TextField(
+                    controller: _textEditingController,
+                    decoration: InputDecoration(
+                        fillColor: Colors.black87,
+                        filled: true,
+                        border: InputBorder.none,
+                        hintText: 'Search For The Fam',
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              context.read<SearchBloc>().clearSearch();
+                              _textEditingController.clear();
+                            },
+                            icon: Icon(Icons.clear))),
+                    textInputAction: TextInputAction.search,
+                    textAlignVertical: TextAlignVertical.center,
+                    onChanged: (value) {
+                      context
+                          .read<SearchBloc>()
+                          .searchUserAdvanced(value.trim());
+                      //context.read<SearchBloc>().searchChurch(value.trim());
+                    },
                   ),
-                  
                 ),
                 body: _builBody(state: state, context: context),
               );

@@ -26,17 +26,15 @@ class ComuinityLoadingCords extends CommuinityEvent {
 
 class CommuinityLoadedEvent extends CommuinityEvent {
   final List<KingsCord?> kcs;
-  final List<CallModel> calls;
   final List<Post?> posts;
   final Church commuinity;
   CommuinityLoadedEvent({
     required this.kcs,
-    required this.calls,
     required this.posts,
     required this.commuinity
   });
   @override
-  List<Object> get props => [kcs, calls, posts, commuinity];
+  List<Object> get props => [kcs, posts, commuinity];
 }
 
 

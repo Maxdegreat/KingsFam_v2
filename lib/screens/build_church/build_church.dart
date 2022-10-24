@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/blocs/cm_type/cm_type.dart';
 import 'package:kingsfam/extensions/extensions.dart';
 import 'package:kingsfam/helpers/helpers.dart';
 import 'package:kingsfam/models/models.dart';
@@ -127,7 +128,7 @@ class _BuildChurchState extends State<BuildChurch> {
                               ),
                             TextFormField(
                               decoration:
-                                  InputDecoration(hintText: 'Church Name'),
+                                  InputDecoration(hintText: 'Community Name'),
                               onChanged: (value) => context
                                   .read<BuildchurchCubit>()
                                   .onNameChanged(value),
@@ -135,6 +136,7 @@ class _BuildChurchState extends State<BuildChurch> {
                                   ? "You need to add a name"
                                   : null,
                             ),
+                            // ------------ drop down btn below
                             DropdownButton<String>(
                               value: Location.dropdownValue,
                               icon: const Icon(Icons.arrow_downward),
@@ -162,17 +164,36 @@ class _BuildChurchState extends State<BuildChurch> {
                                 );
                               }).toList(),
                             ),
-                            TextFormField(
-                              decoration: InputDecoration(
-                                  hintText:
-                                      "hashTags example: #Jesus #KingsFam"),
-                              onChanged: (value) => context
-                                  .read<BuildchurchCubit>()
-                                  .onHashTag(value.trim()),
+                            // ----------- drop down btn above
+                            // ----------- cm type btn row below
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Text("What Type Of Community Is This?"),
                             ),
+                            Row(
+                              children: [
+                                btnHollow(context, state, CmType.regular, () {
+                                    context
+                                        .read<BuildchurchCubit>()
+                                        .onCmTypeChanged(CmType.regular);
+                                }),
+                                SizedBox(width: 10),
+                                btnHollow(context, state, CmType.chialpha, () {
+
+                                    context
+                                        .read<BuildchurchCubit>()
+                                        .onCmTypeChanged(CmType.chialpha);
+                                }),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Text("This is a " + state.cmType + " community", style: TextStyle(color: Colors.grey[700], fontStyle: FontStyle.italic),),
+                            ),
+                            // ---------- cm type btn row above
                             TextFormField(
                               decoration: InputDecoration(
-                                  hintText: 'Mission statement!'),
+                                  hintText: 'Mission statement / about'),
                               onChanged: (value) => context
                                   .read<BuildchurchCubit>()
                                   .onAboutChanged(value),
@@ -181,7 +202,7 @@ class _BuildChurchState extends State<BuildChurch> {
                                   : 'use less than 200 characters',
                             ),
                             SizedBox(height: 5.0),
-                            Text('Virtural Church Particpants'),
+                            Text('Particpants'),
                             SizedBox(height: 5.0),
                             Stack(
                               children: [
@@ -352,6 +373,29 @@ class _BuildChurchState extends State<BuildChurch> {
         );
       },
     );
+  }
+
+  ElevatedButton btnHollow(BuildContext context, BuildchurchState state, String content, VoidCallback vc) {
+    return ElevatedButton(
+                                onPressed: vc,
+                                child: Text(content),
+                                style: ButtonStyle(
+                                    foregroundColor: state.cmType == content
+                                        ? MaterialStateProperty.all<Color>(
+                                            Colors.white)
+                                        : MaterialStateProperty.all<Color>(
+                                            Colors.grey[700]!),
+                                    backgroundColor: MaterialStateProperty.all<Color>(
+                                        Colors.transparent),
+                                    shape: MaterialStateProperty.all<
+                                            RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.zero,
+                                            side: BorderSide(
+                                                color: state.cmType == CmType.chialpha
+                                                    ? Colors.white
+                                                    : Colors.grey[700]!)))),
+                              );
   }
 
   GestureDetector _updateToMember(

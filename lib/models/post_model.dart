@@ -11,57 +11,6 @@ import 'package:kingsfam/models/user_model.dart';
 
 import 'church_model.dart';
 
-// BELOW PREPOST IS A POST CLASS THE PRE POST IS USED IN CREATING A POST (THE CREATE_POST SCREEN TO BE EXACT WHEN PREVIEWING)
-
-class PrePost extends Equatable {
-  final Userr author;
-  final Church? commuinity;
-  final String? quote;
-  final File? imageFile;
-  final File? videoFile;
-  final File?  thumbnailFile;
-  final File? soundTrack;
-  final String? caption;
-  final int? height;
-  PrePost({
-    required this.author,
-    required this.commuinity,
-    this.quote,
-    this.imageFile,
-    this.videoFile,
-    this.thumbnailFile,
-    this.soundTrack,
-    this.caption,
-    this.height,
-  });
-
-  @override
-  List<Object?> get props => [height, author, commuinity, quote, imageFile, videoFile, thumbnailFile, soundTrack, caption];
-
-  PrePost copyWith({
-    Userr? author,
-    int? height,
-    Church? commuinity,
-    String? quote,
-    File? imageFile,
-    File? videoFile,
-    File? thumbnailFile,
-    File? soundTrack,
-    String? caption,
-  }) {
-    return PrePost(
-      author: author ?? this.author,
-      commuinity: commuinity ?? null,
-      quote: quote ?? this.quote,
-      imageFile: imageFile ?? this.imageFile,
-      videoFile: videoFile ?? this.videoFile,
-      thumbnailFile: thumbnailFile ?? this.thumbnailFile,
-      soundTrack: soundTrack ?? this.soundTrack,
-      caption: caption ?? this.caption,
-      height: height ?? this.height,
-    );
-  }
-}
 
 // stings for promoted: promotedL1
 
@@ -174,7 +123,7 @@ class Post extends Equatable {
   
 
   static Future<Post?> fromDoc(DocumentSnapshot doc) async {
-    log ("function: fromDoc ~ file: post_model.dart");
+
     //6 from doc
     final data = doc.data() as Map<String, dynamic>;
     final authorRef = data['author'] as DocumentReference?;

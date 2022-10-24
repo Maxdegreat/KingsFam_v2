@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:kingsfam/models/models.dart';
+import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
-
-import '../../../models/user_model.dart';
-import '../../../repositories/church/church_repository.dart';
-import '../../../widgets/widgets.dart';
+import 'package:kingsfam/widgets/widgets.dart';
 
 class ShowBanedUsersArgs {
   final String cmId;

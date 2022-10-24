@@ -419,7 +419,7 @@ class MessageLines extends StatelessWidget {
         ));
   }
 
-  Widget kingsCordAvtar(BuildContext context) {
+  Widget kingsCordAvtar(BuildContext context, ) {
     HexColor hexcolor = HexColor();
     Size size = MediaQuery.of(context).size;
     return Container(
