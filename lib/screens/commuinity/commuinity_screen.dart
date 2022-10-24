@@ -5,6 +5,7 @@
 
 import 'dart:developer';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -242,21 +243,39 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                   ],
                 ),
                 Container(
-                  height: 85,
+                  height: 95,
                   width: double.infinity,
-                  child: state.postDisplay.length > 0
+                  child: state.events.length > 0
                       ? ListView.builder(
                           itemCount: state.events.length,
                           scrollDirection: Axis.vertical,
                           itemBuilder: (context, index) {
                             Event? event = state.events[index];
-                              return Text("som rand");
+                              return  event!=null? Container(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(Icons.event),
+                                          SizedBox(width : 5),
+                                          Text(event.eventTitle),
+                                        ],
+                                      ),
+                                      Text(event.eventDecription, style: TextStyle(fontStyle: FontStyle.italic),)
+                                    ],
+                                  ),
+                                ),
+                              ):SizedBox.shrink();;
                             }
                           )
                       : Center(
                           child: state.status == CommuintyStatus.loading
                               ? Text("One Second ...")
-                              : Text("Your Community Post Will Show Here")),
+                              : Text("Your Community Events Will Show Here")),
                 ),
                 SizedBox(
                   height: 10,

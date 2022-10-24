@@ -127,6 +127,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
         List<Event?> initEvents = eventSnaps.docs.map((doc) => Event.formDoc(doc)).toList();
         log("The events that were picked up from the event snap is len: " + initEvents.length.toString());
         emit(state.copyWith(events: initEvents));
+        log("the state events has a len of: " + state.events.length.toString());
 
         add(ComuinityLoadingCords(
             commuinity: event.commuinity, cords: allCords));
@@ -171,7 +172,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
         
         isMem = await isMemStream;
         emit(state.copyWith(
-          events: [],
           isMember: isMem,
           kingCords: event.kcs,
           postDisplay: event.posts,
