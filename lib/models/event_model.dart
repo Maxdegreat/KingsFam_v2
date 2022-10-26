@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 class Event extends Equatable {
   final String? id;
   final String eventTitle;
-  final String eventDecription;
+  final String eventDescription;
   final Timestamp? startDate;
   final Timestamp? endDate;
   final List<String>? startDateFrontEnd;
@@ -13,7 +13,7 @@ class Event extends Equatable {
   Event(
       {this.id,
       required this.eventTitle,
-      required this.eventDecription,
+      required this.eventDescription,
       this.startDate,
       this.endDate,
       this.startDateFrontEnd,
@@ -21,7 +21,7 @@ class Event extends Equatable {
     });
 
   List<Object?> get props =>
-      [id, eventTitle, eventDecription, startDate, endDate, startDateFrontEnd, endDateFrontEnd];
+      [id, eventTitle, eventDescription, startDate, endDate, startDateFrontEnd, endDateFrontEnd];
 
   Event copyWith({
     String? id,
@@ -33,7 +33,7 @@ class Event extends Equatable {
     return Event(
       id: id ?? this.id,
       eventTitle: eventTitle ?? this.eventTitle,
-      eventDecription: eventDecription ?? this.eventDecription,
+      eventDescription: eventDecription ?? this.eventDescription,
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
     );
@@ -42,7 +42,7 @@ class Event extends Equatable {
   Map<String, dynamic> toDoc() {
     return {
       'eventTitle': eventTitle,
-      'eventDecription': eventDecription,
+      'eventDecription': eventDescription,
       'startDate' : startDate,
       'endDate' : endDate,
     };
@@ -63,7 +63,7 @@ class Event extends Equatable {
       
         return Event(
             eventTitle: data['eventTitle'],
-            eventDecription: data['eventDecription'],
+            eventDescription: data['eventDecription'],
             startDateFrontEnd: startDateFrontEnd,
             endDateFrontEnd: endDateFrontEnd,
             // startDate: data['startDate'],

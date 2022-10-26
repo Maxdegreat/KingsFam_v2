@@ -157,7 +157,7 @@ class _CreateRoomState extends State<CreateRoom>
                                     // Timestamp.fromDate(DateTime(year))
                                   },
                                   validator: (val) {
-                                    return null;
+                                    
                                   },
                                   onSaved: (val) {}
                                 ),
@@ -196,13 +196,20 @@ class _CreateRoomState extends State<CreateRoom>
                                     onPressed: () {
                                       submitting = true;
                                        if (_eDiscription.value.text.isNotEmpty && _eTitle.value.text.isNotEmpty && startTimeStamp != null && endTimestamp != null) {
-                                         Event event = Event(
-                                           eventTitle: _eTitle.value.text, eventDecription: _eDiscription.value.text, startDate: startTimeStamp!, endDate: endTimestamp!);
-                                          FirebaseFirestore.instance.collection(Paths.church).doc(widget.cm.id).collection(Paths.events).add(event.toDoc());
-                                          snackBar(snackMessage: "Creating your Event", context: context, bgColor: Colors.white);
-                                          widget.cmBloc.onAddEvent(event: event);
-                                          Future.delayed(Duration(seconds: 1,)).then((value) => Navigator.of(context).pop());
-                                       }
+                                        if (startTimeStamp!.compareTo(endTimestamp!) > 1 ) {
+                                          snackBar(snackMessage: "Heyt, starting time can not be after the ending time", context: context, bgColor: Colors.red[400]);
+                                          log("err in ordering of timestamps");
+                                          log( (startTimeStamp!.compareTo(endTimestamp!) > 1).toString() + "if this is true then start time is after ending" );
+                                        } else {
+                                          log("time ordering is correct " + (startTimeStamp!.compareTo(endTimestamp!) < 1).toString());
+                                          // Event event = Event(
+                                            // eventTitle: _eTitle.value.text, eventDescription: _eDiscription.value.text, startDate: startTimeStamp!, endDate: endTimestamp!);
+                                          // FirebaseFirestore.instance.collection(Paths.church).doc(widget.cm.id).collection(Paths.events).add(event.toDoc());
+                                          // snackBar(snackMessage: "Creating your Event", context: context, bgColor: Colors.white);
+                                          // widget.cmBloc.onAddEvent(event: event);
+                                          // Future.delayed(Duration(seconds: 1,)).then((value) => Navigator.of(context).pop());
+                                        }
+                                       } 
                                     },
                                     child: Text("Create Event"))
                               ],

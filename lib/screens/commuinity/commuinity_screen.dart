@@ -252,7 +252,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                           itemBuilder: (context, index) {
                             Event? event = state.events[index];
                               return  event!=null? GestureDetector(
-                                onTap: () => Navigator.of(context).pushNamed(),
+                                onTap: () => Navigator.of(context).pushNamed(EventView.routeName, arguments: EventViewArgs(cmBloc: context.read<CommuinityBloc>(), event: event)),
                                 child: Container(
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
@@ -276,7 +276,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                         ),
                                         Padding(
                                           padding: const EdgeInsets.only(left: 5.0),
-                                          child: Text(event.eventDecription, style: TextStyle(fontStyle: FontStyle.italic), overflow: TextOverflow.ellipsis,),
+                                          child: Text(event.eventDescription, style: TextStyle(fontStyle: FontStyle.italic), overflow: TextOverflow.ellipsis,),
                                         )
                                       ],
                                     ),

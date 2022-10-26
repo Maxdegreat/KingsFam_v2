@@ -1,13 +1,10 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:kingsfam/helpers/vid_helper.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
-import 'package:kingsfam/screens/commuinity/screens/says_room/says_room.dart';
 import 'package:kingsfam/screens/commuinity/screens/says_room/screens/create_says.dart';
-import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
 
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/screens/search/more_cm_screen.dart';
@@ -104,23 +101,11 @@ class CustomRoute {
       case KingsCordScreen.routeName:
         return KingsCordScreen.route(settings.arguments as KingsCordArgs);
 
-      case SoundsScreen.routeName:
-        return SoundsScreen.route(args: settings.arguments as SoundsArgs);
 
-      case StorysCommuinityScreen.routeName:
-        return StorysCommuinityScreen.route(
-            args: settings.arguments as StoryCommuinityArgs);
 
       case CommuinityFeedScreen.routeName:
         return CommuinityFeedScreen.route(
             args: settings.arguments as CommuinityFeedScreenArgs);
-
-      case CallsHome.routeName:
-        return CallsHome.route(args: settings.arguments as CallsHomeArgs);
-
-      case BuildCallScreen.routeName:
-        return BuildCallScreen.route(
-            args: settings.arguments as BuildCallScreenArgs);
 
       case CommuinityScreen.routeName:
         return CommuinityScreen.route(
@@ -182,6 +167,9 @@ class CustomRoute {
 
       case CreateSays.routeName:
         return CreateSays.route(args: settings.arguments as CreateSaysArgs);
+      
+      case EventView.routeName:
+        return EventView.route(args: settings.arguments as EventViewArgs);
 
       default:
         return _errorRoute();

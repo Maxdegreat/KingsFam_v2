@@ -5,22 +5,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 //import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/blocs/search/search_bloc.dart';
 import 'package:kingsfam/blocs/simple_bloc_observer.dart';
-import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/custum_router.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/repositories/says/says_repository.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
-import 'package:kingsfam/screens/commuinity/screens/commuinity_calls/cubit/calls_home_cubit.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
-import 'package:kingsfam/screens/commuinity/screens/says_room/bloc/says_bloc.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/theme_club_house/theme_info.dart';
@@ -79,12 +75,7 @@ class MyApp extends StatelessWidget {
                 postsRepository: context.read<PostsRepository>(),
                 authBloc: context.read<AuthBloc>()),
           ),
-          BlocProvider<CallshomeCubit>(
-              create: (context) => CallshomeCubit(
-                    callRepository: context.read<CallRepository>(),
-                    userrRepository: context.read<UserrRepository>(),
-                    authBloc: context.read<AuthBloc>(),
-                  )),
+         
            BlocProvider<BuildchurchCubit>( // TODO                                        PLEASE NOTE THIS DOES NOT NEED TO BE A GLOBAL THING. NOTE IT IS USED IN CM SCREEN ON A GLOBAL SCOPE BUT IT CAN BE REFACTORED.
                create: (context) => BuildchurchCubit(
                    callRepository: context.read<CallRepository>(),
