@@ -148,12 +148,12 @@ class _CreateRoomState extends State<CreateRoom>
                                     //          year                 month                day                    hour                   second
                                     var timelst = [val.substring(0, 4), val.substring(5,7), val.substring(8, 10), val.substring(11, 13), val.substring(14, 16)];
                                     time = DateTime( int.parse(timelst[0]),     int.parse(timelst[1]),   int.parse(timelst[2]), int.parse(timelst[3]), int.parse(timelst[4]));
-                                    
-                                    startTimeStamp = Timestamp.fromDate(time.toLocal());
-                                    log("start timestamp plain in UTC: " + time.toUtc().toString());
-                                    log("start timestamp plain in local: " + time.toLocal().toString());
-                                    log("start timestamp plain in ____: " + time.toString());
-                                    log("start timestamp from UTC: " + DateTime.fromMicrosecondsSinceEpoch(startTimeStamp!.microsecondsSinceEpoch).toString());
+                                    var local = time.toLocal();
+                                    startTimeStamp = Timestamp.fromDate(local.toUtc());
+                                    //  log("start timestamp plain in UTC: " + time.toUtc().toString());
+                                    //  log("start timestamp plain in local: " + time.toLocal().toString());
+                                    //  log("start timestamp plain in ____: " + time.toString());
+                                    //  log("start timestamp from UTC: " + DateTime.fromMicrosecondsSinceEpoch(startTimeStamp!.microsecondsSinceEpoch).toString());
                                     // Timestamp.fromDate(DateTime(year))
                                   },
                                   validator: (val) {
@@ -176,13 +176,14 @@ class _CreateRoomState extends State<CreateRoom>
                                     //          year                 month                day                    hour                   second
                                     var timelst = [val.substring(0, 4), val.substring(5,7), val.substring(8, 10), val.substring(11, 13), val.substring(14, 16)];
                                     time = DateTime( int.parse(timelst[0]),     int.parse(timelst[1]),   int.parse(timelst[2]), int.parse(timelst[3]), int.parse(timelst[4]));
-                                    
-                                    endTimestamp = Timestamp.fromDate(time.toLocal());
-                                    log("start timestamp plain in UTC: " + time.toUtc().toString());
-                                    log("start timestamp plain in local: " + time.toLocal().toString());
-                                    log("start timestamp plain in ____: " + time.toString());
-                                    log("start timestamp from UTC: " + DateTime.fromMicrosecondsSinceEpoch(startTimeStamp!.microsecondsSinceEpoch).toString());
-                                    // Timestamp.fromDate(DateTime(year))
+                                    var local = time.toLocal();
+                                    endTimestamp = Timestamp.fromDate(local.toUtc()); // storing the time stamp in utc
+
+                                    //  log("end timestamp plain in UTC: " + time.toUtc().toString());
+                                    //  log("end timestamp plain in local: " + time.toLocal().toString());
+                                    //  log("end timestamp plain in ____: " + time.toString());
+                                    //  log("end timestamp from UTC: " + DateTime.fromMicrosecondsSinceEpoch(endTimestamp!.microsecondsSinceEpoch).toString());
+                                    //  Timestamp.fromDate(DateTime(year))
                                   },
                                   validator: (val) {
                                     return null;

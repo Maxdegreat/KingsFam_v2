@@ -251,22 +251,35 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                           scrollDirection: Axis.vertical,
                           itemBuilder: (context, index) {
                             Event? event = state.events[index];
-                              return  event!=null? Container(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Icon(Icons.event),
-                                          SizedBox(width : 5),
-                                          Text(event.eventTitle),
-                                        ],
-                                      ),
-                                      Text(event.eventDecription, style: TextStyle(fontStyle: FontStyle.italic),)
-                                    ],
+                              return  event!=null? GestureDetector(
+                                onTap: () => Navigator.of(context).pushNamed(),
+                                child: Container(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            //        month                             day                                   year
+                                            Padding(
+                                              padding: const EdgeInsets.all(2.0),
+                                              child: Text(event.startDateFrontEnd![1] + "/" + event.startDateFrontEnd![2] + "/" + event.startDateFrontEnd![0]),
+                                            ),
+                                            SizedBox(width : 5),
+                                            Padding(
+                                              padding: const EdgeInsets.all(2.0),
+                                              child: Text(event.eventTitle, style: TextStyle(fontWeight: FontWeight.w700, color: Colors.blue[700]), overflow: TextOverflow.ellipsis),
+                                            ),
+                                          ],
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 5.0),
+                                          child: Text(event.eventDecription, style: TextStyle(fontStyle: FontStyle.italic), overflow: TextOverflow.ellipsis,),
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ):SizedBox.shrink();;
