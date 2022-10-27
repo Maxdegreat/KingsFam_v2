@@ -128,18 +128,16 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
         for (var doc in eventSnaps.docs) {
           Event? e = Event.formDoc(doc);
           if (e != null) {
-            //  a positive integer if this is ordered after
-            if (e.endDate!.compareTo(Timestamp.now()) > 1) {
+            // make a date time to check if its a past date. if so del event
+            DateTime endTimeForDel = DateTime.fromMicrosecondsSinceEpoch(e.endDate!.microsecondsSinceEpoch);
+            if (DateTime.now().isAfter(endTimeForDel)) {
               FirebaseFirestore.instance.collection(Paths.church).doc(event.commuinity.id).collection(Paths.events).doc(e.id!).delete();
             } else {
               initEvents.add(e);
             }
           }
         }
-        // List<Event?> initEvents = eventSnaps.docs.map((doc) {
-        //   Event.formDoc(doc);
-        //   if(Timestamp.now().compareTo(other))
-        // }).toList();
+        
         log("The events that were picked up from the event snap is len: " + initEvents.length.toString());
         emit(state.copyWith(events: initEvents));
         log("the state events has a len of: " + state.events.length.toString());

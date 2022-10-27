@@ -97,8 +97,8 @@ class _CreateRoomState extends State<CreateRoom>
                       TabBar(
                         controller: _tabController,
                         tabs: [
-                          Tab(text: "Add Event"),
                           Tab(text: "Create Room"),
+                          Tab(text: "Add Event"),
                         ],
                       ),
                       SizedBox(
@@ -107,6 +107,17 @@ class _CreateRoomState extends State<CreateRoom>
                       Expanded(
                         child:
                             TabBarView(controller: _tabController, children: [
+                          
+                          // child 1
+                          Column(
+                            children: [
+                              Text("Room type"),
+                              _pickRoomType(),
+                              _textField(context)
+                            ],
+                          ),
+
+                          // child 2
                           SingleChildScrollView(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -137,7 +148,7 @@ class _CreateRoomState extends State<CreateRoom>
                                 DateTimePicker(
                                   type: DateTimePickerType.dateTimeSeparate,
                                   dateMask: 'd MMM, yyyy',
-                                  initialValue: '',
+                                  initialValue: "",
                                   firstDate: DateTime(2000),
                                   lastDate: DateTime(2100),
                                   icon: Icon(Icons.event),
@@ -150,10 +161,10 @@ class _CreateRoomState extends State<CreateRoom>
                                     time = DateTime( int.parse(timelst[0]),     int.parse(timelst[1]),   int.parse(timelst[2]), int.parse(timelst[3]), int.parse(timelst[4]));
                                     var local = time.toLocal();
                                     startTimeStamp = Timestamp.fromDate(local.toUtc());
-                                    //  log("start timestamp plain in UTC: " + time.toUtc().toString());
-                                    //  log("start timestamp plain in local: " + time.toLocal().toString());
-                                    //  log("start timestamp plain in ____: " + time.toString());
-                                    //  log("start timestamp from UTC: " + DateTime.fromMicrosecondsSinceEpoch(startTimeStamp!.microsecondsSinceEpoch).toString());
+                                    log("start timestamp plain in UTC: " + time.toUtc().toString());
+                                    log("start timestamp plain in local: " + time.toLocal().toString());
+                                    log("start timestamp plain in ____: " + time.toString());
+                                    log("start timestamp from UTC: " + DateTime.fromMicrosecondsSinceEpoch(startTimeStamp!.microsecondsSinceEpoch).toString());
                                     // Timestamp.fromDate(DateTime(year))
                                   },
                                   validator: (val) {
@@ -165,7 +176,7 @@ class _CreateRoomState extends State<CreateRoom>
                                  DateTimePicker(
                                   type: DateTimePickerType.dateTimeSeparate,
                                   dateMask: 'd MMM, yyyy',
-                                  initialValue: '',
+                                  initialValue: "",
                                   firstDate: DateTime(2000),
                                   lastDate: DateTime(2100),
                                   icon: Icon(Icons.event),
@@ -179,11 +190,11 @@ class _CreateRoomState extends State<CreateRoom>
                                     var local = time.toLocal();
                                     endTimestamp = Timestamp.fromDate(local.toUtc()); // storing the time stamp in utc
 
-                                    //  log("end timestamp plain in UTC: " + time.toUtc().toString());
-                                    //  log("end timestamp plain in local: " + time.toLocal().toString());
-                                    //  log("end timestamp plain in ____: " + time.toString());
-                                    //  log("end timestamp from UTC: " + DateTime.fromMicrosecondsSinceEpoch(endTimestamp!.microsecondsSinceEpoch).toString());
-                                    //  Timestamp.fromDate(DateTime(year))
+                                      log("end timestamp plain in UTC: " + time.toUtc().toString());
+                                      log("end timestamp plain in local: " + time.toLocal().toString());
+                                      log("end timestamp plain in ____: " + time.toString());
+                                      log("end timestamp from UTC: " + DateTime.fromMicrosecondsSinceEpoch(endTimestamp!.microsecondsSinceEpoch).toString());
+                                      // Timestamp.fromDate(DateTime(year))
                                   },
                                   validator: (val) {
                                     return null;
@@ -193,35 +204,42 @@ class _CreateRoomState extends State<CreateRoom>
 
                                 SizedBox(height: 10),
                                 ElevatedButton(
-                                    onPressed: () {
-                                      submitting = true;
-                                       if (_eDiscription.value.text.isNotEmpty && _eTitle.value.text.isNotEmpty && startTimeStamp != null && endTimestamp != null) {
-                                        if (startTimeStamp!.compareTo(endTimestamp!) > 1 ) {
-                                          snackBar(snackMessage: "Heyt, starting time can not be after the ending time", context: context, bgColor: Colors.red[400]);
-                                          log("err in ordering of timestamps");
-                                          log( (startTimeStamp!.compareTo(endTimestamp!) > 1).toString() + "if this is true then start time is after ending" );
+                                    onPressed: () async {
+                                      if (startTimeStamp == null || endTimestamp == null || _eDiscription.value.text.isEmpty || _eTitle.value.text.isEmpty) {
+                                        snackBar(snackMessage: "Make sure all values are full, yezirr", context: context, bgColor: Colors.red[400]);
+                                      } else {
+                                      DateTime t1 = DateTime.fromMicrosecondsSinceEpoch(startTimeStamp!.microsecondsSinceEpoch);
+                                      DateTime t2 = DateTime.fromMicrosecondsSinceEpoch(endTimestamp!.microsecondsSinceEpoch);
+                                      // log("using doc to see if isbefore: " + t1.isBefore(t2).toString());
+                                      if (t1.isBefore(DateTime.now())) {
+                                        snackBar(snackMessage: "Your start time must be after or on this current date", context: context, bgColor: Colors.red[400]);
+                                      }
+                                       if (_eDiscription.value.text.isNotEmpty && _eTitle.value.text.isNotEmpty && startTimeStamp != null && endTimestamp != null && submitting == false) {
+                                        submitting = true;
+                                        if (t1.isAfter(t2)) {
+                                          snackBar(snackMessage: "Hey, starting time can not be after the ending time", context: context, bgColor: Colors.red[400]);
                                         } else {
-                                          log("time ordering is correct " + (startTimeStamp!.compareTo(endTimestamp!) < 1).toString());
-                                          // Event event = Event(
-                                            // eventTitle: _eTitle.value.text, eventDescription: _eDiscription.value.text, startDate: startTimeStamp!, endDate: endTimestamp!);
-                                          // FirebaseFirestore.instance.collection(Paths.church).doc(widget.cm.id).collection(Paths.events).add(event.toDoc());
-                                          // snackBar(snackMessage: "Creating your Event", context: context, bgColor: Colors.white);
-                                          // widget.cmBloc.onAddEvent(event: event);
-                                          // Future.delayed(Duration(seconds: 1,)).then((value) => Navigator.of(context).pop());
+                                          Event event = Event(
+                                            eventTitle: _eTitle.value.text, eventDescription: _eDiscription.value.text, startDate: startTimeStamp!, endDate: endTimestamp!);
+                                          FirebaseFirestore.instance.collection(Paths.church).doc(widget.cm.id).collection(Paths.events).add(event.toDoc());
+                                          snackBar(snackMessage: "Creating your Event", context: context, bgColor: Colors.white);
+                                          widget.cmBloc.onAddEvent(event: event);
+                                          await Future.delayed(Duration(seconds: 1,)).then((value) => Navigator.of(context).pop());
                                         }
                                        } 
+                                      }
+                                     
                                     },
                                     child: Text("Create Event"))
                               ],
                             ),
                           ),
-                          Column(
-                            children: [
-                              Text("Room type"),
-                              _pickRoomType(),
-                              _textField(context)
-                            ],
-                          )
+
+
+
+
+
+
                         ]),
                       )
                     ],

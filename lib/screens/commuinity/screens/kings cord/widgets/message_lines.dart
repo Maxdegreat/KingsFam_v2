@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
@@ -11,6 +12,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/extensions/extensions.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
 import 'package:kingsfam/screens/screens.dart';
+import 'package:kingsfam/widgets/link_preview_container.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:bloc/bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -24,26 +26,6 @@ class MessageLines extends StatelessWidget {
   final BuildContext inhearatedCtx;
 
   MessageLines({required this.message, required this.cmId, required this.kcId, this.previousSenderAsUid, required  this.inhearatedCtx});
-
-  showLinkPicker(List<String> links, BuildContext context) {
-    return showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return Container(
-            child: Column(
-              children: links
-                  .map((e) => ListTile(
-                        leading: Text(
-                          e,
-                          style: TextStyle(fontSize: 17, color: Colors.white),
-                        ),
-                        onTap: () async => await launch(e),
-                      ))
-                  .toList(),
-            ),
-          );
-        });
-  }
 
   uploadReaction(String reaction, String msgId, Map<String, int> reactions) {
     int? incrementedReaction = reactions[reaction];
@@ -240,39 +222,36 @@ class MessageLines extends StatelessWidget {
                     fontWeight: FontWeight.w800, ));
       }
 
-    return GestureDetector(
-      onTap: () {
-        if (links.isNotEmpty) {
-          return showLinkPicker(links, context);
-        }
-      },
-      onLongPress: () =>
-          _showReactionsBar(message.id!, message.reactions!, context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _showReplyBarUi(message.replyed),
-          Padding(
-            padding: const EdgeInsets.only(left: 7),
-            child: Text(message.text!,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17.0,
-                    fontWeight: FontWeight.w800)),
-          ),
-          _showReactionBarUi(messageReactions: message.reactions)
-        ],
-      ),
+      if (links.isNotEmpty) {
+        return GestureDetector(
+          onTap: () {
+            launch(links[0]);
+          },
+          child: Column(
+            children: [
+              LinkPreviewContainer(link: links[0]),
+              SizedBox(height: 2),
+              message.text!.trim().length != links[0].trim().length ? Text(message.text!) : SizedBox.shrink()
+            ],
+          ));
+      }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _showReplyBarUi(message.replyed),
+        Padding(
+          padding: const EdgeInsets.only(left: 7),
+          child: Text(message.text!,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 17.0,
+                  fontWeight: FontWeight.w800)),
+        ),
+        _showReactionBarUi(messageReactions: message.reactions)
+      ],
     );
 
-    //lineGen.parsedStringToFormatedForMessageGenerator(fuleAsString: message.text);
-    //  return Padding(
-    //  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
-    //  child: RichText(
-    //  textAlign: TextAlign.start,
-    //  text: TextSpan(
-    //  children: lineGen.children
-    //  )));
   }
 
   //for an image
