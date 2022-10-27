@@ -61,8 +61,10 @@ class _SaysContainerState extends State<SaysContainer> {
                 children: [
                   ProfileImage(
                       radius: 25,
-                      pfpUrl:
-                          "https://firebasestorage.googleapis.com/v0/b/kingsfam-9b1f8.appspot.com/o/images%2Fchurches%2FchurchAvatar_eb0c7061-a124-41b4-b948-60dcb0dffc49.jpg?alt=media&token=7e2fc437-9448-48bd-95bc-78e977fbcad8"),
+                      pfpUrl: widget.says.author!.profileImageUrl == null || widget.says.author!.profileImageUrl.isEmpty ? 
+                        "https://firebasestorage.googleapis.com/v0/b/kingsfam-9b1f8.appspot.com/o/images%2Fchurches%2FchurchAvatar_eb0c7061-a124-41b4-b948-60dcb0dffc49.jpg?alt=media&token=7e2fc437-9448-48bd-95bc-78e977fbcad8" :
+                         widget.says.author!.profileImageUrl
+                          ),
                   SizedBox(width: 5),
                   Flexible(
                     child: Padding(
@@ -134,9 +136,10 @@ class _SaysContainerState extends State<SaysContainer> {
             SizedBox(width: 1),
             Text(widget.says.commentsCount.toString()),
             SizedBox(width: 7),
-            Text(widget.says.date.timeAgo())
+            
           ],
         ),
+        Text(widget.says.date.timeAgo())
       ],
     );
   }

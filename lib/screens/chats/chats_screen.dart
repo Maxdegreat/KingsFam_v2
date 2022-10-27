@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -56,7 +57,8 @@ class _ChatsScreenState extends State<ChatsScreen>
 
   Future<void> setupInteractedMessage() async {
     
-    await FirebaseMessaging.instance.requestPermission(
+    if (Platform.isIOS) {
+      await FirebaseMessaging.instance.requestPermission(
       alert: true,
       announcement: false,
       badge: true,
@@ -65,6 +67,8 @@ class _ChatsScreenState extends State<ChatsScreen>
       provisional: false,
       sound: true,
     );
+
+    }
   
     // Get any messages which caused the application to open from.
     // a terminated state.
@@ -83,7 +87,7 @@ class _ChatsScreenState extends State<ChatsScreen>
   }
 
   Future<void> _handleMessage(RemoteMessage message) async {
-    // log("MESSAGE.DATA['TYPE'] IS OF VAL: "  + message.data['type'].toString());
+     log("MESSAGE.DATA['TYPE'] IS OF VAL: "  + message.data['type'].toString());
     if (message.data['type'] == 'kc_type') {
       // type: kc_type has a cmId and a kcId. see cloud functions onMentionedUser for reference
       // var snap = await FirebaseFirestore.instance.collection(Paths.church).doc(message.data['cmId']).collection(Paths.kingsCord).doc(message.data['kcId']).get();
