@@ -65,8 +65,8 @@ class _ChatsScreenState extends State<ChatsScreen>
       provisional: false,
       sound: true,
     );
-
-    // Get any messages which caused the application to open from
+  
+    // Get any messages which caused the application to open from.
     // a terminated state.
     RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();

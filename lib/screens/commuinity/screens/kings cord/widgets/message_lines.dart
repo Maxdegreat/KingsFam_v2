@@ -17,7 +17,7 @@ import 'package:kingsfam/widgets/widgets.dart';
 import 'package:bloc/bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class MessageLines extends StatelessWidget {
+class MessageLines extends StatefulWidget {
   //class data
   final String? previousSenderAsUid;
   final Message message;
@@ -27,6 +27,11 @@ class MessageLines extends StatelessWidget {
 
   MessageLines({required this.message, required this.cmId, required this.kcId, this.previousSenderAsUid, required  this.inhearatedCtx});
 
+  @override
+  State<MessageLines> createState() => _MessageLinesState();
+}
+
+class _MessageLinesState extends State<MessageLines> {
   uploadReaction(String reaction, String msgId, Map<String, int> reactions) {
     int? incrementedReaction = reactions[reaction];
     if (incrementedReaction == null) {
@@ -37,9 +42,9 @@ class MessageLines extends StatelessWidget {
     reactions[reaction] = incrementedReaction;
     FirebaseFirestore.instance
         .collection(Paths.church)
-        .doc(cmId)
+        .doc(widget.cmId)
         .collection(Paths.kingsCord)
-        .doc(kcId)
+        .doc(widget.kcId)
         .collection(Paths.messages)
         .doc(msgId)
         .update({'reactions': reactions});
@@ -70,7 +75,7 @@ class MessageLines extends StatelessWidget {
   }
 
   _showReactionBarUi({required Map<String, int>? messageReactions}) {
-    return message.reactions == {} || messageReactions == {'': 0}
+    return widget.message.reactions == {} || messageReactions == {'': 0}
         ? SizedBox.shrink()
         : Container(
             height: 30,
@@ -80,7 +85,7 @@ class MessageLines extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(vertical: 5.0, horizontal: 7.0),
                 child:
-                    reactionContainer(reaction: e, num: message.reactions![e]!),
+                    reactionContainer(reaction: e, num: widget.message.reactions![e]!),
               );
             }).toList()),
           );
@@ -169,12 +174,12 @@ class MessageLines extends StatelessWidget {
                     //  SizedBox(width: 5,),
                       GestureDetector(
                         onTap: () {
-                          if (message.sender!.id == context.read<AuthBloc>().state.user!.uid) {
-                            if (message.text != null && message.text == "(code:unsent 10987345)") {
+                          if (widget.message.sender!.id == context.read<AuthBloc>().state.user!.uid) {
+                            if (widget.message.text != null && widget.message.text == "(code:unsent 10987345)") {
                               snackBar(snackMessage: "You can\'t del this fam", context: context, bgColor: Colors.red[400]!);
                             } else {
-                              Message messageForDel = message.copyWith(text: "(code:unsent 10987345)", imageUrl: null, mentionedIds: null, thumbnailUrl: null, videoUrl: null,);
-                          FirebaseFirestore.instance.collection(Paths.church).doc(this.cmId).collection(Paths.kingsCord).doc(this.kcId).collection(Paths.messages).doc(this.message.id).update(messageForDel.ToDoc(senderId: message.sender!.id));
+                              Message messageForDel = widget.message.copyWith(text: "(code:unsent 10987345)", imageUrl: null, mentionedIds: null, thumbnailUrl: null, videoUrl: null,);
+                          FirebaseFirestore.instance.collection(Paths.church).doc(this.widget.cmId).collection(Paths.kingsCord).doc(this.widget.kcId).collection(Paths.messages).doc(this.widget.message.id).update(messageForDel.ToDoc(senderId: widget.message.sender!.id));
                             }
                         } else
                           snackBar(snackMessage: "hmm, can't del a message that is not yours fam", context: context, bgColor: Colors.red[400]!);
@@ -202,19 +207,20 @@ class MessageLines extends StatelessWidget {
       ),
     ) : SizedBox.shrink();
   }
+
   // if i send the message.
   _buildText(BuildContext context) {
-    if (message.reactions == {}) {
-      message.reactions![''] = 0;
+    if (widget.message.reactions == {}) {
+      widget.message.reactions![''] = 0;
     }
     List<String> links = [];
-    var msgAsList = message.text!.split(' ').forEach((element) {
+    var msgAsList = widget.message.text!.split(' ').forEach((element) {
       if (element.startsWith('https://') || element.startsWith('Https://')) {
         links.add(element);
       } 
     });
 
-    if (message.text == "(code:unsent 10987345)") {
+    if (widget.message.text == "(code:unsent 10987345)") {
         return Text("deleted", style: TextStyle(
                     color: Colors.grey,
                     fontSize: 17.0,
@@ -223,33 +229,42 @@ class MessageLines extends StatelessWidget {
       }
 
       if (links.isNotEmpty) {
+
         return GestureDetector(
-          onTap: () {
+          onLongPress: () =>
+                    _showReactionsBar(widget.message.id!, widget.message.reactions, context),
+           onTap: () {
             launch(links[0]);
           },
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              LinkPreviewContainer(link: links[0]),
+              LinkPreviewContainer(link: links.last),
               SizedBox(height: 2),
-              message.text!.trim().length != links[0].trim().length ? Text(message.text!) : SizedBox.shrink()
+              widget.message.text!.trim().length != links[0].trim().length ? Text(widget.message.text!) : Text("#weblink")
             ],
           ));
       }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _showReplyBarUi(message.replyed),
-        Padding(
-          padding: const EdgeInsets.only(left: 7),
-          child: Text(message.text!,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 17.0,
-                  fontWeight: FontWeight.w800)),
-        ),
-        _showReactionBarUi(messageReactions: message.reactions)
-      ],
+    return GestureDetector(
+      onLongPress: () =>
+                    _showReactionsBar(widget.message.id!, widget.message.reactions, context),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _showReplyBarUi(widget.message.replyed),
+          Padding(
+            padding: const EdgeInsets.only(left: 7),
+            child: Text(widget.message.text!,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 17.0,
+                    fontWeight: FontWeight.w800)),
+          ),
+          _showReactionBarUi(messageReactions: widget.message.reactions)
+        ],
+      ),
     );
 
   }
@@ -263,11 +278,11 @@ class MessageLines extends StatelessWidget {
       children: [
         GestureDetector(
           onLongPress: () =>
-              _showReactionsBar(message.id!, message.reactions, context),
+              _showReactionsBar(widget.message.id!, widget.message.reactions, context),
           onTap: () => Navigator.of(context).pushNamed(UrlViewScreen.routeName,
               arguments: UrlViewArgs(
-                  urlImg: message.imageUrl!,
-                  heroTag: 'Message/${message.imageUrl}/')),
+                  urlImg: widget.message.imageUrl!,
+                  heroTag: 'Message/${widget.message.imageUrl}/')),
           child: Container(
             height: size.height * 0.2,
             width: size.width * 0.6,
@@ -279,10 +294,10 @@ class MessageLines extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20.0),
                 image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: CachedNetworkImageProvider(message.imageUrl!))),
+                    image: CachedNetworkImageProvider(widget.message.imageUrl!))),
           ),
         ),
-        _showReactionBarUi(messageReactions: message.reactions)
+        _showReactionBarUi(messageReactions: widget.message.reactions)
       ],
     );
   }
@@ -299,14 +314,14 @@ class MessageLines extends StatelessWidget {
             children: [
               GestureDetector(
                 onLongPress: () =>
-                    _showReactionsBar(message.id!, message.reactions, context),
+                    _showReactionsBar(widget.message.id!, widget.message.reactions, context),
                 onTap: () => Navigator.of(context).pushNamed(
                     UrlViewScreen.routeName,
                     arguments: UrlViewArgs(
-                        urlVid: message.videoUrl!,
-                        urlImg: message.thumbnailUrl!,
+                        urlVid: widget.message.videoUrl!,
+                        urlImg: widget.message.thumbnailUrl!,
                         heroTag:
-                            'Message/${message.videoUrl}/${message.thumbnailUrl}')),
+                            'Message/${widget.message.videoUrl}/${widget.message.thumbnailUrl}')),
                 child: Container(
                   child: Icon(
                     Icons.play_arrow,
@@ -330,9 +345,9 @@ class MessageLines extends StatelessWidget {
               borderRadius: BorderRadius.circular(20.0),
               image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: CachedNetworkImageProvider(message.thumbnailUrl!))),
+                  image: CachedNetworkImageProvider(widget.message.thumbnailUrl!))),
         ),
-        _showReactionBarUi(messageReactions: message.reactions)
+        _showReactionBarUi(messageReactions: widget.message.reactions)
       ],
     );
   }
@@ -355,7 +370,7 @@ class MessageLines extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 //FancyListTile(username: '${kingsCordMemInfo.memberInfo[message.senderId]['username']}', imageUrl: '${kingsCordMemInfo.memberInfo[message.senderId]['profileImageUrl']}', onTap: null, isBtn: false, BR: 18, height: 18, width: 18),
-                previousSenderAsUid == message.sender!.id ? SizedBox.shrink() :kingsCordAvtar(context),
+                widget.previousSenderAsUid == widget.message.sender!.id ? SizedBox.shrink() :kingsCordAvtar(context),
                 SizedBox(
                   width: 5.0,
                 ),
@@ -363,17 +378,17 @@ class MessageLines extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      message.sender!.username,
+                      widget.message.sender!.username,
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w900,
-                          color: message.sender!.colorPref == ""
+                          color: widget.message.sender!.colorPref == ""
                               ? Colors.red
                               : Color(hexcolor
-                                  .hexcolorCode(message.sender!.colorPref))),
+                                  .hexcolorCode(widget.message.sender!.colorPref))),
                     ),
                     Text(
-                      '${message.date.timeAgo()}',
+                      '${widget.message.date.timeAgo()}',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
@@ -389,9 +404,9 @@ class MessageLines extends StatelessWidget {
                 constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width,
                 ),
-                child: message.text != null
+                child: widget.message.text != null
                     ? _buildText(context)
-                    : message.videoUrl != null && message.thumbnailUrl != null
+                    : widget.message.videoUrl != null && widget.message.thumbnailUrl != null
                         ? _buildVideo(context)
                         : _buildImage(context)),
           ],
@@ -404,18 +419,18 @@ class MessageLines extends StatelessWidget {
     return Container(
       height: size.height / 18.5,
       width: size.width / 8,
-      child: message.sender!.profileImageUrl != "null"
+      child: widget.message.sender!.profileImageUrl != "null"
           ? kingsCordProfileImg()
           : kingsCordProfileIcon(),
       decoration: BoxDecoration(
          border: Border.all(
              width: 2,
-             color: message.sender!.colorPref == ""
+             color: widget.message.sender!.colorPref == ""
                  ? Colors.red
-                 : Color(hexcolor.hexcolorCode(message.sender!.colorPref))),
-          color: message.sender!.colorPref == ""
+                 : Color(hexcolor.hexcolorCode(widget.message.sender!.colorPref))),
+          color: widget.message.sender!.colorPref == ""
               ? Colors.red
-              : Color(hexcolor.hexcolorCode(message.sender!.colorPref)),
+              : Color(hexcolor.hexcolorCode(widget.message.sender!.colorPref)),
          shape: BoxShape.circle),
     );
   }
@@ -423,7 +438,8 @@ class MessageLines extends StatelessWidget {
   Widget? kingsCordProfileImg() => CircleAvatar(
       backgroundColor: Colors.grey[400],
       backgroundImage:
-          CachedNetworkImageProvider(message.sender!.profileImageUrl),radius: 8,);
+          CachedNetworkImageProvider(widget.message.sender!.profileImageUrl),radius: 8,);
+
   Widget? kingsCordProfileIcon() =>
       Container(child: Icon(Icons.account_circle));
 }
