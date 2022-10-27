@@ -7,7 +7,7 @@ class AdHelper {
     String testAdUnitId = "ca-app-pub-3940256099942544/6300978111";
     if (Platform.isAndroid) {
       // ignore: dead_code
-      return prodAdUnitIdA ;
+      return testAdUnitId ;
     } else if (Platform.isIOS) {
       return "ca-app-pub-3940256099942544/2934735716";
     } else {
@@ -17,10 +17,6 @@ class AdHelper {
 
 
 }
-
-
-
-
 
 
 class AdHelperTest {

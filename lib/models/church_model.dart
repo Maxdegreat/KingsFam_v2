@@ -15,6 +15,7 @@ class Church extends Equatable {
   final String? id;
   final String name;
   final String cmType;
+  final String cmPrivacy;
   final String location;
   final List<String>? hashTags;
   final String imageUrl;
@@ -31,6 +32,7 @@ class Church extends Equatable {
   Church({
     required this.searchPram,
     this.id,
+    required this.cmPrivacy, 
     required this.cmType,
     required this.name,
     required this.location,
@@ -53,6 +55,7 @@ class Church extends Equatable {
         cmType,
         name,
         location,
+        cmPrivacy, 
         cmType,
         hashTags,
         imageUrl,
@@ -75,6 +78,7 @@ class Church extends Equatable {
     String? imageUrl,
     String? about,
     String? cmType,
+    String? cmPrivacy,
     Timestamp? recentMsgTime,
     Map<Userr, dynamic>? members,
     List<String>? events,
@@ -85,6 +89,7 @@ class Church extends Equatable {
   }) {
     return Church(
       cmType: cmType ?? this.cmType,
+      cmPrivacy: cmPrivacy ?? this.cmPrivacy,
       id: id ?? this.id,
       recentMsgTime: recentMsgTime ?? this.recentMsgTime,
       searchPram: searchPram ?? this.searchPram,
@@ -130,6 +135,7 @@ class Church extends Equatable {
 
     return {
       'cmType': cmType,
+      'cmPrivacy': cmPrivacy,
       'name': name,
       'location': location,
       'searchPram': searchPram,
@@ -167,6 +173,7 @@ class Church extends Equatable {
 
     return {
       'cmType' : cmType,
+      'cmPrivacy' : cmPrivacy,
       'name': name,
       'location': location,
       'searchPram': searchPram,
@@ -194,8 +201,8 @@ class Church extends Equatable {
   static Future<Church> fromDoc(DocumentSnapshot doc) async {
     final data = doc.data() as Map<String, dynamic>;
     Map<Userr, dynamic> members = {};
-    final memRefs =
-        Map<String, dynamic>.from(data['members']); //data['members'];
+    final memRefs = Map<String, dynamic>.from(data['members']); //data['members'];
+
 
     // log("about to show you data in the mems ref");
     // for (var id in memRefs.keys) {
@@ -237,6 +244,7 @@ class Church extends Equatable {
       events: List<String>.from(
         data['events'] ?? [],
       ), cmType: data['cmType'] ?? CmType.regular,
+      cmPrivacy: data['cmPrivacy'] ?? Cm
     );
   }
 
