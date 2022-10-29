@@ -244,16 +244,25 @@ part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
             // final usersInCommuiinity = await context.read<BuildchurchCubit>().commuinityParcticipatents(ids: widget.commuinity.memberIds);
             
             showModalBottomSheet(
+              isDismissible: true,
+              isScrollControlled: true,
+               backgroundColor: Colors.transparent,
                 context: context,
                 builder: (context) {
           
                   return Container(
-                    height: MediaQuery.of(context).size.height / 2,
+                    height: MediaQuery.of(context).size.height / 1.75,
                     decoration: BoxDecoration(
                       color: Color(hc.hexcolorCode('#141829')),
                     ),
                     child: Column(
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(
+                            child: Icon(Icons.drag_handle),
+                          ),
+                        ),
                         //child one is a tab bar
                         TabBar(
                           controller: tabcontrollerForCmScreen,
@@ -309,10 +318,10 @@ part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
     );
   }
 
-  // TODO comment this code.
 
 
-
+  // this is a widget for the participant view.
+  // ignore: todo
   //TODO ADMIN WHERE 2==2
   Widget _participantsView({
     required List<Userr> users, 
@@ -374,6 +383,7 @@ part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
     );
   }
 
+  // part of the participants view. this shows more options when deciding to ptomote a user or not
   Widget _moreOptinos({ 
 
       required BuildContext context,
@@ -409,6 +419,8 @@ part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
     );
   }
 
+  // extension of the moreoptions
+  // ignore: todo
   // TODO ADMIN
   Future<dynamic> _adminsOptions({
     required Church cm,
@@ -428,6 +440,7 @@ part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
         });
   }
 
+  // extension of the moreoptions
   Column changRolePopUp(
       BuildContext context, Userr participatant, Church cm) {
     return Column(
@@ -523,6 +536,7 @@ part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
     );
   }
 
+  // extension of the moreoptions
   Future<dynamic> _nonAdminOptions({required String role, required BuildContext context}) {
     return showDialog(
         context: context,
@@ -549,14 +563,19 @@ part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
       return SingleChildScrollView(
         child: Column(children: [
           ListTile(
-              title: Text("Update the Community name",
+            title: Text("please view pending request", style: Theme.of(context).textTheme.bodyText1),
+            onTap: () => Navigator.of(context).pushNamed(ReviewPendingRequest.routeName, arguments: ReviewPendingRequestArgs(cmId: commuinity.id!))
+            
+          ),
+          ListTile(
+              title: Text("Update the Community name".toLowerCase(),
                   style: Theme.of(context).textTheme.bodyText1),
               onTap: () async => _updateCommuinityName(context: context,
               txtController: txtController,
                   commuinity: commuinity,
                   buildchurchCubit: context.read<BuildchurchCubit>())),
           ListTile(
-            title: Text("Update Community ImageUrl",
+            title: Text("Update Community ImageUrl".toLowerCase(),
                 overflow: TextOverflow.fade,
                 style: Theme.of(context).textTheme.bodyText1),
             trailing: ProfileImage(radius: 25, pfpUrl: commuinity.imageUrl),
@@ -564,8 +583,14 @@ part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
                 commuinity: commuinity, buildchurchCubit: buildchurchCubit, context: context),
           ),
           ListTile(
+            title: Text("Update the Community privacy".toLowerCase(),
+             style: Theme.of(context).textTheme.bodyText1),
+             onTap: () => _updateCommunityPrivacy(context:context,
+              buildC: buildchurchCubit, cm: commuinity,)
+             ),
+          ListTile(
             title: Text(
-              "Update the community Theme Pack",
+              "Update the community Theme Pack".toLowerCase(),
               style: GoogleFonts.getFont('Montserrat'),
               overflow: TextOverflow.fade,
             ),
@@ -587,7 +612,7 @@ part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
           ),
           ListTile(
             title: Text(
-              "Update The About",
+              "Update The About".toLowerCase(),
               style: Theme.of(context).textTheme.bodyText1,
               overflow: TextOverflow.fade,
             ),
@@ -599,7 +624,7 @@ part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
           ),
           ListTile(
               title: Text(
-                "Manage & Update Roles",
+                "Manage & Update Roles".toLowerCase(),
                 style: Theme.of(context).textTheme.bodyText1,
                 overflow: TextOverflow.fade,
               ),
@@ -615,7 +640,7 @@ part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
               }),
           ListTile(
             title: Text(
-              "Baned Users",
+              "Baned Users".toLowerCase(),
               style: Theme.of(context).textTheme.bodyText1,
               overflow: TextOverflow.fade,
             ),
@@ -640,7 +665,7 @@ part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
       );
   }
 
-
+  // part of the settings allows update of the cm name
   Future<dynamic> _updateCommuinityName({
           required TextEditingController txtController,
           required BuildContext context,
@@ -819,6 +844,10 @@ part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
                 },
               ));
 
+  Future <dynamic>  _updateCommunityPrivacy({
+    required BuildchurchCubit buildC, required Church cm, required BuildContext context}) {
+      return Navigator.of(context).pushNamed(UpdatePrivacyCm.routeName, arguments: UpdatePrivacyCmArgs(cm: cm));
+    }
   Future<dynamic> _updateTheAbout(
           {required Church commuinity,
           required BuildContext context,

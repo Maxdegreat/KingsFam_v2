@@ -42,4 +42,9 @@ class Paths {
   static const String usernameSet = 'usernameSet';
   static const String usernameSetId =
       'ox3bGySRvkIIcwb6VWAZ'; //idk what this is for but not tryna break my code...
+
+
+  static const String cmPrivacy = "cmPrivacy";
+  static const String requestToJoinCm = "requestToJoinCm";
+  static const String request = "request";
 }

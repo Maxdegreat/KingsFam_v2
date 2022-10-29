@@ -170,6 +170,12 @@ class CustomRoute {
       
       case EventView.routeName:
         return EventView.route(args: settings.arguments as EventViewArgs);
+      
+      case UpdatePrivacyCm.routeName:
+        return UpdatePrivacyCm.route(args: settings.arguments as UpdatePrivacyCmArgs);
+
+      case ReviewPendingRequest.routeName:
+        return ReviewPendingRequest.route(args: settings.arguments as ReviewPendingRequestArgs);
 
       default:
         return _errorRoute();

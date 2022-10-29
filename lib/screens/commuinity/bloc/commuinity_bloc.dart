@@ -7,6 +7,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/cm_privacy.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/mentioned_model.dart';
 import 'package:kingsfam/models/models.dart';
@@ -177,20 +178,70 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       late bool isMem;
 
       var ism = await _churchRepository.streamIsCmMember(
-          cm: event.commuinity, authorId: _authBloc.state.user!.uid);
-      _streamSubscriptionIsMember = ism.listen((isMemStream) async {
-        // for (var kc in event.kcs)
+          cm: event.commuinity, 
+          authorId: _authBloc.state.user!.uid
+      );
 
-          //log("from bloc kc recentSenderInfo is: ${kc!.recentSender}");
+      _streamSubscriptionIsMember = ism.listen((isMemStream) async {
         
-        isMem = await isMemStream;
-        emit(state.copyWith(
-          isMember: isMem,
-          kingCords: event.kcs,
-          postDisplay: event.posts,
-          status: CommuintyStatus.loaded,
-        ));
-      });
+        isMem = isMemStream; // I took off an await incase mem is now broken
+        if (!isMem) {
+          log("not a member");
+          // read privacy to see if cm is private or not
+          DocumentSnapshot privacySnap = await FirebaseFirestore.instance.collection(Paths.cmPrivacy).doc(event.commuinity.id).get();
+          if (privacySnap.exists) {
+            log("The Privacy snap exist");
+            Map<String, dynamic> data = privacySnap.data() as Map<String, dynamic>;
+            log("about to do the from data[] thing");
+            String? cmPrivacy = data['privacy'] ?? null;
+            log("The cmPrivacy is: ");
+            log(" $cmPrivacy");
+            // check to see if there is any pending request to join
+            DocumentSnapshot requestSnap = await FirebaseFirestore.instance.collection(Paths.requestToJoinCm).doc(event.commuinity.id)
+              .collection(Paths.request).doc(_authBloc.state.user!.uid).get();
+
+            if (requestSnap.exists) {
+              log("a request snap exist");
+              // show cms but set status to requestPending
+              if (cmPrivacy == CmPrivacy.armored) {
+                log("requested: this is a armored cm");
+              // say request to join. if requested please wait for approval
+              emitWhenCmIsArmored(isMem, CommuintyStatus.requestPending);
+            } else if (cmPrivacy == CmPrivacy.shielded) {
+                log("requested: this is a shielded cm");
+              // show cm HIDE ALL DO NOT ALLOW TO OPEN CORDS
+              // has to request access to join
+              emitWhenCmIsShielded(isMem, event.kcs, event.posts, CommuintyStatus.requestPending);
+            } 
+
+            } else {
+              // allow users to request if it is required
+              if (cmPrivacy == CmPrivacy.armored) {
+                log("make a request to this armored cm");
+              // say request to join. if requested please wait for approval
+              emitWhenCmIsArmored(isMem, CommuintyStatus.armormed);
+            } else if (cmPrivacy == CmPrivacy.shielded) {
+              log("make a request to this shielded cm");
+              // show cm HIDE ALL DO NOT ALLOW TO OPEN CORDS
+              // has to request access to join
+              emitWhenCmIsShielded(isMem, event.kcs, event.posts, CommuintyStatus.shielded);
+            } else {
+              log("no request needed to join this cm");
+              // allow to join and read cords. all is chill
+              emitWhenCmIsOpen(isMem, event.kcs, event.posts, CommuintyStatus.loaded);
+            }
+            
+            }
+          
+          }
+        } else {
+          log("This is a open cm. join at will");
+          // when the member is apart of the community
+          emitWhenCmIsOpen(isMem, event.kcs, event.posts, CommuintyStatus.loaded);
+        }
+       
+      }
+    );
 
       // checking for perks
 
@@ -199,6 +250,36 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
           failure: Failure(message: failed, code: e.toString())));
     }
     //yield CommuinityLoaded(calls: event.calls, kingCords: event.kcs, postDisplay: event.posts, isMember: isMem);
+  }
+
+
+  // ================== emit methods =======================
+  emitWhenCmIsArmored(bool isMem, CommuintyStatus status) {
+     emit(state.copyWith(
+          isMember: isMem,
+          kingCords: [],
+          postDisplay: [],
+          status: status,
+        ));
+  }
+
+  emitWhenCmIsShielded(bool isMem, List<KingsCord?>? kcs, List<Post?> posts, CommuintyStatus status) {
+    emit(state.copyWith(
+          isMember: isMem,
+          kingCords: kcs,
+          postDisplay: posts,
+          status: status,
+        ));
+  }
+
+
+  emitWhenCmIsOpen(bool isMem, List<KingsCord?>? kcs, List<Post?> posts, CommuintyStatus status) {
+    emit(state.copyWith(
+          isMember: isMem,
+          kingCords: kcs,
+          postDisplay: posts,
+          status: status,
+        ));
   }
 
   // ============== funcs =======================
@@ -260,6 +341,10 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
             );
           });
     }
+  }
+
+  Future<void> requestToJoin(Church cm, String usrId) async {
+    FirebaseFirestore.instance.collection(Paths.requestToJoinCm).doc(cm.id).collection(Paths.request).doc(usrId);
   }
 
   Future<void> banedUsers({required String communityId}) async {

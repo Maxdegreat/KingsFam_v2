@@ -2,6 +2,8 @@
 
 part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 
+Set<CommuintyStatus> cmPrivacySet = {CommuintyStatus.armormed, CommuintyStatus.shielded, CommuintyStatus.requestPending};
+
 Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm, String? currRole, TabController tabCtrl) {
     // ignore: unused_local_variable
     Color primaryColor = Colors.white;
@@ -20,6 +22,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm, 
       padding: const EdgeInsets.all(8.0),
       child: CustomScrollView(slivers: <Widget>[
         cmSliverAppBar(
+          currRole: currRole,
           tabCtrl: tabCtrl,
           cm: cm,
             context: context, cmBloc: context.read<CommuinityBloc>()),
@@ -46,7 +49,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm, 
 
                 Padding(
                   padding: const EdgeInsets.only(top: 0, bottom: 5, left: 2.5, right: 2.5),
-                  child: Text(cm.cmType + "  •  " cm.Privacy,
+                  child: Text(cm.cmType + "  •  " + cm.cmPrivacy,
                       style: TextStyle(
                           fontStyle: FontStyle.italic, color: Colors.grey)),
                 ),
@@ -218,14 +221,22 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm, 
                     new_kingscord(cmBloc: context.read<CommuinityBloc>(), cm: cm, context: context, currRole: currRole),
                   ],
                 ),
-                //TODO below should work if change name else use lib?
+                
+
                 Column(
-                  children: state.collapseCordColumn
-                      ? [SizedBox.shrink()]
-                      : state.kingCords.map((cord) {
+                  children: [ 
+                    if(state.collapseCordColumn)...[
+                      SizedBox.shrink(),
+                    ]else...
+                      state.kingCords.map((cord) {
+                        
                           if (cord != null) {
                             return GestureDetector(
                                 onTap: () {
+                                  if (cmPrivacySet.contains(state.status)) {
+                                    snackBar(snackMessage: "You must be a member to view", context: context);
+                                    return null;
+                                  }
                                   if (cord.mode == "chat") {
                                     // handels the navigation to the kingscord screen and also handels the
                                     // deletion of a noti if it eist. we check if noty eist by through a function insde the bloc.
@@ -260,9 +271,13 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm, 
                                             kcId: cord.id!));
                                   }
                                 },
-                                onLongPress: () => _delKcDialog(
-                                  context: context,
-                                    cord: cord, commuinity: cm),
+                                onLongPress: () {
+                                  if (cmPrivacySet.contains(state.status)) {
+                                    snackBar(snackMessage: "You must be a member to view", context: context);
+                                    return null;
+                                  }
+                                  _delKcDialog(context: context, cord: cord, commuinity: cm);
+                                } ,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
@@ -312,7 +327,9 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm, 
                             return SizedBox.shrink();
                           }
                         }).toList(),
-                ),
+                    
+                ]),
+
                 SizedBox(height: 15),
                 Align(
                   alignment: Alignment.centerLeft,
@@ -365,6 +382,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm, 
   required CommuinityBloc cmBloc, 
   required Church cm, 
   required TabController tabCtrl,
+  required String? currRole,
 }) {
     return SliverAppBar(
       expandedHeight: MediaQuery.of(context).size.height / 4,
@@ -387,7 +405,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm, 
         ),
       ),
       actions: [
-        settingsBtn(cmBloc: cmBloc, cm: cm, context: context, tabcontrollerForCmScreen: tabCtrl),
+        settingsBtn(cmBloc: cmBloc, cm: cm, context: context, tabcontrollerForCmScreen: tabCtrl, currRole: currRole ),
         inviteButton(cm: cm, context: context),
         // _themePackButton()
       ],

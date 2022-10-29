@@ -10,7 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/blocs/cm_type/cm_type.dart';
+import 'package:kingsfam/config/cm_type.dart';
 import 'package:kingsfam/extensions/extensions.dart';
 import 'package:kingsfam/helpers/helpers.dart';
 import 'package:kingsfam/models/models.dart';

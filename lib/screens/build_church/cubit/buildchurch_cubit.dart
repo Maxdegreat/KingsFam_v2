@@ -6,7 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:kingsfam/blocs/cm_type/cm_type.dart';
+import 'package:kingsfam/config/cm_privacy.dart';
+import 'package:kingsfam/config/cm_type.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:get/get_connect/http/src/interceptors/get_modifiers.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
@@ -233,6 +234,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       //===========================================================
       //the build of the initial church
       final commuinity = Church(
+          cmPrivacy: CmPrivacy.open,
           cmType: state.cmType,
           searchPram: state.caseSearchList!,
           hashTags: state.hashTags ?? null,

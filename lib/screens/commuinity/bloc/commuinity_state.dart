@@ -1,6 +1,9 @@
 part of 'commuinity_bloc.dart';
 
-enum CommuintyStatus { inital, loading, loaded, error }
+// if not a member then the cm will show armormed or shielded.
+// this is because we want to show only a limited amount of info to 
+// certian users based on the cm settings
+enum CommuintyStatus { inital, loading, loaded, error, armormed, shielded, requestPending}
 
 class CommuinityState extends Equatable {
   final bool? isMember;

@@ -8,7 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/blocs/cm_type/cm_type.dart';
+import 'package:kingsfam/config/cm_privacy.dart';
+import 'package:kingsfam/config/cm_type.dart';
 import 'package:kingsfam/enums/bottom_nav_items.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
@@ -336,7 +337,8 @@ class _PostContentScreenState extends State<PostContentScreen> {
     setState(() {});
     final author = context.read<ProfileBloc>().state.userr;
     final Church ch = Church(
-       cmType: CmType.regular, // does not use this value
+        cmPrivacy: CmPrivacy.open,
+        cmType: CmType.regular, // does not use this value
         searchPram: [],
         name: '',
         location: '',

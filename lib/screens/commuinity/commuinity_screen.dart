@@ -35,6 +35,7 @@ import 'package:kingsfam/extensions/date_time_extension.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 
 import 'package:kingsfam/screens/screens.dart';
+import 'package:kingsfam/widgets/show_alert_dialog.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:rive/rive.dart';
 // ignore: unused_import
@@ -126,11 +127,53 @@ class _CommuinityScreenState extends State<CommuinityScreen>
           content:
               'hmm, something went worong. check your connection - ecode: commuinityScreenError: ${state.failure.code}',
         );
+      } if (state.status == CommuintyStatus.armormed) {
+
+        AlertDialogKf(title: "Request access to join", content: "This is a armormed community. You must be admitted to join this community", cb: () {
+          context.read<CommuinityBloc>().requestToJoin(widget.commuinity, userId).then((value) => snackBar(snackMessage: "Your request to join has been sent.", context: context));
+        }, cbTxt: "Request");
+      
+      } else if (state.status == CommuintyStatus.shielded) {
+
+         AlertDialogKf(title: "Request access to join", content: "This is a armormed shielded. You can look around but you must be admitted to join this community", cb: () {
+          context.read<CommuinityBloc>().requestToJoin(widget.commuinity, userId).then((value) => snackBar(snackMessage: "Your request to join has been sent.", context: context));
+        }, cbTxt: "Request");
+     
+      } else if (state.status == CommuintyStatus.requestPending) {
+
+        AlertDialogKf(title: "Request Pending", content: "Hey, your request to join is currently pending. You will recieve a notification when there is an update",
+          cb: () => Navigator.of(context).pop(), cbTxt: "Thanks");
+
       }
+
     }, builder: (context, state) {
       return Scaffold(
           body: SafeArea(
-        child: _mainScrollView(context, state, widget.commuinity, currRole, _tabController),
+        child: state.status == CommuintyStatus.armormed ? 
+        // status is armormed
+        Container(
+          height: MediaQuery.of(context).size.height,
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("This is a armormed community so it is entirley private. Please wait for your request to be approved in order to join", textAlign: TextAlign.center,),
+                SizedBox(height: 7),
+                Icon(Icons.health_and_safety_outlined,size: 50,)
+                
+              ],
+            ),
+          ),
+        ) :
+
+        state.status == CommuintyStatus.shielded ?
+        // status is shielded 
+          _mainScrollView(context, state, widget.commuinity, currRole, _tabController)
+
+        : _mainScrollView(context, state, widget.commuinity, currRole, _tabController),
       ));
     });
   }
