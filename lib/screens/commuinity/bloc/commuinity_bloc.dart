@@ -206,12 +206,12 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
               if (cmPrivacy == CmPrivacy.armored) {
                 log("requested: this is a armored cm");
               // say request to join. if requested please wait for approval
-              emitWhenCmIsArmored(isMem, CommuintyStatus.requestPending);
+              emitWhenCmIsArmored(isMem, CommuintyStatus.armormed, RequestStatus.pending);
             } else if (cmPrivacy == CmPrivacy.shielded) {
                 log("requested: this is a shielded cm");
               // show cm HIDE ALL DO NOT ALLOW TO OPEN CORDS
               // has to request access to join
-              emitWhenCmIsShielded(isMem, event.kcs, event.posts, CommuintyStatus.requestPending);
+              emitWhenCmIsShielded(isMem, event.kcs, event.posts, CommuintyStatus.shielded, RequestStatus.pending);
             } 
 
             } else {
@@ -219,12 +219,12 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
               if (cmPrivacy == CmPrivacy.armored) {
                 log("make a request to this armored cm");
               // say request to join. if requested please wait for approval
-              emitWhenCmIsArmored(isMem, CommuintyStatus.armormed);
+              emitWhenCmIsArmored(isMem, CommuintyStatus.armormed, RequestStatus.none);
             } else if (cmPrivacy == CmPrivacy.shielded) {
               log("make a request to this shielded cm");
               // show cm HIDE ALL DO NOT ALLOW TO OPEN CORDS
               // has to request access to join
-              emitWhenCmIsShielded(isMem, event.kcs, event.posts, CommuintyStatus.shielded);
+              emitWhenCmIsShielded(isMem, event.kcs, event.posts, CommuintyStatus.shielded, RequestStatus.none);
             } else {
               log("no request needed to join this cm");
               // allow to join and read cords. all is chill
@@ -233,6 +233,10 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
             
             }
           
+          } else {
+            // else there is no privacy setting. this is kinda a bug ngl. older versions require this check
+            // because they do not have a cm privacy setting
+            emitWhenCmIsOpen(isMem, event.kcs, event.posts, CommuintyStatus.loaded);
           }
         } else {
           log("This is a open cm. join at will");
@@ -254,21 +258,23 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
 
   // ================== emit methods =======================
-  emitWhenCmIsArmored(bool isMem, CommuintyStatus status) {
+  emitWhenCmIsArmored(bool isMem, CommuintyStatus status, RequestStatus requestStatus) {
      emit(state.copyWith(
           isMember: isMem,
           kingCords: [],
           postDisplay: [],
           status: status,
+          requestStatus: requestStatus
         ));
   }
 
-  emitWhenCmIsShielded(bool isMem, List<KingsCord?>? kcs, List<Post?> posts, CommuintyStatus status) {
+  emitWhenCmIsShielded(bool isMem, List<KingsCord?>? kcs, List<Post?> posts, CommuintyStatus status, RequestStatus requestStatus) {
     emit(state.copyWith(
           isMember: isMem,
           kingCords: kcs,
           postDisplay: posts,
           status: status,
+          requestStatus: requestStatus,
         ));
   }
 
@@ -279,6 +285,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
           kingCords: kcs,
           postDisplay: posts,
           status: status,
+          requestStatus: RequestStatus.none,
         ));
   }
 
@@ -344,7 +351,8 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   }
 
   Future<void> requestToJoin(Church cm, String usrId) async {
-    FirebaseFirestore.instance.collection(Paths.requestToJoinCm).doc(cm.id).collection(Paths.request).doc(usrId);
+    FirebaseFirestore.instance.collection(Paths.requestToJoinCm).doc(cm.id).collection(Paths.request).doc(usrId).set({});
+    emit(state.copyWith(requestStatus: RequestStatus.pending));
   }
 
   Future<void> banedUsers({required String communityId}) async {

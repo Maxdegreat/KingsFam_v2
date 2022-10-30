@@ -564,7 +564,7 @@ part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
         child: Column(children: [
           ListTile(
             title: Text("please view pending request", style: Theme.of(context).textTheme.bodyText1),
-            onTap: () => Navigator.of(context).pushNamed(ReviewPendingRequest.routeName, arguments: ReviewPendingRequestArgs(cmId: commuinity.id!))
+            onTap: () => Navigator.of(context).pushNamed(ReviewPendingRequest.routeName, arguments: ReviewPendingRequestArgs(cm: commuinity))
             
           ),
           ListTile(

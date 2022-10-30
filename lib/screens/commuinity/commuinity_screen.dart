@@ -139,7 +139,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
           context.read<CommuinityBloc>().requestToJoin(widget.commuinity, userId).then((value) => snackBar(snackMessage: "Your request to join has been sent.", context: context));
         }, cbTxt: "Request");
      
-      } else if (state.status == CommuintyStatus.requestPending) {
+      } else if (state.requestStatus == RequestStatus.pending) {
 
         AlertDialogKf(title: "Request Pending", content: "Hey, your request to join is currently pending. You will recieve a notification when there is an update",
           cb: () => Navigator.of(context).pop(), cbTxt: "Thanks");
@@ -162,8 +162,16 @@ class _CommuinityScreenState extends State<CommuinityScreen>
               children: [
                 Text("This is a armormed community so it is entirley private. Please wait for your request to be approved in order to join", textAlign: TextAlign.center,),
                 SizedBox(height: 7),
-                Icon(Icons.health_and_safety_outlined,size: 50,)
-                
+                Icon(Icons.health_and_safety_outlined,size: 50),
+                SizedBox(height: 7),
+                ElevatedButton(
+                  onPressed: () {
+                    state.requestStatus == RequestStatus.pending ?
+                    snackBar(snackMessage: "Your Request is pending", context: context) :
+                    context.read<CommuinityBloc>().requestToJoin(widget.commuinity, context.read<AuthBloc>().state.user!.uid);
+                  }, 
+                  child: state.requestStatus == RequestStatus.pending ?  Text("Pending ...") : Text("Request To Join")
+                ),
               ],
             ),
           ),

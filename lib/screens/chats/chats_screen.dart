@@ -173,8 +173,10 @@ class _ChatsScreenState extends State<ChatsScreen>
               title: Row(
                 children: [
                   Text('KING\'SFAM',
-                      style: GoogleFonts.cedarvilleCursive(
-                          color: Color(hexcolor.hexcolorCode('#FFC050')))),
+                      // style: 
+                      // GoogleFonts.cedarvilleCursive(
+                      //     color: Color(hexcolor.hexcolorCode('#FFC050'))) 
+                      ),
                   SizedBox(width: 5),
                   // showAssetImage(40, 40, 5,
                   //     "assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png")

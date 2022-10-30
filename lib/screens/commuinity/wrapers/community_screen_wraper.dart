@@ -2,7 +2,7 @@
 
 part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 
-Set<CommuintyStatus> cmPrivacySet = {CommuintyStatus.armormed, CommuintyStatus.shielded, CommuintyStatus.requestPending};
+Set<dynamic> cmPrivacySet = {CommuintyStatus.armormed, CommuintyStatus.shielded, RequestStatus.pending};
 
 Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm, String? currRole, TabController tabCtrl) {
     // ignore: unused_local_variable

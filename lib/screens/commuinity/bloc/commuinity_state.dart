@@ -3,7 +3,8 @@ part of 'commuinity_bloc.dart';
 // if not a member then the cm will show armormed or shielded.
 // this is because we want to show only a limited amount of info to 
 // certian users based on the cm settings
-enum CommuintyStatus { inital, loading, loaded, error, armormed, shielded, requestPending}
+enum CommuintyStatus { inital, loading, loaded, error, armormed, shielded}
+enum RequestStatus { none, pending, }
 
 class CommuinityState extends Equatable {
   final bool? isMember;
@@ -20,6 +21,7 @@ class CommuinityState extends Equatable {
   final int boosted;
   final bool isBaned;
   final List<Userr> banedUsers;
+  final RequestStatus requestStatus;
 
   const CommuinityState({
     required this.isMember,
@@ -36,6 +38,7 @@ class CommuinityState extends Equatable {
     required this.boosted,
     required this.isBaned,
     required this.banedUsers,
+    required this.requestStatus,
   });
 
   @override
@@ -54,6 +57,7 @@ class CommuinityState extends Equatable {
         boosted,
         isBaned,
         banedUsers,
+        requestStatus,
       ];
 
   factory CommuinityState.inital() {
@@ -71,7 +75,9 @@ class CommuinityState extends Equatable {
         themePack: 'none',
         boosted: 0,
         isBaned: false,
-        banedUsers: []);
+        banedUsers: [],
+        requestStatus: RequestStatus.none
+    );
   }
   CommuinityState copyWith({
     bool? isMember,
@@ -88,6 +94,7 @@ class CommuinityState extends Equatable {
     int? boosted,
     bool? isBaned,
     List<Userr>? banedUsers,
+    RequestStatus? requestStatus,
   }) {
     return CommuinityState(
         events: events ?? this.events,
@@ -103,6 +110,8 @@ class CommuinityState extends Equatable {
         themePack: themePack ?? this.themePack,
         boosted: boosted ?? this.boosted,
         isBaned: isBaned ?? this.isBaned,
-        banedUsers: banedUsers ?? this.banedUsers);
+        banedUsers: banedUsers ?? this.banedUsers,
+        requestStatus: requestStatus ?? this.requestStatus,
+    );
   }
 }
