@@ -4,7 +4,6 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/cm_privacy.dart';
@@ -12,8 +11,6 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/mentioned_model.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
-import 'package:kingsfam/widgets/snackbar.dart';
-import 'package:video_player/video_player.dart';
 
 import '../../../roles/role_types.dart';
 
@@ -57,33 +54,25 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   @override
   Stream<CommuinityState> mapEventToState(CommuinityEvent event) async* {
-    if (event is CommuinityLoadCommuinity) {
-      yield* _mapCommuinityLoadCommuinityToState(event);
-    } else if (event is ComuinityLoadingCords) {
+    if (event is CommunityInitalEvent) {
+      yield* _mapCommunityInitalEventToState(event);
+    } else if (event is CommunityLoadingCords) {
       yield* _mapCommuinityLoadingCordsToState(event);
-    } else if (event is CommuinityLoadedEvent) {
-      yield* _mapCommuinityLoadedToState(event);
+    } else if (event is CommunityLoadingPosts) {
+      yield* _mapCommunityLoadingPostToState(event);
+    } else if (event is CommunityLoadingEvents) {
+      yield* _mapCommunityLoadingEventsToState(event);
     }
   }
 
-  late List<KingsCord?> eKcs;
-  late List<CallModel> eCalls;
-  late List<Post?> ePosts;
 
   String failed = 'failed to load commuinty screen';
 
-  Stream<CommuinityState> _mapCommuinityLoadCommuinityToState(
-      CommuinityLoadCommuinity event) async* {
+  Stream<CommuinityState> _mapCommunityInitalEventToState(CommunityInitalEvent event) async* {
     emit(state.copyWith(status: CommuintyStatus.loading));
     try {
-      final Userr userr = await _userrRepository.getUserrWithId(
-          userrId: _authBloc.state.user!.uid);
-
-      emit(state.copyWith(
-          themePack: event.commuinity.themePack,
-          boosted: event.commuinity.boosted));
-
-      // update the usr timestamp for the cm when they open the cm
+      
+      // just some pre-reqs
       Church cm = Church.empty.copyWith(
         id: event.commuinity.id,
         members: event.commuinity.members,
@@ -91,8 +80,112 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
       _churchRepository.updateUserTimestampOnOpenCm(cm, _authBloc.state.user!.uid);
 
+      // load if member and handel as the cm requires
+      late bool isMem;
+
+      var ism = await _churchRepository.streamIsCmMember(
+          cm: event.commuinity, 
+          authorId: _authBloc.state.user!.uid
+      );
+
+      _streamSubscriptionIsMember = ism.listen((isMemStream) async {
+        
+        isMem = isMemStream; // I took off an await incase mem is now broken
+        if (!isMem) {
+          log("not a member");
+          // read privacy to see if cm is private or not
+          DocumentSnapshot privacySnap = await FirebaseFirestore.instance.collection(Paths.cmPrivacy).doc(event.commuinity.id).get();
+          if (privacySnap.exists) {
+            log("The Privacy snap exist");
+            Map<String, dynamic> data = privacySnap.data() as Map<String, dynamic>;
+            log("about to do the from data[] thing");
+            String? cmPrivacy = data['privacy'] ?? null;
+            log("The cmPrivacy is: ");
+            log(" $cmPrivacy");
+
+            // check to see if there is any pending request to join
+            DocumentSnapshot requestSnap = await FirebaseFirestore.instance.collection(Paths.requestToJoinCm).doc(event.commuinity.id).collection(Paths.request).doc(_authBloc.state.user!.uid).get();
+
+            if (requestSnap.exists) {
+              log("a request snap exist");
+              // show cms but set status to requestPending
+              if (cmPrivacy == CmPrivacy.armored) {
+              // say request to join. if requested please wait for approval
+              log("requested: this is a armored cm");
+              emitWhenCmIsArmored(isMem, CommuintyStatus.armormed, RequestStatus.pending);
+            } else if (cmPrivacy == CmPrivacy.shielded) {
+              // show cm HIDE ALL cords DO NOT ALLOW TO OPEN CORDS AND EVENTS
+              // has to request access to join
+              log("requested: this is a shielded cm");
+              emitWhenCmIsShielded(isMem, [], [], CommuintyStatus.shielded, RequestStatus.pending);
+              add(CommunityLoadingPosts(cm: event.commuinity));
+            } 
+
+            } else {
+              // allow users to request if it is required
+              if (cmPrivacy == CmPrivacy.armored) {
+                log("make a request to this armored cm");
+              // say request to join. if requested please wait for approval
+              emitWhenCmIsArmored(isMem, CommuintyStatus.armormed, RequestStatus.none);
+            } else if (cmPrivacy == CmPrivacy.shielded) {
+              // show cm HIDE ALL DO NOT ALLOW TO OPEN CORDS
+              // has to request access to join
+              log("make a request to this shielded cm");
+              emitWhenCmIsShielded(isMem, [], [], CommuintyStatus.shielded, RequestStatus.none);
+              add(CommunityLoadingPosts(cm: event.commuinity));
+            } else {
+              log("no request needed to join this cm");
+              // allow to join and read cords. all is chill
+              emitWhenCmIsOpen(isMem, [], [], CommuintyStatus.loaded);
+              add(CommunityLoadingCords(commuinity: event.commuinity));
+            }
+            
+            }
+          
+          } else {
+            // else there is no privacy setting. this is kinda a bug ngl. older versions require this check
+            // because they do not have a cm privacy setting
+            emitWhenCmIsOpen(isMem, [], [], CommuintyStatus.loaded);
+            add(CommunityLoadingCords(commuinity: cm));
+          }
+        } else {
+          log("This is a open cm. join at will");
+          // when the member is apart of the community
+          emitWhenCmIsOpen(isMem, [], [], CommuintyStatus.loaded);
+          add(CommunityLoadingCords(commuinity: cm));
+        }
+       
+      }
+    );
+
+      
+
+      // emit(state.copyWith(
+      //     themePack: event.commuinity.themePack,
+      //     boosted: event.commuinity.boosted));
+
+      // update the usr timestamp for the cm when they open the cm
+
+
+    } catch (e) {
+      emit(state.copyWith(
+          status: CommuintyStatus.error,
+          failure: Failure(message: failed, code: e.toString())));
+    }
+  }
+
+  Stream<CommuinityState> _mapCommuinityLoadingCordsToState(CommunityLoadingCords event) async* {
+    // make calls sream
+    // add calls to loaded then yield
+    // also add this.event to loaded yield ... now has both list (this event has the cord and cm)
+    // STILL LOAFDING SO NO YIELD YET
+    try {
+
+      
+      // ignore: unused_local_variable
       final List<KingsCord> allCords = [];
       final Map<String, bool> mentionedMap = {};
+      final Userr userr = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
 
       // stream subscription for community cords
       _streamSubscriptionKingsCord?.cancel();
@@ -124,7 +217,18 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
           }
         }
 
-        QuerySnapshot eventSnaps = await FirebaseFirestore.instance.collection(Paths.church).doc(event.commuinity.id).collection(Paths.events).limit(5).get();
+        add(CommunityLoadingEvents(cm: event.commuinity));
+      });
+
+    } catch (e) {
+      emit(state.copyWith(
+          failure: Failure(message: failed, code: e.toString())));
+    }
+  }
+
+  Stream<CommuinityState> _mapCommunityLoadingEventsToState(CommunityLoadingEvents event) async* {
+    try {
+      QuerySnapshot eventSnaps = await FirebaseFirestore.instance.collection(Paths.church).doc(event.cm.id).collection(Paths.events).limit(5).get();
         List<Event?> initEvents = [];
         for (var doc in eventSnaps.docs) {
           Event? e = Event.formDoc(doc);
@@ -132,7 +236,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
             // make a date time to check if its a past date. if so del event
             DateTime endTimeForDel = DateTime.fromMicrosecondsSinceEpoch(e.endDate!.microsecondsSinceEpoch);
             if (DateTime.now().isAfter(endTimeForDel)) {
-              FirebaseFirestore.instance.collection(Paths.church).doc(event.commuinity.id).collection(Paths.events).doc(e.id!).delete();
+              FirebaseFirestore.instance.collection(Paths.church).doc(event.cm.id).collection(Paths.events).doc(e.id!).delete();
             } else {
               initEvents.add(e);
             }
@@ -143,117 +247,21 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
         emit(state.copyWith(events: initEvents));
         log("the state events has a len of: " + state.events.length.toString());
 
-        add(ComuinityLoadingCords(
-            commuinity: event.commuinity, cords: allCords));
-      });
+        add(CommunityLoadingPosts(cm: event.cm));
+
     } catch (e) {
-      emit(state.copyWith(
-          status: CommuintyStatus.error,
-          failure: Failure(message: failed, code: e.toString())));
+      log("There was an error in the cmBloc communityLoadingEvents: " + e.toString());
+      emit(state.copyWith(failure: Failure(message: "Ops something went wrong")));
     }
   }
 
-  Stream<CommuinityState> _mapCommuinityLoadingCordsToState(
-      ComuinityLoadingCords event) async* {
-    // make calls sream
-    // add calls to loaded then yield
-    // also add this.event to loaded yield ... now has both list (this event has the cord and cm)
-    // STILL LOAFDING SO NO YIELD YET
+  Stream<CommuinityState> _mapCommunityLoadingPostToState(CommunityLoadingPosts event) async* {
     try {
-      List<Post?> posts =
-          await _churchRepository.getCommuinityPosts(cm: event.commuinity);
-
-      add(CommuinityLoadedEvent(
-          kcs: event.cords, posts: posts, commuinity: event.commuinity));
+      List<Post?> posts = await _churchRepository.getCommuinityPosts(cm: event.cm);
+      emit(state.copyWith(postDisplay: posts, status: CommuintyStatus.loaded));
     } catch (e) {
-      emit(state.copyWith(
-          failure: Failure(message: failed, code: e.toString())));
+      emit(state.copyWith(failure: Failure(message: "Ops, something went wrong when getting the cm post")));
     }
-  }
-
-  Stream<CommuinityState> _mapCommuinityLoadedToState(
-      CommuinityLoadedEvent event) async* {
-    try {
-      //var cmIds = event.commuinity.members.keys.map((e) => e.id).toList();
-      late bool isMem;
-
-      var ism = await _churchRepository.streamIsCmMember(
-          cm: event.commuinity, 
-          authorId: _authBloc.state.user!.uid
-      );
-
-      _streamSubscriptionIsMember = ism.listen((isMemStream) async {
-        
-        isMem = isMemStream; // I took off an await incase mem is now broken
-        if (!isMem) {
-          log("not a member");
-          // read privacy to see if cm is private or not
-          DocumentSnapshot privacySnap = await FirebaseFirestore.instance.collection(Paths.cmPrivacy).doc(event.commuinity.id).get();
-          if (privacySnap.exists) {
-            log("The Privacy snap exist");
-            Map<String, dynamic> data = privacySnap.data() as Map<String, dynamic>;
-            log("about to do the from data[] thing");
-            String? cmPrivacy = data['privacy'] ?? null;
-            log("The cmPrivacy is: ");
-            log(" $cmPrivacy");
-            // check to see if there is any pending request to join
-            DocumentSnapshot requestSnap = await FirebaseFirestore.instance.collection(Paths.requestToJoinCm).doc(event.commuinity.id)
-              .collection(Paths.request).doc(_authBloc.state.user!.uid).get();
-
-            if (requestSnap.exists) {
-              log("a request snap exist");
-              // show cms but set status to requestPending
-              if (cmPrivacy == CmPrivacy.armored) {
-                log("requested: this is a armored cm");
-              // say request to join. if requested please wait for approval
-              emitWhenCmIsArmored(isMem, CommuintyStatus.armormed, RequestStatus.pending);
-            } else if (cmPrivacy == CmPrivacy.shielded) {
-                log("requested: this is a shielded cm");
-              // show cm HIDE ALL DO NOT ALLOW TO OPEN CORDS
-              // has to request access to join
-              emitWhenCmIsShielded(isMem, event.kcs, event.posts, CommuintyStatus.shielded, RequestStatus.pending);
-            } 
-
-            } else {
-              // allow users to request if it is required
-              if (cmPrivacy == CmPrivacy.armored) {
-                log("make a request to this armored cm");
-              // say request to join. if requested please wait for approval
-              emitWhenCmIsArmored(isMem, CommuintyStatus.armormed, RequestStatus.none);
-            } else if (cmPrivacy == CmPrivacy.shielded) {
-              log("make a request to this shielded cm");
-              // show cm HIDE ALL DO NOT ALLOW TO OPEN CORDS
-              // has to request access to join
-              emitWhenCmIsShielded(isMem, event.kcs, event.posts, CommuintyStatus.shielded, RequestStatus.none);
-            } else {
-              log("no request needed to join this cm");
-              // allow to join and read cords. all is chill
-              emitWhenCmIsOpen(isMem, event.kcs, event.posts, CommuintyStatus.loaded);
-            }
-            
-            }
-          
-          } else {
-            // else there is no privacy setting. this is kinda a bug ngl. older versions require this check
-            // because they do not have a cm privacy setting
-            emitWhenCmIsOpen(isMem, event.kcs, event.posts, CommuintyStatus.loaded);
-          }
-        } else {
-          log("This is a open cm. join at will");
-          // when the member is apart of the community
-          emitWhenCmIsOpen(isMem, event.kcs, event.posts, CommuintyStatus.loaded);
-        }
-       
-      }
-    );
-
-      // checking for perks
-
-    } catch (e) {
-      emit(state.copyWith(
-          failure: Failure(message: failed, code: e.toString())));
-    }
-    //yield CommuinityLoaded(calls: event.calls, kingCords: event.kcs, postDisplay: event.posts, isMember: isMem);
   }
 
 
@@ -316,7 +324,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
         'timestamp': Timestamp.now(),
         'userReference': '...'
       };
-      add(CommuinityLoadCommuinity(commuinity: commuinity));
+      add(CommunityInitalEvent(commuinity: commuinity));
       emit(state.copyWith(isMember: true));
     } else {
       log("we are in the true, is ban is true");

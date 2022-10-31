@@ -77,7 +77,7 @@ class CommuinityScreen extends StatefulWidget {
                 churchRepository: context.read<ChurchRepository>(),
                 storageRepository: context.read<StorageRepository>(),
                 userrRepository: context.read<UserrRepository>(),
-              )..add(CommuinityLoadCommuinity(
+              )..add(CommunityInitalEvent(
                   commuinity: args.commuinity,
                 )),
               child: CommuinityScreen(

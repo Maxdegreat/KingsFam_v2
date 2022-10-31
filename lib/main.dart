@@ -32,7 +32,7 @@ void main() async {
 
   EquatableConfig.stringify = kDebugMode;
   Bloc.observer = SimpleBlocObserver();
-  //await Stripe.instance.applySettings();
+  // await Stripe.instance.applySettings();
   runApp(MyApp());
 }
 

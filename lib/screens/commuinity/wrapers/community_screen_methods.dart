@@ -24,7 +24,7 @@ part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
                         cm.members.remove(
                             b.state.currUserr);
                         b
-                          ..add(CommuinityLoadCommuinity(
+                          ..add(CommunityInitalEvent(
                               commuinity: cm));
                         Navigator.of(_context).pop();
                       },

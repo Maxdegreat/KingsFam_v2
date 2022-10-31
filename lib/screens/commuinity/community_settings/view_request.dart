@@ -51,12 +51,12 @@ class _ReviewPendingRequestState extends State<ReviewPendingRequest> {
     _controller.addListener(listenToScrolling);
   }
 
-  // my state managment hub lol ___________\_
+  // my state managment hub lol ___________\|_
   List<Userr> users = [];
   late ScrollController _controller;
   String? lastSeenId;
   DocumentSnapshot? lastSeenDocSnap;
-  // ______________________________________-|
+  // ______________________________________ _\|/_
 
   @override
   Widget build(BuildContext context) {

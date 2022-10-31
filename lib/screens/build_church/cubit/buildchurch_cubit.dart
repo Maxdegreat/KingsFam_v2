@@ -180,24 +180,20 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
 
   //void function to upload church
   void submit() async {
-    print("We are in the submit function");
     emit(state.copyWith(status: BuildChurchStatus.loading));
     try {
-      final imageUrl = await _storageRepository.uploadChurchImage(
-          url: '', image: state.imageFile!);
+      final imageUrl = await _storageRepository.uploadChurchImage(url: '', image: state.imageFile!);
       //handels casing for search prams
-      List<String> caseList =
-          AdvancedQuerry().advancedSearch(query: state.name);
-      emit(state.copyWith(
-          caseSearchList: caseList, status: BuildChurchStatus.loading));
+      List<String> caseList = AdvancedQuerry().advancedSearch(query: state.name);
+      emit(state.copyWith(caseSearchList: caseList, status: BuildChurchStatus.loading));
 
-      //handel the making of hash tags
-      if (state.initHashTag != null) {
-        List<String> hashTags =
-            AdvancedQuerry().advancedHashTags(hashTags: state.initHashTag!);
-        emit(state.copyWith(
-            hashTags: hashTags, status: BuildChurchStatus.loading));
-      }
+      // //handel the making of hash tags
+      // if (state.initHashTag != null) {
+      //   List<String> hashTags =
+      //       AdvancedQuerry().advancedHashTags(hashTags: state.initHashTag!);
+      //   emit(state.copyWith(
+      //       hashTags: hashTags, status: BuildChurchStatus.loading));
+      // }
 
       //============================================================
       //populate the member info
@@ -207,7 +203,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
         final user =
             await _userrRepository.getUserrWithId(userrId: state.memberIds[i]);
         mems[user] = Timestamp(
-            0, 0); // may not work so maybe make a list then emit list o
+            0, 0); 
       }
 
       //============================================================

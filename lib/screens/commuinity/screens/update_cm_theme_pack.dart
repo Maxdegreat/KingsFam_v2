@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
+// import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -196,13 +196,13 @@ class _UpdateCmThemePackState extends State<UpdateCmThemePack> {
         log("THE INTENT IS NULL GANG GANG ... FOR YOU MY LORD.");
       }
       // create a payment sheet
-      await Stripe.instance
-          .initPaymentSheet(
-              paymentSheetParameters: SetupPaymentSheetParameters(
-                  paymentIntentClientSecret: _paymentIntent!['client_secret'],
-                  style: ThemeMode.dark,
-                  merchantDisplayName: 'KingsFam'))
-          .then((value) => displayPaymentSheet());
+      // await Stripe.instance
+      //     .initPaymentSheet(
+      //         paymentSheetParameters: SetupPaymentSheetParameters(
+      //             paymentIntentClientSecret: _paymentIntent!['client_secret'],
+      //             style: ThemeMode.dark,
+      //             merchantDisplayName: 'KingsFam'))
+      //     .then((value) => displayPaymentSheet());
     } catch (e) {
       log(e.toString() + "update_cm_theme_pack.dart - _stripePayCardWidget");
     }
@@ -219,24 +219,24 @@ class _UpdateCmThemePackState extends State<UpdateCmThemePack> {
   }
 
   displayPaymentSheet() async {
-    await Stripe.instance.presentPaymentSheet().then((value) => showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.check_circle_outline_outlined,
-                        color: Colors.green,
-                      ),
-                      Text("Success Payment Fam")
-                    ],
-                  )
-                ],
-              ),
-            )));
+    // await Stripe.instance.presentPaymentSheet().then((value) => showDialog(
+    //     context: context,
+    //     builder: (_) => AlertDialog(
+    //           content: Column(
+    //             mainAxisSize: MainAxisSize.min,
+    //             children: [
+    //               Row(
+    //                 children: [
+    //                   Icon(
+    //                     Icons.check_circle_outline_outlined,
+    //                     color: Colors.green,
+    //                   ),
+    //                   Text("Success Payment Fam")
+    //                 ],
+    //               )
+    //             ],
+    //           ),
+    //         )));
 
     _paymentIntent = null;
   }

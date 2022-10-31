@@ -349,7 +349,7 @@ exports.addChatMessage = functions.firestore
 
       const payload = {
         notification: {
-          title: chatData["chatName"],
+          title: chatData.chatName, // chatData["chatName"],
           body: body,
         },
         data: {
@@ -423,6 +423,50 @@ exports.onKingsCordMessageSent = functions.firestore
       recentMessage: recentMessage,
     });
   });
+
+  // send noty to admins and the owner that someone is requesting to join the cm
+  exports.onRequestToJoinCm = functions.firestore
+    .document("/requestToJoinCm/{cmId}/request/{requestingId}")
+    .onCreate(async (snapshot, context) => {
+      const cmId = context.params.cmId;
+      const requestingId = context.params.requestingId;
+      
+      // we need to send: There is a new request to join your community.
+      // need: path to cm: cmId (from home screen can bi-pass other screens and nav to review screens)
+
+      // make payload
+      const payload = {
+        notification: {
+          title: "Someone wants to join your cm",
+          body: "hey, view your cm pending request",
+        },
+        data: {
+          cmId: chatId,
+          type: "pending_cm_request",
+        },
+      };
+
+      const options = {
+        priority: "high",
+        timeToLive: 60 * 60 * 24,
+      };
+
+      // obtain users to send this noty to
+        // which means i should prob redesign the cm users org
+      // read cmMembers get the owner and admins
+
+      for (var userId in readStatus) {
+        
+      }
+
+    });
+
+  // send noty to user that they have been approved
+  exports.onApprovedToJoinCm
+
+  // send noty to user that they have been denied
+  exports.onDeniedToJoinCm
+
 
 // exports.onUpdatePost = functions.firestore
 //   .document('/posts/{postId}')
