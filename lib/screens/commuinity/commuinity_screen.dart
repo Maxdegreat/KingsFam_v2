@@ -90,9 +90,9 @@ class CommuinityScreen extends StatefulWidget {
   _CommuinityScreenState createState() => _CommuinityScreenState();
 }
 
-class _CommuinityScreenState extends State<CommuinityScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerProviderStateMixin {
+
+  late TabController _cmTabCtl;
   late TextEditingController _txtController;
   Map<String, dynamic> accessMap = {};
   String? currRole;
@@ -104,12 +104,11 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     context.read<BottomnavbarCubit>().showBottomNav(true);
     super.initState();
     _txtController = TextEditingController();
-    _tabController = TabController(vsync: this, length: 2);
+    _cmTabCtl = TabController(length: 3, vsync: this);
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
     _txtController.dispose();
     // context.read<CommuinityBloc>().close();
     // context.read<CommuinityBloc>().dispose();
@@ -178,9 +177,9 @@ class _CommuinityScreenState extends State<CommuinityScreen>
 
         state.status == CommuintyStatus.shielded ?
         // status is shielded 
-          _mainScrollView(context, state, widget.commuinity, currRole, _tabController)
+          _mainScrollView(context, state, widget.commuinity, currRole,  _cmTabCtl)
 
-        : _mainScrollView(context, state, widget.commuinity, currRole, _tabController),
+        : _mainScrollView(context, state, widget.commuinity, currRole, _cmTabCtl),
       ));
     });
   }

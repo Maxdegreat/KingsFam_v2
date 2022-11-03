@@ -231,7 +231,7 @@ part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
               )));
 
 // This is for the settings button
- settingsBtn({required CommuinityBloc cmBloc, required Church cm, required BuildContext context, required TabController tabcontrollerForCmScreen, String? currRole}) {
+ settingsBtn({required CommuinityBloc cmBloc, required Church cm, required BuildContext context, required, String? currRole}) {
     return Padding(
       padding: const EdgeInsets.only(left: 10.0, top: 10),
       child: IconButton(
