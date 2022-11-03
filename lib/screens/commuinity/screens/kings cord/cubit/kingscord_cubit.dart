@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'dart:async';
 import 'dart:collection';
 import 'dart:developer';
@@ -42,9 +44,39 @@ class KingscordCubit extends Cubit<KingscordState> {
     _msgStreamSubscription!.cancel();
     return super.close();
   }
+  
+  var fire = FirebaseFirestore.instance; 
 
-  void onLoadInit(
-      {required String cmId, required String kcId, required int limit}) async {
+  /*Future<List<Userr>>*/ void searchMentionedUsers({required String username, required String cmId}) async {
+    var snap = await fire.collection(Paths.communityMembers).doc(cmId).collection(Paths.members).where("userNameCaseList", arrayContains: username).limit(7).get();
+    List<Userr> users = [];
+    for (var j in snap.docs) {
+      Userr user = await UserrRepository().getUserrWithId(userrId: j.id);
+      users.add(user);
+    }
+    emit(state.copyWith(potentialMentions: users));
+  }
+
+  void selectMention({required Userr userr}) {
+    // add to the mentioned list or whatever
+    if (!state.mentions.contains(userr)) {
+      List<Userr> m = List.from(state.mentions)..add(userr);
+      emit(state.copyWith(mentions: m));
+    }
+   }
+
+   void removeMention({required Userr userr}) {
+     if (state.mentions.contains(userr)) {
+      List<Userr> m = List.from(state.mentions)..remove(userr);
+      emit(state.copyWith(mentions: m));
+    }
+   }
+
+   void clearMention() {
+    emit(state.copyWith(mentions: []));
+   }
+
+  void onLoadInit({required String cmId, required String kcId, required int limit}) async {
     int limit = 45;
     _msgStreamSubscription?.cancel();
     _msgStreamSubscription = _churchRepository

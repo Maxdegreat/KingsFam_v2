@@ -58,18 +58,7 @@ class _CommunityUpdateRoleStateScreen extends State<CommunityUpdateRoleScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: 
-                cmActions.Actions.communityActions.map((a) {
-                    false;
-                    
-                  return ListTile(
-                    title: Text(
-                      a,
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ),
-                    trailing: Icon(Icons.check_box_outline_blank_sharp),
-                    onTap: () {}//=> context.read<RoleCubit>().onChanged(widget.role, a),
-                  );
-                }).toList()
+                [Text("Coming Soon")]
                 ),
           ),
         );

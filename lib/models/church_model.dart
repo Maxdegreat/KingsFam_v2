@@ -10,7 +10,6 @@ class Church extends Equatable {
   //1 make the church class data
   final String? id;
   final String name;
-  final String cmType;
   final String cmPrivacy;
   final String location;
   final List<String>? hashTags;
@@ -29,7 +28,7 @@ class Church extends Equatable {
     required this.searchPram,
     this.id,
     required this.cmPrivacy, 
-    required this.cmType,
+
     required this.name,
     required this.location,
     required this.imageUrl,
@@ -48,11 +47,9 @@ class Church extends Equatable {
   List<Object?> get props => [
         id,
         searchPram,
-        cmType,
         name,
         location,
         cmPrivacy, 
-        cmType,
         hashTags,
         imageUrl,
         about,
@@ -73,7 +70,6 @@ class Church extends Equatable {
     String? location,
     String? imageUrl,
     String? about,
-    String? cmType,
     String? cmPrivacy,
     Timestamp? recentMsgTime,
     Map<Userr, dynamic>? members,
@@ -84,7 +80,6 @@ class Church extends Equatable {
     Map<String, List<dynamic>>? permissions,
   }) {
     return Church(
-      cmType: cmType ?? this.cmType,
       cmPrivacy: cmPrivacy ?? this.cmPrivacy,
       id: id ?? this.id,
       recentMsgTime: recentMsgTime ?? this.recentMsgTime,
@@ -104,41 +99,16 @@ class Church extends Equatable {
   }
 
   //5 make the to doc
-  Map<String, dynamic> toDoc({required Map<String, String> roles}) {
-    List<String> ids = members.keys.map((u) => u.id).toList();
-
-    //DocumentReference<Map<String, dynamic>>
-    Map<String, dynamic> memRefs = {};
-
-    for (String id in ids) {
-      if (roles.containsKey(id)) {
-        memRefs[id] = {
-          'userReference':
-              FirebaseFirestore.instance.collection(Paths.users).doc(id),
-          'timestamp': Timestamp.now(),
-          'role':
-              roles[id] == '' || roles[id] == null ? Roles.Member : roles[id],
-        };
-      } else {
-        memRefs[id] = {
-          'userReference':
-              FirebaseFirestore.instance.collection(Paths.users).doc(id),
-          'timestamp': Timestamp.now(),
-          'role': Roles.Member,
-        };
-      }
-    }
-
+  Map<String, dynamic> toDoc() {
+    
     return {
-      'cmType': cmType,
       'cmPrivacy': cmPrivacy,
       'name': name,
       'location': location,
       'searchPram': searchPram,
-      'hashTags': hashTags,
       'about': about,
       'imageUrl': imageUrl,
-      'members': memRefs,
+      'members': {}, // this is depreciated. now using a separate collection to hold roles and members 
       'events': events,
       'size': size,
       'boosted': boosted,
@@ -168,7 +138,6 @@ class Church extends Equatable {
     }
 
     return {
-      'cmType' : cmType,
       'cmPrivacy' : cmPrivacy,
       'name': name,
       'location': location,
@@ -196,58 +165,55 @@ class Church extends Equatable {
   //6 from doc
   static Future<Church> fromDoc(DocumentSnapshot doc) async {
     final data = doc.data() as Map<String, dynamic>;
-    Map<Userr, dynamic> members = {};
-    final memRefs = Map<String, dynamic>.from(data['members']); //data['members'];
 
 
-    // log("about to show you data in the mems ref");
-    // for (var id in memRefs.keys) {
-    //   log("id: $id, userRef: ${memRefs[id]['userReference']}, timeStamp: ${memRefs[id]['timestamp']}");
-    // }
-
-    if (memRefs == null) return Church.empty;
-    for (String idFromDoc in memRefs.keys) {
-      // ignore: unnecessary_null_comparison
-      if (idFromDoc.isNotEmpty && idFromDoc != null) {
-        var docRef = memRefs[idFromDoc]['userReference'] as DocumentReference;
-        var snap = await docRef.get();
-        Userr user = Userr.fromDoc(snap);
-        //end goal is to have <user, time>
-        members[user] = {
-          'timestamp': memRefs[idFromDoc]['timestamp'],
-          'role': memRefs[idFromDoc]['role'],
-        };
-      }
-    }
-
-    String location = data['location'] == " " || data['location'] == ""
-        ? "Reomte"
-        : data['location'];
+    String location = data["location"] ?? "Remote";
+    location = location == "" ? "Remote" : location;
 
     return Church(
-      members: members,
+      members: {},
       id: doc.id,
-      size: data['size'] ?? 0,
-      searchPram: List<String>.from(data['searchPram'] ?? []),
-      hashTags: List<String>.from(data['hashTags'] ?? []),
-      name: data['name'] ?? 'name',
-      location: location,
-      about: data['about'] ?? 'bio',
-      imageUrl: data['imageUrl'] ?? '',
-      recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0),
-      boosted: data['boosted'] ?? 0,
-      themePack: data['themePack'] ?? "none",
-      events: List<String>.from(
-        data['events'] ?? [],
-      ), cmType: data['cmType'] ?? CmType.regular,
-      cmPrivacy: data['cmPrivacy'] ?? CmPrivacy.open,
+      size: data['size'] ?? 0, // ----------------------------------------------
+      searchPram: List<String>.from(data['searchPram'] ?? []), // ----------------                    
+      hashTags: [],
+      name: data['name'] ?? 'name', //-------------------------------------------
+      location: location, // ------------------------------------------------------
+      about: data['about'] ?? '', // ------------------------------------------------
+      imageUrl: data['imageUrl'] ?? '', //------------------------------------------
+      recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0), //-------------------
+      boosted: data['boosted'] ?? 0, // --------------------------------------------
+      themePack: data['themePack'] ?? "none", // ---------------------------------
+      events: List<String>.from( data['events'] ?? [] ), // ----------------------
+      cmPrivacy: data['cmPrivacy'] ?? CmPrivacy.open, // ---------------------------
     );
   }
 
-  static Map<String, dynamic> fromDocMemRefs(DocumentSnapshot doc) {
+  
+    static Future<Church> fromId(String id) async {
+    DocumentSnapshot doc = await FirebaseFirestore.instance.collection(Paths.church).doc(id).get();
     final data = doc.data() as Map<String, dynamic>;
-    return {'memRefs': Map<String, dynamic>.from(data['members'])};
+
+    String location = data["location"] ?? "Remote";
+    location = location == "" ? "Remote" : location;
+
+    return Church(
+      members: {},
+      id: doc.id,
+      size: data['size'] ?? 0, // ----------------------------------------------
+      searchPram: List<String>.from(data['searchPram'] ?? []), // ----------------                    
+      hashTags: [],
+      name: data['name'] ?? 'name', //-------------------------------------------
+      location: location, // ------------------------------------------------------
+      about: data['about'] ?? '', // ------------------------------------------------
+      imageUrl: data['imageUrl'] ?? '', //------------------------------------------
+      recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0), //-------------------
+      boosted: data['boosted'] ?? 0, // --------------------------------------------
+      themePack: data['themePack'] ?? "none", // ---------------------------------
+      events: List<String>.from( data['events'] ?? [] ), // ----------------------
+      cmPrivacy: data['cmPrivacy'] ?? CmPrivacy.open, // ---------------------------
+    );
   }
+
 
 
   //7 church. empty
@@ -265,6 +231,5 @@ class Church extends Equatable {
     hashTags: [],
     size: 0,
     themePack: 'none',
-    cmType: CmType.regular,
   );
 }

@@ -26,3 +26,9 @@
         memberIds: List<String>.from(data['memberIds'] ?? []),
         memberInfo: Map<String, dynamic>.from(data['memberInfo'] ?? {}),
         readStatus: Map<String, dynamic>.from(data['readStatus'] ?? {})
+
+
+        this is how you can do a .where on a Map
+          .where('members.$currId.userReference', isEqualTo: userRef)
+
+      how to querry on an id in firebase db.collection('books').where(firebase.firestore.FieldPath.documentId(), '==', 'fK3ddutEpD2qQqRMXNW5').get() in js or sum

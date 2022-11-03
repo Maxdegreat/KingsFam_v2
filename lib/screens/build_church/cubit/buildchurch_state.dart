@@ -16,7 +16,6 @@ class BuildchurchState extends Equatable {
   final String location;
   final List<String> memberIds;
 
-  final String cmType; // chialpha, regular, chior, church
 
   final String creatorId;
   final Set<String> adminIds;
@@ -41,7 +40,6 @@ class BuildchurchState extends Equatable {
     required this.caseSearchList,
     required this.kingsCords,
     this.initHashTag,
-    required this.cmType,
     this.hashTags,
     required this.name,
     required this.about,
@@ -74,7 +72,7 @@ class BuildchurchState extends Equatable {
         hashTags,
         about,
         creatorId,
-        cmType,
+
         adminIds,
         elderIds,
         updatingRoleView,
@@ -99,7 +97,6 @@ class BuildchurchState extends Equatable {
     String? initHashTag,
     List<String>? hashTags,
     File? imageFile,
-    String? cmType,
     String? name,
     String? about,
     String? location,
@@ -123,7 +120,6 @@ class BuildchurchState extends Equatable {
     return BuildchurchState(
       posts: posts ?? this.posts,
       calls: calls ?? this.calls,
-      cmType: cmType ?? this.cmType,
       kingsCords: kingsCords ?? this.kingsCords,
       isSubmiting: isSubmiting ?? this.isSubmiting,
       caseSearchList: caseSearchList ?? this.caseSearchList,
@@ -160,7 +156,6 @@ class BuildchurchState extends Equatable {
       caseSearchList: [],
       initHashTag: null,
       hashTags: null,
-      cmType: CmType.regular,
       imageFile: null,
       name: '',
       creatorId: '',

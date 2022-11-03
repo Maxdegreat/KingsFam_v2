@@ -47,4 +47,9 @@ class Paths {
   static const String cmPrivacy = "cmPrivacy";
   static const String requestToJoinCm = "requestToJoinCm";
   static const String request = "request";
+  static const String communityMembers = "communityMembers";
+  static const String communityRoles = "communityRoles";
+
+  // general
+  static const String members = "members";
 }

@@ -113,10 +113,7 @@ class _CreateComuinityState extends State<CreateComuinity> {
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(primary: Colors.red[400]),
                     child: Text('Create A Commuinity 👑'),
-                    onPressed: () => Navigator.of(context).pushNamed(
-                        AddUsers.routeName,
-                        arguments:
-                            CreateNewGroupArgs(typeOf: 'Virtural Church'))),
+                    onPressed: () => Navigator.of(context).pushNamed(BuildChurch.routeName)),
               ),
               // Container(height: 400,child: RiveAnimation.asset('assets/phone_idle/phone_idle.riv'))
               SizedBox(height: 10.0),

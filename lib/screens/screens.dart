@@ -35,3 +35,4 @@ export 'package:kingsfam/screens/commuinity/screens/create_room/create_room.dart
 export 'package:kingsfam/screens/commuinity/screens/events/event_view.dart';
 export 'package:kingsfam/screens/commuinity/community_settings/update_privacy.dart';
 export 'package:kingsfam/screens/commuinity/community_settings/view_request.dart';
+export 'package:kingsfam/screens/commuinity/wrapers/participants_view.dart';

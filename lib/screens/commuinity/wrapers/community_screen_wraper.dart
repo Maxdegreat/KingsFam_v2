@@ -49,7 +49,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm, 
 
                 Padding(
                   padding: const EdgeInsets.only(top: 0, bottom: 5, left: 2.5, right: 2.5),
-                  child: Text(cm.cmType + "  •  " + cm.cmPrivacy,
+                  child: Text(cm.cmPrivacy,
                       style: TextStyle(
                           fontStyle: FontStyle.italic, color: Colors.grey)),
                 ),
@@ -111,6 +111,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm, 
                       ),
                       overflow: TextOverflow.fade,
                     ),
+                    context.read<CommuinityBloc>().state.role["permissions"].contains("*") || context.read<CommuinityBloc>().state.role["permissions"].contains("#") || context.read<CommuinityBloc>().state.role["permissions"].contains(CmActions.makeCord) ?
                     IconButton(
                         onPressed: () {
                           Navigator.of(context).pushNamed(CreateRoom.routeName,
@@ -120,7 +121,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm, 
                                     // TODO setState and read the events again.
                                   });
                         },
-                        icon: Icon(Icons.add))
+                        icon: Icon(Icons.add)) : SizedBox.shrink()
                   ],
                 ),
                 Container(
@@ -218,7 +219,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm, 
                       overflow: TextOverflow.fade,
                     ),
                     collapseOrExpand(context.read<CommuinityBloc>(), 'cord'),
-                    new_kingscord(cmBloc: context.read<CommuinityBloc>(), cm: cm, context: context, currRole: currRole),
+                    new_kingscord(cmBloc: context.read<CommuinityBloc>(), cm: cm, context: context),
                   ],
                 ),
                 
@@ -240,10 +241,13 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm, 
                                   if (cord.mode == "chat") {
                                     // handels the navigation to the kingscord screen and also handels the
                                     // deletion of a noti if it eist. we check if noty eist by through a function insde the bloc.
-
+                                    bool isMember = context.read<CommuinityBloc>().state.isMember ?? false;
                                     Navigator.of(context).pushNamed(
                                         KingsCordScreen.routeName,
                                         arguments: KingsCordArgs(
+                                            userInfo: {
+                                              "isMember" : isMember,
+                                            },
                                             commuinity: cm,
                                             kingsCord: cord));
 

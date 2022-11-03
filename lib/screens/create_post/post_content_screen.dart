@@ -338,7 +338,6 @@ class _PostContentScreenState extends State<PostContentScreen> {
     final author = context.read<ProfileBloc>().state.userr;
     final Church ch = Church(
         cmPrivacy: CmPrivacy.open,
-        cmType: CmType.regular, // does not use this value
         searchPram: [],
         name: '',
         location: '',

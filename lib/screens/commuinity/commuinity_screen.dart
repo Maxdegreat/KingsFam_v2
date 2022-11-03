@@ -40,7 +40,7 @@ import 'package:kingsfam/widgets/widgets.dart';
 import 'package:rive/rive.dart';
 // ignore: unused_import
 import 'package:flutter/src/painting/gradient.dart' as paint;
-import 'package:kingsfam/screens/commuinity/actions.dart' as cmActions;
+import 'package:kingsfam/screens/commuinity/actions.dart';
 
 import 'package:video_player/video_player.dart';
 
@@ -124,8 +124,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
         listener: (context, state) {
       if (state.status == CommuintyStatus.error) {
         ErrorDialog(
-          content:
-              'hmm, something went worong. check your connection - ecode: commuinityScreenError: ${state.failure.code}',
+          content:'hmm, something went worong. check your connection - ecode: commuinityScreenError: ${state.failure.code}',
         );
       } if (state.status == CommuintyStatus.armormed) {
 

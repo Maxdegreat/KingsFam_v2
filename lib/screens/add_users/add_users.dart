@@ -215,12 +215,7 @@ class _AddUsersState extends State<AddUsers> {
                                   onPressed: () {
                                     switch (widget.typeOf) {
                                       case 'Virtural Church':
-                                        Navigator.of(context).pushNamed(
-                                            BuildChurch.routeName,
-                                            arguments: BuildChurchArgs(
-                                                selectedMembers: state
-                                                    .selectedUsers
-                                                    .toList()));
+                                        Navigator.of(context).pushNamed(BuildChurch.routeName);
 
                                         break;
                                       case typeOf.inviteTheFam:

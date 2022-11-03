@@ -93,7 +93,7 @@ class CustomRoute {
             args: settings.arguments as ChatRoomSettingsArgs);
 
       case BuildChurch.routeName:
-        return BuildChurch.route(settings.arguments as BuildChurchArgs);
+        return BuildChurch.route();
 
       case CreateComuinity.routeName:
         return CreateComuinity.route();
@@ -176,6 +176,9 @@ class CustomRoute {
 
       case ReviewPendingRequest.routeName:
         return ReviewPendingRequest.route(args: settings.arguments as ReviewPendingRequestArgs);
+
+      case ParticipantsView.routeName:
+        return ParticipantsView.route(args: settings.arguments as ParticipantsViewArgs);
 
       default:
         return _errorRoute();

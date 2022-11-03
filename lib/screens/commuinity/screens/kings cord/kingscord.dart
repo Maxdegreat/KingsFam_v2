@@ -15,22 +15,29 @@ import 'package:kingsfam/widgets/profile_image.dart';
 
 import 'widgets/message_lines.dart';
 
+
+// for kc's to be dynamic know that there is a rollesAllowed in the schema. This is defaulted to Members
+// if members make so all can type as long as part of cm.
+
+// now We need a cm setting. this role can change. for ex if we want to make the roles allowed be chior
+// then we just use the chior rid.
+
 //will probably need args to pass all members from the commuinity into main room
 class KingsCordArgs {
   //class data
   final Church commuinity;
   final KingsCord kingsCord;
+  final Map<String, dynamic> userInfo;
   // class constructor
-  KingsCordArgs({required this.commuinity, required this.kingsCord});
+  KingsCordArgs({required this.commuinity, required this.kingsCord, required this.userInfo});
 }
 
 class KingsCordScreen extends StatefulWidget {
   //class data
   final Church commuinity;
   final KingsCord kingsCord;
-  const KingsCordScreen(
-      {Key? key, required this.commuinity, required this.kingsCord})
-      : super(key: key);
+  final Map<String, dynamic> userInfo;
+  const KingsCordScreen({Key? key, required this.commuinity, required this.kingsCord, required this.userInfo}) : super(key: key);
 
   // will need a static const string route name
   static const String routeName = '/kingsCord';
@@ -49,6 +56,7 @@ class KingsCordScreen extends StatefulWidget {
                       ChurchRepository>() // may need to report to main reposityory collection
                   ),
               child: KingsCordScreen(
+                userInfo: args.userInfo,
                 commuinity: args.commuinity,
                 kingsCord: args.kingsCord,
               ),
@@ -70,10 +78,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
   String currUsersName = "";
 
-  Set<String> memIds = {};
-  // in the _buildMessageStream membersMapWithUsernameAsKey is used to populate the map with member info
-  Map<String, dynamic> membersMapWithUsernameAsKey = {};
-
   List<String> UrlBucket = [];
 
   HexColor hexColor = HexColor();
@@ -85,20 +89,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   }
 
   double textHeight = 25;
-  _buildMessageStream(
-      {required Church commuinity,
-      required KingsCord kingsCord,
-      required List<Message?> msgs}) {
-    for (var user in widget.commuinity.members.keys) {
-      if (user.id == context.read<AuthBloc>().state.user!.uid) {
-        currUsersName = user.username;
-      }
-      memIds.add(user.id);
-      membersMapWithUsernameAsKey[user.username] = {
-        'id': user.id,
-        'token': user.token,
-      };
-    }
+  _buildMessageStream({required Church commuinity, required KingsCord kingsCord, required List<Message?> msgs}) {
+    // set the current username
+    // add all users in cm into a list named memIds - to replace I just need to know if the user is allowed in the cm.
+    // make a membersMapUsernameAsKey where you have username as a ker and {id, token} as values - to replace I use the cubit and it holds a list of mentioned users
 
     return Expanded(
         child: ListView(
@@ -166,7 +160,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   child: Align(
                     alignment: Alignment.center,
                     child: TextFormField(
-                      validator: (value) {},
+                      // validator: (value) {},
                       textAlignVertical: TextAlignVertical.center,
                       style: TextStyle(fontSize: 18),
                       autocorrect: true,
@@ -186,9 +180,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                           log("here you can add the @ container");
                         }
                         if (containsAt)
-                          setState(() => _mentionedController =
-                              messageText.substring(
-                                  idxWhereStartWithat + 1, messageText.length));
+                          setState(() => _mentionedController = messageText.substring(idxWhereStartWithat + 1, messageText.length));
                         if (messageText.endsWith(' ')) {
                           containsAt = false;
                           idxWhereStartWithat = 0;
@@ -218,46 +210,33 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   ),
                   onPressed: state.isTyping
                       ? () {
+                        
                           // this will be passed to the cubit then to the db. upon a get msg lines will psrse for a good look
                           String messageWithsSmbolesForParsing = "";
                           // map of mentioned info that will be added to the kc cubit
                           Map<String, dynamic> mentionedInfo = {};
+                          for (var u in state.mentions) {
+                                  mentionedInfo[u.id] = {
+                                    "username": u.username,
+                                    "token": u.token,
+                                    'communityName': widget.commuinity.name,
+                                    'kingsCordName': widget.kingsCord.cordName,
+                                  };
+                                }
                           var msgAsLst = _messageController.text.split(' ');
                           for (String msg in msgAsLst) {
                             // handels if a shares a link
 
-                            if (msg.length > 8 &&
-                                msg.substring(0, 8) == 'https://') {
-                              messageWithsSmbolesForParsing += '{{a-$msg}} ';
-                            } else if (msg.length > 1 && msg[0] == '@') {
-                              var mentionedUserName =
-                                  msg.substring(1, msg.length);
-                              if (membersMapWithUsernameAsKey
-                                  .containsKey(mentionedUserName)) {
-                                messageWithsSmbolesForParsing += '{{b-$msg}} ';
-                                // mentioned info will be passed to cubit. info will be used in notification
-
-                                // map<id, dynamic>
-                                mentionedInfo[membersMapWithUsernameAsKey[mentionedUserName]['id']] = {
-                                  'username': mentionedUserName,
-                                  'token': membersMapWithUsernameAsKey[
-                                      mentionedUserName]['token'],
-                                  'communityName': widget.commuinity.name,
-                                  'kingsCordName': widget.kingsCord.cordName,
-                                };
-                              }
+                            if (msg.length > 8 && msg.substring(0, 8) == 'https://') {
+                              messageWithsSmbolesForParsing += '{{a-$msg}}';
+                              // we want to check if the msg is mentioning someone
                             } else {
                               messageWithsSmbolesForParsing += '$msg ';
                             }
                           }
-                          ctx.onSendTxtMsg(
-                              churchId: widget.commuinity.id!,
-                              kingsCordId: widget.kingsCord.id!,
-                              txtMsgBodyWithSymbolsForParcing:
-                                  _messageController
-                                      .text, //messageWithsSmbolesForParsing,
-                              txtMsgWithOutSymbolesForParcing:
-                                  _messageController.text,
+                          ctx.onSendTxtMsg( churchId: widget.commuinity.id!, kingsCordId: widget.kingsCord.id!,
+                              txtMsgBodyWithSymbolsForParcing: _messageController .text, //messageWithsSmbolesForParsing,
+                              txtMsgWithOutSymbolesForParcing:_messageController.text,
                               mentionedInfo: mentionedInfo,
                               cmTitle: widget.commuinity.name,
                               kingsCordData: widget.kingsCord,
@@ -265,6 +244,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                               );
                           ctx.onIsTyping(false);
                           _messageController.clear();
+                          ctx.clearMention();
                         }
                       : null,
                 ))
@@ -277,21 +257,25 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     int? _containerHeight;
     List<Userr> potentialMentions = [];
     if (username != null) {
-      for (Userr member in widget.commuinity.members.keys) {
-        if (member.username.startsWith(username)) {
-          potentialMentions.add(member);
-        }
-      }
+      // for (Userr member in widget.commuinity.members.keys) {
+      //   if (member.username.startsWith(username)) {
+      //     potentialMentions.add(member);
+      //   }
+      // }
+
+      // read on the path of cm members while using the username caseList
+      context.read<KingscordCubit>().searchMentionedUsers(cmId: widget.commuinity.id!, username: username);
     }
-    if (potentialMentions.length == 0)
+    var state = context.read<KingscordCubit>().state;
+    if ( state.potentialMentions.length == 0)
       _containerHeight = 0;
-    else if (potentialMentions.length == 1)
-      _containerHeight = 50;
-    else if (potentialMentions.length == 2)
-      _containerHeight = 100;
-    else if (potentialMentions.length == 3)
-      _containerHeight = 125;
-    else if (potentialMentions.length >= 4) _containerHeight = 150;
+    else if (state.potentialMentions.length == 1)
+      _containerHeight = 70;
+    else if (state.potentialMentions.length == 2)
+      _containerHeight = 120;
+    else if (state.potentialMentions.length == 3)
+      _containerHeight = 175;
+    else if (state.potentialMentions.length >= 4) _containerHeight = 220;
 
     return username != null
         ? Container(
@@ -301,9 +285,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             height: _containerHeight!.toDouble(),
             width: double.infinity,
             child: ListView.builder(
-                itemCount: potentialMentions.length,
+                itemCount: state.potentialMentions.length,
                 itemBuilder: (BuildContext context, int index) {
-                  Userr _mentioned = potentialMentions[index];
+                  Userr _mentioned = state.potentialMentions[index];
                   return ListTile(
                     leading: ProfileImage(
                         radius: 24, pfpUrl: _mentioned.profileImageUrl),
@@ -315,12 +299,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                       overflow: TextOverflow.fade,
                     ),
                     onTap: () {
-                      var oldMessageControllerBody = _messageController.text
-                          .substring(0, idxWhereStartWithat);
-                      _messageController.text = oldMessageControllerBody +=
-                          '@${_mentioned.username} ';
-                      _messageController.selection = TextSelection.fromPosition(
-                          TextPosition(offset: _messageController.text.length));
+                      var oldMessageControllerBody = _messageController.text.substring(0, idxWhereStartWithat);
+                      _messageController.text = oldMessageControllerBody += '@${_mentioned.username} ';
+                      _messageController.selection = TextSelection.fromPosition(TextPosition(offset: _messageController.text.length));
+                      context.read<KingscordCubit>().selectMention(userr: _mentioned);
                     },
                   );
                 }),
@@ -401,6 +383,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                         msgs: state.msgs),
                     //divider of a height 1
                     Divider(height: 1.0),
+
+                    state.mentions.length > 0 ? 
+                    _showMentioned(state) : SizedBox.shrink(),
             
                     _mentionUserContainer(username: _mentionedController),
             
@@ -433,26 +418,13 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                             ),
                           )
                         : SizedBox.shrink(),
-                        // state.replying ?
-                        // SizedBox.shrink() : 
-                        // Column(
-                        //   mainAxisAlignment: MainAxisAlignment.start,
-                        //   crossAxisAlignment: CrossAxisAlignment.start,
-                        //   children: [
-                        //     IconButton(onPressed: () {
-                        //       context.read<KingscordCubit>().onReplyMessage(replyingToMessage: null,);
-                        //       setState(() {});
-                        //     }, icon: Icon(Icons.cancel_outlined),),
-                    
-                        //     Container(height: 50, width: double.infinity, child: Text(
-                        //       "replying to " + state.replyMessage!.sender!.username, style: TextStyle(fontStyle: FontStyle.italic),
-                        //     ),),
-                        //   ],
-                        // ),
-                    memIds.contains(context.read<AuthBloc>().state.user!.uid)
+
+                        // use the state.isMem to know if the user is a part of cm.
+                        // this values will have to be updated soon tho. because we want
+                        // dynamic roles to be sourced 
+                        widget.userInfo["isMember"]
                         ? _buildBottomTF(state, context)
-                        : _permissionDenied(
-                            messasge: "Join Commuinity To say whats up")
+                        : _permissionDenied(messasge: "Join Community To say whats up")
                   ],
                 ),
               ],
@@ -460,6 +432,41 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           );
         },
       ),
+    );
+  }
+
+  _showMentioned(KingscordState state) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextButton(
+          onPressed: () {
+            context.read<KingscordCubit>().clearMention();
+            // log(state.mentions.length.toString());
+          },
+          child: Row(
+            children: [
+              Text("Clear mentions  "),
+              Icon(Icons.cancel_outlined),
+            ],
+          )),
+        Container(
+          height: 25,
+          width: double.infinity,
+          child: 
+          ListView.builder(
+            itemCount: state.mentions.length,
+            itemBuilder: (BuildContext context, int index) {
+              Userr m = state.mentions[index];
+              return Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Text(m.username),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

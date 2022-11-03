@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/models/models.dart';
@@ -34,21 +35,25 @@ class ChurchRepository extends BaseChurchRepository {
   }
 
   Stream<List<Future<Church?>>> getCmsStream({required String currId}) {
+    
+    // this was members { "currId":userRef } or top level was a list
+    // .where('members.$currId.userReference', isEqualTo: userRef)
+    
     log("we are now in the getCmsStream");
-    final userRef =
-        FirebaseFirestore.instance.collection(Paths.users).doc(currId);
+    List<Future<Church?>> bucket = [];
     return FirebaseFirestore.instance
+        .collection(Paths.users)
+        .doc(currId)
         .collection(Paths.church)
-        .limit(10)
-        .where('members.$currId.userReference', isEqualTo: userRef)
+        .limit(15)
         .snapshots()
         .map((snap) {
-      List<Future<Church?>> chs = [];
-      snap.docs.forEach((doc) async {
-        Future<Church> ch = Church.fromDoc(doc);
-        chs.add(ch);
-      });
-      return chs;
+          
+          for (var j in snap.docs) {
+            Future<Church> ch = Church.fromId(j.id);
+            bucket.add(ch);
+          }
+      return bucket;
     });
   }
 
@@ -193,18 +198,43 @@ class ChurchRepository extends BaseChurchRepository {
     //batch.commit();
   }
 
-  @override
-  Future<void> newChurch(
-      {required Church church,
-      required Userr recentSender,
-      required Map<String, String> roles}) async {
+  // not everyone will have a role if you think about it.
+  // if roleName is nullable then we assume that the role is non existant. just a member
+  Future<void> createRole({required String cmId, required String roleName, required List<String> permissions,  required String userId, bool? isNewCm}) async {
+    await fire.collection(Paths.communityMembers).doc(cmId).collection(Paths.communityRoles).add({
+      "roleName" : roleName,
+      "permissions" : permissions,
+    }).then((role)  async {
+      if (isNewCm!=null && isNewCm) {
+        // we only need the rid aka roleId
+        await addCommunityMember(userId: userId, cmId: cmId, roleId: role.id);
+      }
+    });
+  }
+
+  Future<void> addCommunityMember({required String userId, required String cmId, required String? roleId}) async {
+    DocumentSnapshot userSnap = await fire.collection(Paths.users).doc(userId).get();
+    Userr user = Userr.fromDoc(userSnap);
+    log("we have created the user from data in the db: ${user.username}");
+    // this is the assignment of the role. not a creation of the role.
+    // this also holds the users name so that a query for mentions can be done.
+    fire.collection(Paths.communityMembers).doc(cmId).collection(Paths.members).doc(userId).set({
+      "roleId" : roleId,
+      "userNameCaseList" :  user.usernameSearchCase
+    });
+
+    // I also need to add the cmId somewhere so that I can find all cm's the user is a part of
+    FirebaseFirestore.instance.collection(Paths.users).doc(userId).collection(Paths.church).doc(cmId).set({});
+
+  }
+
+  Future<void> newChurch({required Church church, required Userr recentSender, required String userId}) async {
     try {
-      fb
-          .add(church.toDoc(
-        roles: roles,
-      ))
-          .then((value) async {
+      fb.add(church.toDoc()).then((value) async {
         final doc = await value.get();
+        // make a separate collection to hold members and roles. The top level collection
+        // will also hold doc id which will map to a role. a role is a list of permissions
+        createRole(cmId: doc.id, roleName: "Owner", permissions: ["*"], userId: userId, isNewCm: true); //isNewCm is not required. only called on creation
         final kingsCord = KingsCord(
             tag: doc.id,
             cordName: "Welcome To ${church.name}!",
@@ -310,16 +340,15 @@ class ChurchRepository extends BaseChurchRepository {
         .add(kingsCord.toDoc());
   }
 
-  Future<bool> isInCm(String currId) async {
-    final userRef =
-        FirebaseFirestore.instance.collection(Paths.users).doc(currId);
-    final cmRef = await FirebaseFirestore.instance
-        .collection(Paths.church)
-        .limit(1)
-        .where('members.$currId.userReference', isEqualTo: userRef)
-        .get();
-    if (cmRef.docs.isNotEmpty) {
-      if (cmRef.docs.first.exists) {
+  Future<bool> isInCm(String currId, String userId) async {
+    
+    // .where('members.$currId.userReference', isEqualTo: userRef)
+    
+    final cmSnap = await FirebaseFirestore.instance
+        .collection(Paths.users).doc(userId).collection(Paths.church).limit(1).get();
+    
+    if (cmSnap.docs.isNotEmpty) {
+      if (cmSnap.docs.first.exists) {
         return true;
       }
     }
@@ -524,29 +553,21 @@ class ChurchRepository extends BaseChurchRepository {
 
   Future<void> leaveCommuinity(
       {required Church commuinity, required String leavingUserId}) async {
-    final docRef = fb.doc(commuinity.id);
-    final docSnap = await docRef.get();
 
-    var cmIds = Church.getCommunityMemberIds(docSnap);
-    if (!cmIds.contains(leavingUserId)) return;
+        // to leave we must remove from the users church path
 
-    var cmSnap = await FirebaseFirestore.instance
-        .collection(Paths.church)
-        .doc(commuinity.id)
-        .get();
-    var memRefs = Church.fromDocMemRefs(cmSnap);
-    var memRefsMap = memRefs['memRefs'] as Map<String, dynamic>;
-    memRefsMap.remove(leavingUserId);
+        // we must also remove from cmMembers path. thats it
 
-    // to update the size
-    docRef.update({'size': commuinity.members.length - 1});
-    docRef.update({'members': memRefsMap});
+        fire.collection(Paths.users).doc(leavingUserId).collection(Paths.church).doc(commuinity.id).delete();
+
+        fire.collection(Paths.communityMembers).doc(commuinity.id).collection(Paths.members).doc(leavingUserId).delete();
+
+        // we should also inc the size of the cm Id
+        final docRef = fb.doc(commuinity.id);
+        docRef.update({'size': commuinity.members.length - 1});
   }
 
-  void inviteUserToCommuinity(
-      {required Userr fromUser,
-      required String toUserId,
-      required Church commuinity}) {
+  void inviteUserToCommuinity({required Userr fromUser,required String toUserId,required Church commuinity}) {
     //make a noty
     final NotificationKF noty = NotificationKF(
         fromUser: fromUser,
@@ -554,45 +575,52 @@ class ChurchRepository extends BaseChurchRepository {
         date: Timestamp.now(),
         fromCommuinity: commuinity);
 
-    fire
-        .collection(Paths.noty)
-        .doc(toUserId)
-        .collection(Paths.notifications)
-        .add(noty.toDoc());
+    fire.collection(Paths.noty).doc(toUserId).collection(Paths.notifications).add(noty.toDoc());
   }
 
-  void onJoinCommuinity(
-      {required Userr user, required Church commuinity}) async {
-    final docRef = fb.doc(commuinity.id);
-    final docSnap = await docRef.get();
-    var cmIds = await Church.getCommunityMemberIds(docSnap);
-    if (cmIds.contains(user.id)) return;
+  Future<void> onJoinCommuinity({required Userr user, required Church commuinity}) async {
 
-    // update the commuinity size
-    docRef.update({'size': commuinity.members.length + 1});
-    var cmSnap = await FirebaseFirestore.instance
-        .collection(Paths.church)
-        .doc(commuinity.id)
-        .get();
-    var memRefs = Church.fromDocMemRefs(cmSnap);
-    var memRefsMap = memRefs['memRefs'] as Map<String, dynamic>;
-    memRefsMap[user.id] = {
-      'role': Roles.Member,
-      'timestamp': Timestamp(0, 0),
-      'userReference':
-          FirebaseFirestore.instance.collection(Paths.users).doc(user.id)
-    };
-    docRef.update({'members': memRefsMap});
-    return;
+    // run a transaction
+
+    // check if member in both user -> id -> church lst of documents and communityMembers -> cmId -> members -> lst of members if so do nothing
+
+    // if not a member add to the path above and to the cmMembers path.
+    // to do this just call addCmMember function and provide the availavble information
+
+    fire.runTransaction((transaction) async {
+
+      DocumentReference isInUserPathChurchRef = FirebaseFirestore.instance.collection(Paths.users).doc(user.id).collection(Paths.church).doc(commuinity.id);
+      DocumentSnapshot isInUserPathChurchSnap = await transaction.get(isInUserPathChurchRef);
+
+      DocumentReference isInCmMembersRef = fire.collection(Paths.communityMembers).doc(commuinity.id).collection(Paths.members).doc(user.id);
+      DocumentSnapshot isInCmMemberSnap = await transaction.get(isInCmMembersRef);
+
+      if (isInUserPathChurchSnap.exists) {
+        throw Exception("church is in path users -> uid -> church -> id. does exist! id found. in church repo onJoinCommuinity");
+      }
+
+      if (isInCmMemberSnap.exists) {
+        throw Exception("User is found in the CmMembers path. so how can they try joining? In Church repo onJoinCommunity");
+      }
+
+      addCommunityMember(cmId: commuinity.id!, roleId: "0", userId: user.id);
+
+      final docRef = fb.doc(commuinity.id); 
+      docRef.update({'size': commuinity.members.length + 1});
+    });
+
+
+  
   }
 
-  Future<Stream<bool>> streamIsCmMember(
-      {required Church cm, required String authorId}) async {
-    final doc = await fb.doc(cm.id).get();
+  Future<Stream<bool>> streamIsCmMember({required Church cm, required String authorId}) async {
+    
+    // I can look in users personal church path and see if the cm doc id is belonging.
+    // I can return this value as true or false ig
+    DocumentReference isInCm = FirebaseFirestore.instance.collection(Paths.users).doc(authorId).collection(Paths.church).doc(cm.id);
+    DocumentSnapshot isInCmSnap = await isInCm.get();
 
-    Set<String> memIds = Church.getCommunityMemberIds(doc);
-
-    return Stream<bool>.value(memIds.contains(authorId));
+    return Stream<bool>.value(isInCmSnap.exists);
   }
 
   Future<bool> isCommuinityMember(

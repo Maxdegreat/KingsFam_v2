@@ -16,6 +16,8 @@ class KingscordState extends Equatable {
   final Queue<File> filesToBePosted;
   final Message? replyMessage;
   final bool replying;
+  final List<Userr> potentialMentions;
+  final List<Userr> mentions;
   //gen constructor
   KingscordState({
     required this.isTyping,
@@ -29,10 +31,12 @@ class KingscordState extends Equatable {
     required this.filesToBePosted,
     required this.replyMessage,
     required this.replying,
+    required this.potentialMentions,
+    required this.mentions,
   });
   // props
   List<Object?> get props =>
-      [isTyping, txtImgUrl, txtMsg, msgs, txtVidUrl, status, fileShareStatus, filesToBePosted, failure, replyMessage, replying];
+      [isTyping, txtImgUrl, txtMsg, msgs, txtVidUrl, status, fileShareStatus, filesToBePosted, failure, replyMessage, replying, potentialMentions, mentions];
   //copy with
     KingscordState copyWith({
       bool? isTyping,
@@ -46,6 +50,8 @@ class KingscordState extends Equatable {
       Failure? failure,
       Message? replyMessage,
       bool? replying,
+      List<Userr>? potentialMentions,
+      final List<Userr> ? mentions,
     }) {
       return KingscordState(
         isTyping: isTyping ?? this.isTyping,
@@ -59,6 +65,8 @@ class KingscordState extends Equatable {
         filesToBePosted: filesToBePosted ?? this.filesToBePosted,
         replying: replying ?? this.replying,
         replyMessage: replyMessage ?? this.replyMessage,
+        potentialMentions: potentialMentions ?? this.potentialMentions,
+        mentions: mentions ?? this.mentions,
       );
     }
   //make the init phase
@@ -75,6 +83,8 @@ class KingscordState extends Equatable {
         failure: Failure(),
         replyMessage: null,
         replying: true,
+        potentialMentions: [],
+        mentions: [],
       );
   }
 

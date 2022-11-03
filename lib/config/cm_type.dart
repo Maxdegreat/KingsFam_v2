@@ -1,5 +1,6 @@
 class CmType {
-  static const String regular = "regular";
+  static const String social = "social";
+  static const String org = "org";
   static const String chior = "chior";
   static const String chialpha = "chialpha";
   static const String youthGroup = "youthGroup";

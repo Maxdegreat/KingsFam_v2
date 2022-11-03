@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 import 'dart:async';
 import 'dart:developer';
 
@@ -11,6 +13,7 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/mentioned_model.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:kingsfam/screens/commuinity/actions.dart';
 
 import '../../../roles/role_types.dart';
 
@@ -71,7 +74,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   Stream<CommuinityState> _mapCommunityInitalEventToState(CommunityInitalEvent event) async* {
     emit(state.copyWith(status: CommuintyStatus.loading));
     try {
-      
+      String uid = _authBloc.state.user!.uid;
       // just some pre-reqs
       Church cm = Church.empty.copyWith(
         id: event.commuinity.id,
@@ -87,6 +90,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
           cm: event.commuinity, 
           authorId: _authBloc.state.user!.uid
       );
+
 
       _streamSubscriptionIsMember = ism.listen((isMemStream) async {
         
@@ -150,6 +154,13 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
           }
         } else {
           log("This is a open cm. join at will");
+                        // get the role of the user
+              var cmUserInfo = await FirebaseFirestore.instance.collection(Paths.communityMembers).doc(event.commuinity.id).collection(Paths.members).doc(uid).get();
+              if (cmUserInfo.exists && cmUserInfo.data() != null) {
+                Map<String, dynamic> role = await CmActions.getRidPermissions(rid: cmUserInfo["roleId"], cmId: event.commuinity.id!);
+                emit(state.copyWith(role: role));
+
+              }
           // when the member is apart of the community
           emitWhenCmIsOpen(isMem, [], [], CommuintyStatus.loaded);
           add(CommunityLoadingCords(commuinity: cm));
@@ -243,9 +254,8 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
           }
         }
         
-        log("The events that were picked up from the event snap is len: " + initEvents.length.toString());
+      
         emit(state.copyWith(events: initEvents));
-        log("the state events has a len of: " + state.events.length.toString());
 
         add(CommunityLoadingPosts(cm: event.cm));
 
@@ -306,26 +316,23 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     emit(state.copyWith(isMember: false));
   }
 
-  Future<void> onJoinCommuinity(
-      {required Church commuinity, required BuildContext context}) async {
-    bool isBan = await _churchRepository.isBaned(
-        usrId: _authBloc.state.user!.uid, cmId: commuinity.id!);
-    log("the val of is ban: " + isBan.toString());
+  Future<void> onJoinCommuinity({required Church commuinity, required BuildContext context}) async {
+    
+    bool isBan = await _churchRepository.isBaned(usrId: _authBloc.state.user!.uid, cmId: commuinity.id!);
+
+    
     emit(state.copyWith(isBaned: isBan));
+    
     await Future.delayed(Duration(seconds: 1));
 
     if (isBan == false) {
-      log("we are in the conditional, is ban is false");
       final userrId = _authBloc.state.user!.uid;
       final user = await _userrRepository.getUserrWithId(userrId: userrId);
-      _churchRepository.onJoinCommuinity(commuinity: commuinity, user: user);
-      commuinity.members[state.currUserr] = {
-        'role': Roles.Member,
-        'timestamp': Timestamp.now(),
-        'userReference': '...'
-      };
-      add(CommunityInitalEvent(commuinity: commuinity));
       emit(state.copyWith(isMember: true));
+      _churchRepository.onJoinCommuinity(commuinity: commuinity, user: user);
+      await Future.delayed(Duration(seconds: 1));
+      add(CommunityInitalEvent(commuinity: commuinity));
+      
     } else {
       log("we are in the true, is ban is true");
       showDialog(

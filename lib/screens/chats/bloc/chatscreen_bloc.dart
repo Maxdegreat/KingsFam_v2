@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 import 'dart:async';
 import 'dart:developer';
 
@@ -63,18 +65,19 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
       // geting the currUserr for later use
-      final Userr currUserr = await _userrRepository.getUserrWithId(
-          userrId: _authBloc.state.user!.uid);
+      final Userr currUserr = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
       // ignore: unused_local_variable
       List<Church> chsToJoin = [];
-      bool isInCm = await _churchRepository.isInCm(_authBloc.state.user!.uid);
+
+      bool isInCm = await _churchRepository.isInCm(_authBloc.state.user!.uid, _authBloc.state.user!.uid);
+
       if (!isInCm) {
         chsToJoin = await _churchRepository.grabChurchs(limit: 15);
         emit(state.copyWith(chsToJoin: chsToJoin));
       }
 
       final Map<String, bool> mentionedMap = {};
-      final List<Church> allChs = [];
+      
     
       _churchStreamSubscription?.cancel();
       _churchStreamSubscription = _churchRepository
@@ -83,7 +86,8 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
         log("in cm stream");
         final allChs = await Future.wait(churchs);
         for (var ch in churchs) {
-          var church = await ch;
+          Church? church = await ch;
+          log(church.toString());
 
           var hasSnap = await FirebaseFirestore.instance
               .collection(Paths.mention)
@@ -97,7 +101,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
           else
             mentionedMap[church.id!] = false;
         }
-        emit(state.copyWith(chs: allChs));
+        emit(state.copyWith(chs: allChs.toSet().toList()));
         emit(state.copyWith(mentionedMap: mentionedMap));
       });
       yield state.copyWith(status: ChatStatus.sccuess, currUserr: currUserr);

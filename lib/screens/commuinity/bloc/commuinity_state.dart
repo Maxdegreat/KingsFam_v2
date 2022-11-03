@@ -22,6 +22,7 @@ class CommuinityState extends Equatable {
   final bool isBaned;
   final List<Userr> banedUsers;
   final RequestStatus requestStatus;
+  final Map<String, dynamic> role;
 
   const CommuinityState({
     required this.isMember,
@@ -39,6 +40,7 @@ class CommuinityState extends Equatable {
     required this.isBaned,
     required this.banedUsers,
     required this.requestStatus,
+    required this.role
   });
 
   @override
@@ -58,10 +60,15 @@ class CommuinityState extends Equatable {
         isBaned,
         banedUsers,
         requestStatus,
+        role,
       ];
 
   factory CommuinityState.inital() {
     return CommuinityState(
+      role: {
+        "roleName" : "Member", // default can be string Member or null
+        "permissions" : ["0"] // string 0 means basic role
+      },
         currUserr: Userr.empty,
         mentionedMap: {},
         collapseCordColumn: false,
@@ -76,10 +83,11 @@ class CommuinityState extends Equatable {
         boosted: 0,
         isBaned: false,
         banedUsers: [],
-        requestStatus: RequestStatus.none
+        requestStatus: RequestStatus.none,
     );
   }
   CommuinityState copyWith({
+    Map<String, dynamic>? role,
     bool? isMember,
     List<Post?>? postDisplay,
     List<KingsCord?>? kingCords,
@@ -97,6 +105,7 @@ class CommuinityState extends Equatable {
     RequestStatus? requestStatus,
   }) {
     return CommuinityState(
+      role: role ?? this.role,
         events: events ?? this.events,
         isMember: isMember ?? this.isMember,
         postDisplay: postDisplay ?? this.postDisplay,

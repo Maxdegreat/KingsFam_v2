@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/models/says_model.dart';
 import 'package:kingsfam/models/user_model.dart';
 import 'package:kingsfam/widgets/says_container.dart';
@@ -60,26 +62,15 @@ class showJoinedCms extends StatelessWidget {
                       .snapshots()
                       .isEmpty;
 
-                  bool cmHasNotif;
+                  bool cmHasNotif = false;
                   try {
-                    var usersrecentTime = commuinity.members[state.currUserr];
-                    int? compraeTimes = commuinity.recentMsgTime
-                        .compareTo(usersrecentTime['timestamp']);
-                    // ignore: unnecessary_null_comparison
-                    cmHasNotif =
-                        compraeTimes != null ? compraeTimes > 0 : false;
+                    cmHasNotif = false;
                   } catch (e) {
                     print(e.toString());
-                    var usersrecentTime = commuinity.members[state.currUserr];
-                    int? compraeTimes = commuinity.recentMsgTime
-                        .compareTo(usersrecentTime['timestamp']);
-                    // ignore: unnecessary_null_comparison
-                    cmHasNotif = true;
                   }
 
                   return GestureDetector(
-                    onLongPress: () => leaveCommuinity(
-                        commuinity: commuinity, context: context),
+                    onLongPress: () => leaveCommuinity(commuinity: commuinity, context: context, userId: context.read<AuthBloc>().state.user!.uid),
                     onTap: () => Navigator.of(context).pushNamed(
                         CommuinityScreen.routeName,
                         arguments: CommuinityScreenArgs(

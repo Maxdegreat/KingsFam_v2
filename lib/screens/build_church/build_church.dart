@@ -21,20 +21,14 @@ import 'cubit/buildchurch_cubit.dart';
 
 // ADMIN ID CODE ATTHE BOTTOM
 
-class BuildChurchArgs {
-  final List<Userr> selectedMembers;
-
-  BuildChurchArgs({required this.selectedMembers});
-}
 
 class BuildChurch extends StatefulWidget {
-  final List<Userr> selectedMembers;
-  const BuildChurch({Key? key, required this.selectedMembers})
+  const BuildChurch({Key? key})
       : super(key: key);
 
   static const String routeName = '/buildChurch';
 
-  static Route route(BuildChurchArgs args) {
+  static Route route() {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
         builder: (context) => BlocProvider<BuildchurchCubit>(
@@ -44,7 +38,7 @@ class BuildChurch extends StatefulWidget {
                   userrRepository: context.read<UserrRepository>(),
                   storageRepository: context.read<StorageRepository>(),
                   churchRepository: context.read<ChurchRepository>())),
-              child: BuildChurch(selectedMembers: args.selectedMembers),
+              child: BuildChurch(),
             ));
   }
 
@@ -164,32 +158,7 @@ class _BuildChurchState extends State<BuildChurch> {
                                 );
                               }).toList(),
                             ),
-                            // ----------- drop down btn above
-                            // ----------- cm type btn row below
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4.0),
-                              child: Text("What Type Of Community Is This?"),
-                            ),
-                            Row(
-                              children: [
-                                btnHollow(context, state, CmType.regular, () {
-                                    context
-                                        .read<BuildchurchCubit>()
-                                        .onCmTypeChanged(CmType.regular);
-                                }),
-                                SizedBox(width: 10),
-                                btnHollow(context, state, CmType.chialpha, () {
-
-                                    context
-                                        .read<BuildchurchCubit>()
-                                        .onCmTypeChanged(CmType.chialpha);
-                                }),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4.0),
-                              child: Text("This is a " + state.cmType + " community", style: TextStyle(color: Colors.grey[700], fontStyle: FontStyle.italic),),
-                            ),
+                            
                             // ---------- cm type btn row above
                             TextFormField(
                               decoration: InputDecoration(
@@ -202,147 +171,7 @@ class _BuildChurchState extends State<BuildChurch> {
                                   : 'use less than 200 characters',
                             ),
                             SizedBox(height: 5.0),
-                            Text('Particpants'),
-                            SizedBox(height: 5.0),
-                            Stack(
-                              children: [
-                                GestureDetector(
-                                  child: Container(
-                                    height: state.updatingRoleView
-                                        ? MediaQuery.of(context).size.height /
-                                            3.2
-                                        : MediaQuery.of(context).size.height /
-                                            3.5,
-                                    decoration: BoxDecoration(
-                                        color: Colors.grey[900],
-                                        borderRadius:
-                                            BorderRadius.circular(10.0)),
-                                    child: state.updatingRoleView
-                                        ?
-                                        // show updatingRoleView when state.updatingRoleView is true
-                                        Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    IconButton(
-                                                        onPressed: () {
-                                                          context
-                                                              .read<
-                                                                  BuildchurchCubit>()
-                                                              .onUpdatingRoleView(
-                                                                  null);
-                                                        },
-                                                        icon: Icon(Icons
-                                                            .arrow_back_sharp)),
-                                                    Text(
-                                                      state
-                                                          .userWhosRoleIsBeingUpdated!
-                                                          .username,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(
-                                                  height: 12,
-                                                ),
-                                                _updateToAdmin(context, state),
-                                                SizedBox(
-                                                  height: 12,
-                                                ),
-                                                _updateToElder(context, state),
-                                                SizedBox(
-                                                  height: 12,
-                                                ),
-                                                _updateToMember(context, state),
-                                                SizedBox(height: 7),
-                                              ],
-                                            ),
-                                          )
-                                        :
-                                        // show listview when the state.updatingRoleView is false
-                                        ListView.builder(
-                                            itemCount:
-                                                widget.selectedMembers.length,
-                                            itemBuilder: (BuildContext context,
-                                                int index) {
-                                              Userr user =
-                                                  widget.selectedMembers[index];
-                                              return Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 8.0),
-                                                child: ListTile(
-                                                    leading: ProfileImage(
-                                                        pfpUrl: user
-                                                            .profileImageUrl,
-                                                        radius: 35),
-                                                    title: Text(
-                                                      user.username,
-                                                      style: state.adminIds
-                                                              .contains(user.id)
-                                                          ? TextStyle(
-                                                              color:
-                                                                  Colors.blue,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w700)
-                                                          : state.elderIds
-                                                                  .contains(
-                                                                      user.id)
-                                                              ? TextStyle(
-                                                                  color: Colors
-                                                                      .green,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w700)
-                                                              : null,
-                                                    ),
-                                                    trailing: GestureDetector(
-                                                      onTap: () {
-                                                        context
-                                                            .read<
-                                                                BuildchurchCubit>()
-                                                            .onUpdatingRoleView(
-                                                                user);
-                                                      },
-                                                      child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Text('Update Role'),
-                                                          state.adminIds
-                                                                  .contains(
-                                                                      user.id)
-                                                              ? Text("Admin")
-                                                              : state.elderIds
-                                                                      .contains(
-                                                                          user
-                                                                              .id)
-                                                                  ? Text(
-                                                                      'Elder')
-                                                                  : Text(
-                                                                      'Member')
-                                                        ],
-                                                      ),
-                                                    )),
-                                              );
-                                            },
-                                          ),
-                                  ),
-                                ),
-                              ],
-                              clipBehavior: Clip.none,
-                            ),
-                            SizedBox(height: 10.0),
+                           
                             state.isSubmiting == false
                                 ? ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -375,74 +204,30 @@ class _BuildChurchState extends State<BuildChurch> {
     );
   }
 
-  ElevatedButton btnHollow(BuildContext context, BuildchurchState state, String content, VoidCallback vc) {
-    return ElevatedButton(
-                                onPressed: vc,
-                                child: Text(content),
-                                style: ButtonStyle(
-                                    foregroundColor: state.cmType == content
-                                        ? MaterialStateProperty.all<Color>(
-                                            Colors.white)
-                                        : MaterialStateProperty.all<Color>(
-                                            Colors.grey[700]!),
-                                    backgroundColor: MaterialStateProperty.all<Color>(
-                                        Colors.transparent),
-                                    shape: MaterialStateProperty.all<
-                                            RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.zero,
-                                            side: BorderSide(
-                                                color: state.cmType == CmType.chialpha
-                                                    ? Colors.white
-                                                    : Colors.grey[700]!)))),
-                              );
-  }
+  // ElevatedButton btnHollow(BuildContext context, BuildchurchState state, String content, VoidCallback vc) {
+  //   return ElevatedButton(
+  //                               onPressed: vc,
+  //                               child: Text(content),
+  //                               style: ButtonStyle(
+  //                                   foregroundColor: state.cmType == content
+  //                                       ? MaterialStateProperty.all<Color>(
+  //                                           Colors.white)
+  //                                       : MaterialStateProperty.all<Color>(
+  //                                           Colors.grey[700]!),
+  //                                   backgroundColor: MaterialStateProperty.all<Color>(
+  //                                       Colors.transparent),
+  //                                   shape: MaterialStateProperty.all<
+  //                                           RoundedRectangleBorder>(
+  //                                       RoundedRectangleBorder(
+  //                                           borderRadius: BorderRadius.zero,
+  //                                           side: BorderSide(
+  //                                               color: state.cmType == CmType.chialpha
+  //                                                   ? Colors.white
+  //                                                   : Colors.grey[700]!)))),
+  //                             );
+  // }
 
-  GestureDetector _updateToMember(
-      BuildContext context, BuildchurchState state) {
-    return GestureDetector(
-      onTap: () {
-        context
-            .read<BuildchurchCubit>()
-            .onRemoveUserIdFromRoles(state.userWhosRoleIsBeingUpdated!.id);
-        context.read<BuildchurchCubit>().onUpdatingRoleView(null);
-      },
-      child: RichText(
-          text: TextSpan(text: "Update Role To ", children: [
-        TextSpan(text: 'Member', style: Theme.of(context).textTheme.bodyText1)
-      ])),
-    );
-  }
 
-  GestureDetector _updateToElder(BuildContext context, BuildchurchState state) {
-    return GestureDetector(
-      onTap: () {
-        context
-            .read<BuildchurchCubit>()
-            .onElderIdAdded(state.userWhosRoleIsBeingUpdated!.id);
-        context.read<BuildchurchCubit>().onUpdatingRoleView(null);
-      },
-      child: RichText(
-          text: TextSpan(text: "Update Role To ", children: [
-        TextSpan(text: 'Elder', style: Theme.of(context).textTheme.bodyText1)
-      ])),
-    );
-  }
-
-  GestureDetector _updateToAdmin(BuildContext context, BuildchurchState state) {
-    return GestureDetector(
-      onTap: () {
-        context
-            .read<BuildchurchCubit>()
-            .onAdminAdded(state.userWhosRoleIsBeingUpdated!.id);
-        context.read<BuildchurchCubit>().onUpdatingRoleView(null);
-      },
-      child: RichText(
-          text: TextSpan(text: "Update Role To ", children: [
-        TextSpan(text: 'Admin', style: Theme.of(context).textTheme.bodyText1)
-      ])),
-    );
-  }
 
   void _onChurchImageChanged(BuildContext context) async {
     final pickedFile = await ImageHelper.pickImageFromGallery(
@@ -463,9 +248,6 @@ class _BuildChurchState extends State<BuildChurch> {
         context.read<BuildchurchCubit>().onSubmiting();
         setState(() {});
 
-        _extractMemberId(context, widget.selectedMembers);
-        //_makeAdminIds(context);
-        _makeCreatorId(context);
         context.read<BuildchurchCubit>().submit();
       } else {
         return;
@@ -476,21 +258,5 @@ class _BuildChurchState extends State<BuildChurch> {
           builder: (context) =>
               ErrorDialog(content: "make sure you added a image"));
     }
-  }
-
-  void _extractMemberId(BuildContext context, List<Userr> users) {
-    List<String> ids = users.map((e) => e.id).toList();
-    ids.insert(0, context.read<AuthBloc>().state.user!.uid);
-    context.read<BuildchurchCubit>().onMemberIdsAdded(ids);
-  }
-
-  // void _makeAdminIds(BuildContext context) {
-  //   final Set<String> adminIds =context.read<BuildchurchCubit>().state.adminIds;
-  //   context.read<BuildchurchCubit>().onAdminsAdded(adminIds);
-  // }
-
-  void _makeCreatorId(BuildContext context) {
-    final currId = context.read<AuthBloc>().state.user!.uid;
-    context.read<BuildchurchCubit>().onCreatorIdAdded(creatorId: currId);
   }
 }

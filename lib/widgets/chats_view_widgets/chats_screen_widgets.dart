@@ -11,7 +11,7 @@ import 'package:rive/rive.dart';
 import 'package:kingsfam/extensions/extensions.dart';
 
 Future<dynamic> leaveCommuinity(
-    {required Church commuinity, required BuildContext context}) {
+    {required Church commuinity, required BuildContext context, required userId}) {
   return showDialog(
       context: context,
       builder: (context) => AlertDialog(

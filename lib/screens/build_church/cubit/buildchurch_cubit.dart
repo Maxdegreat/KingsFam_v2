@@ -93,9 +93,6 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
     emit(state.copyWith(about: about, status: BuildChurchStatus.initial));
   }
 
-  void onCmTypeChanged(String newType) {
-    emit(state.copyWith(cmType: newType));
-  }
 
   //void function to update location
   void onLocationChanged(String location) {
@@ -187,61 +184,22 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       List<String> caseList = AdvancedQuerry().advancedSearch(query: state.name);
       emit(state.copyWith(caseSearchList: caseList, status: BuildChurchStatus.loading));
 
-      // //handel the making of hash tags
-      // if (state.initHashTag != null) {
-      //   List<String> hashTags =
-      //       AdvancedQuerry().advancedHashTags(hashTags: state.initHashTag!);
-      //   emit(state.copyWith(
-      //       hashTags: hashTags, status: BuildChurchStatus.loading));
-      // }
-
       //============================================================
-      //populate the member info
-
-      Map<Userr, Timestamp> mems = {};
-      for (int i = 0; i < state.memberIds.length; i++) {
-        final user =
-            await _userrRepository.getUserrWithId(userrId: state.memberIds[i]);
-        mems[user] = Timestamp(
-            0, 0); 
-      }
-
-      //============================================================
-      // populate the roles list roles will be passed when calling the create. it is used in the toDoc
-      // it is not a pram of the cm
-      Map<String, String> roles = {};
-      Set<String> idsWithRoles = {};
-      idsWithRoles.addAll(state.adminIds);
-      idsWithRoles.add(state.creatorId);
-      for (var id in idsWithRoles) {
-        if (state.creatorId == id) {
-          roles[id] = Roles.Owner;
-        } else if (state.elderIds.contains(id)) {
-          roles[id] = Roles.Elder;
-        } else if (state.adminIds.contains(id)) {
-          roles[id] = Roles.Admin;
-        }
-      }
-
-      emit(state.copyWith(members: mems));
-      //-----------------------------------
-      //----------------------------------------------------------
-
+      // SEE THE CREATION OF MEMBERS AND ROLES INSIDE THE 
+      // CHURCHREPO.NEWCHURCH(...);
       //===========================================================
       //the build of the initial church
       final commuinity = Church(
           cmPrivacy: CmPrivacy.open,
-          cmType: state.cmType,
           searchPram: state.caseSearchList!,
-          hashTags: state.hashTags ?? null,
           name: state.name,
           location: state.location,
           imageUrl: imageUrl,
-          members: state.members,
+          members: {},
           events: [],
           about: state.about,
-          size: state.memberIds.length,
-          recentMsgTime: Timestamp(1, 0),
+          size: 1,
+          recentMsgTime: Timestamp.now(),
           boosted: 0,
           themePack: 'none');
       // build the church mem
@@ -251,12 +209,10 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       final recentSender = await _userrRepository.getUserrWithId(
           userrId: _authBloc.state.user!.uid);
 
-      //call my church repo and use the upload method to launch commuinity to firestore
-      await _churchRepository.newChurch(
-          church: commuinity, recentSender: recentSender, roles: roles);
+      // call my church repo and use the upload method to launch commuinity to firestore
+      await _churchRepository.newChurch(userId: _authBloc.state.user!.uid,church: commuinity, recentSender: recentSender);
 
       //-------------------------------------------------------
-      print("The church is made my boi");
       emit(state.copyWith(status: BuildChurchStatus.success));
     } catch (err) {
       emit(state.copyWith(
@@ -350,7 +306,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
         .collection(Paths.church)
         .doc(commuinityId)
         .get();
-    var memRefs = Church.fromDocMemRefs(cmSnap);
+    var memRefs = {};
     var memRefsMap = memRefs['memRefs'];
     memRefsMap[user.id]['role'] = role;
 
