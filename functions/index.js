@@ -252,21 +252,21 @@ exports.onMentionedUser = functions.firestore
 
 exports.onMentionedUserUpdate = functions.firestore
   .document("/mention/{mentionedId}/{churchId}/{kingsCordId}")
-  .onUpdate((snapshot, context) => {
+  .onUpdate((change, context) => {
     // curr data of what was written to firestore
-    const snap = snapshot.data(); // can access any val of snap as i would any js obj
+    const newValue = change.after.data(); // can access any val of snap as i would any js obj
     const mentionedId = context.params.mentionedId;
     const communityId = context.params.churchId;
 
     // make the FCM
     const message = {
       notification: {
-        title: "Hey Fam! you're mentioned in " + snap.communityName,
-        body: snap.messageBody,
+        title: "Hey Fam! you're mentioned in " + newValue.communityName,
+        body: newValue.messageBody,
       },
       data: {
-        kcId: String(snap.type_id),
-        type: String(snap.type),
+        kcId: String(newValue.type_id),
+        type: String(newValue.type),
         cmId: communityId,
         //'tag': String(snap.type_tag),
         //'cordName': String(snap.type_cordName),
@@ -282,7 +282,7 @@ exports.onMentionedUserUpdate = functions.firestore
       priority: "high",
       timeToLive: 60 * 60 * 24,
     };
-    admin.messaging().sendToDevice(snap.token, message, options);
+    admin.messaging().sendToDevice(newValue.token, message, options);
   });
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
