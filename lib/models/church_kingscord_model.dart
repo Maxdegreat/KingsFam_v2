@@ -8,22 +8,18 @@ class KingsCord extends Equatable {
   final String? id;
   final String tag;
   final String cordName;
-  final Timestamp recentTimestamp;
-  //final List<String> recentSender;
-  final String recentMessage;
-  // call this when opening the screen, get info from parent commuinity
   final List<Userr>? members;
   final String? mode;
   final String? rolesAllowed;
+  final List<String>? subscribedIds;
   // final Map<String, dynamic> memberInfo;
 
   //make a constructor for fields
   KingsCord({
     this.id,
+    required this.subscribedIds,
     required this.tag,
     required this.cordName,
-    required this.recentTimestamp,
-    required this.recentMessage,
     // required this.recentSender,
     this.members,
     this.mode,
@@ -31,8 +27,7 @@ class KingsCord extends Equatable {
   });
   //gen the props
   @override
-  List<Object?> get props =>
-      [id, recentTimestamp, tag, cordName, recentMessage, members, mode, rolesAllowed];
+  List<Object?> get props => [id, tag, cordName, members, mode, rolesAllowed, subscribedIds];
 
   //gen the copy with
   KingsCord copyWith({
@@ -41,7 +36,7 @@ class KingsCord extends Equatable {
     String? cordName,
     // List<String>? recentSender,
     Timestamp? recentTimestamp,
-    String? recentMessage,
+    List<String>? subscribedIds,
     List<Userr>? members,
     String? mode,
     String? rolesAllowed,
@@ -52,8 +47,7 @@ class KingsCord extends Equatable {
       tag: tag ?? this.tag,
       cordName: cordName ?? this.cordName,
       // recentSender: recentSender ?? this.recentSender,
-      recentTimestamp: recentTimestamp ?? this.recentTimestamp,
-      recentMessage: recentMessage ?? this.recentMessage,
+      subscribedIds: subscribedIds ?? this.subscribedIds,
       members: members ?? this.members,
       mode: mode ?? "chat",
       rolesAllowed: rolesAllowed ?? Roles.Member,
@@ -67,8 +61,7 @@ class KingsCord extends Equatable {
       'tag': tag,
       'cordName': cordName,
       // 'recentSender': recentSender,
-      'recentMessage': recentMessage,
-      'recentTimestamp': recentTimestamp,
+      'subscribedIds' : subscribedIds ?? [],
       'mode': mode ?? 'chat',
       'rolesAllowed': rolesAllowed ?? Roles.Member,
       // members, get members from parent commuinity, this is if a user sends msg store only then that way
@@ -84,9 +77,7 @@ class KingsCord extends Equatable {
         id: doc.id,
         tag: data['tag'],
         cordName: data['cordName'] ?? 'MainRoom',
-        recentMessage: data['recentMessage'],
-        // recentSender: List<String>.from(data['recentSender']),
-        recentTimestamp: data['recentTimestamp'],
+        subscribedIds: List<String>.from(data['subscribedIds']) ?? [],
         mode: data['mode'] ?? 'chat',
         rolesAllowed: data['rolesAllowed'] ?? Roles.Member);
   }
@@ -97,9 +88,7 @@ class KingsCord extends Equatable {
         id: doc.id,
         tag: data['tag'],
         cordName: data['cordName'] ?? 'MainRoom',
-        recentMessage: data['recentMessage'],
-        //recentSender: List<String>.from(data['recentSender']),
-        recentTimestamp: data['recentTimestamp'],
+        subscribedIds: List<String>.from(data['subscribedIds']) ?? [],
         mode: data['mode'] ?? 'chat',
         rolesAllowed: data['rolesAllowed'] ?? Roles.Member);
   }

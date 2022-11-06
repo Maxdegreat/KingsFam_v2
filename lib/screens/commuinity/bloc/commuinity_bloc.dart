@@ -10,12 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/cm_privacy.dart';
 import 'package:kingsfam/config/paths.dart';
-import 'package:kingsfam/models/mentioned_model.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/commuinity/actions.dart';
 
-import '../../../roles/role_types.dart';
 
 part 'commuinity_event.dart';
 part 'commuinity_state.dart';
@@ -205,6 +203,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
           .listen((kcords) async {
         final allCords = await Future.wait(kcords);
         for (var kcAwait in kcords) {
+          log("we heared something on the kc screen");
           final kc = await kcAwait;
           if (kc != null) {
             //allCords.add(kc);

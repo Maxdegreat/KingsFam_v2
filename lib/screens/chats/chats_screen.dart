@@ -27,6 +27,7 @@ import 'package:kingsfam/widgets/chats_view_widgets/screens_for_page_view.dart';
 import 'package:kingsfam/widgets/kf_crown_v2.dart';
 import 'package:kingsfam/widgets/videos/asset_video.dart';
 import 'package:kingsfam/widgets/widgets.dart';
+import 'package:new_version/new_version.dart';
 import 'package:rive/rive.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -144,6 +145,14 @@ class _ChatsScreenState extends State<ChatsScreen>
   @override
   void initState() {
     super.initState();
+
+    final newVersion = NewVersion(
+      iOSId: 'com.kingbiz.kingsfam',
+      androidId: 'com.kingbiz.kingsfam',
+    );
+
+    advancedStatusCheck(newVersion);
+
     
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
    
@@ -161,8 +170,28 @@ class _ChatsScreenState extends State<ChatsScreen>
   late TabController _tabController;
   bool chatScreenStateUnReadChats = false;
   
+  advancedStatusCheck(NewVersion newVersion) async {
+    final status = await newVersion.getVersionStatus();
+    if (status != null) {
+      debugPrint(status.releaseNotes);
+      debugPrint(status.appStoreLink);
+      debugPrint(status.localVersion);
+      debugPrint(status.storeVersion);
+      debugPrint(status.canUpdate.toString());
+      newVersion.showUpdateDialog(
+        context: context,
+        versionStatus: status,
+        dialogTitle: 'Update Available',
+        dialogText: 'Hey Fam Please Update KingsFam In Your App Store',
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+
+
+    
     HexColor hexcolor = HexColor();
     
     final userId = context.read<AuthBloc>().state.user!.uid;

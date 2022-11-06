@@ -237,10 +237,10 @@ class ChurchRepository extends BaseChurchRepository {
         createRole(cmId: doc.id, roleName: "Owner", permissions: ["*"], userId: userId, isNewCm: true); //isNewCm is not required. only called on creation
         final kingsCord = KingsCord(
             tag: doc.id,
-            cordName: "Welcome To ${church.name}!",
-            recentMessage: "whats good Gods People!",
+            cordName: "Welcome To ${church.name}!", 
+            subscribedIds: [],
             // recentSender: [recentSender.id, recentSender.username],
-            recentTimestamp: Timestamp.now());
+          );
 
         //send off the repo
         fb.doc(doc.id).collection(Paths.kingsCord).add(kingsCord.toDoc());
@@ -308,13 +308,9 @@ class ChurchRepository extends BaseChurchRepository {
           tag: ch.id!,
           cordName: cordName,
           mode: mode,
-          rolesAllowed: rolesAllowed,
-          recentMessage: "Welcome To $cordName!",
-          // recentSender: [
-          //   currUser != null ? currUser.id : '000',
-          //   currUser != null ? currUser.username.substring(0, 5) : 'A-Member'
-          // ],
-          recentTimestamp: Timestamp.now());
+          rolesAllowed: rolesAllowed, 
+          subscribedIds: [],
+          );
       log("sending to db");
       await FirebaseFirestore.instance
           .collection(Paths.church)

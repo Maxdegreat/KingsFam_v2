@@ -5,6 +5,8 @@ import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart'
 import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
 import 'package:kingsfam/screens/commuinity/screens/says_room/screens/create_says.dart';
+import 'package:kingsfam/screens/commuinity/wrapers/create_new_role.dart';
+import 'package:kingsfam/screens/commuinity/wrapers/role_permissions.dart';
 
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/screens/search/more_cm_screen.dart';
@@ -179,6 +181,12 @@ class CustomRoute {
 
       case ParticipantsView.routeName:
         return ParticipantsView.route(args: settings.arguments as ParticipantsViewArgs);
+
+      case RolePermissions.routeName:
+        return RolePermissions.route(args: settings.arguments as RolePermissionsArgs);
+
+      case CreateRole.routeName:
+        return CreateRole.route(args: settings.arguments as CreateRoleArgs);
 
       default:
         return _errorRoute();

@@ -54,48 +54,54 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                         state.isMember == null
                             ? SizedBox.shrink()
                             : state.isMember != false
-                                ? Container(
-                                    height: 30,
-                                    width: 200,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        if (currRole != Roles.Owner) {
-                                          showLeaveCommuinity(
-                                              b: context.read<CommuinityBloc>(),
-                                              cm: cm,
-                                              context: context);
-                                        } else {
-                                          snackBar(
-                                              snackMessage:
-                                                  "Owners can not abandon ship",
-                                              context: context,
-                                              bgColor: Colors.red);
-                                        }
-                                      },
-                                      child: Text(
-                                        "...Leave",
-                                        style: TextStyle(color: Colors.red),
-                                      ),
-                                      style: ButtonStyle(
-                                          foregroundColor:
-                                              MaterialStateProperty.all<Color>(
-                                                  Colors.white),
-                                          backgroundColor:
-                                              MaterialStateProperty.all<Color>(
-                                                  Colors.transparent),
-                                          shape: MaterialStateProperty.all<
-                                                  RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.zero,
-                                                  side: BorderSide(
-                                                      color: Colors.red)))),
+                                ? Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 5.0),
+                                  child: Container(
+                                      height: 30,
+                                      width: 200,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          if (currRole != Roles.Owner) {
+                                            showLeaveCommuinity(
+                                                b: context.read<CommuinityBloc>(),
+                                                cm: cm,
+                                                context: context);
+                                          } else {
+                                            snackBar(
+                                                snackMessage:
+                                                    "Owners can not abandon ship",
+                                                context: context,
+                                                bgColor: Colors.red);
+                                          }
+                                        },
+                                        child: Text(
+                                          "...Leave",
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                        style: ButtonStyle(
+                                            foregroundColor:
+                                                MaterialStateProperty.all<Color>(
+                                                    Colors.white),
+                                            backgroundColor:
+                                                MaterialStateProperty.all<Color>(
+                                                    Colors.transparent),
+                                            shape: MaterialStateProperty.all<
+                                                    RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.zero,
+                                                    side: BorderSide(
+                                                        color: Colors.red)))),
+                                      ), 
                                     ),
-                                  )
-                                : joinBtn(
-                                    b: context.read<CommuinityBloc>(),
-                                    cm: cm,
-                                    context: context),
+                                )
+                                : Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: joinBtn(
+                                      b: context.read<CommuinityBloc>(),
+                                      cm: cm,
+                                      context: context),
+                                ),
                         SizedBox(width: 10),
                         Text("${cm.size} members")
                       ],
@@ -304,7 +310,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                     .read<CommuinityBloc>()
                                     .state
                                     .role["permissions"]
-                                    .contains(CmActions.makeCord)
+                                    .contains(CmActions.makeRoom)
                             ? IconButton(
                                 onPressed: () {
                                   Navigator.of(context)
@@ -491,8 +497,9 @@ SliverAppBar cmSliverAppBar({
       ),
     ),
     actions: [
-      settingsBtn(cmBloc: cmBloc, cm: cm, context: context, currRole: currRole),
+      memberBtn(cmBloc: cmBloc, cm: cm, context: context),
       inviteButton(cm: cm, context: context),
+      settingsBtn(cmBloc: cmBloc, cm: cm, context: context)
       // _themePackButton()
     ],
   );

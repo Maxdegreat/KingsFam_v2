@@ -341,17 +341,24 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${widget.kingsCord.cordName} ~ ${widget.commuinity.name}',
-          style: TextStyle(letterSpacing: 1.0),
+          widget.kingsCord.cordName.length > 10 ? '${widget.kingsCord.cordName.substring(0,7)}' : '${widget.kingsCord.cordName}',
           overflow: TextOverflow.fade,
         ),
+        // actions: [
+        //   IconButton(onPressed: () {
+            // Nav to a settings room that will 
+            // 1) allow only certian roles to enter the room. only an owner / admin can do this
+            // 2) allow someone to subscribe to get notifications
+            // Navigator.of(context).pushNamed(KingsCordSettings.routeName, arguments: KingsCordSettingsArgs.route);     
+        //  }, icon: Icon(Icons.settings))
+        //],
       ),
       // the body is a collumn containeing message widgets... with a bottom sheet for the txt controller
       body: BlocConsumer<KingscordCubit, KingscordState>(
         listener: (context, state) {
           // TODO: implement listener
         },
-        builder: (context, state) {
+        builder: (context, state) {                                 
           context.read<KingscordCubit>().onLoadInit(
                 cmId: widget.commuinity.id!,
                 kcId: widget.kingsCord.id!,

@@ -122,8 +122,7 @@ class KingscordCubit extends Cubit<KingscordState> {
             .collection(Paths.mention)
             .doc(id)
             .collection(churchId)
-            .doc(kingsCordId)
-            .set({
+            .doc(kingsCordId).set({
           'communityName': mentionedInfo[id]['communityName'],
           'username': mentionedInfo[id]['username'],
           'token': mentionedInfo[id]['token'],
@@ -132,8 +131,6 @@ class KingscordCubit extends Cubit<KingscordState> {
           'type_id': kingsCordData.id!,
           'type_tag': kingsCordData.tag,
           'type_cordName': kingsCordData.cordName,
-          //'type_recentSender': kingsCordData.recentSender,
-          'type_recentMessage': kingsCordData.recentMessage,
           'type_members': kingsCordData.members,
         });
       }

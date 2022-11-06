@@ -41,13 +41,13 @@ class CmActions {
 
   // admin grants all the basic privalaged roles below
   static const String admin = "admin";
-
-  static const String makeCord = "makeCord";
-  static const String makeEvent = "makeEvent";
-  static const String accessToSettings = "accessToSettings";
-  static const String canChangeRoles = "canChangeRoles";
-  static const String updatePrivacy = "updatePrivacy";
-  static const String kickAndBan = "kickAndBan";
+  static const int actionsLen = 6;
+  static const String makeRoom = "Make Room";
+  static const String makeEvent = "Make Event";
+  static const String accessToSettings = "Access To Settings";
+  static const String canChangeRoles = "Can Change Roles";
+  static const String updatePrivacy = "Update Privacy";
+  static const String kickAndBan = "Kick and Ban";
 
   // roles can also be written as 
   // "roleName" ...
