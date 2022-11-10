@@ -9,126 +9,54 @@ import 'package:kingsfam/models/models.dart';
 class NotificationKF extends Equatable {
   final String? id;
   final Userr fromUser;
-  final Church? fromCommuinity;
-  final Chat? fromDirectMessage;
-  final CallModel? fromCall;
-
-  final Notification_type notificationType;
+  final String? fromCm;
+  final String? fromDm;
+  final String msg;
   final Timestamp date;
 
   NotificationKF({
     this.id,
+    required this.msg,
     required this.fromUser,
-    this.fromCommuinity,
-    this.fromDirectMessage,
-    this.fromCall,
-    required this.notificationType,
+    this.fromCm,
+    this.fromDm,
     required this.date,
   });
 
   static NotificationKF empty() => NotificationKF(
+      msg:"Someting went wrong",
       date: Timestamp.now(),
       fromUser: Userr.empty,
-      notificationType: Notification_type.deleted_noty);
+    );
 
   @override
-  List<Object?> get props => [
-        id,
-        fromUser,
-        fromCommuinity,
-        fromDirectMessage,
-        notificationType,
-        fromCall,
-        date
-      ];
+  List<Object?> get props =>
+      [id, fromUser, fromCm, fromDm, date, msg];
 
   Map<String, dynamic> toDoc() {
-    final notificationTypeAsString =
-        EnumToString.convertToString(notificationType);
     return {
-      'fromUser':
-          FirebaseFirestore.instance.collection(Paths.users).doc(fromUser.id),
-      'fromCommuinity': fromCommuinity != null
-          ? FirebaseFirestore.instance
-              .collection(Paths.church)
-              .doc(fromCommuinity!.id)
-          : null,
-      'fromDirectMessage': fromDirectMessage != null
-          ? FirebaseFirestore.instance
-              .collection(Paths.chats)
-              .doc(fromDirectMessage!.id)
-          : null,
-      'fromCall': fromCall != null
-          ? FirebaseFirestore.instance
-              .collection(Paths.church)
-              .doc(fromCommuinity!.id)
-              .collection(Paths.call)
-              .doc(fromCall!.id)
-          : null,
-      'notificationType': notificationTypeAsString,
+      'fromUser': fromUser,
+      'fromCm': fromCm,
+      'fromDm': fromDm,
+      'msg' : msg,
       'date': Timestamp.fromDate(DateTime.now()),
     };
   }
 
-  static Future<NotificationKF?> fromDoc(DocumentSnapshot? doc) async {
+  static NotificationKF? fromDoc(DocumentSnapshot? doc) {
     try {
       //=====================
       //if (doc == null ) return null;
       final data = doc!.data() as Map<String, dynamic>;
 
-      final notificationTypeAsString = EnumToString.fromString(
-          Notification_type.values, data['notificationType']);
 
-      final userRef = data['fromUser'] as DocumentReference?;
-      if (userRef != null) {
-        // ok now we know userRef is not null so we can get the doc
-        // we will also check our next case
-
-        final userDoc = await userRef.get();
-        if (!userDoc.exists) return NotificationKF.empty();
-
-        //next case, if case is not null we will return in case. (may have may conditions in one case)
-        final commuinityRef = data['fromCommuinity'] as DocumentReference?;
-        final callRef = data['fromCall'] as DocumentReference?;
-
-        // check a multi lear conditional in this case and return accordingly
-        if (commuinityRef != null) {
-          //check call ref
-          if (callRef != null) {
-            //if both exist return here
-            final commuinityDoc = await commuinityRef.get();
-            var ch = await Church.fromDoc(commuinityDoc);
-            final callDoc = await callRef.get();
-            return NotificationKF(
-              fromUser: Userr.fromDoc(userDoc),
-              fromCommuinity: ch,
-              fromCall: CallModel.fromDoc(callDoc),
-              fromDirectMessage: null,
-              notificationType: notificationTypeAsString!,
-              date: data['date'],
-            );
-          }
-          final commuinityDoc = await commuinityRef.get();
-          var ch = await Church.fromDoc(commuinityDoc);
-          return NotificationKF(
-            fromUser: Userr.fromDoc(userDoc),
-            fromCommuinity: ch,
-            fromCall: null,
-            fromDirectMessage: null,
-            notificationType: notificationTypeAsString!,
-            date: data['date'],
-          );
-        }
-
-        //in this case all if statments failed so we just will return with the user and required prams
         return NotificationKF(
-            fromUser: Userr.fromDoc(userDoc),
-            notificationType: notificationTypeAsString!,
-            fromCall: null,
-            fromCommuinity: null,
-            fromDirectMessage: null,
+            fromUser: data['fromUser'],
+            msg: data['msg'],
+            fromCm: data['fromCm'],
+            fromDm: data['fromDm'],
             date: data['date']);
-      }
+
     }
     //=====================
     catch (e) {

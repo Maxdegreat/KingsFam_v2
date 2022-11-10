@@ -72,11 +72,11 @@ class UserrRepository extends BaseUserrRepository {
   }
 
   @override
-  void followerUserr({required String userrId, required String followersId}) {
+  void followerUserr({required Userr userr, required String followersId}) {
 
     _firebaseFirestore
         .collection(Paths.following)
-        .doc(userrId)
+        .doc(userr.id)
         .collection(Paths.userrFollowing)
         .doc(followersId)
         .set({});
@@ -86,15 +86,15 @@ class UserrRepository extends BaseUserrRepository {
         .collection(Paths.followers)
         .doc(followersId)
         .collection(Paths.userFollowers)
-        .doc(userrId)
+        .doc(userr.id)
         .set({});
 
     //handel notifications for a new follower
     final NotificationKF noty = NotificationKF(
-      notificationType:  Notification_type.new_follower,
-      fromUser: Userr.empty.copyWith(id: userrId),
-      fromCommuinity: null,
-      fromDirectMessage: null,
+      msg: userr.username + " started following you",
+      fromUser: Userr.empty.copyWith(id: userr.id, username: userr.username, profileImageUrl: userr.profileImageUrl ),
+      fromCm: null,
+      fromDm: null,
       date:Timestamp.now(),
     );
 

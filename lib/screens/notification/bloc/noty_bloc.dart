@@ -13,7 +13,7 @@ class NotyBloc extends Bloc<NotyEvent, NotyState> {
   final NotificationRepository _notificationRepository;
   final AuthBloc _authBloc;
 
-  StreamSubscription<List<Future<NotificationKF?>>>? _notificationSubscription;
+  StreamSubscription<List<NotificationKF?>>? _notificationSubscription;
 
   NotyBloc({
     required NotificationRepository notificationRepository,
@@ -23,9 +23,8 @@ class NotyBloc extends Bloc<NotyEvent, NotyState> {
       _notificationSubscription?.cancel();
     _notificationSubscription = _notificationRepository
     .getUserNotifications(userId: _authBloc.state.user!.uid)
-    .listen((value) async {
-      final allNotys = await Future.wait(value);
-      add(NotyUpdateNotifications(notifications: allNotys));
+    .listen((value)  {
+      add(NotyUpdateNotifications(notifications: value));
     });
     } catch (e) {
       print("The error when in noty stream sub is $e");

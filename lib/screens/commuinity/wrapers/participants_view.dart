@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/models/role_modal.dart';
@@ -13,6 +14,7 @@ import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 import 'package:kingsfam/screens/commuinity/wrapers/create_new_role.dart';
 import 'package:kingsfam/screens/commuinity/wrapers/role_permissions.dart';
+import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
 
 class ParticipantsViewArgs {
@@ -86,36 +88,44 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
                       // child 1 -------------------------------------------------
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: Container(
-                            height: MediaQuery.of(context).size.height / 1.5,
-                            child: ListView.builder(
-                              itemCount: users.length,
-                              itemBuilder: (context, index) {
-                                Userr user = users[index];
-                                    return Card(
-                                      color: Color(hc.hexcolorCode("##141829")),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(2.0),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            ListTile(
-                                              leading: ProfileImage(
-                                                pfpUrl: user.profileImageUrl,
-                                                radius: 30,
-                                              ),
-                                              title: Text(user.username),
-                                              onTap: () {
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // child 1 will be a row allowing you to view pending joins or baned users ---------
+                              pendingAndBandRow(),
+                              Container(
+                                height: MediaQuery.of(context).size.height / 1.85,
+                                child: ListView.builder(
+                                  itemCount: users.length,
+                                  itemBuilder: (context, index) {
+                                    Userr user = users[index];
+                                        return Card(
+                                          color: Color(hc.hexcolorCode("##141829")),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(2.0),
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                ListTile(
+                                                  leading: ProfileImage(
+                                                    pfpUrl: user.profileImageUrl,
+                                                    radius: 30,
+                                                  ),
+                                                  title: Text(user.username),
+                                                  onTap: () {
             
-                                              },
+                                                  },
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                              } 
-                            ),
+                                          ),
+                                        );
+                                  } 
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       // child 1 --------------------------------------------------
@@ -171,6 +181,36 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget pendingAndBandRow() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(ReviewPendingRequest.routeName, arguments: ReviewPendingRequestArgs(cm: widget.cm));
+            }, 
+            child: Text("View Pending Joins"),
+            style: ElevatedButton.styleFrom(
+              shape: StadiumBorder()
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(ShowBanedUsers.routeName, arguments: ShowBanedUsersArgs(cmId: widget.cm.id!, cmBloc: context.read<CommuinityBloc>()));
+            }, 
+            child: Text("View Baned Joins"),
+            style: ElevatedButton.styleFrom(
+              shape: StadiumBorder()
+            ),
+          )
+        ],
       ),
     );
   }

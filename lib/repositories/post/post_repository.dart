@@ -42,8 +42,7 @@ class PostsRepository extends BasePostsRepository {
         date: Timestamp.now(),
         highId: path);
 
-    final postDoc =
-        await _firebaseFirestore.collection(Paths.posts).doc(post.id!);
+    final postDoc = await _firebaseFirestore.collection(Paths.posts).doc(post.id!);
 
     _firebaseFirestore.runTransaction((transaction) async {
       DocumentSnapshot postSnap_ = await transaction.get(postDoc);
@@ -75,7 +74,7 @@ class PostsRepository extends BasePostsRepository {
     if (post.id != null) {
       final notification = NotificationKF(
           fromUser: comment.author,
-          notificationType: Notification_type.comment_post,
+          msg: "someone commented on your post",
           date: Timestamp.now());
 
       _firebaseFirestore
@@ -111,19 +110,18 @@ class PostsRepository extends BasePostsRepository {
       transaction.update(postDoc, {"CommentCount": updatedCount});
     });
 
-    // ignore: unnecessary_null_comparison
-    if (post != null) {
-      final notification = NotificationKF(
-          fromUser: comment.author,
-          notificationType: Notification_type.comment_post,
-          date: Timestamp.now());
+    // if (post != null) {
+    //   final notification = NotificationKF(
+    //       fromUser: comment.author,
+    //       msg: comment.author.username + " commented on your post",
+    //       date: Timestamp.now());
 
-      _firebaseFirestore
-          .collection(Paths.noty)
-          .doc(post.author.id)
-          .collection(Paths.notifications)
-          .add(notification.toDoc());
-    }
+    //   _firebaseFirestore
+    //       .collection(Paths.noty)
+    //       .doc(post.author.id)
+    //       .collection(Paths.notifications)
+    //       .add(notification.toDoc());
+    // }
   }
 
   Future<List<Comment>> getCommentReplys(Comment comment, String postId, lastCommentid) async {

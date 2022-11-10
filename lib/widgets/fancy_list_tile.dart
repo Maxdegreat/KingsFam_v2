@@ -49,61 +49,65 @@ class FancyListTile extends StatelessWidget {
   Container child1(BuildContext context, HexColor hc) {
     TextStyle s = TextStyle(color: Colors.grey, fontStyle: FontStyle.italic);
     return Container(
+      
         height: MediaQuery.of(context).size.height / height,
         width: double.infinity,
-        child: Row(
-          //mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            leadingImageWidget(
-              url: imageUrl,
-              BR: BR,
-              height: height,
-              width: width,
-            ), //leading is taking the same value that was passed into thh fancy
-            SizedBox(
-              width: 15,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('$username.',
-                    overflow: TextOverflow.fade,
-                    style: newNotification == null || newNotification == false
-                        ? TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white)
-                        : TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.amber[200])),
-                SizedBox(height: 3),
-                location != null || location == ""
-                    ? Text('$location.',
-                        overflow: TextOverflow.fade,
-                        style: s)
-                    : Text('Remote.',
-                        overflow: TextOverflow.fade,
-                        style: s),
-              ],
-            ),
-            SizedBox(width: width - (width * .10)),
-            isBtn
-                ? Icon(Icons.check_circle)
-                : isMentioned != null && isMentioned == true
-                    ? Icon(
-                        Icons.alternate_email_outlined,
-                        color: Colors.amber,
-                      )
-                    : SizedBox.shrink()
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            //mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              leadingImageWidget(
+                url: imageUrl,
+                BR: BR,
+                height: height,
+                width: width,
+              ), //leading is taking the same value that was passed into thh fancy
+              SizedBox(
+                width: 15,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('$username.',
+                      overflow: TextOverflow.fade,
+                      style: newNotification == null || newNotification == false
+                          ? TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white)
+                          : TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.amber[200])),
+                  SizedBox(height: 3),
+                  location != null || location == ""
+                      ? Text('$location.',
+                          overflow: TextOverflow.fade,
+                          style: s)
+                      : Text('Remote.',
+                          overflow: TextOverflow.fade,
+                          style: s),
+                ],
+              ),
+              SizedBox(width: width - (width * .10)),
+              isBtn
+                  ? Icon(Icons.check_circle)
+                  : isMentioned != null && isMentioned == true
+                      ? Icon(
+                          Icons.alternate_email_outlined,
+                          color: Colors.amber,
+                        )
+                      : SizedBox.shrink()
+            ],
+          ),
         ),
         decoration: BoxDecoration(
-            color: Color(hc.hexcolorCode('#20263c')),
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(BR), bottomLeft: Radius.circular(BR)),
+          
+            color: Color(hc.hexcolorCode('#141829')),
+            borderRadius: BorderRadius.circular(15),
             border: Border.all(
                 color: isMentioned == null || isMentioned == false
                     ? Colors.transparent

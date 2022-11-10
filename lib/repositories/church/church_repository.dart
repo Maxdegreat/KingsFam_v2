@@ -134,36 +134,31 @@ class ChurchRepository extends BaseChurchRepository {
         .delete();
   }
 
-  Future<List<Church>> getCommuinitysUserIn(
-      {required String userrId,
-      required int limit,
-      String? lastStringId}) async {
+  Future<List<Church>> getCommuinitysUserIn( {required String userrId, required int limit, String? lastStringId}) async {
     try {
+      log("The userId: " + userrId);
       if (lastStringId == null) {
         List<Church> bucket = [];
-        DocumentReference userRef =
-            FirebaseFirestore.instance.collection(Paths.users).doc(userrId);
-        var querys = await fb
-            .where('members.$userrId.userReference', isEqualTo: userRef)
+       
+        var querys = await fire.collection(Paths.users).doc(userrId).collection(Paths.church)
             .limit(limit)
             .get(); //'members.$currId.userReference', isEqualTo: userRef
         for (var snap in querys.docs) {
-          var ch = await Church.fromDoc(snap);
+          var ch = await Church.fromId(snap.id);
+          log("The ch is " + ch.toString());
           bucket.add(ch);
         }
 
         return bucket;
       } else {
         // get the last doc
-        var lastDocSnap = await FirebaseFirestore.instance
-            .collection(Paths.church)
+        var lastDocSnap = await fire.collection(Paths.users).doc(userrId).collection(Paths.church)
             .doc(lastStringId)
             .get();
         List<Church> bucket = [];
         DocumentReference userRef =
             FirebaseFirestore.instance.collection(Paths.users).doc(userrId);
-        var querys = await fb
-            .where('members.$userrId.userReference', isEqualTo: userRef)
+        var querys = await fire.collection(Paths.users).doc(userrId).collection(Paths.church)
             .startAfterDocument(lastDocSnap)
             .limit(limit)
             .get(); //'members.$currId.userReference', isEqualTo: userRef
@@ -567,9 +562,9 @@ class ChurchRepository extends BaseChurchRepository {
     //make a noty
     final NotificationKF noty = NotificationKF(
         fromUser: fromUser,
-        notificationType: Notification_type.invite_to_commuinity,
         date: Timestamp.now(),
-        fromCommuinity: commuinity);
+        msg: fromUser.username + " is inviting you to join " + commuinity.name,
+        fromCm: commuinity.id);
 
     fire.collection(Paths.noty).doc(toUserId).collection(Paths.notifications).add(noty.toDoc());
   }

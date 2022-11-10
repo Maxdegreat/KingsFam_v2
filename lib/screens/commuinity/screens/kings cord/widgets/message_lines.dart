@@ -214,11 +214,37 @@ class _MessageLinesState extends State<MessageLines> {
       widget.message.reactions![''] = 0;
     }
     List<String> links = [];
-    var msgAsList = widget.message.text!.split(' ').forEach((element) {
-      if (element.startsWith('https://') || element.startsWith('Https://')) {
-        links.add(element);
-      } 
-    });
+    List<Widget> textWithLinksForColumn = [];
+    String tempString = "";
+
+     widget.message.text!.split(RegExp("\\s")).forEach((element) {
+
+       if (!element.startsWith('https://')) {
+         if (textWithLinksForColumn.isEmpty && tempString.isEmpty) {
+          tempString += element;
+         } else {
+          tempString += " $element ";
+         }
+
+       }
+
+       else if (element.startsWith('https://')) {
+        textWithLinksForColumn.add(Text(tempString));
+        tempString = "";
+         // add the element to the links so that the code knows visually there is a link in a show link preview
+         links.add(element);
+         // make a textbutton so that indivdual links can be taped on
+
+         Widget l = GestureDetector(
+          onTap: () {
+            launch(element);
+          },
+          child: Text(element, style: Theme.of(context).textTheme.bodyText1!.merge(TextStyle(color: Colors.blue))),
+         );
+          // add the links to the list below so that the code can later use these txtbuttons w/ links as child
+         textWithLinksForColumn.add(l);
+       } 
+     });
 
     if (widget.message.text == "(code:unsent 10987345)") {
         return Text("deleted", style: TextStyle(
@@ -231,10 +257,11 @@ class _MessageLinesState extends State<MessageLines> {
       if (links.isNotEmpty) {
 
         return GestureDetector(
-          onLongPress: () =>
-                    _showReactionsBar(widget.message.id!, widget.message.reactions, context),
+          onLongPress: () => _showReactionsBar(widget.message.id!, widget.message.reactions, context),
            onTap: () {
-            launch(links[0]);
+            if (links.length == 1) {
+              launch(links[0]);
+            }
           },
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -242,7 +269,13 @@ class _MessageLinesState extends State<MessageLines> {
             children: [
               LinkPreviewContainer(link: links.last),
               SizedBox(height: 2),
-              widget.message.text!.trim().length != links[0].trim().length ? Text(widget.message.text!) : Text("#weblink")
+              // if a link was sent only without any text
+              // widget.message.text!.trim().length != links[0].trim().length ? Text(widget.message.text!) : Text("#weblink")
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: textWithLinksForColumn.map((e) => e).toList()
+              )
             ],
           ));
       }

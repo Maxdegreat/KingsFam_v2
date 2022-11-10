@@ -228,7 +228,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   Stream<ProfileState> _mapProfileFollowUserToState() async* {
     try {
       _userrRepository.followerUserr(
-          userrId: _authBloc.state.user!.uid, followersId: state.userr.id);
+          userr: state.userr, followersId: state.userr.id);
       final updatedUserr =
           state.userr.copyWith(followers: state.userr.followers + 1);
       yield state.copyWith(userr: updatedUserr, isFollowing: true);

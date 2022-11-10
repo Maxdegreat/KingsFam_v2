@@ -9,7 +9,7 @@ abstract class BaseUserrRepository {
   
   Future<List<Userr>> searchUsersadvanced({required String query});
   
-  void followerUserr({required String userrId, required String followersId});//followUserrId
+  void followerUserr({required Userr userr, required String followersId});//followUserrId
   
   void unFollowUserr({required String userrId, required String unFollowedUserr});
   

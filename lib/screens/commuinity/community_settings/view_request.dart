@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/paths.dart';
@@ -112,7 +111,6 @@ class _ReviewPendingRequestState extends State<ReviewPendingRequest> {
             onPressed: () {
               ChurchRepository().onJoinCommuinity(commuinity: widget.cm, user: user);
               // send a push noti to the users phone
-
               snackBar(snackMessage: "green chgeck", context: context);
             },
             icon: Icon(Icons.check_sharp, color: Colors.green)),
@@ -122,6 +120,7 @@ class _ReviewPendingRequestState extends State<ReviewPendingRequest> {
         // red x
         IconButton(
           onPressed: () {
+
             snackBar(snackMessage: "red x", context: context);
           },
           icon: FaIcon(FontAwesomeIcons.ban, color: Colors.red),

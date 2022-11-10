@@ -1,6 +1,8 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/notification/bloc/noty_bloc.dart';
@@ -71,12 +73,7 @@ class NotyTile extends StatelessWidget {
         title: Text.rich(
           TextSpan(
             children: [
-              TextSpan(
-                text: notifications.fromUser.username,
-                style: Theme.of(context).textTheme.bodyText1
-              ),
-              const TextSpan(text: ' '),
-              TextSpan(text: _getText(notifications)),
+              TextSpan(text: notifications.msg),
             ]
           )
         ),
@@ -84,39 +81,16 @@ class NotyTile extends StatelessWidget {
     );
   }
 
-  String _getText(NotificationKF notifications) {
-    switch (notifications.notificationType) {
-      case Notification_type.friend_request:
-        return " sent you a friend request ";
-      case Notification_type.invite_to_commuinity: {
-        if (notifications.fromCommuinity != null) 
-          return " invited you to a commuinity ${notifications.fromCommuinity!.name}";
-        else 
-          return " invited you to a commuinity";
-      }
-      case Notification_type.new_follower:
-        return " started following you";
-      case Notification_type.invite_to_call:
-        return " invited you to a call";
-      case Notification_type.direct_message:
-        return " sent you a direct message  ";
-      case Notification_type.comment_post:
-        return " commented on your post";
-      case Notification_type.deleted_noty:
-        return " This is a deleted notification";
-    }
-  }
 
-  _getOnTap(BuildContext context, NotificationKF noty)  {
+  _getOnTap(BuildContext context, NotificationKF noty) async {
    //if from commuinity 
-   if (notifications.notificationType == Notification_type.invite_to_commuinity) 
-     return  Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: notifications.fromCommuinity!));
-     //if drom direct messages
-   else if (notifications.notificationType == Notification_type.direct_message)
-       return Navigator.of(context).pushNamed(ChatRoom.routeName, arguments: ChatRoomArgs(chat: notifications.fromDirectMessage!));
-    // if from new follower
+   if (noty.fromCm != null) {
+      final DocumentSnapshot cmSnap = await FirebaseFirestore.instance.collection(Paths.church).doc(noty.fromCm).get();
+      final Church cm = await Church.fromDoc(cmSnap);
+     return  Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: cm));
+   } 
     else 
-       return Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: notifications.fromUser.id));
+       return Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: noty.fromUser.id));
  }
 }
 
