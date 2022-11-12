@@ -13,7 +13,7 @@ class SearchState extends Equatable {
   final List<Church> churches; // list of churches
   final List<Church> churchesList2; // rn ppl from tik tok
   final List<Church> chruchesNotEqualLocation; // new churches
-  final List<Userr> userExploreList; // a list to find new users
+
 
   final bool isSelected; // bool for ?
   final SearchStatus status; //the enum status
@@ -29,7 +29,7 @@ class SearchState extends Equatable {
         churches: [],
         chruchesNotEqualLocation: [],
         churchesList2: [],
-        userExploreList: [],
+
         isSelected: false,
         status: SearchStatus.initial,
         failure: Failure());
@@ -44,7 +44,7 @@ class SearchState extends Equatable {
     required this.churches,
     required this.churchesList2,
     required this.chruchesNotEqualLocation,
-    required this.userExploreList,
+
     required this.isSelected,
     required this.status,
     required this.failure,
@@ -60,7 +60,7 @@ class SearchState extends Equatable {
         churches,
         churchesList2,
         chruchesNotEqualLocation,
-        userExploreList,
+
         isSelected,
         status,
         failure
@@ -76,7 +76,7 @@ class SearchState extends Equatable {
     List<Church>? churches,
     List<Church>? churchesList2,
     List<Church>? chruchesNotEqualLocation,
-    List<Userr>? userExploreList,
+
     SearchStatus? status,
     Failure? failure,
   }) {
@@ -89,7 +89,7 @@ class SearchState extends Equatable {
       churches: churches ?? this.churches,
       churchesList2: churchesList2 ?? this.churchesList2,
       chruchesNotEqualLocation: chruchesNotEqualLocation ?? this.chruchesNotEqualLocation,
-      userExploreList: userExploreList ?? this.userExploreList,
+
       isSelected: isSelected ?? this.isSelected,
       status: status ?? this.status,
       failure: failure ?? this.failure,

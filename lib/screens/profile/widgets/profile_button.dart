@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/screens/chat_room/chat_room.dart';
 import 'package:kingsfam/screens/edit_profile/edit_profile_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,12 +24,14 @@ class ProfileButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle style = TextStyle(
-        color: Colors.white, fontSize: 13, fontWeight: FontWeight.w400);
-    final TextStyle styleFalse = TextStyle(
-        color: Colors.black, fontSize: 15, fontWeight: FontWeight.w400);
+    final TextStyle style = TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w400);
+    final TextStyle styleFalse = TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w400);
+    
     return isCurrentUserr
-        ? editPf(style, context)
+        ? Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: editPf(style, context),
+        )
         : Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             //mainAxisSize: MainAxisSize.min,
@@ -64,11 +67,15 @@ class ProfileButton extends StatelessWidget {
     //HexColor hexcolor = HexColor();
     return Container(
       width: MediaQuery.of(context).size.width / 3,
-      child: IconButton(
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: StadiumBorder(),
+          primary: Color(hc.hexcolorCode("#141829"))
+        ),
         onPressed: () => Navigator.of(context).pushNamed(
             EditProfileScreen.routeName,
             arguments: EditProfileScreenArgs(context: context)),
-        icon: Icon(Icons.settings_rounded),
+        child: Text("Edit"),
       ),
     );
   }

@@ -70,43 +70,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    //_perkedVideoPlayerController =
-        // VideoPlayerController.asset("assets/promo_assets/Perked-2.mp4",
-        //     videoPlayerOptions: VideoPlayerOptions(
-        //       mixWithOthers: true,
-        //     ))
-        //   ..addListener(() {
-        //     if (this.mounted) {
-        //       setState(() {
-                
-        //       });
-        //     }
-        //   })
-        //   ..setLooping(
-        //       true) // -------------------------------- SET PERKED LOOPING TO TRUE
-        //   ..initialize().then((_) {
-        //     _perkedVideoPlayerController.play();
-        //     _perkedVideoPlayerController.setVolume(0);
-        //   });
-    scrollController.addListener(listenToScrolling);
+    
+   // scrollController.addListener(listenToScrolling);
   }
 
 
-  void listenToScrolling() {
-    //TODO you need to add this later make it a p1 requirment
-    if (scrollController.position.atEdge) {
-      if (scrollController.position.pixels != 0.0 &&
-          scrollController.position.maxScrollExtent ==
-              scrollController.position.pixels) {
-        // snackBar(snackMessage: "yay a snack bar", context: context);
-        log("This is a log");
-        context.read<ProfileBloc>()
-          ..add(ProfilePaginatePosts(
-              userId: widget.ownerId)); // ----------------- TODO This is why ur pag does not work properly. use a dynamic id. cant pag someone else w/ ur id
-        log("HEY I AM CALLING A PAGINATION MAX!!!");
-      }
-    }
-  }
+  // void listenToScrolling() {
+  //   //TODO you need to add this later make it a p1 requirment
+  //   if (scrollController.position.atEdge) {
+  //     if (scrollController.position.pixels != 0.0 &&
+  //         scrollController.position.maxScrollExtent ==
+  //             scrollController.position.pixels) {
+  //       // snackBar(snackMessage: "yay a snack bar", context: context);
+  //       log("This is a log");
+  //       context.read<ProfileBloc>()
+  //         ..add(ProfilePaginatePosts(
+  //             userId: widget.ownerId)); // ----------------- TODO This is why ur pag does not work properly. use a dynamic id. cant pag someone else w/ ur id
+  //       log("HEY I AM CALLING A PAGINATION MAX!!!");
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -278,8 +261,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             isFromPfpScreen: true)),
                     //Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(startIndex: index, posts: state.post)),
                     child: Container(
-                      height: 150,
-                      width: 250,
+                      height: 100,
+                      width: 130,
                       decoration: BoxDecoration(
                           color: Colors.white,
                           image: post!.imageUrl != null

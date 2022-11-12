@@ -109,30 +109,47 @@ class _SearchScreenState extends State<SearchScreen> {
             builder: (context, state) {
               return Scaffold(
                 appBar: AppBar(
-                  title: TextField(
-                    controller: _textEditingController,
-                    decoration: InputDecoration(
-                        fillColor: Colors.black87,
+                  toolbarHeight: 56,
+                  title: Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Container(
+                      height: 45,
+                      width: double.infinity,
+                      child: TextField(
+                        controller:  _textEditingController,
+                        decoration: InputDecoration(
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
                         filled: true,
-                        border: InputBorder.none,
-                        hintText: 'Search For The Fam',
+                        hintStyle: TextStyle(color: Colors.grey),
+                        hintText: "Search Cm or Fam",
+                        fillColor: Color(hc.hexcolorCode("#141829")!),
+
                         suffixIcon: IconButton(
-                            onPressed: () {
-                              context.read<SearchBloc>().clearSearch();
-                              _textEditingController.clear();
-                            },
-                            icon: Icon(Icons.clear))),
-                    textInputAction: TextInputAction.search,
-                    textAlignVertical: TextAlignVertical.center,
-                    onChanged: (value) {
-                      context
-                          .read<SearchBloc>()
-                          .searchUserAdvanced(value.trim());
-                      //context.read<SearchBloc>().searchChurch(value.trim());
-                    },
+                                onPressed: () {
+                                  context.read<SearchBloc>().clearSearch();
+                                  _textEditingController.clear();
+                                },
+                                icon: Icon(Icons.clear, size: 17,))),
+                        textInputAction: TextInputAction.search,
+                        textAlignVertical: TextAlignVertical.center,
+                        onChanged: (value) {
+                          context
+                              .read<SearchBloc>()
+                              .searchUserAdvanced(value.trim());
+                          //context.read<SearchBloc>().searchChurch(value.trim());
+                        },
+                      ),
+                    ),
                   ),
+                    
+                    ),
+                
+                        
+                
+                body: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _builBody(state: state, context: context),
                 ),
-                body: _builBody(state: state, context: context),
               );
             },
           )),
@@ -230,45 +247,34 @@ class _SearchScreenState extends State<SearchScreen> {
                           ))
                       : Container(
                           height: 170,
-                          child:
-                              Center(child: Text("hmm, nothing to see here"))),
+                          child: Center(child: Text("hmm, nothing to see here"))),
 
                   SizedBox(height: 10.0),
-                  Text(
-                    "Find The Fam",
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: Color(hexcolor.hexcolorCode('#FFC050'))),
-                  ),
-                  SizedBox(
-                    height: 20.0,
+                  
+                  Text("Join Link"),
+
+                  SizedBox(height: 10.0),
+
+                  Container(
+                    height: 45,
+                    child: TextField(
+                      decoration: InputDecoration(
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+                      filled: true,
+                      hintStyle: TextStyle(color: Colors.grey),
+                      hintText: "Enter A Join Link",
+                      fillColor: Color(hc.hexcolorCode("#141829")!)),
+                    ),
                   )
-                  // to find most popular write a script that finds greater than sum of of all commuinities then
+                  
                 ],
               ),
             ),
-            SliverToBoxAdapter(
-                child: state.userExploreList.length > 0
-                    ? GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                                mainAxisExtent: 105),
-                        primary: false,
-                        shrinkWrap: true,
-                        itemCount: state.userExploreList.length,
-                        itemBuilder: (context, index) {
-                          Userr userr = state.userExploreList[index];
-                          return ProfileCard(userr);
-                        })
-                    : Container(
-                        height: 181,
-                        child: Center(
-                            child: Text("You are folloing all the fam!?!?"))))
+            
           ],
         );
+
+      // this is in the case that we are using the search box on a user..
 
       case SearchStatus.loading:
         return Center(

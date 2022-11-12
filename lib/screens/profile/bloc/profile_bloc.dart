@@ -122,7 +122,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         _postStreamSubscription?.cancel();
         _postStreamSubscription = _postsRepository
             .getUserPosts(
-                userId: event.userId, limit: 8, lastPostDoc: lastPostDoc)
+                userId: event.userId, limit: 2, lastPostDoc: lastPostDoc)
             .listen((posts) async {
           List<Post?> allPost = [];
           for (var p in posts) {

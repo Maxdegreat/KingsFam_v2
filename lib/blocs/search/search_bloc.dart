@@ -36,8 +36,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       yield* _mapAddMemberToState(event);
     } else if (event is RemoveMember) {
       yield* _mapRemoveMemberToState(event);
-    } else if (event is GrabUsersPaginate) {
-      yield* _mapGrabUsersPaginate(event);
     } else if (event is PaginateChList1) {
       yield* _mapPaginateChList1(event);
     } else if (event is PaginateChListNotEqualToLocation) {
@@ -45,32 +43,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     }
   }
 
-  // In mapLoadUserToState we also init the instances of commuinitys and the user explore in the search page
-  Stream<SearchState> _mapGrabUsersPaginate(GrabUsersPaginate event) async* {
-    yield state.copyWith(status: SearchStatus.pag);
-    try {
-      List<Userr>? newUserExploreList = [];
-      List<Userr>? updatedUsers = [];
-      final String? lastPostId = state.userExploreList.isNotEmpty
-          ? state.userExploreList.last.id
-          : null;
-      if (lastPostId != null) {
-        newUserExploreList = await _userrRepository.getSearchUsers(
-            currId: event.currId, limit: 8, lastId: lastPostId);
-        updatedUsers = List<Userr>.from(state.userExploreList)
-          ..addAll(newUserExploreList);
-      }
-
-      yield state.copyWith(
-          userExploreList: updatedUsers, status: SearchStatus.initial);
-    } catch (e) {
-      yield state.copyWith(
-          status: SearchStatus.error,
-          failure: Failure(
-              message: "uhh, sorry. error when geting next set of data",
-              code: e.toString() + " from the search bloc"));
-    }
-  }
 
   Stream<SearchState> _mapPaginateChList1(PaginateChList1 event) async* {
     yield state.copyWith(status: SearchStatus.pag);
@@ -124,17 +96,13 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       List<Church> churchesList3 =
           await _churchRepository.grabChurchAllOver(location: user.location);
 
-      // final userExploreController = BehaviorSubject<List<DocumentSnapshot>>();
-      List<Userr> userExploreList = await _userrRepository.getSearchUsers(
-          currId: event.currentUserrId, limit: 4, lastId: null);
-
       // await _userrRepository.grabUserExploreListNext10(ownerId);
       yield state.copyWith(
           user: user,
           churches: churches,
           churchesList2: [], //churchesList2,
           chruchesNotEqualLocation: churchesList3,
-          userExploreList: userExploreList, //userExploreList,
+
           status: SearchStatus.initial);
     } catch (e) {
       state.copyWith(
