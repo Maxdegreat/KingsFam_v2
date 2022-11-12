@@ -187,6 +187,9 @@ class CustomRoute {
 
       case CreateRole.routeName:
         return CreateRole.route(args: settings.arguments as CreateRoleArgs);
+      
+      case KingsCordSettings.routeName:
+        return KingsCordSettings.route(args: settings.arguments as KingsCordSettingsArgs);
 
       default:
         return _errorRoute();

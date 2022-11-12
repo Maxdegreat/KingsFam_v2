@@ -28,7 +28,6 @@ class Church extends Equatable {
     required this.searchPram,
     this.id,
     required this.cmPrivacy, 
-
     required this.name,
     required this.location,
     required this.imageUrl,

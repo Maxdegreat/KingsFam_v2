@@ -12,6 +12,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/widgets/media_bottom_sheet.dart';
+import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
 
 import 'widgets/message_lines.dart';
@@ -350,14 +351,14 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           widget.kingsCord.cordName.length > 10 ? '${widget.kingsCord.cordName.substring(0,7)}' : '${widget.kingsCord.cordName}',
           overflow: TextOverflow.fade,
         ),
-        // actions: [
-        //   IconButton(onPressed: () {
+        actions: [
+          IconButton(onPressed: () {
             // Nav to a settings room that will 
             // 1) allow only certian roles to enter the room. only an owner / admin can do this
             // 2) allow someone to subscribe to get notifications
-            // Navigator.of(context).pushNamed(KingsCordSettings.routeName, arguments: KingsCordSettingsArgs.route);     
-        //  }, icon: Icon(Icons.settings))
-        //],
+            Navigator.of(context).pushNamed(KingsCordSettings.routeName, arguments: KingsCordSettingsArgs(cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!));     
+         }, icon: Icon(Icons.notifications_on_outlined))
+        ],
       ),
       // the body is a collumn containeing message widgets... with a bottom sheet for the txt controller
       body: BlocConsumer<KingscordCubit, KingscordState>(

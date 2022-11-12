@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/blocs/search/search_bloc.dart';
+import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/helpers/navigator_helper.dart';
 

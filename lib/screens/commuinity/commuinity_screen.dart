@@ -17,6 +17,7 @@ import 'package:helpers/helpers.dart';
 
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 
@@ -52,7 +53,7 @@ import 'screens/says_room/says_room.dart';
 part 'wrapers/community_screen_wraper.dart';
 part 'wrapers/community_screen_methods.dart';
 
-HexColor hc = HexColor();
+
 
 class CommuinityScreenArgs {
   final Church commuinity;
