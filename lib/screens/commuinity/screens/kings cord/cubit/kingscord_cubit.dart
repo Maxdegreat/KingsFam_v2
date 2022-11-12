@@ -77,7 +77,7 @@ class KingscordCubit extends Cubit<KingscordState> {
    }
 
   void onLoadInit({required String cmId, required String kcId, required int limit}) async {
-    int limit = 45;
+    //int limit = 45;
     _msgStreamSubscription?.cancel();
     _msgStreamSubscription = _churchRepository
         .getMsgStream(cmId: cmId, kcId: kcId, limit: limit)
@@ -236,6 +236,8 @@ class KingscordCubit extends Cubit<KingscordState> {
 
     emit(state.copyWith(status: KingsCordStatus.initial, fileShareStatus: fileShareStatus, filesToBePosted: state.filesToBePosted));
   }
+
+  // for upword pagination just go to the top and add the next 10 or so to the begining of the list.
 
   String getShortReply(String? txt) {
     if (txt == null) {

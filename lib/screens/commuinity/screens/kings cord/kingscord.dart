@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 
 import 'package:kingsfam/models/models.dart';
@@ -88,7 +89,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     super.dispose();
   }
 
-  double textHeight = 25;
+  double textHeight = 30;
   _buildMessageStream({required Church commuinity, required KingsCord kingsCord, required List<Message?> msgs}) {
     // set the current username
     // add all users in cm into a list named memIds - to replace I just need to know if the user is allowed in the cm.
@@ -138,7 +139,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   _buildBottomTF(KingscordState state, BuildContext context) {
     final ctx = context.read<KingscordCubit>();
     return Container(
-        margin: EdgeInsets.symmetric(horizontal: 5.0),
+      height: 71,
+        // margin: EdgeInsets.symmetric(horizontal: 5.0),
         child: Row(
           children: [
             IconButton(
@@ -153,7 +155,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
               child: Container(
                 height: textHeight,
                 decoration: BoxDecoration(
-                    color: Colors.grey[900],
                     borderRadius: BorderRadius.circular(5.0)),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 3.0),
@@ -161,6 +162,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                     alignment: Alignment.center,
                     child: TextFormField(
                       // validator: (value) {},
+                      
                       textAlignVertical: TextAlignVertical.center,
                       style: TextStyle(fontSize: 18),
                       autocorrect: true,
@@ -186,16 +188,20 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                           idxWhereStartWithat = 0;
                           _mentionedController = null;
                         }
-                        if (messageText.length >= 25)
-                          setState(() => textHeight = 50.0);
-                        else if (messageText.length >= 50)
-                          setState(() => textHeight = 65.0);
-                        else
+                        if (messageText.length > 24)
+                          setState(() => textHeight = 70.0);
+                        else if (messageText.length < 24)
                           setState(() => textHeight = 30.0);
                         ctx.onIsTyping(messageText.length >= 1);
                       },
-                      decoration:
-                          InputDecoration.collapsed(hintText: 'think b4 u txt'),
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(2),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+                        filled: true,
+                        hintText: 'think b4 u txt',
+                        isCollapsed: true,
+                        fillColor: Color(hc.hexcolorCode("#141829")!)
+                      )
                     ),
                   ),
                 ),
@@ -205,7 +211,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 margin: const EdgeInsets.symmetric(horizontal: 4.0),
                 child: IconButton(
                   icon: Icon(
-                    Icons.send,
+                    Icons.stacked_line_chart_rounded,
                     color: state.isTyping ? Colors.red[400] : Colors.white,
                   ),
                   onPressed: state.isTyping
@@ -362,7 +368,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           context.read<KingscordCubit>().onLoadInit(
                 cmId: widget.commuinity.id!,
                 kcId: widget.kingsCord.id!,
-                limit: 30,
+                limit: 17,
               );
           return GestureDetector(
             onTap: () => FocusScope.of(context).unfocus(),

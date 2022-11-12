@@ -216,7 +216,7 @@ class _MessageLinesState extends State<MessageLines> {
     List<String> links = [];
     List<Widget> textWithLinksForColumn = [];
     String tempString = "";
-
+      // checking for strings starting with https:// I do this w/ regex
      widget.message.text!.split(RegExp("\\s")).forEach((element) {
 
        if (!element.startsWith('https://')) {
@@ -229,7 +229,9 @@ class _MessageLinesState extends State<MessageLines> {
        }
 
        else if (element.startsWith('https://')) {
-        textWithLinksForColumn.add(Text(tempString));
+        textWithLinksForColumn.add(Text(tempString, style: TextStyle(color: Colors.white,
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w800),));
         tempString = "";
          // add the element to the links so that the code knows visually there is a link in a show link preview
          links.add(element);
@@ -246,16 +248,17 @@ class _MessageLinesState extends State<MessageLines> {
        } 
      });
 
+    // The return of the build text when there is an unsent message
     if (widget.message.text == "(code:unsent 10987345)") {
         return Text("deleted", style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 17.0,
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.w800, ));
+           color: Colors.grey,
+           fontSize: 14.0,
+           fontStyle: FontStyle.italic,
+           fontWeight: FontWeight.w800, ));
       }
 
       if (links.isNotEmpty) {
-
+        // the return of the build text when the links are not empty
         return GestureDetector(
           onLongPress: () => _showReactionsBar(widget.message.id!, widget.message.reactions, context),
            onTap: () {
@@ -279,10 +282,9 @@ class _MessageLinesState extends State<MessageLines> {
             ],
           ));
       }
-
+    // the return of the text when there is no links involved
     return GestureDetector(
-      onLongPress: () =>
-                    _showReactionsBar(widget.message.id!, widget.message.reactions, context),
+      onLongPress: () => _showReactionsBar(widget.message.id!, widget.message.reactions, context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -292,7 +294,7 @@ class _MessageLinesState extends State<MessageLines> {
             child: Text(widget.message.text!,
                 style: TextStyle(
                     color: Colors.white,
-                    fontSize: 17.0,
+                    fontSize: 14.0,
                     fontWeight: FontWeight.w800)),
           ),
           _showReactionBarUi(messageReactions: widget.message.reactions)
