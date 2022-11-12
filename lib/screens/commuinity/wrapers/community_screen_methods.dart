@@ -53,21 +53,16 @@ Widget joinBtn(
     height: 30,
     width: 200,
     child: ElevatedButton(
-      onPressed: () {
-        _onJoinCommuinity(b: b, cm: cm, c: context);
-      },
-      child: Text(
-        "Join",
-        style: TextStyle(color: Colors.white),
-      ),
-      style: ButtonStyle(
-          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-          backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero,
-                  side: BorderSide(color: Colors.white)))),
-    ),
+        onPressed: () {
+          _onJoinCommuinity(b: b, cm: cm, c: context);
+        },
+        child: Text(
+          "Join",
+          style: TextStyle(color: Colors.green),
+        ),
+        style: ElevatedButton.styleFrom(
+            shape: StadiumBorder(),
+            primary: Color(hc.hexcolorCode("#141829")))),
   );
 }
 
@@ -77,8 +72,7 @@ _onJoinCommuinity(
 }
 
 // content preview: This holds the post
-Widget contentPreview(
-    {required Post post, required BuildContext context, required Church cm}) {
+Widget contentPreview({required Post post, required BuildContext context, required Church cm}) {
   return Padding(
     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
     child: GestureDetector(
@@ -88,54 +82,55 @@ Widget contentPreview(
       child: Container(
         height: 80,
         width: 200,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              height: 80,
-              width: 80,
-              decoration: BoxDecoration(
-                  image: post.imageUrl != null
-                      ? DecorationImage(
-                          image: CachedNetworkImageProvider(post.imageUrl!),
-                          fit: BoxFit.fitWidth)
-                      : post.thumbnailUrl != null
-                          ? DecorationImage(
-                              image: CachedNetworkImageProvider(
-                                  post.thumbnailUrl!),
-                              fit: BoxFit.fitWidth)
-                          : null,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      bottomLeft: Radius.circular(10))),
-            ),
-            SizedBox(width: 10),
-            Flexible(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  post.author.username,
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                  maxLines: 1,
-                  overflow: TextOverflow.fade,
-                ),
-                Text(
-                  'Posted to',
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                  maxLines: 1,
-                  overflow: TextOverflow.fade,
-                ),
-                Text(
-                  cm.name,
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                  maxLines: 1,
-                  overflow: TextOverflow.fade,
-                ),
-                // Text(post.date.toString(), style: TextStyle(fontWeight: FontWeight.w400),maxLines: 1, overflow: TextOverflow.fade,)
-              ],
-            ))
-          ],
+        decoration: BoxDecoration(
+          color: Color(hc.hexcolorCode("#141829")),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                height: 80,
+                width: 80,
+                decoration: BoxDecoration(
+                    image: post.imageUrl != null
+                        ? DecorationImage(
+                            image: CachedNetworkImageProvider(post.imageUrl!),
+                            fit: BoxFit.fitWidth)
+                        : post.thumbnailUrl != null
+                            ? DecorationImage(
+                                image: CachedNetworkImageProvider(
+                                    post.thumbnailUrl!),
+                                fit: BoxFit.fitWidth)
+                            : null,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        bottomLeft: Radius.circular(10))),
+              ),
+              SizedBox(width: 10),
+              Flexible(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    post.author.username,
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                    maxLines: 1,
+                    overflow: TextOverflow.fade,
+                  ),
+                  Text(
+                    'shared',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                    maxLines: 1,
+                    overflow: TextOverflow.fade,
+                  ),
+                  // Text(post.date.toString(), style: TextStyle(fontWeight: FontWeight.w400),maxLines: 1, overflow: TextOverflow.fade,)
+                ],
+              ))
+            ],
+          ),
         ),
       ),
     ),
@@ -254,13 +249,24 @@ memberBtn(
     String? currRole}) {
   return Padding(
       padding: const EdgeInsets.only(left: 10.0, top: 10),
-      child: IconButton(
-        onPressed: () async {
-          // final usersInCommuiinity = await context.read<BuildchurchCubit>().commuinityParcticipatents(ids: widget.commuinity.memberIds);
-          Navigator.of(context).pushNamed(ParticipantsView.routeName,
-              arguments: ParticipantsViewArgs(cmBloc: cmBloc, cm: cm));
-        },
-        icon: Icon(Icons.people_alt_sharp),
+      child: Container(
+
+        decoration: BoxDecoration(
+          color: Colors.black12,
+          borderRadius: BorderRadius.circular(10)
+        ),
+
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: IconButton(
+            onPressed: () async {
+              // final usersInCommuiinity = await context.read<BuildchurchCubit>().commuinityParcticipatents(ids: widget.commuinity.memberIds);
+              Navigator.of(context).pushNamed(ParticipantsView.routeName,
+                  arguments: ParticipantsViewArgs(cmBloc: cmBloc, cm: cm));
+            },
+            icon: Icon(Icons.people_alt_sharp),
+          ),
+        ),
       ));
 }
 
@@ -268,68 +274,89 @@ Widget settingsBtn(
     {required CommuinityBloc cmBloc,
     required Church cm,
     required BuildContext context}) {
-  return IconButton(
-      onPressed: () {
-        showModalBottomSheet(
-            context: context,
-            builder: (context) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    //  update the cm name
-                    ListTile(
-                        title: Text("Update the Community name",
-                            style: Theme.of(context).textTheme.bodyText1),
-                        onTap: () async => _updateCommuinityName(
-                            commuinity: cm,
-                            context: context,
-                            buildchurchCubit:
-                                context.read<BuildchurchCubit>())),
-                    ListTile(
-                      title: Text(
-                        "Update The About",
-                        style: Theme.of(context).textTheme.bodyText1,
-                        overflow: TextOverflow.fade,
-                      ),
-                      onTap: () async => _updateTheAbout(
-                          commuinity: cm,
-                          buildchurchCubit: context.read<BuildchurchCubit>(),
-                          context: context),
-                    ),
-                    ListTile(
-                      title: Text("Update Community ImageUrl",
-                          overflow: TextOverflow.fade,
-                          style: Theme.of(context).textTheme.bodyText1),
-                          trailing:
-                          ProfileImage(radius: 25, pfpUrl: cm.imageUrl),
+  return Container(
+
+        decoration: BoxDecoration(
+          color: Colors.black12,
+          borderRadius: BorderRadius.circular(10)
+        ),
+    child: Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: IconButton(
+          onPressed: () {
+            showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        //  update the cm name
+                        ListTile(
+                            title: Text("Update the Community name",
+                                style: Theme.of(context).textTheme.bodyText1),
+                            onTap: () async => _updateCommuinityName(
+                                commuinity: cm,
+                                context: context,
+                                buildchurchCubit:
+                                    context.read<BuildchurchCubit>())),
+                        ListTile(
+                          title: Text(
+                            "Update The About",
+                            style: Theme.of(context).textTheme.bodyText1,
+                            overflow: TextOverflow.fade,
+                          ),
+                          onTap: () async => _updateTheAbout(
+                              commuinity: cm,
+                              buildchurchCubit: context.read<BuildchurchCubit>(),
+                              context: context),
+                        ),
+                        ListTile(
+                          title: Text("Update Community ImageUrl",
+                              overflow: TextOverflow.fade,
+                              style: Theme.of(context).textTheme.bodyText1),
+                          trailing: ProfileImage(radius: 25, pfpUrl: cm.imageUrl),
                           onTap: () => _updateCommuinityImage(
-                            context: context,
-                          commuinity: cm,
-                          buildchurchCubit:context.read<BuildchurchCubit>() ),
+                              context: context,
+                              commuinity: cm,
+                              buildchurchCubit: context.read<BuildchurchCubit>()),
+                        ),
+                        ListTile(
+                          title: Text("Update Cm Privacy"),
+                          onTap: () => Navigator.of(context).pushNamed(
+                              UpdatePrivacyCm.routeName,
+                              arguments: UpdatePrivacyCmArgs(cm: cm)),
+                        )
+                      ],
                     ),
-                    ListTile(
-                      title: Text("Update Cm Privacy"),
-                      onTap: () => Navigator.of(context).pushNamed(UpdatePrivacyCm.routeName, arguments: UpdatePrivacyCmArgs(cm: cm)),
-                    )
-                  ],
-                ),
-              );
-            });
-      },
-      icon: Icon(Icons.settings));
+                  );
+                });
+          },
+          icon: Icon(Icons.settings)),
+    ),
+  );
 }
 
 // This is a method for inviting users to the Cm
 Widget inviteButton({required BuildContext context, required Church cm}) {
   return Padding(
     padding: const EdgeInsets.only(left: 10.0, top: 10),
-    child: IconButton(
-        icon: Icon(Icons.person_add),
-        onPressed: () async {
-          final following =
-              await context.read<BuildchurchCubit>().grabCurrFollowing();
-          _inviteBottomSheet(following: following, cm: cm, context: context);
-        }),
+    child: Container(
+
+        decoration: BoxDecoration(
+          color: Colors.black12,
+          borderRadius: BorderRadius.circular(10)
+        ),
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: IconButton(
+            icon: Icon(Icons.person_add),
+            onPressed: () async {
+              final following =
+                  await context.read<BuildchurchCubit>().grabCurrFollowing();
+              _inviteBottomSheet(following: following, cm: cm, context: context);
+            }),
+      ),
+    ),
   );
 }
 
@@ -374,7 +401,8 @@ Future<dynamic> _inviteBottomSheet(
                                 icon: Icon(
                                   Icons.add,
                                 ),
-                                onPressed: () => _showInviteDialog(cm: cm, user: user, context: context),
+                                onPressed: () => _showInviteDialog(
+                                    cm: cm, user: user, context: context),
                               ),
                             ),
                           );
@@ -416,93 +444,77 @@ _showInviteDialog(
       });
 }
 
-
-
-
-
-
-
-
 // _-/\______|-=[}}]}]}]>>>>>>>|\<>\>\\|\<>.<<><<<<<<<<<<<<<
 // Below here is the settings methods to the cm:
 
+Future<dynamic> _updateCommuinityImage(
+        {required Church commuinity,
+        required BuildContext context,
+        required BuildchurchCubit buildchurchCubit}) async =>
+    showModalBottomSheet(
+        context: context,
+        builder: (context) => StatefulBuilder(
+              builder: (BuildContext context, setState) {
+                return Container(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GestureDetector(
+                        onTap: () async {
+                          final pickedFile =
+                              await ImageHelper.pickImageFromGallery(
+                                  context: context,
+                                  cropStyle: CropStyle.rectangle,
+                                  title: 'New Commuinity wrap');
+                          if (pickedFile != null)
+                            buildchurchCubit
+                                .onImageChanged(File(pickedFile.path));
+                          buildchurchCubit.lightUpdate(commuinity.id!, 2);
+                          snackBar(
+                              snackMessage:
+                                  '${commuinity.name}\'s avatar is updated. leave and join back to see changes',
+                              context: context);
 
-
-
-  Future<dynamic> _updateCommuinityImage(
-          {required Church commuinity, required BuildContext context,
-          required BuildchurchCubit buildchurchCubit}) async =>
-      showModalBottomSheet(
-          context: context,
-          builder: (context) => StatefulBuilder(
-                builder: (BuildContext context, setState) {
-                  return Container(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        GestureDetector(
-                          onTap: () async {
-                            final pickedFile =
-                                await ImageHelper.pickImageFromGallery(
-                                    context: context,
-                                    cropStyle: CropStyle.rectangle,
-                                    title: 'New Commuinity wrap');
-                            if (pickedFile != null)
-                              buildchurchCubit
-                                  .onImageChanged(File(pickedFile.path));
-                            buildchurchCubit.lightUpdate(commuinity.id!, 2);
-                            snackBar(
-                                snackMessage:
-                                    '${commuinity.name}\'s avatar is updated. leave and join back to see changes',
-                                context: context);
-
-                            setState(() {});
-                          },
-                          child: Container(
-                              //height: MediaQuery.of(context).size.height / 3.5,
-                              width: double.infinity,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    child: Text(
-                                        "Hey 👋🏾, Once you pick a Wrap or image ${commuinity.name} will be updated",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1,
-                                        overflow: TextOverflow.fade),
-                                  ),
-                                  Container(
-                                    height: MediaQuery.of(context).size.height /
-                                        3.5,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                        image: buildchurchCubit
-                                                    .state.imageFile ==
-                                                null
-                                            ? DecorationImage(
-                                                image:
-                                                    CachedNetworkImageProvider(
-                                                        commuinity.imageUrl),
-                                                fit: BoxFit.fitWidth)
-                                            : DecorationImage(
-                                                image: FileImage(
-                                                    buildchurchCubit
-                                                        .state.imageFile!),
-                                                fit: BoxFit.fitWidth)),
-                                  )
-                                ],
-                              )),
-                        )
-                      ],
-                    ),
-                  );
-                },
-              ));
-
-
-
+                          setState(() {});
+                        },
+                        child: Container(
+                            //height: MediaQuery.of(context).size.height / 3.5,
+                            width: double.infinity,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  child: Text(
+                                      "Hey 👋🏾, Once you pick a Wrap or image ${commuinity.name} will be updated",
+                                      style:
+                                          Theme.of(context).textTheme.bodyText1,
+                                      overflow: TextOverflow.fade),
+                                ),
+                                Container(
+                                  height:
+                                      MediaQuery.of(context).size.height / 3.5,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                      image: buildchurchCubit.state.imageFile ==
+                                              null
+                                          ? DecorationImage(
+                                              image: CachedNetworkImageProvider(
+                                                  commuinity.imageUrl),
+                                              fit: BoxFit.fitWidth)
+                                          : DecorationImage(
+                                              image: FileImage(buildchurchCubit
+                                                  .state.imageFile!),
+                                              fit: BoxFit.fitWidth)),
+                                )
+                              ],
+                            )),
+                      )
+                    ],
+                  ),
+                );
+              },
+            ));
 
 Future<dynamic> _updateTheAbout(
     {required Church commuinity,

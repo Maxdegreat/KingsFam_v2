@@ -37,7 +37,6 @@ import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/show_alert_dialog.dart';
 import 'package:kingsfam/widgets/widgets.dart';
-import 'package:rive/rive.dart';
 // ignore: unused_import
 import 'package:flutter/src/painting/gradient.dart' as paint;
 import 'package:kingsfam/screens/commuinity/actions.dart';

@@ -28,13 +28,28 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
           state.status == CommuintyStatus.loading
               ? LinearProgressIndicator()
               : SizedBox.shrink(),
-          TabBar(
-            controller: cmTabCtrl,
-            tabs: [
-              Tab(child: Text("rooms")),
-              Tab(child: Text("Events")),
-              Tab(child: Text("About")),
-            ],
+          Container(
+            height: 40,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Color(hc.hexcolorCode("#141829")),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TabBar(
+                unselectedLabelColor: Colors.grey[700],
+                indicator: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Color(hc.hexcolorCode("#20263c"))),
+                controller: cmTabCtrl,
+                tabs: [
+                  Tab(child: Text("rooms")),
+                  Tab(child: Text("Events")),
+                  Tab(child: Text("About")),
+                ],
+              ),
+            ),
           ),
           SizedBox(
             height: MediaQuery.of(context).size.height,
@@ -55,53 +70,45 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                             ? SizedBox.shrink()
                             : state.isMember != false
                                 ? Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 5.0),
-                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 5.0),
+                                    child: Container(
                                       height: 30,
                                       width: 200,
                                       child: ElevatedButton(
-                                        onPressed: () {
-                                          if (currRole != Roles.Owner) {
-                                            showLeaveCommuinity(
-                                                b: context.read<CommuinityBloc>(),
-                                                cm: cm,
-                                                context: context);
-                                          } else {
-                                            snackBar(
-                                                snackMessage:
-                                                    "Owners can not abandon ship",
-                                                context: context,
-                                                bgColor: Colors.red);
-                                          }
-                                        },
-                                        child: Text(
-                                          "...Leave",
-                                          style: TextStyle(color: Colors.red),
-                                        ),
-                                        style: ButtonStyle(
-                                            foregroundColor:
-                                                MaterialStateProperty.all<Color>(
-                                                    Colors.white),
-                                            backgroundColor:
-                                                MaterialStateProperty.all<Color>(
-                                                    Colors.transparent),
-                                            shape: MaterialStateProperty.all<
-                                                    RoundedRectangleBorder>(
-                                                RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.zero,
-                                                    side: BorderSide(
-                                                        color: Colors.red)))),
-                                      ), 
+                                          onPressed: () {
+                                            if (currRole != Roles.Owner) {
+                                              showLeaveCommuinity(
+                                                  b: context
+                                                      .read<CommuinityBloc>(),
+                                                  cm: cm,
+                                                  context: context);
+                                            } else {
+                                              snackBar(
+                                                  snackMessage:
+                                                      "Owners can not abandon ship",
+                                                  context: context,
+                                                  bgColor: Colors.red);
+                                            }
+                                          },
+                                          child: Text(
+                                            "Leave",
+                                            style: TextStyle(color: Colors.red),
+                                          ),
+                                          style: ElevatedButton.styleFrom(
+                                              shape: StadiumBorder(),
+                                              primary: Color(
+                                                  hc.hexcolorCode("#141829")))),
                                     ),
-                                )
+                                  )
                                 : Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: joinBtn(
-                                      b: context.read<CommuinityBloc>(),
-                                      cm: cm,
-                                      context: context),
-                                ),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                    child: joinBtn(
+                                        b: context.read<CommuinityBloc>(),
+                                        cm: cm,
+                                        context: context),
+                                  ),
                         SizedBox(width: 10),
                         Text("${cm.size} members")
                       ],
@@ -486,13 +493,31 @@ SliverAppBar cmSliverAppBar({
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  image: DecorationImage(
-                      image: CachedNetworkImageProvider(cm.imageUrl),
-                      fit: BoxFit.cover)),
-            ),
+                decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              image: DecorationImage(
+                  image: CachedNetworkImageProvider(cm.imageUrl),
+                  fit: BoxFit.cover),
+            )),
           ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomCenter,//Alignment(0.8, 1),
+                  
+                  colors: <Color>[
+                    Colors.transparent,
+                    Colors.black87
+                  ], // Gradient from https://learnui.design/tools/gradient-generator.html
+                  tileMode: TileMode.mirror,
+                ),
+              ),
+            ),
+          )
         ],
       ),
     ),

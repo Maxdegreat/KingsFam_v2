@@ -30,11 +30,14 @@ class NotificationsScreen extends StatelessWidget {
               );
             case NotyStatus.loaded:
               if (state.notifications.length == 0) {
-                return Center(
-                      child: Container(
-                        child: Text("Hmm, you have no notifications to view here fam"),
+                return Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Center(
+                        child: Container(
+                          child: Text("Hmm, you have no notifications to view here fam", textAlign: TextAlign.center,),
+                        ),
                       ),
-                    );
+                );
               } else {
               return ListView.builder(
                 itemCount: state.notifications.length,

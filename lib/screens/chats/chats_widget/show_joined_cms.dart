@@ -63,7 +63,7 @@ class showJoinedCms extends StatelessWidget {
                           commuinity: commuinity,
                         )), // ----------------------------------------------------------------------set state here
                     child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        padding: const EdgeInsets.symmetric(vertical: 7.0),
                         // see child of list view here below.
                         child: FancyListTile(
                           // ------------------------- update hee
