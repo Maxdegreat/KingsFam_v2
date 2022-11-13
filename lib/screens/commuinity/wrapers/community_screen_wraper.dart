@@ -190,7 +190,9 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                         false;
                                     Navigator.of(context).pushNamed(
                                         KingsCordScreen.routeName,
-                                        arguments: KingsCordArgs(userInfo: {
+                                        arguments: KingsCordArgs(
+                                          usr: state.currUserr,
+                                          userInfo: {
                                           "isMember": isMember,
                                         }, commuinity: cm, kingsCord: cord));
 
@@ -231,50 +233,64 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                       cord: cord,
                                       commuinity: cm);
                                 },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    cord.mode == "chat"
-                                        ? Text(
-                                            "#",
-                                            style: TextStyle(fontSize: 21),
-                                          )
-                                        : Icon(Icons.record_voice_over_rounded),
-                                    SizedBox(width: 3),
-                                    Container(
-                                      height: 30,
-                                      width: MediaQuery.of(context).size.width -
-                                          50,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 7),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              cord.cordName,
-                                              overflow: TextOverflow.fade,
-                                              style: TextStyle(
-                                                  color: state.mentionedMap[
-                                                              cord.id] ==
-                                                          true
-                                                      ? Colors.amber
-                                                      : Colors.white,
-                                                  fontWeight:
-                                                      state.mentionedMap[
-                                                                  cord.id] ==
-                                                              true
-                                                          ? FontWeight.w900
-                                                          : FontWeight.w700),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical:3.0),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width / 1.7,
+                                    decoration:
+                                    BoxDecoration(
+                                      color: Color(hc.hexcolorCode("#0a0c14")),
+                                      borderRadius: BorderRadius.circular(8)
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          cord.mode == "chat"
+                                              ? Text(
+                                                  "#",
+                                                  style: TextStyle(fontSize: 21),
+                                                )
+                                              : Icon(Icons.record_voice_over_rounded),
+                                          SizedBox(width: 3),
+                                          Container(
+                                            height: 30,
+                                            //width: MediaQuery.of(context).size.width -
+                                               // 50,
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 7),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    cord.cordName,
+                                                    overflow: TextOverflow.fade,
+                                                    style: TextStyle(
+                                                        color: state.mentionedMap[
+                                                                    cord.id] ==
+                                                                true
+                                                            ? Colors.amber
+                                                            : Colors.white,
+                                                        fontWeight:
+                                                            state.mentionedMap[
+                                                                        cord.id] ==
+                                                                    true
+                                                                ? FontWeight.w900
+                                                                : FontWeight.w700),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ));
                           } else {
                             return SizedBox.shrink();

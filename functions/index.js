@@ -258,7 +258,7 @@ exports.onMentionedUserUpdate = functions.firestore
     const mentionedId = context.params.mentionedId;
     const communityId = context.params.churchId;
 
-    // make the FCM
+    // make the FCM payload
     const message = {
       notification: {
         title: "Hey Fam! you're mentioned in " + newValue.communityName,
@@ -460,6 +460,63 @@ exports.onKingsCordMessageSent = functions.firestore
       }
 
     });
+
+  // when a user has opted to recieve notifications in a kings cord room
+  exports.onRecieveKcRoomNotif = functions.firestore
+    .document("/kcMsgNotif/{cmId}/kingsCord/{kcId}")
+    .onCreate(async (snapshot, context) => {
+      const cmId = context.params.churchId;
+      const kcId = context.params.kingsCordId;
+
+      var info = snapshot.data();
+
+      const message = {
+        notification: {
+          title: info.communityName,
+          body: info.messageBody,
+        },
+        data: {
+          type: String(info.type_id),
+          cmId: cmId,
+        }
+      };
+
+      const options = {
+        priority: "high",
+        timeToLive: 60 * 60 * 24,
+      };
+
+      admin.messaging().sendToDevice(info.token, message, options);
+
+    });
+
+    // when a user has opted to recieve notifications in a kings cord room (updated),
+    exports.onRecieveKcRoomNotifUpdate = functions.firestore
+    .document("/kcMsgNotif/{cmId}/kingsCord/{kcId}")
+    .onUpdate((change, context) => {
+      const cmId = context.params.churchId;
+      const kcId = context.params.kingsCordId;
+      var info = change.after.data();
+      functions.logger.log("value of tokens is: ", info.token);
+
+      const message = {
+        notification: {
+          title: info.communityName,
+          body: info.messageBody,
+        },
+        data: {
+          type: String(info.type_id),
+          cmId: cmId,
+        }
+      };
+
+      const options = {
+        priority: "high",
+        timeToLive: 60 * 60 * 24,
+      };
+      admin.messaging().sendToDevice(info.token, message, options);
+    });
+  
 
   // send noty to user that they have been approved
   exports.onApprovedToJoinCm

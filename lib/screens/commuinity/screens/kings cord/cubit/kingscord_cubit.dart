@@ -8,11 +8,13 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:equatable/equatable.dart';                                                                                                    
+import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';                                                                                                    
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:kingsfam/screens/chat_room_settings/cubit/roomsettings_cubit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -77,13 +79,33 @@ class KingscordCubit extends Cubit<KingscordState> {
    }
 
   void onLoadInit({required String cmId, required String kcId, required int limit}) async {
+    // I need to load the all list and the recent list
+    // then update the state with the users who are opt in
+
+    await getNotifLst(cmId: cmId, kcId: kcId);
+
+    // this is a temp set to be used for copywith. copy x num most recent users
+    // into the recentnotif list (granted not all of them will get a noty bc opt options) 
+    Map<String, dynamic> recentMsgIdTokenForOpt = {};
+
     //int limit = 45;
     _msgStreamSubscription?.cancel();
     _msgStreamSubscription = _churchRepository
         .getMsgStream(cmId: cmId, kcId: kcId, limit: limit)
         .listen((msgs) async {
       final allMsgs = await Future.wait(msgs);
-      emit(state.copyWith(msgs: allMsgs));
+      // get the most recent ids
+      int count = 0;
+      for (var x in allMsgs) {
+        count += 1;
+        recentMsgIdTokenForOpt[x!.sender!.id] = x.sender!.token;
+        if (count == 15) {
+          break;
+        }
+      }
+      emit(state.copyWith(msgs: allMsgs, recentMsgIdToTokenMap: recentMsgIdTokenForOpt));
+      // log("recentMsgIds: " + state.recentMsgIdToTokenMap.toString());
+      // log("roomSettings: " + state.recentNotifLst.toString() + " all now: " + state.allNotifLst.toString());
     });
   }
   // time for some methods babby
@@ -110,8 +132,8 @@ class KingscordCubit extends Cubit<KingscordState> {
     required Map<String, dynamic> mentionedInfo,
     required String cmTitle,
     required KingsCord kingsCordData,
-    required String currUserName,
-  }) {
+    required String currUserName, // aka sender username
+  }) async {
     // This should tell the cloud that the mentioned id was mentioned through the cloud
     // I have added the function to send a noti to the users phone. the update for this to happen is in the
     // functions index.js file
@@ -128,13 +150,56 @@ class KingscordCubit extends Cubit<KingscordState> {
           'token': mentionedInfo[id]['token'],
           'messageBody': txtMsgWithOutSymbolesForParcing,
           'type': 'kc_type',
-          'type_id': kingsCordData.id!,
-          'type_tag': kingsCordData.tag,
-          'type_cordName': kingsCordData.cordName,
-          'type_members': kingsCordData.members,
+          // 'type_id': kingsCordData.id!,
+          // 'type_tag': kingsCordData.tag,
+          // 'type_cordName': kingsCordData.cordName,
+          // 'type_members': kingsCordData.members,
         });
       }
     }
+
+    // we will grab the ids in the all and recent. we will use the id and pass a
+    // notif to each id 
+
+    // list with all and recent tokens for push notifs 
+    Set<String> sendToDevices = {};
+
+    for (var x in state.recentNotifLst) {
+      // we do not want to send 2 msg so if alredy mentioned ignore
+      if (mentionedInfo.containsKey(x)) continue;
+      // where x is an id in the recent notif list
+      if (state.recentMsgIdToTokenMap.containsKey(x)) {
+        // where the token is an itterable
+        sendToDevices.addAll(state.recentMsgIdToTokenMap["token"]);
+
+      }
+    }
+
+    for (var x in state.allNotifLst) {
+      // we do not want to send 2 msg so if alredy mentioned ignore
+      if (mentionedInfo.containsKey(x)) continue;
+      // where x is an id in the all notif list
+      if (state.recentMsgIdToTokenMap.containsKey(x)) {
+        sendToDevices.addAll(state.recentMsgIdToTokenMap["token"]);
+      } else {
+        Userr userr = await UserrRepository().getUserrWithId(userrId: x);
+        sendToDevices.addAll(userr.token);
+      }
+    }
+
+
+    FirebaseFirestore.instance
+      .collection(Paths.kcMsgNotif)
+      .doc(churchId)
+      .collection(Paths.kingsCord).
+      doc(kingsCordId).set({
+        'communityName': cmTitle,
+        'username': currUserName,
+        'token' : sendToDevices.toList(),
+        'messageBody': txtMsgWithOutSymbolesForParcing,
+        'type': 'kc_type',
+      }).then((value) => log ("kcMsgNotif added"))
+        .catchError((error) => log("Failed to add user: $error"));
 
     // the creation of the message
     final message = Message(
@@ -236,6 +301,25 @@ class KingscordCubit extends Cubit<KingscordState> {
 
     emit(state.copyWith(status: KingsCordStatus.initial, fileShareStatus: fileShareStatus, filesToBePosted: state.filesToBePosted));
   }
+
+
+  Future<void> getNotifLst({required String cmId, required String kcId}) async {
+    DocumentReference ref = FirebaseFirestore.instance.collection(Paths.church).doc(cmId)
+      .collection(Paths.kingsCord).doc(kcId)
+      .collection(Paths.roomSettings).doc(kcId);
+
+    DocumentSnapshot snap = await ref.get();
+    if (snap.exists) {
+      // now I need to store the curr list in local state
+      Map<String, dynamic> data = snap.data() as Map<String, dynamic>;
+      state.copyWith(recentNotifLst: List.from(data["recent"]), allNotifLst: List.from(data["all"]));
+    } else {
+      state.copyWith(recentNotifLst: [], allNotifLst: []);
+    }
+    
+  }
+
+
 
   // for upword pagination just go to the top and add the next 10 or so to the begining of the list.
 

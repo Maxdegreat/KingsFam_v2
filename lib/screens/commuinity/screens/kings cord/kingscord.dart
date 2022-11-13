@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -29,9 +30,10 @@ class KingsCordArgs {
   //class data
   final Church commuinity;
   final KingsCord kingsCord;
+  final Userr usr;
   final Map<String, dynamic> userInfo;
   // class constructor
-  KingsCordArgs({required this.commuinity, required this.kingsCord, required this.userInfo});
+  KingsCordArgs({required this.commuinity, required this.kingsCord, required this.userInfo, required this.usr});
 }
 
 class KingsCordScreen extends StatefulWidget {
@@ -39,7 +41,8 @@ class KingsCordScreen extends StatefulWidget {
   final Church commuinity;
   final KingsCord kingsCord;
   final Map<String, dynamic> userInfo;
-  const KingsCordScreen({Key? key, required this.commuinity, required this.kingsCord, required this.userInfo}) : super(key: key);
+  final Userr usr;
+  const KingsCordScreen({Key? key, required this.commuinity, required this.kingsCord, required this.userInfo, required this.usr}) : super(key: key);
 
   // will need a static const string route name
   static const String routeName = '/kingsCord';
@@ -58,6 +61,7 @@ class KingsCordScreen extends StatefulWidget {
                       ChurchRepository>() // may need to report to main reposityory collection
                   ),
               child: KingsCordScreen(
+                usr: args.usr,
                 userInfo: args.userInfo,
                 commuinity: args.commuinity,
                 kingsCord: args.kingsCord,
@@ -365,7 +369,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         listener: (context, state) {
           // TODO: implement listener
         },
-        builder: (context, state) {                                 
+        builder: (context, state) {      
+          
+          currUsersName = widget.usr.username;
+
           context.read<KingscordCubit>().onLoadInit(
                 cmId: widget.commuinity.id!,
                 kcId: widget.kingsCord.id!,

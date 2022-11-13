@@ -5,7 +5,9 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/widgets/snackbar.dart';
 
 // I will make this class here because atm this is the only place this will be used
 class RoomNotifications extends Equatable {
@@ -71,12 +73,21 @@ class KingsCordSettings extends StatefulWidget {
 
 class _KingsCordSettingsState extends State<KingsCordSettings> {
   // class properties
+
+  // this is the status for the individual user
   RoomNotifications _roomNotifications =
       RoomNotifications(recent: false, all: false);
 
   Map<String, dynamic> roomOptions = {
     "recent": [],
     "all": [],
+  };
+
+  // this is the individual settings from user -> cm -> kc.
+  // if ture add to the room options list where true else rm
+  Map<String, dynamic> roomSettingsLocal = {
+    "recent": false,
+    "all": false,
   };
 
   bool recentState = false;
@@ -117,50 +128,91 @@ class _KingsCordSettingsState extends State<KingsCordSettings> {
             children: [
               loadingIndecator ? LinearProgressIndicator() : SizedBox.shrink(),
               // child 1 : we want to allow people subscribe to a cord this way they will get notifications
+              Text("Receive notifications if you are within the last 15 to send a message in this room."),
               Text(
-                  "Receive notifications if you are within the last 15 to send a message in this room."),
-              Checkbox(
-                  value: recentState,
-                  onChanged: (bool? value) {
-
-
-                    if (_roomNotifications.recent != true) {
-                      // auto update and make true bc we just clicked
-                      roomOptions["recent"].add(currId);
-                      roomOptions["recent"].toSet();
-                      _roomNotifications.copyWith(recent: true);
+                roomSettingsLocal["recent"] == true
+                    ? "You will be notified if your activity was recent."
+                    : "You are currently not being notified",
+                style: roomSettingsLocal["recent"] == true
+                    ? TextStyle(color: Colors.green)
+                    : TextStyle(color: Colors.red),
+              ),
+              SizedBox(
+                height: 7,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    if (roomSettingsLocal["recent"] == true) {
+                      roomSettingsLocal["recent"] = false;
                       setState(() {});
+                      snackBar(
+                          snackMessage: "settings updated",
+                          context: context,
+                          bgColor: Colors.green);
+                      roomOptions["recent"].remove(currId);
+                      update(_path);
+                      updateRoomSettings(currId: currId, data: roomSettingsLocal);
                     } else {
-                      roomOptions["recent"].toSet().remove(currId);
-                      _roomNotifications.copyWith(recent: false);
+                      roomSettingsLocal["recent"] = true;
                       setState(() {});
+                      snackBar(
+                          snackMessage: "settings updated",
+                          context: context,
+                          bgColor: Colors.green);
+                      roomOptions["recent"].add(currId);
+                      update(_path);
+                      updateRoomSettings(currId: currId, data: roomSettingsLocal);
                     }
-                    // now do the auto update in db
-                    _path.set(roomOptions);
-                  }),
+                  },
+                  style: ElevatedButton.styleFrom(
+                      primary: Color(hc.hexcolorCode("#141829")),
+                      shape: StadiumBorder(),
+                      elevation: 0),
+                  child: Text("Notify Me")),
 
               // child 2
 
               Text("Receive all notifications from this room."),
-              Checkbox(
-                value: _roomNotifications.recent,
-                onChanged: (bool? value) {
-                  setState(() {
-                    _roomNotifications.copyWith(
-                        recent: _roomNotifications.recent,
-                        all: !_roomNotifications.all);
-                  });
-
-                  if (_roomNotifications.all != true) {
-                    // auto update and make true bc we just clicked
-                    roomOptions["all"].add(currId).toSet();
-                  } else {
-                    roomOptions["all"].toSet().remove(currId);
-                  }
-                  // now do the auto update in db
-                  _path.set(roomOptions);
-                },
+              Text(
+                roomSettingsLocal["all"] == true
+                    ? "You will be notified of all notifications."
+                    : "You are currently not being notified",
+                style: roomSettingsLocal["all"] == true
+                    ? TextStyle(color: Colors.green)
+                    : TextStyle(color: Colors.red),
               ),
+              SizedBox(
+                height: 7,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    if (roomSettingsLocal["all"] == true) {
+                      roomSettingsLocal["all"] = false;
+                      setState(() {});
+                      snackBar(
+                          snackMessage: "settings updated",
+                          context: context,
+                          bgColor: Colors.green);
+                      roomOptions["all"].remove(currId);
+                      update(_path);
+                      updateRoomSettings(currId: currId, data: roomSettingsLocal);
+                    } else {
+                      roomSettingsLocal["all"] = true;
+                      setState(() {});
+                      snackBar(
+                          snackMessage: "settings updated",
+                          context: context,
+                          bgColor: Colors.green);
+                      roomOptions["all"].add(currId);
+                      update(_path);
+                      updateRoomSettings(currId: currId, data: roomSettingsLocal);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                      primary: Color(hc.hexcolorCode("#141829")),
+                      shape: StadiumBorder(),
+                      elevation: 0),
+                  child: Text("Notify Me")),
             ],
           ),
         ),
@@ -180,23 +232,19 @@ class _KingsCordSettingsState extends State<KingsCordSettings> {
         .collection(Paths.church)
         .doc(widget.cmId)
         .collection(Paths.kingsCord)
-        .doc(widget.cmId)
+        .doc(widget.kcId)
         .get();
     if (settingsSnap.exists) {
       RoomNotifications _rn = RoomNotifications.fromDoc(settingsSnap);
-      _roomNotifications.copyWith(recent: _rn.recent, all: _rn.all);
-      setState(() {
-        recentState =  _rn.recent;
-        allState = _rn.all;
-      });
+      roomSettingsLocal["all"] = _rn.all;
+      roomSettingsLocal["recent"] = _rn.recent;
     }
-    log("made it to the end ye hearddd");
     setState(() {
-      
       loadingIndecator = false;
     });
   }
 
+  // the public list of users who are getting notifs
   Future<void> getCurrOptions() async {
     String currId = context.read<AuthBloc>().state.user!.uid;
     DocumentSnapshot settingsSnap = await FirebaseFirestore.instance
@@ -207,6 +255,54 @@ class _KingsCordSettingsState extends State<KingsCordSettings> {
         .collection(Paths.roomSettings)
         .doc(widget.kcId)
         .get();
-    if (settingsSnap.exists) {}
+    if (settingsSnap.exists) {
+      // get the info
+      log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      Map<String, dynamic> data = settingsSnap.data() as Map<String, dynamic>;
+      roomOptions["all"] = data["all"];
+      roomOptions["recent"] = data["recent"];
+    } else {
+      // make new info for first time
+      log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+      roomOptions["all"] = [];
+      roomOptions["recent"] = [];
+    }
+  }
+
+  update(path) {
+    try {
+      log("Passsssssssssssssssss");
+      path.set({}, SetOptions(merge: true));
+      path.update({"recent": roomOptions["recent"], "all": roomOptions["all"]});
+    } catch (e) {
+      log("failllllllllllllllllll");
+      path.set({"recent": roomOptions["recent"], "all": roomOptions["all"]});
+      // try again
+      path.update({"recent": roomOptions["recent"], "all": roomOptions["all"]});
+    }
+  }
+
+  // this is local to the curr user
+  updateRoomSettings({
+    required String currId,
+    required Map<String, dynamic> data,
+  }) async {
+    DocumentReference ref = await FirebaseFirestore.instance
+        .collection(Paths.users)
+        .doc(currId)
+        .collection(Paths.church)
+        .doc(widget.cmId)
+        .collection(Paths.kingsCord)
+        .doc(widget.kcId);
+
+    DocumentSnapshot snap = await ref.get();
+    // okay now we have the snap. check if user has any settings for this room
+    if (snap.exists) {
+      // use the update
+      ref.update(data);
+    } else {
+      // use the set
+      ref.set(data);
+    }
   }
 }
