@@ -477,7 +477,7 @@ exports.onKingsCordMessageSent = functions.firestore
         },
         data: {
           type: String(info.type_id),
-          cmId: cmId,
+          cmId: String(cmId),
         }
       };
 
@@ -506,7 +506,7 @@ exports.onKingsCordMessageSent = functions.firestore
         },
         data: {
           type: String(info.type_id),
-          cmId: cmId,
+          cmId: String(cmId),
         }
       };
 

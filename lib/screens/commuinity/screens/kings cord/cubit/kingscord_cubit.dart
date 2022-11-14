@@ -98,7 +98,8 @@ class KingscordCubit extends Cubit<KingscordState> {
       int count = 0;
       for (var x in allMsgs) {
         count += 1;
-        recentMsgIdTokenForOpt[x!.sender!.id] = x.sender!.token;
+        if (state.recentNotifLst.contains(x))
+          recentMsgIdTokenForOpt[x!.sender!.id] = x.sender!.token;
         if (count == 15) {
           break;
         }
@@ -134,11 +135,12 @@ class KingscordCubit extends Cubit<KingscordState> {
     required KingsCord kingsCordData,
     required String currUserName, // aka sender username
   }) async {
+    log("recent: " + state.recentNotifLst.toString());
+    log("all: " + state.allNotifLst.toString());
     // This should tell the cloud that the mentioned id was mentioned through the cloud
     // I have added the function to send a noti to the users phone. the update for this to happen is in the
     // functions index.js file
     for (var id in mentionedInfo.keys) {
-      
       if (txtMsgBodyWithSymbolsForParcing.length > 1 && txtMsgBodyWithSymbolsForParcing.length < 450) {
         FirebaseFirestore.instance
             .collection(Paths.mention)
@@ -158,35 +160,20 @@ class KingscordCubit extends Cubit<KingscordState> {
       }
     }
 
-    // we will grab the ids in the all and recent. we will use the id and pass a
-    // notif to each id 
-
-    // list with all and recent tokens for push notifs 
-    Set<String> sendToDevices = {};
-
-    for (var x in state.recentNotifLst) {
-      // we do not want to send 2 msg so if alredy mentioned ignore
-      if (mentionedInfo.containsKey(x)) continue;
-      // where x is an id in the recent notif list
-      if (state.recentMsgIdToTokenMap.containsKey(x)) {
-        // where the token is an itterable
-        sendToDevices.addAll(state.recentMsgIdToTokenMap["token"]);
-
+    List<String> toSendNotifications = state.allNotifLst;
+    List<dynamic> toSendNotificationsT = state.recentMsgIdToTokenMap.values.toList();
+    for (var i in toSendNotifications) {
+      if (state.recentMsgIdToTokenMap.containsKey(i)) 
+        continue;
+      else {
+        Userr userr = await UserrRepository().getUserrWithId(userrId: i);
+        // currently tokens are updated so each NEW user should only havb a  single token
+        toSendNotificationsT.add(userr.token[0]); 
       }
     }
 
-    for (var x in state.allNotifLst) {
-      // we do not want to send 2 msg so if alredy mentioned ignore
-      if (mentionedInfo.containsKey(x)) continue;
-      // where x is an id in the all notif list
-      if (state.recentMsgIdToTokenMap.containsKey(x)) {
-        sendToDevices.addAll(state.recentMsgIdToTokenMap["token"]);
-      } else {
-        Userr userr = await UserrRepository().getUserrWithId(userrId: x);
-        sendToDevices.addAll(userr.token);
-      }
-    }
-
+   
+    log("the tokens in sendToDevicies: " + toSendNotificationsT.toString());
 
     FirebaseFirestore.instance
       .collection(Paths.kcMsgNotif)
@@ -195,7 +182,7 @@ class KingscordCubit extends Cubit<KingscordState> {
       doc(kingsCordId).set({
         'communityName': cmTitle,
         'username': currUserName,
-        'token' : sendToDevices.toList(),
+        'token' : toSendNotificationsT.toList(),
         'messageBody': txtMsgWithOutSymbolesForParcing,
         'type': 'kc_type',
       }).then((value) => log ("kcMsgNotif added"))
@@ -275,7 +262,7 @@ class KingscordCubit extends Cubit<KingscordState> {
   onSendTxtImg({required String churchId, required String kingsCordId, required String senderUsername}) async {
     //set to load bc we wait for image to be sent.
     emit(state.copyWith(status: KingsCordStatus.loading, fileShareStatus: FileShareStatus.imgSharing));
-
+    
     final chatImageUrl = await _storageRepository.uploadKingsCordImage(imageFile: state.txtImgUrl!);
     
     //make the message
@@ -312,9 +299,14 @@ class KingscordCubit extends Cubit<KingscordState> {
     if (snap.exists) {
       // now I need to store the curr list in local state
       Map<String, dynamic> data = snap.data() as Map<String, dynamic>;
-      state.copyWith(recentNotifLst: List.from(data["recent"]), allNotifLst: List.from(data["all"]));
+
+
+      List<String> r = List.from(data["recent"]);
+      List<String> a = List.from(data["all"]);
+
+      emit(state.copyWith(recentNotifLst: r, allNotifLst: a));
     } else {
-      state.copyWith(recentNotifLst: [], allNotifLst: []);
+      emit(state.copyWith(recentNotifLst: [], allNotifLst: []));
     }
     
   }
