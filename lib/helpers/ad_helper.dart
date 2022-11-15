@@ -1,6 +1,19 @@
+// ignore_for_file: unused_local_variable
+
 import 'dart:io';
 
 class AdHelper {
+
+  static String get nativeAdUnitId {
+    String prodNativeAdUnitId = "ca-app-pub-5583578072631354/4772946038";
+    String testNativeAdUnitId = "ca-app-pub-3940256099942544/2247696110";
+
+    if (Platform.isAndroid) {
+      return testNativeAdUnitId;
+    } else {
+      return "";
+    }
+  }
 
   static String get bannerAdUnitId {
     String prodAdUnitIdA = "ca-app-pub-4874104031068690/5905761705";

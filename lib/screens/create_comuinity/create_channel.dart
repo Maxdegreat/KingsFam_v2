@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:rive/rive.dart';
@@ -25,22 +26,22 @@ class CreateComuinity extends StatefulWidget {
 }
 
 class _CreateComuinityState extends State<CreateComuinity> {
-  late BannerAd _bottomBannerAd;
-  bool _isBottomBannerAdLoaded = false;
+  late NativeAd _nativeAd;
+  bool _isNativeAdLoaded = false;
   void _createBottomBannerAd() {
-    _bottomBannerAd = BannerAd(
-        size: AdSize.banner,
-        adUnitId: AdHelper.bannerAdUnitId,
-        listener: BannerAdListener(onAdLoaded: (_) {
+    _nativeAd = NativeAd(
+        adUnitId: AdHelper.nativeAdUnitId,
+        factoryId: "listTile",
+        listener: NativeAdListener(onAdLoaded: (_) {
           setState(() {
-            _isBottomBannerAdLoaded = true;
+            _isNativeAdLoaded = true;
           });
         }, onAdFailedToLoad: (ad, error) {
           ad.dispose();
           log("chatsScreen ad error: ${error.toString()}");
         }),
-        request: AdRequest());
-    _bottomBannerAd.load();
+        request: const AdRequest());
+    _nativeAd.load();
   }
 
   @override
@@ -51,7 +52,7 @@ class _CreateComuinityState extends State<CreateComuinity> {
 
   @override
   void dispose() {
-    _bottomBannerAd.dispose();
+    _nativeAd.dispose();
     super.dispose();
   }
 
@@ -59,15 +60,18 @@ class _CreateComuinityState extends State<CreateComuinity> {
   Widget build(BuildContext context) {
     return Scaffold(
       persistentFooterButtons: [
-        _isBottomBannerAdLoaded
+        _isNativeAdLoaded
             ? Container(
-                height: AdSize.banner.height.toDouble(),
-                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color:  Color(hc.hexcolorCode("#141829")),
+                ),
+                height: 70,
                 child: AdWidget(
-                  ad: _bottomBannerAd,
+                  ad: _nativeAd,
                 ),
               )
-            : SizedBox.shrink()
+            : SizedBox()
       ],
       appBar: AppBar(
         title: Text.rich(TextSpan(children: [
@@ -100,7 +104,8 @@ class _CreateComuinityState extends State<CreateComuinity> {
                     onPressed: () {
                       requestPhotoPermission(context).then((value) {
                         if (value) {
-                          Navigator.of(context).pushNamed(CreatePostScreen.routeName);
+                          Navigator.of(context)
+                              .pushNamed(CreatePostScreen.routeName);
                         }
                       });
                     }),
@@ -113,7 +118,8 @@ class _CreateComuinityState extends State<CreateComuinity> {
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(primary: Colors.red[400]),
                     child: Text('Create A Commuinity 👑'),
-                    onPressed: () => Navigator.of(context).pushNamed(BuildChurch.routeName)),
+                    onPressed: () =>
+                        Navigator.of(context).pushNamed(BuildChurch.routeName)),
               ),
               // Container(height: 400,child: RiveAnimation.asset('assets/phone_idle/phone_idle.riv'))
               SizedBox(height: 10.0),
