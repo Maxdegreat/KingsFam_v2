@@ -57,7 +57,6 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
   // my state managment hub lol ___________\|_
   List<Userr> users = [];
   late ScrollController _controller;
-  String? lastSeenId;
   DocumentSnapshot? lastSeenDocSnap;
   late TabController tabctrl;
 
@@ -95,6 +94,16 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
                             children: [
                               // child 1 will be a row allowing you to view pending joins or baned users ---------
                               pendingAndBandRow(),
+                               Padding(
+                                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
+                                 child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    shape: StadiumBorder(),
+                                  ),
+                                  onPressed: () {
+                                  listenToScrolling();
+                                 }, child: Text("LoadMore")),
+                               ),
                               Container(
                                 height: MediaQuery.of(context).size.height / 1.85,
                                 child: ListView.builder(
@@ -187,7 +196,19 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
   }
 
   Widget pendingAndBandRow() {
-    return Padding(
+
+     return widget.cmBloc
+                                    .state
+                                    .role["permissions"]
+                                    .contains("*") ||
+                                context
+                                    .read<CommuinityBloc>()
+                                    .state
+                                    .role["permissions"]
+                                    .contains("#")
+                            ?
+
+     Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -213,7 +234,7 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
           )
         ],
       ),
-    );
+    ) : SizedBox.shrink();
   }
 
   initGetUsers() async {
@@ -229,12 +250,12 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
   // grab limit ids from the cm request
   Future<List<Userr>> grabLimitUserrs() async {
     List<Userr> bucket = [];
-    if (lastSeenId == null) {
+    if (lastSeenDocSnap == null) {
       var snaps = await FirebaseFirestore.instance
           .collection(Paths.communityMembers)
           .doc(widget.cm.id)
           .collection(Paths.members)
-          .limit(12)
+          .limit(7)
           .get();
       lastSeenDocSnap = snaps.docs.last;
       log("snaps doc len: " + snaps.docs.length.toString());

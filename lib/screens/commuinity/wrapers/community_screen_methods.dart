@@ -74,7 +74,7 @@ _onJoinCommuinity(
 // content preview: This holds the post
 Widget contentPreview({required Post post, required BuildContext context, required Church cm}) {
   return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+    padding: EdgeInsets.symmetric(horizontal: 7, vertical: 7),
     child: GestureDetector(
       onTap: () => Navigator.of(context).pushNamed(
           CommuinityFeedScreen.routeName,
@@ -284,6 +284,18 @@ Widget settingsBtn(
       padding: const EdgeInsets.all(4.0),
       child: IconButton(
           onPressed: () {
+
+            if ( context
+                                    .read<CommuinityBloc>()
+                                    .state
+                                    .role["permissions"]
+                                    .contains("*") ||
+                                context
+                                    .read<CommuinityBloc>()
+                                    .state
+                                    .role["permissions"]
+                                    .contains("#")
+                            ) {
             showModalBottomSheet(
                 context: context,
                 builder: (context) {
@@ -330,6 +342,11 @@ Widget settingsBtn(
                     ),
                   );
                 });
+
+                            } else {
+                              snackBar(snackMessage: "You must be admin to access the settings", context: context);
+                            }
+
           },
           icon: Icon(Icons.settings)),
     ),

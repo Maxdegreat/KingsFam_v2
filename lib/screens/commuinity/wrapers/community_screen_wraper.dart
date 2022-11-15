@@ -6,8 +6,12 @@ Set<dynamic> cmPrivacySet = {
   RequestStatus.pending
 };
 
-Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
-    String? currRole, TabController cmTabCtrl) {
+Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,String? currRole, TabController cmTabCtrl, Widget? _ad) {
+
+  // load an ad for the cm content
+  
+
+
   // ignore: unused_local_variable
   Color primaryColor = Colors.white;
   // ignore: unused_local_variable
@@ -77,7 +81,11 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                       width: 200,
                                       child: ElevatedButton(
                                           onPressed: () {
-                                            if (currRole != Roles.Owner) {
+                                            if (!context
+                                                .read<CommuinityBloc>()
+                                                .state
+                                                .role["permissions"]
+                                                .contains("*")) {
                                               showLeaveCommuinity(
                                                   b: context
                                                       .read<CommuinityBloc>(),
@@ -127,15 +135,15 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                       width: double.infinity,
                       child: state.postDisplay.length > 0
                           ? ListView.builder(
-                              itemCount: state.postDisplay.length,
+                              itemCount: 2,
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) {
-                                Post? post = state.postDisplay[index];
-                                if (post != null) {
+                                Post? post = state.postDisplay[0];
+                                if (post != null && index == 0) {
                                   return contentPreview(
                                       cm: cm, context: context, post: post);
                                 } else {
-                                  return SizedBox.shrink();
+                                  return _ad !=null ? _ad : SizedBox.shrink();
                                 }
                               })
                           : Center(
@@ -158,10 +166,26 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                         ),
                         collapseOrExpand(
                             context.read<CommuinityBloc>(), 'cord'),
-                        new_kingscord(
-                            cmBloc: context.read<CommuinityBloc>(),
-                            cm: cm,
-                            context: context),
+                        context
+                                    .read<CommuinityBloc>()
+                                    .state
+                                    .role["permissions"]
+                                    .contains("*") ||
+                                context
+                                    .read<CommuinityBloc>()
+                                    .state
+                                    .role["permissions"]
+                                    .contains("#") ||
+                                context
+                                    .read<CommuinityBloc>()
+                                    .state
+                                    .role["permissions"]
+                                    .contains(CmActions.makeRoom)
+                            ? new_kingscord(
+                                cmBloc: context.read<CommuinityBloc>(),
+                                cm: cm,
+                                context: context)
+                            : SizedBox.shrink(),
                       ],
                     ),
 
@@ -188,13 +212,15 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                             .state
                                             .isMember ??
                                         false;
-                                    Navigator.of(context).pushNamed(
-                                        KingsCordScreen.routeName,
-                                        arguments: KingsCordArgs(
-                                          usr: state.currUserr,
-                                          userInfo: {
-                                          "isMember": isMember,
-                                        }, commuinity: cm, kingsCord: cord));
+                                    Navigator.of(context)
+                                        .pushNamed(KingsCordScreen.routeName,
+                                            arguments: KingsCordArgs(
+                                                usr: state.currUserr,
+                                                userInfo: {
+                                                  "isMember": isMember,
+                                                },
+                                                commuinity: cm,
+                                                kingsCord: cord));
 
                                     if (state.mentionedMap[cord.id] != false) {
                                       // del the @ notification (del the mention)
@@ -234,33 +260,38 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                       commuinity: cm);
                                 },
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical:3.0),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 3.0),
                                   child: Container(
-                                    width: MediaQuery.of(context).size.width / 1.7,
-                                    decoration:
-                                    BoxDecoration(
-                                      color: Color(hc.hexcolorCode("#0a0c14")),
-                                      borderRadius: BorderRadius.circular(8)
-                                    ),
+                                    width:
+                                        MediaQuery.of(context).size.width / 1.7,
+                                    decoration: BoxDecoration(
+                                        color:
+                                            Color(hc.hexcolorCode("#0a0c14")),
+                                        borderRadius: BorderRadius.circular(8)),
                                     child: Padding(
                                       padding: const EdgeInsets.all(4.0),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
                                         children: [
                                           cord.mode == "chat"
                                               ? Text(
                                                   "#",
-                                                  style: TextStyle(fontSize: 21),
+                                                  style:
+                                                      TextStyle(fontSize: 21),
                                                 )
-                                              : Icon(Icons.record_voice_over_rounded),
+                                              : Icon(Icons
+                                                  .record_voice_over_rounded),
                                           SizedBox(width: 3),
                                           Container(
                                             height: 30,
                                             //width: MediaQuery.of(context).size.width -
-                                               // 50,
+                                            // 50,
                                             child: Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                  horizontal: 7),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 7),
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
@@ -277,11 +308,13 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                                             ? Colors.amber
                                                             : Colors.white,
                                                         fontWeight:
-                                                            state.mentionedMap[
-                                                                        cord.id] ==
+                                                            state.mentionedMap[cord
+                                                                        .id] ==
                                                                     true
-                                                                ? FontWeight.w900
-                                                                : FontWeight.w700),
+                                                                ? FontWeight
+                                                                    .w900
+                                                                : FontWeight
+                                                                    .w700),
                                                   ),
                                                 ],
                                               ),
@@ -523,8 +556,8 @@ SliverAppBar cmSliverAppBar({
                 borderRadius: BorderRadius.circular(15),
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
-                  end: Alignment.bottomCenter,//Alignment(0.8, 1),
-                  
+                  end: Alignment.bottomCenter, //Alignment(0.8, 1),
+
                   colors: <Color>[
                     Colors.transparent,
                     Colors.black87

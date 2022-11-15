@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:helpers/helpers.dart';
 
 import 'package:image_cropper/image_cropper.dart';
@@ -20,6 +21,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
+import 'package:kingsfam/helpers/ad_helper.dart';
 
 import 'package:kingsfam/helpers/helpers.dart';
 import 'package:kingsfam/helpers/navigator_helper.dart';
@@ -97,8 +99,27 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
   Map<String, dynamic> accessMap = {};
   String? currRole;
 
+   late NativeAd _nativeAd;
+  bool _isNativeAdLoaded = false;
+  void _createNativeAd() {
+    _nativeAd = NativeAd(
+        adUnitId: AdHelper.nativeAdUnitId,
+        factoryId: "listTile",
+        listener: NativeAdListener(onAdLoaded: (_) {
+          setState(() {
+            _isNativeAdLoaded = true;
+          });
+        }, onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          log("chatsScreen ad error: ${error.toString()}");
+        }),
+        request: const AdRequest());
+    _nativeAd.load();
+  }
+
   @override
   void initState() {
+     _createNativeAd();
     currRole = getAccessCmHelp(
         widget.commuinity, context.read<AuthBloc>().state.user!.uid);
     context.read<BottomnavbarCubit>().showBottomNav(true);
@@ -109,6 +130,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
 
   @override
   void dispose() {
+    _nativeAd.dispose();
     _txtController.dispose();
     // context.read<CommuinityBloc>().close();
     // context.read<CommuinityBloc>().dispose();
@@ -117,6 +139,26 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
+
+    // nativeAd widget that can be used when passing ad to the mainAxis scroll view
+     dynamic nativeAd = Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Container(
+            child: _isNativeAdLoaded
+                ? Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Color(hc.hexcolorCode("#141829")),
+                    ),
+                    height: 80,
+                    width: 200,
+                    child: AdWidget(
+                      ad: _nativeAd,
+                    ),
+                  )
+                : null));
+
+
     // ignore: unused_local_variable
     final userId = context.read<AuthBloc>().state.user!.uid;
     return BlocConsumer<CommuinityBloc, CommuinityState>(
@@ -177,9 +219,9 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
 
         state.status == CommuintyStatus.shielded ?
         // status is shielded 
-          _mainScrollView(context, state, widget.commuinity, currRole,  _cmTabCtl)
+          _mainScrollView(context, state, widget.commuinity, currRole,  _cmTabCtl, nativeAd)
 
-        : _mainScrollView(context, state, widget.commuinity, currRole, _cmTabCtl),
+        : _mainScrollView(context, state, widget.commuinity, currRole, _cmTabCtl, nativeAd),
       ));
     });
   }

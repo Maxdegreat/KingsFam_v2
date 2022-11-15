@@ -28,7 +28,7 @@ class CreateComuinity extends StatefulWidget {
 class _CreateComuinityState extends State<CreateComuinity> {
   late NativeAd _nativeAd;
   bool _isNativeAdLoaded = false;
-  void _createBottomBannerAd() {
+  void _createNativeAd() {
     _nativeAd = NativeAd(
         adUnitId: AdHelper.nativeAdUnitId,
         factoryId: "listTile",
@@ -46,7 +46,7 @@ class _CreateComuinityState extends State<CreateComuinity> {
 
   @override
   void initState() {
-    _createBottomBannerAd();
+    _createNativeAd();
     super.initState();
   }
 

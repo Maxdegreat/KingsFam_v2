@@ -217,18 +217,7 @@ class UserrRepository extends BaseUserrRepository {
   
   @override
   Future<void> snedFriendRequest({required String senderId, required String currUserId}) async {
-    // final senderUser = await UserrRepository().getUserrWithId(userrId: senderId);
-    // final noty = Notification(
-    //     fromUser: senderUser,
-    //     type: Notification_type.friend_request,
-    //     date: DateTime.now());
-    // FirebaseFirestore.instance
-    //     .collection(Paths.notifications)
-    //     .doc(currUserId)
-    //     .collection(Paths.userNotifications)
-    //     .add(noty.toDoc());
-    // //write into friend collection : friend -> reciever.id -> friends -> sender.id
-    // //if the sender is in the recievers collection they are not friends however if both have each other added then they are friends!
+
   }
 
   Future<bool> updateUserInField(String userId, Map<String, dynamic> fieldMap) async {
