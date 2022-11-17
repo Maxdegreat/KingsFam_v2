@@ -52,9 +52,9 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       }
       
       log("The length of the post is ${posts.length}");
-      if (posts.length > 5) {
-        posts.add(Post.empty.copyWith(id: posts.last!.id));
-        posts.insert(2, Post.empty);
+      if (posts.length >= 2) {
+        posts.add( Post.empty.copyWith(id: posts.last!.id) );
+        posts.insert( 2, Post.empty );
       }
 
       _likedPostCubit.clearAllLikedPosts();
@@ -98,14 +98,12 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     yield state.copyWith(status: FeedStatus.paginating);
     try {
       final lastPostId = state.posts.isNotEmpty ? state.posts.last!.id : null;
-      final posts = await _postsRepository.getUserFeed(
-          userId: _authBloc.state.user!.uid, lastPostId: lastPostId, limit: 8);
+      final posts = await _postsRepository.getUserFeed(userId: _authBloc.state.user!.uid, lastPostId: lastPostId, limit: 2);
       posts.add(Post.empty.copyWith(id: posts.last!.id));
 
       final updatedPosts = List<Post?>.from(state.posts)..addAll(posts);
 
-      final likedPostIds = await _postsRepository.getLikedPostIds(
-          userId: _authBloc.state.user!.uid, posts: posts);
+      final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: posts);
       yield state.copyWith(posts: updatedPosts, status: FeedStatus.success);
       _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
     } catch (e) {

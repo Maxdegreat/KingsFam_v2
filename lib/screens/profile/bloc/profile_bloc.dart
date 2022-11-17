@@ -28,7 +28,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final ChatRepository _chatRepository;
   final PrayerRepo _prayerRepo;
 
-  StreamSubscription<List<Future<Post?>>>? _postStreamSubscription;
+  // <List<Future<Post?>>>? _postStreamSubscription;
 
   ProfileBloc(
       {required UserrRepository userrRepository,
@@ -49,7 +49,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   @override
   Future<void> close() {
-    _postStreamSubscription!.cancel();
+   // _postStreamSubscription!.cancel();
     return super.close();
   }
 
@@ -119,18 +119,25 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           userId: event.userId, lastPostId: lastPostId);
       if (lastPostDoc != null && !lastPostDoc.exists) return;
       if (lastPostDoc != null && lastPostDoc.exists) {
-        _postStreamSubscription?.cancel();
-        _postStreamSubscription = _postsRepository
-            .getUserPosts(
-                userId: event.userId, limit: 2, lastPostDoc: lastPostDoc)
-            .listen((posts) async {
-          List<Post?> allPost = [];
-          for (var p in posts) {
-            var post = await p;
-            if (post!.id == lastPostId)
-              continue;
-            else
-              allPost.add(post);
+        // we want to grab some 2 post and pass them onto the users post.
+        List<Post> lst = await _postsRepository.getUserPosts(
+          userId: _authBloc.state.user!.uid, 
+          limit: 2, 
+          lastPostDoc: lastPostDoc
+        );
+        //
+        // // _postStreamSubscription?.cancel();
+        //  // _postStreamSubscription = _postsRepository
+        //     .getUserPosts(
+        //         userId: event.userId, limit: 2, lastPostDoc: lastPostDoc)
+        //     .listen((posts) async {
+        //   List<Post?> allPost = [];
+        //   for (var p in posts) {
+        //     var post = await p;
+        //     if (post!.id == lastPostId)
+        //       continue;
+        //     else
+        //       allPost.add(post);
           }
           add(ProfileUpdatePost(post: allPost));
         });

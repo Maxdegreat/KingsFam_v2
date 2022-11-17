@@ -16,7 +16,7 @@ class AdHelper {
   }
 
   static String get bannerAdUnitId {
-    String prodAdUnitIdA = "ca-app-pub-4874104031068690/5905761705";
+    String prodAdUnitIdA = "ca-app-pub-5583578072631354/4427022170";
     String testAdUnitId = "ca-app-pub-3940256099942544/6300978111";
     if (Platform.isAndroid) {
       // ignore: dead_code

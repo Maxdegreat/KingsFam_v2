@@ -264,6 +264,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     }
   }
 
+  // this is the loaded for the community content.
   Stream<CommuinityState> _mapCommunityLoadingPostToState(CommunityLoadingPosts event) async* {
     try {
       List<Post?> posts = await _churchRepository.getCommuinityPosts(cm: event.cm);

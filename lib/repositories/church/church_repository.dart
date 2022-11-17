@@ -253,7 +253,7 @@ class ChurchRepository extends BaseChurchRepository {
         .collection(Paths.posts)
         .orderBy("date", descending: true)
         .where('commuinity', isEqualTo: cmDocRef)
-        .limit(2)
+        .limit(1)
         .get();
 
     List<Post?> bucket = [];

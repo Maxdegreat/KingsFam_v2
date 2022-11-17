@@ -388,41 +388,41 @@ exports.addChatMessage = functions.firestore
     }
   });
 
-exports.onKingsCordMessageSent = functions.firestore
-  .document("/church/{churchId}/kingsCord/{kingsCordId}/messages/{messageId}")
-  .onCreate(async (snapshot, context) => {
-    const cmId = context.params.churchId;
-    const kcId = context.params.kingsCordId;
-    const kcRef = admin
-      .firestore()
-      .collection("church")
-      .doc(cmId)
-      .collection("kingsCord")
-      .doc(kcId);
-    const cmRef = admin.firestore().collection("church").doc(cmId);
+// exports.onKingsCordMessageSent = functions.firestore
+//   .document("/church/{churchId}/kingsCord/{kingsCordId}/messages/{messageId}")
+//   .onCreate(async (snapshot, context) => {
+//     const cmId = context.params.churchId;
+//     const kcId = context.params.kingsCordId;
+//     const kcRef = admin
+//       .firestore()
+//       .collection("church")
+//       .doc(cmId)
+//       .collection("kingsCord")
+//       .doc(kcId);
+//     const cmRef = admin.firestore().collection("church").doc(cmId);
 
-    var kcMsgData = snapshot.data();
-    var senderId = kcMsgData.sender.path.split("/")[1];
-    var senderUsername = kcMsgData.senderUsername;
+//     var kcMsgData = snapshot.data();
+//     var senderId = kcMsgData.sender.path.split("/")[1];
+//     var senderUsername = kcMsgData.senderUsername;
 
-    var recentMessage;
-    if (kcMsgData.imageUrl !== null) {
-      recentMessage = "An image was shared";
-    } else if (kcMsgData.videoUrl !== null) {
-      recentMessage = "A video was shared";
-    } else {
-      recentMessage = kcMsgData.text;
-    }
+//     var recentMessage;
+//     if (kcMsgData.imageUrl !== null) {
+//       recentMessage = "An image was shared";
+//     } else if (kcMsgData.videoUrl !== null) {
+//       recentMessage = "A video was shared";
+//     } else {
+//       recentMessage = kcMsgData.text;
+//     }
 
-    cmRef.update({
-      recentMsgTime: kcMsgData.date,
-    });
-    kcRef.update({
-      recentSender: [senderId, kcMsgData.senderUsername],
-      recentTimestamp: kcMsgData.date,
-      recentMessage: recentMessage,
-    });
-  });
+//     cmRef.update({
+//       recentMsgTime: kcMsgData.date,
+//     });
+//     kcRef.update({
+//       recentSender: [senderId, kcMsgData.senderUsername],
+//       recentTimestamp: kcMsgData.date,
+//       recentMessage: recentMessage,
+//     });
+//   });
 
   // send noty to admins and the owner that someone is requesting to join the cm
   exports.onRequestToJoinCm = functions.firestore

@@ -184,30 +184,46 @@ class PostsRepository extends BasePostsRepository {
   }
 
   @override
-  Stream<List<Future<Post?>>> getUserPosts(
-      {required String userId,
+  Future<List<Future<Post?>>> getUserPosts({
+      required String userId,
       required int limit,
-      required DocumentSnapshot<Map<String, dynamic>>? lastPostDoc}) {
+      required DocumentSnapshot<Map<String, dynamic>>? lastPostDoc,
+    }) async {
     final authorRef = _firebaseFirestore.collection(Paths.users).doc(userId);
+    QuerySnapshot? postSnap;
+    List<Post> returningPost = [];
+
     if (lastPostDoc == null) {
-      return _firebaseFirestore
-          .collection(Paths.posts)
-          .where('author', isEqualTo: authorRef)
-          .limit(limit)
-          .orderBy('date', descending: true)
-          .snapshots() //.snap() returns a stream of querry snaps
-          //convert or map each query snap into a post
-          .map((snap) => snap.docs.map((doc) => Post.fromDoc(doc)).toList());
+
+      postSnap = await  _firebaseFirestore
+        .collection(Paths.posts)
+        .where('author', isEqualTo: authorRef)
+        .limit(limit)
+        .orderBy('date', descending: true).get();
+
+        //convert or map each query snap into a post
+        if (postSnap != null)
+          postSnap.docs.map((doc) => Post.fromDoc(doc)).toList();
+        
     } else {
-      return _firebaseFirestore
+      
+
+      postSnap = await _firebaseFirestore
           .collection(Paths.posts)
           .where('author', isEqualTo: authorRef)
           .limit(limit)
           .orderBy('date', descending: true)
-          .startAfterDocument(lastPostDoc)
-          .snapshots()
-          .map((snap) => snap.docs.map((doc) => Post.fromDoc(doc)).toList());
+          .startAfterDocument(lastPostDoc).get();
+
+      for (var i in postSnap.docs) {
+        // I want the snap 
+      }
+      if (postSnap != null)
+          returningPost = postSnap.docs.map((doc) => Post.fromDoc(doc)).toList();
     }
+    
+
+
   }
 
   @override
@@ -273,10 +289,9 @@ class PostsRepository extends BasePostsRepository {
   Future<List<Post?>> getCommuinityFeed(
       {required String commuinityId, String? lastPostId, int? limit}) async {
     // Build a reference catagori. this is used so i can query for a reference.
-    var commuinityRef =
-        _firebaseFirestore.collection(Paths.church).doc(commuinityId);
+    var commuinityRef = _firebaseFirestore.collection(Paths.church).doc(commuinityId);
     QuerySnapshot postSnap;
-    limit = limit == null ? 7 : limit;
+    limit = limit == null ? 2 : limit;
     if (lastPostId == null) {
       // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       postSnap = await _firebaseFirestore
