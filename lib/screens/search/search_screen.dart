@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/blocs/search/search_bloc.dart';
 import 'package:kingsfam/config/constants.dart';
+import 'package:kingsfam/enums/bottom_nav_items.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/helpers/navigator_helper.dart';
 
@@ -13,6 +14,8 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/add_users/add_users.dart';
 import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
+import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
+import 'package:kingsfam/screens/nav/widgets/bottom_nav_bar.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
 
 import 'package:kingsfam/widgets/widgets.dart';
@@ -83,10 +86,16 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   // the build method is shown below
-
+  bool hasSeen = false;
   @override
   Widget build(BuildContext context) {
-    if (initSearchScreen == false) initializeSeachScreen(context);
+    if (context.read<BottomnavbarCubit>().state.selectedItem == BottomNavItem.search ) {
+      if (!hasSeen) {
+        initializeSeachScreen(context);
+        hasSeen = true;
+      }
+
+    } 
 
     return RefreshIndicator(
         onRefresh: () async {

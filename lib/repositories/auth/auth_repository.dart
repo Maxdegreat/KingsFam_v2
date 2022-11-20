@@ -158,7 +158,7 @@ class AuthRepository extends BaseAuthRepository {
       if (userCredential.additionalUserInfo != null && userCredential.additionalUserInfo!.isNewUser) {
        
         _firebaseFirestore.collection(Paths.users).doc(user!.uid).set({
-          'profileImage': user.photoURL,
+          'profileImageUrl': user.photoURL,
           // 'username': "!" + formatUsername(user.displayName, user.uid),
           'username': formatUsername(user.displayName, user.uid),
           'usernameSearchCase': usernameSearchCase,
@@ -233,9 +233,9 @@ Future<auth.User?> signInWithApple(BuildContext context) async {
   if (userCredential.additionalUserInfo != null && userCredential.additionalUserInfo!.isNewUser) {
     
   _firebaseFirestore.collection(Paths.users).doc(currUser!.uid).set({
-       'profileImage': null,
+       'profileImageUrl': currUser!.photoURL ?? "",
        // 'username': "!" + formatUsername(null, currUser!.uid),
-       'username': formatUsername(null, currUser!.uid),
+       'username': formatUsername(currUser!.displayName, currUser!.uid),
        'email': appleCredential.email,
        'followers': 0,
        'following': 0,

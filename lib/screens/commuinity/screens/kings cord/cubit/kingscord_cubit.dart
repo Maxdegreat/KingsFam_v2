@@ -185,6 +185,7 @@ class KingscordCubit extends Cubit<KingscordState> {
         'token' : toSendNotificationsT.toList(),
         'messageBody': txtMsgWithOutSymbolesForParcing,
         'type': 'kc_type',
+        'kcId': kingsCordId,
       }).then((value) => log ("kcMsgNotif added"))
         .catchError((error) => log("Failed to add user: $error"));
 

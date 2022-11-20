@@ -63,7 +63,7 @@ class TabNavigator extends StatelessWidget {
               likedPostCubit: ctx.read<LikedPostCubit>(),
               authBloc: ctx.read<AuthBloc>(),
               chatRepository: ctx.read<ChatRepository>())
-            ..add(LoadChats(chatId: ctx.read<AuthBloc>().state.user!.uid)),
+            ..add(LoadCms() /*LoadChats(chatId: ctx.read<AuthBloc>().state.user!.uid)*/ ),
           child: ChatsScreen(),
         );
 

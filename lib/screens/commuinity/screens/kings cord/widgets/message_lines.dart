@@ -355,8 +355,7 @@ class _MessageLinesState extends State<MessageLines> {
                     arguments: UrlViewArgs(
                         urlVid: widget.message.videoUrl!,
                         urlImg: widget.message.thumbnailUrl!,
-                        heroTag:
-                            'Message/${widget.message.videoUrl}/${widget.message.thumbnailUrl}')),
+                        heroTag: 'Message/${widget.message.videoUrl}/${widget.message.thumbnailUrl}')),
                 child: Container(
                   child: Icon(
                     Icons.play_arrow,

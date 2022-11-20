@@ -372,8 +372,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,S
                                   Navigator.of(context)
                                       .pushNamed(CreateRoom.routeName,
                                           arguments: CreateRoomArgs(
-                                              cmBloc: context
-                                                  .read<CommuinityBloc>(),
+                                              cmBloc: context.read<CommuinityBloc>(),
                                               cm: cm))
                                       .then((value) {
                                     // TODO setState and read the events again.
@@ -383,8 +382,9 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,S
                             : SizedBox.shrink()
                       ],
                     ),
+                    // This is the listview of events that is displayed.
                     Container(
-                      height: 95,
+                      height: MediaQuery.of(context).size.height / 1.89,
                       width: double.infinity,
                       child: state.events.length > 0
                           ? ListView.builder(
@@ -395,75 +395,87 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,S
                                 return event != null
                                     ? GestureDetector(
                                         onTap: () => Navigator.of(context)
-                                            .pushNamed(EventView.routeName,
+                                            .pushNamed(
+                                              EventView.routeName,
                                                 arguments: EventViewArgs(
+                                                  cm: cm,
                                                     cmBloc: context
                                                         .read<CommuinityBloc>(),
-                                                    event: event)),
-                                        child: Container(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    //        month                             day                                   year
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              2.0),
-                                                      child: Text(event
-                                                                  .startDateFrontEnd![
-                                                              1] +
-                                                          "/" +
-                                                          event.startDateFrontEnd![
-                                                              2] +
-                                                          "/" +
-                                                          event.startDateFrontEnd![
-                                                              0]),
-                                                    ),
-                                                    SizedBox(width: 5),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              2.0),
-                                                      child: Text(
-                                                          event.eventTitle,
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w700,
-                                                              color: Colors
-                                                                  .blue[700]),
-                                                          overflow: TextOverflow
-                                                              .ellipsis),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 5.0),
-                                                  child: Text(
-                                                    event.eventDescription,
-                                                    style: TextStyle(
-                                                        fontStyle:
-                                                            FontStyle.italic),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
+                                                    event: event,
+                                                    )),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.black87,
+                                              borderRadius: BorderRadius.circular(15)
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      //        month                             day                                   year
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets.all(
+                                                                2.0),
+                                                        child: Text(event
+                                                                    .startDateFrontEnd![
+                                                                1] +
+                                                            "/" +
+                                                            event.startDateFrontEnd![
+                                                                2] +
+                                                            "/" +
+                                                            event.startDateFrontEnd![
+                                                                0]),
+                                                      ),
+                                                      SizedBox(width: 5),
+                                                      Flexible(
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets.all(
+                                                                  2.0),
+                                                          child: Text(
+                                                              event.eventTitle,
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
+                                                                  color: Colors
+                                                                      .blue[700]),
+                                                              overflow: TextOverflow
+                                                                  .ellipsis),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                )
-                                              ],
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 5.0),
+                                                    child: Text(
+                                                      event.eventDescription,
+                                                      style: TextStyle(
+                                                          fontStyle:
+                                                              FontStyle.italic),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
                                       )
                                     : SizedBox.shrink();
-                                ;
+                                
                               })
                           : Center(
                               child: state.status == CommuintyStatus.loading

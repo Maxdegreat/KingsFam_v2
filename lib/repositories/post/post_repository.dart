@@ -183,15 +183,15 @@ class PostsRepository extends BasePostsRepository {
         .get();
   }
 
-  @override
-  Future<List<Future<Post?>>> getUserPosts({
+  // @override
+  Future<List<Post?>> getUserPosts({
       required String userId,
       required int limit,
       required DocumentSnapshot<Map<String, dynamic>>? lastPostDoc,
     }) async {
+
     final authorRef = _firebaseFirestore.collection(Paths.users).doc(userId);
     QuerySnapshot? postSnap;
-    List<Post> returningPost = [];
 
     if (lastPostDoc == null) {
 
@@ -201,9 +201,16 @@ class PostsRepository extends BasePostsRepository {
         .limit(limit)
         .orderBy('date', descending: true).get();
 
-        //convert or map each query snap into a post
-        if (postSnap != null)
-          postSnap.docs.map((doc) => Post.fromDoc(doc)).toList();
+         List<Post> postList = [];
+
+      for (var i in postSnap.docs) {
+        // I want the doc and use it to get a Post then form a list.
+        Post? p = await Post.fromDoc(i);
+        if (p != null) {
+          postList.add(p);
+        }
+      }
+      return postList;
         
     } else {
       
@@ -214,15 +221,18 @@ class PostsRepository extends BasePostsRepository {
           .limit(limit)
           .orderBy('date', descending: true)
           .startAfterDocument(lastPostDoc).get();
+      
+      List<Post> postList = [];
 
       for (var i in postSnap.docs) {
-        // I want the snap 
+        // I want the doc and use it to get a Post then form a list.
+        Post? p = await Post.fromDoc(i);
+        if (p != null) {
+          postList.add(p);
+        }
       }
-      if (postSnap != null)
-          returningPost = postSnap.docs.map((doc) => Post.fromDoc(doc)).toList();
+      return postList;
     }
-    
-
 
   }
 

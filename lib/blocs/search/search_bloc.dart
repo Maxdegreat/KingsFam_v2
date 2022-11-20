@@ -84,6 +84,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   }
 
   Stream<SearchState> _mapLoadUserToState(InitializeUser event) async* {
+    log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     yield state.copyWith(status: SearchStatus.loading, );
     try {
       Userr user =

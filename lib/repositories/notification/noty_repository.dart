@@ -14,7 +14,7 @@ class NotificationRepository extends BaseNotificationRepository {
         .doc(userId)
         .collection(Paths.notifications)
         .orderBy('date', descending: true)
-        .limit(20)
+        .limit(10)
         .snapshots()
         .map((snap) => snap.docs.map((doc) => NotificationKF.fromDoc(doc)).toList());
   }

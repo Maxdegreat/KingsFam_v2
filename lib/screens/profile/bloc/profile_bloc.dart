@@ -120,7 +120,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       if (lastPostDoc != null && !lastPostDoc.exists) return;
       if (lastPostDoc != null && lastPostDoc.exists) {
         // we want to grab some 2 post and pass them onto the users post.
-        List<Post> lst = await _postsRepository.getUserPosts(
+        List<Post?> lst = await _postsRepository.getUserPosts(
           userId: _authBloc.state.user!.uid, 
           limit: 2, 
           lastPostDoc: lastPostDoc
@@ -138,9 +138,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         //       continue;
         //     else
         //       allPost.add(post);
-          }
-          add(ProfileUpdatePost(post: allPost));
-        });
+          
+          add(ProfileUpdatePost(post: lst));
+   
         print("got new posts");
       }
       yield state.copyWith(status: ProfileStatus.loaded);
@@ -180,21 +180,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       // log("seen id's: $seen");
       // whenever a new post is posted it will update the home page post view
       yield state.copyWith(post: []);
-      _postStreamSubscription?.cancel();
-      _postStreamSubscription = _postsRepository
-          .getUserPosts(userId: event.userId, limit: 4, lastPostDoc: null)
-          .listen((posts) async {
-        List<Post?> postList = [];
-        for (var i in posts) {
-          Post? p = await i;
-          if (p != null && !seen.contains(p.id)) {
-            seen.add(p.id!);
-            postList.add(p);
-          }
-        }
-        if (postList.contains(beenSeen) && beenSeen != null) return;
-        add(ProfileUpdatePost(post: postList));
-      });
+      List<Post?> lst = await _postsRepository.getUserPosts(
+          userId: _authBloc.state.user!.uid, 
+          limit: 2, 
+          lastPostDoc: null,
+        );
+        add(ProfileUpdatePost(post: lst ));
 
       yield state.copyWith(
           seen: seen,
@@ -236,8 +227,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     try {
       _userrRepository.followerUserr(
           userr: state.userr, followersId: state.userr.id);
-      final updatedUserr =
-          state.userr.copyWith(followers: state.userr.followers + 1);
+      final updatedUserr = state.userr.copyWith(followers: state.userr.followers + 1);
       yield state.copyWith(userr: updatedUserr, isFollowing: true);
     } catch (error) {
       state.copyWith(
@@ -266,6 +256,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       var user2Id = event.profileOwnersId;
       DocumentReference docRef1 =
           FirebaseFirestore.instance.collection(Paths.users).doc(user1Id);
+
       DocumentReference docRef2 =
           FirebaseFirestore.instance.collection(Paths.users).doc(user2Id);
 
@@ -316,7 +307,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
         var a = currUser.username.substring(0, 3);
         var b = profileOwner.username.substring(0, 3);
-        //TODO SEARCH PRAM
+        // TODO SEARCH PRAM
         Chat chat = Chat(
             memRefs: memRefs,
             activeMems: [],

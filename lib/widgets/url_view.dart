@@ -87,7 +87,16 @@ class _FileViewScreenState extends State<UrlViewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(getTitle()),
+        backgroundColor: Colors.black,
+        leading: SizedBox.shrink(),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.cancel_outlined),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          )
+        ],
       ),
       body: Hero(tag: widget.heroTag!, child: _viewPort()),
     );
@@ -103,6 +112,7 @@ class _FileViewScreenState extends State<UrlViewScreen> {
         },
         child: flagWhichVidPlayer
             ? Container(
+              
                 child: vidController != null
                     ? VideoPostView16_9(
                         controller: vidController!,
@@ -113,6 +123,7 @@ class _FileViewScreenState extends State<UrlViewScreen> {
                     : null,
                 decoration: widget.urlImg != null || widget.fileImg != null
                     ? BoxDecoration(
+                      color: Colors.black,
                         image: widget.urlImg != null
                             ? DecorationImage(
                                 image:

@@ -54,7 +54,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
     ChatscreenEvent event,
   ) async* {
     if (event is LoadChats) {
-      yield* _mapLoadChatsToState(event);
+      //yield* _mapLoadChatsToState(event);
     } else if (event is LoadCms) {
       yield* _mapLoadCmsToState();
     }
@@ -105,46 +105,49 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
         emit(state.copyWith(mentionedMap: mentionedMap));
       });
       yield state.copyWith(status: ChatStatus.sccuess, currUserr: currUserr);
-    } catch (e) {}
+    } catch (e) {
+      log("!!!!!!!!!!!!!!!!ERROR: " + e.toString());
+      yield state.copyWith(status: ChatStatus.error, failure: Failure(message: "mmm, there was an error when loading your community's"));
+    }
   }
 
   // This is the maping of chats to state, (this is currently not being used, rather a streamblder in UI is
   // this needs to be addressed)
 
   //jesus
-  Stream<ChatscreenState> _mapLoadChatsToState(event) async* {
-    try {
-      bool unreadChats = false;
-      Set<String> seen = {};
-      var currId = _authBloc.state.user!.uid;
-      List<Chat> allChats = [];
-      state.copyWith(status: ChatStatus.loading);
-      _chatsStreamSubscription?.cancel();
-      _chatsStreamSubscription = _chatRepository
-          .getUserChats(userId: _authBloc.state.user!.uid)
-          .listen((chat) async {
-            for (var c in chat) { 
-              Chat? ch = await c;
-              if (ch != null) {
-                if (ch.readStatus.containsKey(currId)) {
-                  if (ch.readStatus[currId] == false) {
-                    unreadChats = true;
-                  }
-                }
-                if (!seen.contains(ch.id)) {
-                  allChats.add(ch);
-                  seen.add(ch.id!);
-                }
-              }
-            }
-          emit(state.copyWith(chat: allChats, unreadChats: unreadChats));
-      });
-      add(LoadCms());
-      // state.copyWith(status: ChatStatus.sccuess);
-    } catch (e) {
-      state.copyWith(
-          failure: Failure(
-              message: 'error loading your chats, check ur connection fam'));
-    }
-  }
+  // Stream<ChatscreenState> _mapLoadChatsToState(event) async* {
+  //   try {
+  //     bool unreadChats = false;
+  //     Set<String> seen = {};
+  //     var currId = _authBloc.state.user!.uid;
+  //     List<Chat> allChats = [];
+  //     state.copyWith(status: ChatStatus.loading);
+  //     _chatsStreamSubscription?.cancel();
+  //     _chatsStreamSubscription = _chatRepository
+  //         .getUserChats(userId: _authBloc.state.user!.uid)
+  //         .listen((chat) async {
+  //           for (var c in chat) { 
+  //             Chat? ch = await c;
+  //             if (ch != null) {
+  //               if (ch.readStatus.containsKey(currId)) {
+  //                 if (ch.readStatus[currId] == false) {
+  //                   unreadChats = true;
+  //                 }
+  //               }
+  //               if (!seen.contains(ch.id)) {
+  //                 allChats.add(ch);
+  //                 seen.add(ch.id!);
+  //               }
+  //             }
+  //           }
+  //         emit(state.copyWith(chat: allChats, unreadChats: unreadChats));
+  //     });
+  //     add(LoadCms());
+  //     // state.copyWith(status: ChatStatus.sccuess);
+  //   } catch (e) {
+  //     state.copyWith(
+  //         failure: Failure(
+  //             message: 'error loading your chats, check ur connection fam'));
+  //   }
+  // }
 }

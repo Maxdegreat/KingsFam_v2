@@ -59,15 +59,15 @@ class _ChatsDropDownButtonState extends State<ChatsDropDownButton> {
                 items: [
                   DropdownMenuItem(
                     child: Text(
-                      "Communitys",
+                      "community's",
                       style: TextStyle(fontWeight: FontWeight.w500),
                     ),
                     value: 0,
                   ),
-                  DropdownMenuItem(
-                    child: Text("Chats"),
-                    value: 1,
-                  )
+                  // DropdownMenuItem(
+                  //   child: Text("chats"),
+                  //   value: 1,
+                  // )
                 ],
                 onChanged: (int? value) {
                   if (value != null && value <= widget.tabctrl.length - 1) {

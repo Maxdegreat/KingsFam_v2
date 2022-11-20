@@ -3,7 +3,7 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const { user } = require("firebase-functions/v1/auth");
-//var serviceAccount = require("./kingsfam-9b1f8-firebase-adminsdk-dgh0u-38f8d6850d.json");
+// var serviceAccount = require("./kingsfam-9b1f8-firebase-adminsdk-dgh0u-38f8d6850d.json");
 
 admin.initializeApp();
 
@@ -465,19 +465,21 @@ exports.addChatMessage = functions.firestore
   exports.onRecieveKcRoomNotif = functions.firestore
     .document("/kcMsgNotif/{cmId}/kingsCord/{kcId}")
     .onCreate(async (snapshot, context) => {
-      const cmId = context.params.churchId;
-      const kcId = context.params.kingsCordId;
+      const cmId = context.params.cmId;
+      const kcId = context.params.kcId;
 
       var info = snapshot.data();
 
       const message = {
         notification: {
           title: info.communityName,
-          body: info.messageBody,
+          body: info.username + ": " + info.messageBody,
         },
         data: {
-          type: String(info.type_id),
+          type: String(info.type),
           cmId: String(cmId),
+          kcId: String(kcId),
+
         }
       };
 
@@ -494,19 +496,21 @@ exports.addChatMessage = functions.firestore
     exports.onRecieveKcRoomNotifUpdate = functions.firestore
     .document("/kcMsgNotif/{cmId}/kingsCord/{kcId}")
     .onUpdate((change, context) => {
-      const cmId = context.params.churchId;
-      const kcId = context.params.kingsCordId;
+      const cmId = context.params.cmId;
+      const kcId = context.params.kcId;
       var info = change.after.data();
       functions.logger.log("value of tokens is: ", info.token);
 
       const message = {
         notification: {
           title: info.communityName,
-          body: info.messageBody,
+          body: info.username + ": " + info.messageBody,
         },
         data: {
-          type: String(info.type_id),
+          type: String(info.type),
           cmId: String(cmId),
+          kcId: String(kcId),
+
         }
       };
 

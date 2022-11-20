@@ -62,6 +62,7 @@ class Event extends Equatable {
       List<String> endDateFrontEnd = [endTime.substring(0, 4), endTime.substring(5,7), endTime.substring(8, 10), endTime.substring(11, 13), endTime.substring(14, 16)];
       
         return Event(
+            id: doc.id,
             eventTitle: data['eventTitle'],
             eventDescription: data['eventDecription'],
             startDateFrontEnd: startDateFrontEnd,
