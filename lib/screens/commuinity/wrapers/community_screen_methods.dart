@@ -78,7 +78,7 @@ Widget contentPreview({required Post post, required BuildContext context, requir
     child: GestureDetector(
       onTap: () => Navigator.of(context).pushNamed(
           CommuinityFeedScreen.routeName,
-          arguments: CommuinityFeedScreenArgs(commuinity: cm)),
+          arguments: CommuinityFeedScreenArgs(commuinity: cm)).then((_) => context.read<BottomnavbarCubit>().showBottomNav(true)),
       child: Container(
         height: 80,
         width: 200,

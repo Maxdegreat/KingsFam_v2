@@ -63,21 +63,3 @@ class BuildVideoFile extends StatelessWidget {
       aspectRatio: controller.value.aspectRatio,
       child: VideoPlayer(controller));
 }
-// class BuildVideo_16_9 extends StatelessWidget {
-//   final VideoPlayerController controller;
-//   const BuildVideo_16_9({Key? key, required this.controller}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) => Stack(
-//         children: [
-//           Positioned(
-//             bottom: ,
-//           )
-//           buildVideoPlayer(),
-//           Positioned.fill(child: BasicOverlayWidget(controller: controller))
-//           //add btn that will allow fill of video on width
-//         ],
-//       );
-//   Widget buildVideoPlayer() =>
-//       AspectRatio(aspectRatio: controller.value.aspectRatio, child: VideoPlayer(controller));
-// }

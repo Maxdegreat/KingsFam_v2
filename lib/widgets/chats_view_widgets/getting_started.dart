@@ -25,12 +25,16 @@ class _GettingStartedState extends State<GettingStarted> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text("Find A Community To Join", style: TextStyle(fontSize: 40)),
+        Align(
+          alignment: Alignment.center,
+          child: Text("Find A Community To Join", style: TextStyle(fontSize: 40))),
         SizedBox(height: 10),
-        carousel(),
+        Container(
+          height: 300,
+          child: carousel()),
         gettingStartedBtn(),
       
         _kfLogo()
@@ -58,7 +62,7 @@ class _GettingStartedState extends State<GettingStarted> {
   CarouselOptions _options() => CarouselOptions(
         height: 225,
         aspectRatio: 16 / 9,
-        viewportFraction: 0.8,
+        viewportFraction: 0.7,
         initialPage: 0,
         enableInfiniteScroll: true,
         reverse: false,
@@ -68,7 +72,7 @@ class _GettingStartedState extends State<GettingStarted> {
         autoPlayCurve: Curves.fastOutSlowIn,
         enlargeCenterPage: true,
         onPageChanged: null,
-        scrollDirection: Axis.horizontal,
+        scrollDirection: Axis.vertical,
       );
 }
 
@@ -81,19 +85,22 @@ class gettingStartedBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Container(
-          width: 125,
-          child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  primary: Color(hexcolor.hexcolorCode('#FFC050'))),
-              onPressed: () async {
-                helpDialog(context);
-              },
-              child: Text(
-                "Getting Started",
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyText1,
-              ))),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+            width: double.infinity,
+            child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    primary: Colors.white),
+                onPressed: () async {
+                  helpDialog(context);
+                },
+                child: Text(
+                  "Getting Started",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.black),
+                ))),
+      ),
     );
   }
 }
@@ -108,7 +115,7 @@ class _kfLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment.bottomLeft,
+      alignment: Alignment.center,
       child: Text("KingsFam", style: Theme.of(context).textTheme.bodyText1),
     );
   }

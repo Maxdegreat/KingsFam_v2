@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:rive/rive.dart';
 
+import '../config/constants.dart';
+
 Future<void> helpDialog(BuildContext context) async {
   return showDialog(
       context: context,
@@ -20,7 +22,7 @@ Widget howToBox() {
     builder: (BuildContext context, setState) {
       return Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(25), color: Colors.transparent),
+            borderRadius: BorderRadius.circular(25), color: Color(hc.hexcolorCode('#FFC050'))),
         height: MediaQuery.of(context).size.height / 2.5,
         width: 450,
         child: PageView.builder(
@@ -48,9 +50,9 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
     Column(
       children: [
         Text(
-          " Hey Fam, Find A Commuinity or ... Create One! \n"
-          " Talk About Whatever But Keep Jesus At the Center! \n"
-          " Yeherdd! ",
+          " Chat with the bros and sis in Christ \n"
+          " Create polls, ask questions, share post, \n"
+          " make events and control your community with roles!",
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
@@ -63,11 +65,7 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
           ),
         ),
         SizedBox(height: 15),
-        ElevatedButton(
-          onPressed: () {}, 
-          child: Text("Swipe ->"),
-          style: ElevatedButton.styleFrom(primary: Color(hexcolor.hexcolorCode('#FFC050'))),
-        )
+       Text("Swipe -->", style: TextStyle(color: Color(hexcolor.hexcolorCode('#FFC050'))),)
       ],
     ),
 
@@ -75,7 +73,7 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
     Column(
       children: [
         Text(
-          " Tap The Bottom Left Search To Join A Commuinity! \n",
+          " Tap The Bottom Left Search To Join A Community! \n",
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
@@ -92,20 +90,16 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
           ),
         ),
         SizedBox(height: 15),
-        ElevatedButton(
-          onPressed: () {}, 
-          child: Text("Swipe ->"),
-          style: ElevatedButton.styleFrom(primary: Color(hexcolor.hexcolorCode('#FFC050'))),
-        )
+        Text("Swipe -->", style: TextStyle(color: Color(hexcolor.hexcolorCode('#FFC050'))),)
       ],
     ),
 
-    // ----------------------------------------------> child 3 ------------------------------------------- how to make a commuinity or chat
+    // ----------------------------------------------> child 3 ------------------------------------------- how to make a Community or chat
 
     Column(
       children: [
         Text(
-          " Or In The Top Right Click The Add To Create A Commuinity! \n",
+          " Or Tap The Bottom Center Add To Create A Community! \n",
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
@@ -122,11 +116,7 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
           ),
         ),
         SizedBox(height: 15),
-        ElevatedButton(
-          onPressed: () {}, 
-          child: Text("Swipe ->"),
-          style: ElevatedButton.styleFrom(primary: Color(hexcolor.hexcolorCode('#FFC050'))),
-        )
+        Text("Swipe -->", style: TextStyle(color: Color(hexcolor.hexcolorCode('#FFC050'))),)
       ],
     ),
 
@@ -149,12 +139,7 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
           ),
         ),
         SizedBox(height: 15),
-        ElevatedButton(
-          onPressed: () {},
-          child: Text("You Are Loved! :)"),
-          style: ElevatedButton.styleFrom(
-              primary: Color(hexcolor.hexcolorCode('#FFC050'))),
-        )
+        Text("You Are Loved :)", style: TextStyle(color: Color(hexcolor.hexcolorCode('#FFC050'))),)
       ],
     )
   ];

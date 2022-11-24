@@ -11,9 +11,7 @@ import 'package:kingsfam/screens/feed_main/feed.dart';
 
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/chats_view_widgets/getting_started.dart';
-import 'package:kingsfam/widgets/kf_crown_v2.dart';
 import 'package:kingsfam/widgets/chats_view_widgets/chats_screen_widgets.dart';
-import 'package:kingsfam/widgets/widgets.dart';
 import 'package:rive/rive.dart';
 
 import '../../screens/chats/chats_widget/show_joined_cms.dart';

@@ -21,6 +21,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
+import '../config/paths.dart';
+
 class PostSingleView extends StatefulWidget {
   final Post? post;
   final bool isLiked;
@@ -77,15 +79,16 @@ class _PostSingleViewState extends State<PostSingleView> {
         Align(
             alignment: Alignment.center,
             child: contentContainer(post: widget.post, size: size)),
+
         _visible ? blackOverLay() : SizedBox.shrink(),
         Positioned.fill(
             child: userPicAndName(
                 name: widget.post == null ? "Ad" : widget.post!.author.username,
                 imgurl: widget.post == null ? "Ad" : widget.post!.author.profileImageUrl)),
-        Positioned.fill(
-            child: widget.post == null ? SizedBox.shrink() :  viewCommuinity(
-                commuinity: widget.post!.commuinity,
-                isImage: widget.post!.imageUrl != null)),
+        // Positioned.fill(
+        //     child: widget.post == null ? SizedBox.shrink() :  viewCommuinity(
+        //         commuinity: widget.post!.commuinity,
+        //         isImage: widget.post!.imageUrl != null)),
         // captionBox(caption: widget.post.caption, size: size),
         Align(
             alignment: Alignment.bottomLeft,
@@ -115,11 +118,11 @@ class _PostSingleViewState extends State<PostSingleView> {
 
   Widget viewCommuinity({required Church? commuinity, required bool isImage}) {
     return commuinity != null
-        ? Stack(children: [
+        ? Column(children: [
             !isImage
                 ? Positioned(
-                    top: 0,
-                    right: 0,
+                    bottom: 170,
+                    left: 0,
                     child: Padding(
                         padding: const EdgeInsets.only(
                             top: 7.0, right: 12.0, left: 12.0),
@@ -262,11 +265,10 @@ class _PostSingleViewState extends State<PostSingleView> {
     return widget.post != null ? Stack(
       children: [
         Positioned(
-          top: 15,
+          top: 5,
           left: 0,
-          right: 30,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 7),
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4),
             child: GestureDetector(
               onTap: () => Navigator.of(context).pushNamed(
                   ProfileScreen.routeName,
@@ -277,7 +279,7 @@ class _PostSingleViewState extends State<PostSingleView> {
                 children: [
                   Row(
                     children: [
-                      ProfileImage(radius: 25, pfpUrl: imgurl),
+                      ProfileImage(radius: 20, pfpUrl: imgurl),
                       SizedBox(width: 15.0),
                       Text(
                         name,
@@ -288,12 +290,14 @@ class _PostSingleViewState extends State<PostSingleView> {
                       ),
                     ],
                   ),
-                  widget.post!.author.id ==
-                          context.read<AuthBloc>().state.user!.uid
+                  widget.post!.author.id == context.read<AuthBloc>().state.user!.uid
                       ? IconButton(
-                          onPressed: () => widget.post != null ?_postSettings() : null,
+                          onPressed: () => widget.post != null ? _postSettings() : null,
                           icon: Icon(Icons.more_vert))
-                      : SizedBox.shrink()
+                      : IconButton(
+                        onPressed: () => widget.post != null ? _reportPost() : null,
+                        icon: Icon(Icons.report_gmailerrorred_outlined, color: Colors.red[100]),
+                      )
                 ],
               ),
             ),
@@ -337,6 +341,18 @@ class _PostSingleViewState extends State<PostSingleView> {
                 ],
               ));
         });
+  }
+
+  _reportPost() {
+    // send a notif to me (kf ceo) to make known that there was a post that was 
+    // flaged for some reason.
+    if (widget.post!.commuinity != null) {
+      FirebaseFirestore.instance.collection(Paths.report).doc(widget.post!.commuinity!.id).set({
+        "postId":widget.post!.id});
+
+        snackBar(snackMessage: "Thank you. this post will be reviewed", context: context);
+    }
+    
   }
 
   Widget contentContainer({required Post? post, required Size size}) {
@@ -387,7 +403,7 @@ class _PostSingleViewState extends State<PostSingleView> {
     } else if (widget.adWidget != null ) {
       return Center(child: widget.adWidget);
     } else {
-      return Text("contennt containe is empty???");
+      return Text("content container is empty???");
     }
   }
 
@@ -410,6 +426,8 @@ class _PostSingleViewState extends State<PostSingleView> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          widget.post!=null?viewCommuinity(commuinity: widget.post!.commuinity,
+                isImage: widget.post!.imageUrl != null):SizedBox.shrink(),
           interactions(),
          
           Container(

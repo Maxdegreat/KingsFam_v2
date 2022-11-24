@@ -55,4 +55,7 @@ class Paths {
   // general
   static const String members = "members";
   static const String roomSettings = "rSettings";
+
+  static const String report = "report";
+  static const String developers = "developers";
 }

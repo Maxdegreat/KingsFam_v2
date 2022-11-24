@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.2+15
+version: 1.0.2+16
 
 environment:
   sdk: ">=2.17.5 <3.0.0"
@@ -56,7 +56,7 @@ dependencies:
   
   firebase_core: ^1.3.0
   firebase_messaging: ^10.0.3
-  flutter_local_notifications: ^9.2.0
+  flutter_local_notifications: ^12.0.4 #^7.0.0
   firebase_storage: ^9.0.0
 
   provider: ^5.0.0
@@ -67,7 +67,7 @@ dependencies:
   cached_network_image: ^3.0.0
   
   # file_picker: ^4.1.4
-  # image_editor_plus: ^0.1.5 this thing litterly causes my app to crash
+  # image_editor_plus: ^0.1.5 this thing literly causes my app to crash
   image_cropper: ^1.4.1
   video_player:
 
@@ -104,7 +104,6 @@ dependencies:
   carousel_slider: ^4.1.1
   date_time_picker: ^2.1.0
   simple_link_preview: ^1.0.2
-  
 
 
 dev_dependencies:

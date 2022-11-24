@@ -9,7 +9,7 @@ class AdHelper {
     String testNativeAdUnitId = "ca-app-pub-3940256099942544/2247696110";
 
     if (Platform.isAndroid) {
-      return testNativeAdUnitId;
+      return testNativeAdUnitId; // prodNativeAdUnitId;
     } else {
       return "";
     }
@@ -20,7 +20,7 @@ class AdHelper {
     String testAdUnitId = "ca-app-pub-3940256099942544/6300978111";
     if (Platform.isAndroid) {
       // ignore: dead_code
-      return testAdUnitId ;
+      return testAdUnitId; // prodAdUnitIdA ;
     } else if (Platform.isIOS) {
       return "ca-app-pub-3940256099942544/2934735716";
     } else {

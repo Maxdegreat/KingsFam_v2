@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
+import 'package:kingsfam/local_notif/notif_api.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/chat_room/chat_room.dart';
 
@@ -72,6 +73,12 @@ class _ChatsScreenState extends State<ChatsScreen>
     // Also handle any interaction when the app is in the background via a
     // Stream listener
     FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+
+    // listen if app is in the foreground
+    FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) {
+      snackBar(snackMessage: "you recieved a notfication", context: context, bgColor: Colors.blueGrey);
+      log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+    });
   }
 
   Future<void> _handleMessage(RemoteMessage message) async {
@@ -150,7 +157,6 @@ class _ChatsScreenState extends State<ChatsScreen>
   @override
   void initState() {
     super.initState();
-
     final newVersion = NewVersion(
       iOSId: 'com.kingbiz.kingsfam',
       androidId: 'com.kingbiz.kingsfam',
