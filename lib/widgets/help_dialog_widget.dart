@@ -22,7 +22,7 @@ Widget howToBox() {
     builder: (BuildContext context, setState) {
       return Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(25), color: Color(hc.hexcolorCode('#FFC050'))),
+            borderRadius: BorderRadius.circular(25), color: Colors.grey[900]),
         height: MediaQuery.of(context).size.height / 2.5,
         width: 450,
         child: PageView.builder(

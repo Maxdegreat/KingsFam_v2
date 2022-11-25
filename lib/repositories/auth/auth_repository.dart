@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:kingsfam/config/paths.dart';
@@ -10,6 +11,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/auth/base_auth_repository.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kingsfam/repositories/extraTools.dart';
+import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/widgets/snackbar.dart';
 import 'dart:convert';
 import 'dart:math';
@@ -123,6 +125,41 @@ class AuthRepository extends BaseAuthRepository {
       await _firebaseAuth.signOut();
     }
     await _firebaseAuth.signOut();
+  }
+
+  Future<void> deleteAccount() async {
+    if (currUser != null) {
+      currUser!.delete();
+      // remove the users post 
+      FirebaseFirestore db = FirebaseFirestore.instance;
+      var batch = db.batch();
+      QuerySnapshot p = await FirebaseFirestore.instance.collection(Paths.posts).where('author', isEqualTo: FirebaseFirestore.instance.collection(Paths.users).doc(currUser!.uid)).get();
+      p.docs.forEach((doc) async {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        var imageUrl = data['imageUrl'] ?? null;
+        var videoUrl = data['videoUrl'] ?? null;
+        var thumbnailUrl = data['thumbnailUrl'] ?? null;
+        if (imageUrl != null)
+          FirebaseStorage.instance.refFromURL(imageUrl).delete();
+        if (videoUrl != null)
+          FirebaseStorage.instance.refFromURL(videoUrl).delete();
+        if (thumbnailUrl != null)
+          FirebaseStorage.instance.refFromURL(thumbnailUrl).delete();
+        Userr u = await UserrRepository().getUserrWithId(userrId: currUser!.uid);
+        if (u.profileImageUrl.isNotEmpty) {
+          FirebaseStorage.instance.refFromURL(u.profileImageUrl).delete();
+        }
+        if (u.bannerImageUrl!=null || u.bannerImageUrl.isNotEmpty) {
+          FirebaseStorage.instance.refFromURL(u.bannerImageUrl).delete();
+        }
+
+        // TODO LATER ADD THE URLS INTO A BATCH DEL;
+        batch.delete(doc.reference);
+      });
+      await batch.commit();
+      // update the user document and make it a deled account
+      await FirebaseFirestore.instance.collection(Paths.users).doc(currUser!.uid).update(Userr.empty.copyWith().toDoc());
+    }
   }
 
     final googleSignIn = GoogleSignIn();

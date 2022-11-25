@@ -21,7 +21,7 @@ class EditProfileScreenArgs {
   });
 }
 
-// global args type beat. once we have our passed args we will update this args to be equal 
+// global args type beat. once we have our passed args we will update this args to be equal
 // this will allow us to use the global args below for our  colorPref picker!
 BuildContext? pb;
 
@@ -36,15 +36,14 @@ class EditProfileScreen extends StatefulWidget {
                   storageRepository: context.read<StorageRepository>(),
                   userrRepository: context.read<UserrRepository>()),
               child: EditProfileScreen(
-                userr: args.context.read<ProfileBloc>().state.userr, 
+                userr: args.context.read<ProfileBloc>().state.userr,
               ),
             ));
   }
 
   EditProfileScreen({required this.userr});
-  
-  final Userr userr;
 
+  final Userr userr;
 
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
@@ -58,7 +57,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Map<String, String> hexcolormapStr = HexColor().hexColorMap;
   Map<int, String> hexcolormapInt = HexColor().hexcolorCounter;
   Map<String, String> hexToColor = HexColor().hexToColor;
-
 
   // used to gobally update the users color preff
   String? userColorPref;
@@ -89,7 +87,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           // this will help the user know what they are changing in realtime and prevent them from muptile updates via writes
           if (state.colorPref == '') {
             log(widget.userr.colorPref);
-            context.read<EditProfileCubit>().updateColorPreff(widget.userr.colorPref);
+            context
+                .read<EditProfileCubit>()
+                .updateColorPreff(widget.userr.colorPref);
           }
 
           return SingleChildScrollView(
@@ -156,13 +156,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               child: Padding(
                                 padding: const EdgeInsets.only(bottom: 5),
                                 child: Text(
-                                  'My Color Pref is... ${hexToColor[state.colorPref]}',
-                                  style: TextStyle( fontWeight: FontWeight.bold, fontSize: 17, color: Color(hexcolor.hexcolorCode(state.colorPref)),
-                                )),
+                                    'My Color Pref is... ${hexToColor[state.colorPref]}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+                                      color: Color(hexcolor
+                                          .hexcolorCode(state.colorPref)),
+                                    )),
                               ),
                             ),
 
-                            PickColorPref(hexcolormapStr: hexcolormapStr, hexcolormapInt: hexcolormapInt, hexcolor: hexcolor),
+                            PickColorPref(
+                                hexcolormapStr: hexcolormapStr,
+                                hexcolormapInt: hexcolormapInt,
+                                hexcolor: hexcolor),
 
                             Divider(
                               color: Colors.grey,
@@ -180,15 +187,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 style: const TextStyle(color: Colors.white),
                                 underline: Container(
                                   height: 2,
-                                  color: Color(hexcolor.hexcolorCode(state.colorPref)),
+                                  color: Color(
+                                      hexcolor.hexcolorCode(state.colorPref)),
                                 ),
                                 onChanged: (String? newValue) {
-
-
-                                  setState(() => Location.dropdownValue = newValue!);
-                                  context.read<EditProfileCubit>().locationChanged(newValue!);
+                                  setState(
+                                      () => Location.dropdownValue = newValue!);
+                                  context
+                                      .read<EditProfileCubit>()
+                                      .locationChanged(newValue!);
                                 },
-                                items: locations().map<DropdownMenuItem<String>>((String value) {
+                                items: locations()
+                                    .map<DropdownMenuItem<String>>(
+                                        (String value) {
                                   return DropdownMenuItem<String>(
                                     value: value,
                                     child: Text(value),
@@ -197,29 +208,87 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                             ),
 
-                            //  TextFormField(
-                            //    initialValue: userr.location,
-                            //    decoration: InputDecoration(hintText: 'add name of state to find commuinitys around'),
-                            //    validator: (value) => value!.trim().isEmpty ? "Location Can Not be empty" : null,
-                            //    onChanged: (value) => context
-                            //        .read<EditProfileCubit>()
-                            //        .locationChanged(value),
-                            //  ),
                             SizedBox(height: 15.0),
                             ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                              primary: Colors.red[400]),
-                              onPressed: () => _submitForm(context, state.status == EditProfileStatus.submitting),
-                              child: Text('Done!?')
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.green[400]),
+                                onPressed: () => _submitForm(
+                                    context,
+                                    state.status ==
+                                        EditProfileStatus.submitting),
+                                child: Text('Done!?')),
+
+                            SizedBox(
+                              height: 20,
                             ),
 
-
-                            ElevatedButton(
-                              onLongPress: () => context.read<AuthRepository>().logout(),
-                              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Long Press For 5 Seconds To Log Out"))),
-                              child: Text("Log Me Out :(", style: TextStyle(color: Colors.black),),
-                              style: ElevatedButton.styleFrom(primary: Colors.grey[400]),
-                            )
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  TextButton(
+                                    onLongPress: () =>
+                                        context.read<AuthRepository>().logout(),
+                                    onPressed: () => ScaffoldMessenger.of(
+                                            context)
+                                        .showSnackBar(SnackBar(
+                                            content: Text(
+                                                "Long Press For 5 Seconds To Log Out"))),
+                                    child: Text(
+                                      "Log Me Out",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  TextButton(
+                                    onLongPress: () {
+                                      context.read<AuthRepository>().deleteAccount();
+                                      // Navigator.of(context).pushNamed(routeName)
+                                      // showDialog(context: context, builder: (context) {
+                                      //   return AlertDialog(
+                                      //     title:
+                                      //         const Text('Delete Your Account'),
+                                      //     content: SingleChildScrollView(
+                                      //       child: ListBody(
+                                      //         children: const <Widget>[
+                                      //           Text(
+                                      //               'Upon deleteing your account you will remove all your information from'
+                                      //               ' our cloud. You will have to make a new account if you would like to come back to KingsFam.'),
+                                      //         ],
+                                      //       ),
+                                      //     ),
+                                      //     actions: <Widget>[
+                                      //       TextButton(
+                                      //         child: const Text('Nevermind, go back', style:TextStyle(color: Colors.white)),
+                                      //         onPressed: () {
+                                      //           Navigator.of(context).pop();
+                                      //         },
+                                      //       ),
+                                      //       TextButton(
+                                      //         child: const Text('I understand', style:TextStyle(color: Colors.red)),
+                                      //         onPressed: () {
+                                      //           snackBar(snackMessage: "hold for 5 seconds to delete your account", context: context);
+                                      //         },
+                                      //         onLongPress: () {
+                                      //           
+                                      //         },
+                                      //       ),
+                                      //     ]);
+                                      // });
+                                    },
+                                    onPressed: () => ScaffoldMessenger.of(
+                                            context)
+                                        .showSnackBar(SnackBar(
+                                            content: Text(
+                                                "Long Press For 5 Seconds To to delete your account. Note your account will be forever deleted"))),
+                                    child: Text(
+                                      "Delete my account",
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  )
+                                ])
                           ],
                         )))
               ],
@@ -257,8 +326,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       context.read<EditProfileCubit>().submit();
     }
   }
-
-
 }
 
 class PickColorPref extends StatelessWidget {
@@ -279,42 +346,42 @@ class PickColorPref extends StatelessWidget {
       height: 127,
       width: double.infinity,
       child: ListView.builder(
-        
-        scrollDirection: Axis.horizontal,
-        itemCount: hexcolormapStr.length,
-        itemBuilder: (context, idx) {
-        
-        Size size = MediaQuery.of(context).size;
-        final currColor = hexcolormapStr[hexcolormapInt[idx]];
-        
-        return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () {
-                if (currColor != null) {
-                  context.read<EditProfileCubit>().updateColorPreff(currColor);
-                }
-              },
-      child: Container(
-        height: size.height / 17,
-        width: size.width / 8,
-        decoration: BoxDecoration(
-          color: Color(hexcolor.hexcolorCode(currColor!)),
-          borderRadius: BorderRadius.circular(15),
-        ),
-      ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(hexcolormapInt[idx]!,
-        style: TextStyle(
-          color: Color(hexcolor.hexcolorCode(currColor)),
-        ))
-                        ],
+          scrollDirection: Axis.horizontal,
+          itemCount: hexcolormapStr.length,
+          itemBuilder: (context, idx) {
+            Size size = MediaQuery.of(context).size;
+            final currColor = hexcolormapStr[hexcolormapInt[idx]];
+
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (currColor != null) {
+                        context
+                            .read<EditProfileCubit>()
+                            .updateColorPreff(currColor);
+                      }
+                    },
+                    child: Container(
+                      height: size.height / 17,
+                      width: size.width / 8,
+                      decoration: BoxDecoration(
+                        color: Color(hexcolor.hexcolorCode(currColor!)),
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                    );
-                  }),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(hexcolormapInt[idx]!,
+                      style: TextStyle(
+                        color: Color(hexcolor.hexcolorCode(currColor)),
+                      ))
+                ],
+              ),
+            );
+          }),
     );
   }
 }
