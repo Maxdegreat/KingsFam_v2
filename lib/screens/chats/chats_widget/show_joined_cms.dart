@@ -71,6 +71,13 @@ class _showJoinedCmsState extends State<showJoinedCms> {
             child: _isNativeAdLoaded
                 ? Container(
                     decoration: BoxDecoration(
+                      gradient: LinearGradient(
+              begin: Alignment.bottomLeft,
+              end: Alignment.topCenter,
+              colors: [
+                Color(hc.hexcolorCode("#20263c")),
+                Color(hc.hexcolorCode("#141829"))
+              ]),
                       borderRadius: BorderRadius.circular(15),
                       color: Color(hc.hexcolorCode("#141829")),
                     ),

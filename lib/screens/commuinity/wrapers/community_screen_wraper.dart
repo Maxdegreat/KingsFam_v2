@@ -556,6 +556,7 @@ SliverAppBar cmSliverAppBar({
             child: Container(
                 decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
+              border: Border.all(width: .5, color: Colors.blue[900]!),
               image: DecorationImage(
                   image: CachedNetworkImageProvider(cm.imageUrl),
                   fit: BoxFit.cover),

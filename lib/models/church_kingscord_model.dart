@@ -25,6 +25,7 @@ class KingsCord extends Equatable {
     this.mode,
     this.rolesAllowed,
   });
+  
   //gen the props
   @override
   List<Object?> get props => [id, tag, cordName, members, mode, rolesAllowed, subscribedIds];

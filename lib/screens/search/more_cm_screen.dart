@@ -131,7 +131,7 @@ class _MoreCmState extends State<MoreCm> {
                             bgImgUrl: cm.imageUrl,
                             name: cm.name,
                             location: cm.location,
-                            count: cm.members.length.toString()),
+                            count: cm.size.toString()),
                       );
                     },
                   ),

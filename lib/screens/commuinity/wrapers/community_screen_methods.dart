@@ -1,5 +1,6 @@
 part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 
+
 // On Leave A Community
 onLeaveCommuinity(
     {required CommuinityBloc b,
@@ -80,11 +81,20 @@ Widget contentPreview({required Post post, required BuildContext context, requir
           CommuinityFeedScreen.routeName,
           arguments: CommuinityFeedScreenArgs(commuinity: cm)).then((_) => context.read<BottomnavbarCubit>().showBottomNav(true)),
       child: Container(
+      
         height: 80,
         width: 200,
         decoration: BoxDecoration(
           color: Color(hc.hexcolorCode("#141829")),
           borderRadius: BorderRadius.circular(10),
+          border: Border.all(width: .5, color: Colors.blue[900]!),
+          gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              colors: [
+                Color(hc.hexcolorCode("#20263c")),
+                Color(hc.hexcolorCode("#141829"))
+              ]),
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),

@@ -555,7 +555,11 @@ class ChurchRepository extends BaseChurchRepository {
 
         // we should also inc the size of the cm Id
         final docRef = fb.doc(commuinity.id);
-        docRef.update({'size': commuinity.members.length - 1});
+        if (commuinity.size == null ) {
+          docRef.update({'size': 1});
+        } else {
+          docRef.update({'size': commuinity.size! - 1});
+        }
   }
 
   void inviteUserToCommuinity({required Userr fromUser,required String toUserId,required Church commuinity}) {
@@ -597,7 +601,11 @@ class ChurchRepository extends BaseChurchRepository {
       addCommunityMember(cmId: commuinity.id!, roleId: "0", userId: user.id);
 
       final docRef = fb.doc(commuinity.id); 
-      docRef.update({'size': commuinity.members.length + 1});
+      if (commuinity.size == null)
+        docRef.update({'size': 1});
+      else
+        docRef.update({'size': commuinity.size! + 1});
+        
     });
 
 

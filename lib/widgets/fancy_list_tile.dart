@@ -49,7 +49,7 @@ class FancyListTile extends StatelessWidget {
   Container child1(BuildContext context, HexColor hc) {
     TextStyle s = TextStyle(color: Colors.grey, fontStyle: FontStyle.italic);
     return Container(
-      
+        
         height: MediaQuery.of(context).size.height / height,
         width: double.infinity,
         child: Padding(
@@ -105,12 +105,18 @@ class FancyListTile extends StatelessWidget {
           ),
         ),
         decoration: BoxDecoration(
-          
+            gradient: LinearGradient(
+              begin: Alignment.bottomLeft,
+              end: Alignment.topCenter,
+              colors: [
+                Color(hc.hexcolorCode("#20263c")),
+                Color(hc.hexcolorCode("#141829"))
+              ]),
             color: Color(hc.hexcolorCode('#141829')),
             borderRadius: BorderRadius.circular(15),
             border: Border.all(
                 color: isMentioned == null || isMentioned == false
-                    ? Colors.transparent
+                    ? Colors.transparent//blue[900]!
                     : Colors.amber)));
   }
 

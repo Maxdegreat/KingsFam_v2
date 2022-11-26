@@ -121,7 +121,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       if (lastPostDoc != null && lastPostDoc.exists) {
         // we want to grab some 2 post and pass them onto the users post.
         List<Post?> lst = await _postsRepository.getUserPosts(
-          userId: _authBloc.state.user!.uid, 
+          userId: event.userId, 
           limit: 2, 
           lastPostDoc: lastPostDoc
         );
@@ -181,7 +181,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       // whenever a new post is posted it will update the home page post view
       yield state.copyWith(post: []);
       List<Post?> lst = await _postsRepository.getUserPosts(
-          userId: _authBloc.state.user!.uid, 
+          userId: event.userId, 
           limit: 2, 
           lastPostDoc: null,
         );

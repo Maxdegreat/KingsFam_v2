@@ -385,4 +385,3 @@ class PickColorPref extends StatelessWidget {
     );
   }
 }
-//128 by 128

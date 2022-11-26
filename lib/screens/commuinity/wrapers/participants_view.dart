@@ -95,14 +95,15 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
                               // child 1 will be a row allowing you to view pending joins or baned users ---------
                               pendingAndBandRow(),
                                Padding(
-                                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
+                                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
                                  child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
+                                    primary: Color(hc.hexcolorCode("#141829")),
                                     shape: StadiumBorder(),
                                   ),
                                   onPressed: () {
                                   listenToScrolling();
-                                 }, child: Text("LoadMore")),
+                                 }, child: Text("Load more")),
                                ),
                               Container(
                                 height: MediaQuery.of(context).size.height / 1.85,
@@ -110,25 +111,30 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
                                   itemCount: users.length,
                                   itemBuilder: (context, index) {
                                     Userr user = users[index];
-                                        return Card(
-                                          color: Color(hc.hexcolorCode("##141829")),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(2.0),
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                ListTile(
-                                                  leading: ProfileImage(
-                                                    pfpUrl: user.profileImageUrl,
-                                                    radius: 30,
+                                        return GestureDetector(
+                                          onTap: () {
+                                            //Navigator.of(context).pushNamed(routeName)
+                                          },
+                                          child: Card(
+                                            color: Color(hc.hexcolorCode("#141829")),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(2.0),
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  ListTile(
+                                                    leading: ProfileImage(
+                                                      pfpUrl: user.profileImageUrl,
+                                                      radius: 30,
+                                                    ),
+                                                    title: Text(user.username),
+                                                    onTap: () {
+                                                    
+                                                    },
                                                   ),
-                                                  title: Text(user.username),
-                                                  onTap: () {
-            
-                                                  },
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         );
@@ -220,6 +226,7 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
             }, 
             child: Text("View Pending Joins"),
             style: ElevatedButton.styleFrom(
+              //primary: Color(hc.hexcolorCode("#141829")),
               shape: StadiumBorder()
             ),
           ),
@@ -229,6 +236,7 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
             }, 
             child: Text("View Baned Joins"),
             style: ElevatedButton.styleFrom(
+              //primary: Color(hc.hexcolorCode("#141829")),
               shape: StadiumBorder()
             ),
           )
@@ -287,15 +295,19 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
   }
 
   void listenToScrolling() async {
-    if (_controller.position.atEdge) {
-      if (_controller.position.pixels != 0.0 &&
-          _controller.position.maxScrollExtent == _controller.position.pixels) {
-        List<Userr> lst = await grabLimitUserrs();
-        // TODO ADD A VALIDATION THAT WILL ALLOW NO DUPLICATE IDS
+    List<Userr> lst = await grabLimitUserrs();
+
         users.addAll(lst);
         setState(() {});
-      }
-    }
+    // if (_controller.position.atEdge) {
+    //   if (_controller.position.pixels != 0.0 &&
+    //       _controller.position.maxScrollExtent == _controller.position.pixels) {
+    //     List<Userr> lst = await grabLimitUserrs();
+    //     // TODO ADD A VALIDATION THAT WILL ALLOW NO DUPLICATE IDS
+    //     users.addAll(lst);
+    //     setState(() {});
+    //   }
+    // }
   }
 
 

@@ -8,8 +8,11 @@ class ThemeInfo {
   ThemeData themeClubHouseDark() {
     HexColor hexcolor = HexColor(); // 1 sec
     return ThemeData(
+      
         brightness: Brightness.dark,
-        appBarTheme: AppBarTheme( // thats it! but what looks better. the app bar or screen body?
+        appBarTheme: AppBarTheme( 
+          // thats it! but what looks better. the app bar or screen body?
+          toolbarHeight: 45,
           color: Color(hexcolor.hexcolorCode('#20263c')),// whats the hex val?
           // Color.fromARGB(255, 32, 58, 79), to use hex i have to do some extra stuff. its too much
           elevation: 0,
@@ -17,6 +20,7 @@ class ThemeInfo {
         scaffoldBackgroundColor: Color(hexcolor.hexcolorCode('#20263c')),
         // Color.fromARGB(255, 32, 58, 79),
         primaryColorDark: Colors.white,
+        splashColor: Color.fromARGB(255, 69, 18, 18),
         textTheme: TextTheme(
             bodyText1: TextStyle(color: Colors.white, fontSize: 18),//GoogleFonts.acme(color: Colors.white, fontSize: 18),
             bodyText2: GoogleFonts.aBeeZee(color: Colors.white, fontSize: 17),

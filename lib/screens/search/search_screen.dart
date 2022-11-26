@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -199,7 +198,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   SizedBox(height: 3.0),
                   state.churches.length > 0
                       ? Container(
-                          height: 205,
+                          height: MediaQuery.of(context).size.height/3,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: state.churches.length,
@@ -241,7 +240,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   SizedBox(height: 5.0),
                   state.chruchesNotEqualLocation.length > 0
                       ? Container(
-                          height: 205,
+                          height: MediaQuery.of(context).size.height/3,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: state.chruchesNotEqualLocation.length,
@@ -259,23 +258,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           height: 170,
                           child: Center(child: Text("hmm, nothing to see here"))),
 
-                  SizedBox(height: 10.0),
                   
-                  Text("Join Link"),
-
-                  SizedBox(height: 10.0),
-
-                  Container(
-                    height: 45,
-                    child: TextField(
-                      decoration: InputDecoration(
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
-                      filled: true,
-                      hintStyle: TextStyle(color: Colors.grey),
-                      hintText: "Enter A Join Link",
-                      fillColor: Color(hc.hexcolorCode("#141829")!)),
-                    ),
-                  )
                   
                 ],
               ),

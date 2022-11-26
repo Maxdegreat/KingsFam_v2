@@ -149,6 +149,14 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       color: Color(hc.hexcolorCode("#141829")),
+                      gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              colors: [
+                Color(hc.hexcolorCode("#20263c")),
+                Color(hc.hexcolorCode("#141829"))
+              ]),
+              border: Border.all(width: .5, color: Colors.blue[900]!)
                     ),
                     height: 80,
                     width: 200,
@@ -188,6 +196,7 @@ class _CommuinityScreenState extends State<CommuinityScreen> with SingleTickerPr
 
     }, builder: (context, state) {
       return Scaffold(
+        
           body: SafeArea(
         child: state.status == CommuintyStatus.armormed ? 
         // status is armormed
