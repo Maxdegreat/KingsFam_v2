@@ -111,30 +111,27 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
                                   itemCount: users.length,
                                   itemBuilder: (context, index) {
                                     Userr user = users[index];
-                                        return GestureDetector(
-                                          onTap: () {
-                                            //Navigator.of(context).pushNamed(routeName)
-                                          },
-                                          child: Card(
-                                            color: Color(hc.hexcolorCode("#141829")),
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(2.0),
-                                              child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  ListTile(
-                                                    leading: ProfileImage(
-                                                      pfpUrl: user.profileImageUrl,
-                                                      radius: 30,
-                                                    ),
-                                                    title: Text(user.username),
-                                                    onTap: () {
-                                                    
-                                                    },
+                                        return Card(
+                                          
+                                          color: Color(hc.hexcolorCode("#141829")),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(2.0),
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                ListTile(
+                                                  leading: ProfileImage(
+                                                    pfpUrl: user.profileImageUrl,
+                                                    radius: 30,
                                                   ),
-                                                ],
-                                              ),
+                                                  title: Text(user.username),
+                                                  onTap: () {
+                                                  Navigator.of(context).pushNamed(Participant_deep_view.routeName,
+                                            arguments: ParticipantDeepViewArgs(user: user, cmId: widget.cm.id!));
+                                                  },
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         );
@@ -226,7 +223,7 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
             }, 
             child: Text("View Pending Joins"),
             style: ElevatedButton.styleFrom(
-              //primary: Color(hc.hexcolorCode("#141829")),
+              primary: Color(hc.hexcolorCode("#141829")),
               shape: StadiumBorder()
             ),
           ),
@@ -236,7 +233,7 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
             }, 
             child: Text("View Baned Joins"),
             style: ElevatedButton.styleFrom(
-              //primary: Color(hc.hexcolorCode("#141829")),
+              primary: Color(hc.hexcolorCode("#141829")),
               shape: StadiumBorder()
             ),
           )

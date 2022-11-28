@@ -191,6 +191,9 @@ class CustomRoute {
       case KingsCordSettings.routeName:
         return KingsCordSettings.route(args: settings.arguments as KingsCordSettingsArgs);
 
+      case Participant_deep_view.routeName:
+        return Participant_deep_view.route(args: settings.arguments as ParticipantDeepViewArgs);
+
       default:
         return _errorRoute();
     }

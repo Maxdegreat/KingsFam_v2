@@ -37,3 +37,4 @@ export 'package:kingsfam/screens/commuinity/community_settings/update_privacy.da
 export 'package:kingsfam/screens/commuinity/community_settings/view_request.dart';
 export 'package:kingsfam/screens/commuinity/wrapers/participants_view.dart';
 export 'package:kingsfam/screens/commuinity/screens/kings cord/kings_cord_settings.dart';
+export 'package:kingsfam/screens/commuinity/wrapers/participant_deep_view.dart';

@@ -21,6 +21,7 @@ import 'package:kingsfam/widgets/chats_view_widgets/screens_for_page_view.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:new_version/new_version.dart';
 import 'package:rive/rive.dart';
+import '../../widgets/chats_view_widgets/getting_started.dart';
 import 'chats_widget/tab_dropdown.dart';
 
 class ChatsScreen extends StatefulWidget {
@@ -41,23 +42,19 @@ class _ChatsScreenState extends State<ChatsScreen>
 
   int _tabIdx = 1;
 
-
-
   Future<void> setupInteractedMessage() async {
-    
     if (Platform.isIOS) {
       await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
+      );
     }
-  
+
     // Get any messages which caused the application to open from.
     // a terminated state.
     RemoteMessage? initialMessage =
@@ -75,14 +72,16 @@ class _ChatsScreenState extends State<ChatsScreen>
 
     // listen if app is in the foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) {
-      snackBar(snackMessage: "you recieved a notfication", context: context, bgColor: Colors.blueGrey);
+      snackBar(
+          snackMessage: "you recieved a notfication",
+          context: context,
+          bgColor: Colors.blueGrey);
       log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
     });
   }
 
   Future<void> _handleMessage(RemoteMessage message) async {
-
-     log("MESSAGE.DATA['TYPE'] IS OF VAL: "  + message.data['type'].toString());
+    log("MESSAGE.DATA['TYPE'] IS OF VAL: " + message.data['type'].toString());
     if (message.data['type'] == 'kc_type') {
       // type: kc_type has a cmId and a kcId. see cloud functions onMentionedUser for reference
       // var snap = await FirebaseFirestore.instance.collection(Paths.church).doc(message.data['cmId']).collection(Paths.kingsCord).doc(message.data['kcId']).get();
@@ -98,19 +97,22 @@ class _ChatsScreenState extends State<ChatsScreen>
 
       if (message.data['kcId'] != null) {
         var snapK = await FirebaseFirestore.instance
-          .collection(Paths.kingsCord)
-          .doc(message.data['kcId'])
-          .get();
-      
-          Church? cm = await Church.fromDoc(snap);
-          KingsCord? kc = KingsCord.fromDoc(snapK);
-          if (kc != null)
-            Navigator.of(context).pushNamed(KingsCordScreen.routeName, arguments: KingsCordArgs(commuinity: cm, kingsCord: kc , userInfo: {}, usr: Userr.empty));
+            .collection(Paths.kingsCord)
+            .doc(message.data['kcId'])
+            .get();
 
-          return;
-        
-      } 
-      
+        Church? cm = await Church.fromDoc(snap);
+        KingsCord? kc = KingsCord.fromDoc(snapK);
+        if (kc != null)
+          Navigator.of(context).pushNamed(KingsCordScreen.routeName,
+              arguments: KingsCordArgs(
+                  commuinity: cm,
+                  kingsCord: kc,
+                  userInfo: {},
+                  usr: Userr.empty));
+
+        return;
+      }
 
       // KingsCord? kc = KingsCord.fromDoc(snap);
       // ignore: unnecessary_null_comparison
@@ -167,7 +169,7 @@ class _ChatsScreenState extends State<ChatsScreen>
     // used to navigate to different pages such as chat view and cm view.
 
     _tabController = TabController(length: 1, vsync: this, initialIndex: 0);
-   
+
     _tabController.addListener(() => setState(() {}));
     setupInteractedMessage();
     //super.build(context);
@@ -181,7 +183,7 @@ class _ChatsScreenState extends State<ChatsScreen>
 
   late TabController _tabController;
   bool chatScreenStateUnReadChats = false;
-  
+
   advancedStatusCheck(NewVersion newVersion) async {
     final status = await newVersion.getVersionStatus();
     if (status != null) {
@@ -201,56 +203,44 @@ class _ChatsScreenState extends State<ChatsScreen>
 
   @override
   Widget build(BuildContext context) {
-
-
-    
     HexColor hexcolor = HexColor();
-    
+
     final userId = context.read<AuthBloc>().state.user!.uid;
     return DefaultTabController(
         length: 1,
         child: Scaffold(
-            appBar: AppBar(
-              title: Row(
-                children: [
-                  Text('KING\'SFAM',
-                      // style: 
-                      // GoogleFonts.cedarvilleCursive(
-                      //     color: Color(hexcolor.hexcolorCode('#FFC050'))) 
-                      ),
-                  SizedBox(width: 5),
-                  // showAssetImage(40, 40, 5,
-                  //     "assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png")
-                ],
-              ),
-              actions: [
-                ChatsDropDownButton(tabctrl: _tabController, stateUnreadChats: chatScreenStateUnReadChats),
-              ],
-            ),
             body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
-              
                 listener: (context, state) {
-              if (state.status == ChatStatus.error) {
-                ErrorDialog(content: 'chat_screen e-code: ${state.failure.message}');
-              }
+          if (state.status == ChatStatus.error) {
+            ErrorDialog(
+                content: 'chat_screen e-code: ${state.failure.message}');
+          }
 
-              if (state.unreadChats != false) {
-                chatScreenStateUnReadChats = state.unreadChats;
-                setState(() {});
-              }
-            }, builder: (context, state) {
-              
-              
-              log(state.unreadChats.toString() + "That is the val of stateUnreadChats");
-              return Scaffold(
-                  body: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      ScreensForPageView().commuinity_view(userId, context),
-                      // ScreensForPageView().chats_view(userId, state, context)
-                    ],
-                  ));
-            })));
+          if (state.unreadChats != false) {
+            chatScreenStateUnReadChats = state.unreadChats;
+            setState(() {});
+          }
+        }, builder: (context, state) {
+          return state.chs == null
+              ? CircularProgressIndicator()
+              : state.chs!.length == 0
+                  ? GettingStarted(
+                      bloc: context.read<ChatscreenBloc>(),
+                      state: state,
+                    )
+                  : CommuinityScreen(
+                      commuinity: state.chs!
+                          .first!); // showJoinedCms(currId: currId, state: state),
+          // Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: state.chs!.first));
+          // return Scaffold(
+          //     body: TabBarView(
+          //       controller: _tabController,
+          //       children: [
+          //         ScreensForPageView().commuinity_view(userId, context),
+          //         // ScreensForPageView().chats_view(userId, state, context)
+          //       ],
+          //     ));
+        })));
   }
 
   // ignore: non_constant_identifier_names

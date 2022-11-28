@@ -25,6 +25,9 @@ class ScreensForPageView {
       },
       builder: (context, state) {
         var currId = context.read<AuthBloc>().state.user!.uid;
+        // if (state.chs != null && state.chs!.length>0 && state.chs![0] != null) {
+        //   Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: state.chs![0]!));
+        // }
         return Scaffold(
           body: RefreshIndicator(
               onRefresh: () async =>
@@ -44,7 +47,7 @@ class ScreensForPageView {
                                 bloc: context.read<ChatscreenBloc>(),
                                 state: state,
                               )
-                            : showJoinedCms(currId: currId, state: state),
+                            :  showJoinedCms(currId: currId, state: state),
                       ],
                     ),
                   ))),

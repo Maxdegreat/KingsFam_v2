@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/nav/widgets/widgets.dart';
@@ -25,11 +26,11 @@ class NavScreen extends StatelessWidget {
   };
 
   final Map<BottomNavItem, Widget> items = const {
-    BottomNavItem.chats: Icon(Icons.home),
-    BottomNavItem.search: Icon(Icons.search),
-    BottomNavItem.add: SizedBox(height: 27, width: 27, child:  RiveAnimation.asset("assets/icons/add_icon.riv"),),
-    BottomNavItem.notifications: Icon(Icons.favorite_border),
-    BottomNavItem.profile: Icon(Icons.account_circle)
+    BottomNavItem.chats: Icon(Icons.home, size: 17,),
+    BottomNavItem.search: Icon(Icons.search, size: 17),
+    BottomNavItem.add: Icon(Iconsax.add_square4, size: 17),
+    BottomNavItem.notifications: Icon(Icons.favorite_border, size: 17),
+    BottomNavItem.profile: Icon(Icons.account_circle, size: 17)
   };
 
   @override

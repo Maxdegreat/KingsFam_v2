@@ -583,6 +583,7 @@ SliverAppBar cmSliverAppBar({
         ],
       ),
     ),
+    // leading: ,
     actions: [
       memberBtn(cmBloc: cmBloc, cm: cm, context: context),
       inviteButton(cm: cm, context: context),

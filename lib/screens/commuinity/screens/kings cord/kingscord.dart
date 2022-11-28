@@ -186,7 +186,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                         //     context: context,
                         //     cmId: widget.commuinity.id!,
                         //     kcId: widget.kingsCord.id!,
-                        //     seenderUsername: currUsersName),
+                        //     seenderUsername: currUsersName,
+                        // ),
                         onPressed: () {
                           showMediaPopUp = !showMediaPopUp;
                           setState(() {});
