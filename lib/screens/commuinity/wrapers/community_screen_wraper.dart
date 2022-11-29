@@ -6,11 +6,11 @@ Set<dynamic> cmPrivacySet = {
   RequestStatus.pending
 };
 
-Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,String? currRole, TabController cmTabCtrl, Widget? _ad) {
+Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
+    String? currRole, Widget? _ad) {
+  // create list for mentioned rooms and reg rooms
 
   // load an ad for the cm content
-  
-
 
   // ignore: unused_local_variable
   Color primaryColor = Colors.white;
@@ -18,7 +18,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,S
   Color secondaryColor = Color(hc.hexcolorCode('#141829'));
 
   return Padding(
-    padding: const EdgeInsets.all(8.0),
+    padding: const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
     child: CustomScrollView(slivers: <Widget>[
       cmSliverAppBar(
           currRole: currRole,
@@ -26,174 +26,81 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,S
           context: context,
           cmBloc: context.read<CommuinityBloc>()),
       SliverToBoxAdapter(
-          child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          state.status == CommuintyStatus.loading
-              ? LinearProgressIndicator()
-              : SizedBox.shrink(),
-          Container(
-            height: 40,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Color(hc.hexcolorCode("#141829")),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TabBar(
-                unselectedLabelColor: Colors.grey[700],
-                indicator: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Color(hc.hexcolorCode("#20263c"))),
-                controller: cmTabCtrl,
-                tabs: [
-                  Tab(child: Text("rooms")),
-                  Tab(child: Text("Events")),
-                  Tab(child: Text("About")),
+          child: Padding(
+        padding: const EdgeInsets.only(left: 5.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            state.status == CommuintyStatus.loading
+                ? LinearProgressIndicator()
+                : SizedBox.shrink(),
+            Padding(
+              padding: EdgeInsets.only(right: 10, left: 5, bottom: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height / 20,
+                    width: MediaQuery.of(context).size.width / 3.0,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Color(hc.hexcolorCode("#141829"))),
+                      onPressed: () {},
+                      child: Text("Home",
+                          style: Theme.of(context).textTheme.bodyText1),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Container(
+                    height: MediaQuery.of(context).size.height / 20,
+                    width: MediaQuery.of(context).size.width / 3.0,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Color(hc.hexcolorCode("#141829"))),
+                      onPressed: () {},
+                      child: Text("Invite",
+                          style: Theme.of(context).textTheme.bodyText1),
+                    ),
+                  )
                 ],
               ),
             ),
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: TabBarView(
-              controller: cmTabCtrl,
-              children: [
-                // child 1. this is a display of post and ooms 111111111111111111111111111111111111111111111111111111111111111111111111111111111111
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        state.isMember == null
-                            ? SizedBox.shrink()
-                            : state.isMember != false
-                                ? Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 5.0),
-                                    child: Container(
-                                      height: 30,
-                                      width: 200,
-                                      child: ElevatedButton(
-                                          onPressed: () {
-                                            if (!context
-                                                .read<CommuinityBloc>()
-                                                .state
-                                                .role["permissions"]
-                                                .contains("*")) {
-                                              showLeaveCommuinity(
-                                                  b: context
-                                                      .read<CommuinityBloc>(),
-                                                  cm: cm,
-                                                  context: context);
-                                            } else {
-                                              snackBar(
-                                                  snackMessage:
-                                                      "Owners can not abandon ship",
-                                                  context: context,
-                                                  bgColor: Colors.red);
-                                            }
-                                          },
-                                          child: Text(
-                                            "Leave",
-                                            style: TextStyle(color: Colors.red),
-                                          ),
-                                          style: ElevatedButton.styleFrom(
-                                              shape: StadiumBorder(),
-                                              primary: Color(
-                                                  hc.hexcolorCode("#141829")))),
-                                    ),
-                                  )
-                                : Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0),
-                                    child: joinBtn(
-                                        b: context.read<CommuinityBloc>(),
-                                        cm: cm,
-                                        context: context),
-                                  ),
-                        SizedBox(width: 10),
-                        Text("${cm.size} members")
-                      ],
-                    ),
-                    Text(
-                      "${cm.name}\'s Content",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 21,
-                        fontWeight: FontWeight.w800,
-                      ),
-                      overflow: TextOverflow.fade,
-                    ),
-                    Container(
-                      height: 85,
-                      width: double.infinity,
-                      child: state.postDisplay.length > 0
-                          ? ListView.builder(
-                              itemCount: 2,
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (context, index) {
-                                Post? post = state.postDisplay[0];
-                                if (post != null && index == 0) {
-                                  return contentPreview(
-                                      cm: cm, context: context, post: post);
-                                } else {
-                                  return _ad !=null ? _ad : SizedBox.shrink();
-                                }
-                              })
-                          : Center(
-                              child: state.status == CommuintyStatus.loading
-                                  ? Text("One Second ...")
-                                  : Text("Your Community Post Will Show Here")),
-                    ),
-                    //ContentContaner(context),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Rooms",
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 21,
-                            fontWeight: FontWeight.w800,
-                          ),
-                          overflow: TextOverflow.fade,
-                        ),
-                        collapseOrExpand(
-                            context.read<CommuinityBloc>(), 'cord'),
-                        context
-                                    .read<CommuinityBloc>()
-                                    .state
-                                    .role["permissions"]
-                                    .contains("*") ||
-                                context
-                                    .read<CommuinityBloc>()
-                                    .state
-                                    .role["permissions"]
-                                    .contains("#") ||
-                                context
-                                    .read<CommuinityBloc>()
-                                    .state
-                                    .role["permissions"]
-                                    .contains(CmActions.makeRoom)
-                            ? new_kingscord(
-                                cmBloc: context.read<CommuinityBloc>(),
-                                cm: cm,
-                                context: context)
-                            : SizedBox.shrink(),
-                      ],
-                    ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                children: [
+                  // child 1. this is a display of post and ooms 111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 
-                    Column(children: [
-                      if (state.collapseCordColumn) ...[
-                        SizedBox.shrink(),
-                      ] else
-                        ...state.kingCords.map((cord) {
+                  SizedBox(height: 10),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      state.mentionedCords.isNotEmpty
+                          ? Center(
+                              child: Text(
+                              "Mentions",
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 21,
+                                fontWeight: FontWeight.w800,
+                              ),
+                              overflow: TextOverflow.fade,
+                            ))
+                          : SizedBox.shrink(),
+                      if (state.mentionedCords.isNotEmpty)
+                        ...state.mentionedCords.map((cord) {
                           if (cord != null) {
                             return GestureDetector(
                                 onTap: () {
@@ -222,7 +129,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,S
                                                 commuinity: cm,
                                                 kingsCord: cord));
 
-                                    if (state.mentionedMap[cord.id] != false) {
+                                    
                                       // del the @ notification (del the mention)
                                       String currId = context
                                           .read<AuthBloc>()
@@ -235,7 +142,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,S
                                           .collection(cm.id!)
                                           .doc(cord.id)
                                           .delete();
-                                    }
+                                    
                                   } else {
                                     Navigator.of(context).pushNamed(
                                         SaysRoom.routeName,
@@ -259,68 +166,62 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,S
                                       cord: cord,
                                       commuinity: cm);
                                 },
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 3.0),
-                                  child: Container(
-                                    width:
-                                        MediaQuery.of(context).size.width / 1.7,
-                                    decoration: BoxDecoration(
-                                        color:
-                                            Color(hc.hexcolorCode("#0a0c14")),
-                                        borderRadius: BorderRadius.circular(8)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          cord.mode == "chat"
-                                              ? Text(
-                                                  "#",
-                                                  style:
-                                                      TextStyle(fontSize: 21),
-                                                )
-                                              : Icon(Icons
-                                                  .record_voice_over_rounded),
-                                          SizedBox(width: 3),
-                                          Container(
-                                            height: 30,
-                                            //width: MediaQuery.of(context).size.width -
-                                            // 50,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 7),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    cord.cordName,
-                                                    overflow: TextOverflow.fade,
-                                                    style: TextStyle(
-                                                        color: state.mentionedMap[
-                                                                    cord.id] ==
-                                                                true
-                                                            ? Colors.amber
-                                                            : Colors.white,
-                                                        fontWeight:
-                                                            state.mentionedMap[cord
-                                                                        .id] ==
-                                                                    true
-                                                                ? FontWeight
-                                                                    .w900
-                                                                : FontWeight
-                                                                    .w700),
-                                                  ),
-                                                ],
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 3.0),
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width /
+                                          1.4,
+                                      decoration: BoxDecoration(
+                                          color:
+                                              Color(hc.hexcolorCode("#0a0c14")),
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            cord.mode == "chat"
+                                                ? Text(
+                                                    "#",
+                                                    style:
+                                                        TextStyle(fontSize: 21),
+                                                  )
+                                                : Icon(Icons
+                                                    .record_voice_over_rounded),
+                                            SizedBox(width: 3),
+                                            Container(
+                                              height: 30,
+                                              //width: MediaQuery.of(context).size.width -
+                                              // 50,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 7),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      cord.cordName,
+                                                      overflow:
+                                                          TextOverflow.fade,
+                                                      style: TextStyle(
+                                                          color: Colors.amber,
+                                                          fontWeight:
+                                                              FontWeight.w900),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -329,211 +230,429 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,S
                             return SizedBox.shrink();
                           }
                         }).toList(),
-                    ]),
-                  ],
-                ),
 
-                // child 2 this is a display of events 222222222222222222222222222222222222222222222222222222222222222222222222222
-
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        SizedBox(height: 10),
-                        Text(
-                          "~ Events ~",
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 21,
-                            fontWeight: FontWeight.w800,
+                      SizedBox(height: 10),
+                      // this is the join btn ____________________________________
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.start,
+                      //   children: [
+                      //     state.isMember == null
+                      //         ? SizedBox.shrink()
+                      //         : state.isMember != false
+                      //             ? Padding(
+                      //                 padding: const EdgeInsets.symmetric(
+                      //                     vertical: 5.0),
+                      //                 child: Container(
+                      //                   height: 30,
+                      //                   width: 200,
+                      //                   child: ElevatedButton(
+                      //                       onPressed: () {
+                      //                         if (!context
+                      //                             .read<CommuinityBloc>()
+                      //                             .state
+                      //                             .role["permissions"]
+                      //                             .contains("*")) {
+                      //                           showLeaveCommuinity(
+                      //                               b: context
+                      //                                   .read<CommuinityBloc>(),
+                      //                               cm: cm,
+                      //                               context: context);
+                      //                         } else {
+                      //                           snackBar(
+                      //                               snackMessage:
+                      //                                   "Owners can not abandon ship",
+                      //                               context: context,
+                      //                               bgColor: Colors.red);
+                      //                         }
+                      //                       },
+                      //                       child: Text(
+                      //                         "Leave",
+                      //                         style: TextStyle(color: Colors.red),
+                      //                       ),
+                      //                       style: ElevatedButton.styleFrom(
+                      //                           shape: StadiumBorder(),
+                      //                           primary: Color(
+                      //                               hc.hexcolorCode("#141829")))),
+                      //                 ),
+                      //               )
+                      //             : Padding(
+                      //                 padding: const EdgeInsets.symmetric(
+                      //                     vertical: 8.0),
+                      //                 child: joinBtn(
+                      //                     b: context.read<CommuinityBloc>(),
+                      //                     cm: cm,
+                      //                     context: context),
+                      //               ),
+                      //     SizedBox(width: 10),
+                      //     Text("${cm.size} members")
+                      //   ],
+                      // ),
+                      // Text(
+                      //   "${cm.name}\'s Content",
+                      //   style: TextStyle(
+                      //     color: Colors.grey,
+                      //     fontSize: 21,
+                      //     fontWeight: FontWeight.w800,
+                      //   ),
+                      //   overflow: TextOverflow.fade,
+                      // ),
+                      // Container(
+                      //   height: 85,
+                      //   width: double.infinity,
+                      //   child: state.postDisplay.length > 0
+                      //       ? ListView.builder(
+                      //           itemCount: 2,
+                      //           scrollDirection: Axis.horizontal,
+                      //           itemBuilder: (context, index) {
+                      //             Post? post = state.postDisplay[0];
+                      //             if (post != null && index == 0) {
+                      //               return contentPreview(
+                      //                   cm: cm, context: context, post: post);
+                      //             } else {
+                      //               return _ad !=null ? _ad : SizedBox.shrink();
+                      //             }
+                      //           })
+                      //       : Center(
+                      //           child: state.status == CommuintyStatus.loading
+                      //               ? Text("One Second ...")
+                      //               : Text("Your Community Post Will Show Here")),
+                      // ),
+                      //ContentContaner(context),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Rooms",
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 21,
+                              fontWeight: FontWeight.w800,
+                            ),
+                            overflow: TextOverflow.fade,
                           ),
-                          overflow: TextOverflow.fade,
-                        ),
-                        context
-                                    .read<CommuinityBloc>()
-                                    .state
-                                    .role["permissions"]
-                                    .contains("*") ||
-                                context
-                                    .read<CommuinityBloc>()
-                                    .state
-                                    .role["permissions"]
-                                    .contains("#") ||
-                                context
-                                    .read<CommuinityBloc>()
-                                    .state
-                                    .role["permissions"]
-                                    .contains(CmActions.makeRoom)
-                            ? IconButton(
-                                onPressed: () {
-                                  Navigator.of(context)
-                                      .pushNamed(CreateRoom.routeName,
-                                          arguments: CreateRoomArgs(
-                                              cmBloc: context.read<CommuinityBloc>(),
-                                              cm: cm))
-                                      .then((value) {
-                                    // TODO setState and read the events again.
-                                  });
-                                },
-                                icon: Icon(Icons.add))
-                            : SizedBox.shrink()
-                      ],
-                    ),
-                    // This is the listview of events that is displayed.
-                    Container(
-                      height: MediaQuery.of(context).size.height / 1.89,
-                      width: double.infinity,
-                      child: state.events.length > 0
-                          ? ListView.builder(
-                              itemCount: state.events.length,
-                              scrollDirection: Axis.vertical,
-                              itemBuilder: (context, index) {
-                                Event? event = state.events[index];
-                                return event != null
-                                    ? GestureDetector(
-                                        onTap: () => Navigator.of(context)
-                                            .pushNamed(
-                                              EventView.routeName,
-                                                arguments: EventViewArgs(
-                                                  cm: cm,
-                                                    cmBloc: context
-                                                        .read<CommuinityBloc>(),
-                                                    event: event,
-                                                    )),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.black87,
-                                              borderRadius: BorderRadius.circular(15)
-                                            ),
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      //        month                             day                                   year
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets.all(
-                                                                2.0),
-                                                        child: Text(event
-                                                                    .startDateFrontEnd![
-                                                                1] +
-                                                            "/" +
-                                                            event.startDateFrontEnd![
-                                                                2] +
-                                                            "/" +
-                                                            event.startDateFrontEnd![
-                                                                0]),
-                                                      ),
-                                                      SizedBox(width: 5),
-                                                      Flexible(
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets.all(
-                                                                  2.0),
-                                                          child: Text(
-                                                              event.eventTitle,
-                                                              style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w700,
-                                                                  color: Colors
-                                                                      .blue[700]),
-                                                              overflow: TextOverflow
-                                                                  .ellipsis),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 5.0),
-                                                    child: Text(
-                                                      event.eventDescription,
-                                                      style: TextStyle(
-                                                          fontStyle:
-                                                              FontStyle.italic),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
+                          collapseOrExpand(
+                              context.read<CommuinityBloc>(), 'cord'),
+                          context
+                                      .read<CommuinityBloc>()
+                                      .state
+                                      .role["permissions"]
+                                      .contains("*") ||
+                                  context
+                                      .read<CommuinityBloc>()
+                                      .state
+                                      .role["permissions"]
+                                      .contains("#") ||
+                                  context
+                                      .read<CommuinityBloc>()
+                                      .state
+                                      .role["permissions"]
+                                      .contains(CmActions.makeRoom)
+                              ? new_kingscord(
+                                  cmBloc: context.read<CommuinityBloc>(),
+                                  cm: cm,
+                                  context: context)
+                              : SizedBox.shrink(),
+                        ],
+                      ),
+
+                      Column(children: [
+                        if (state.collapseCordColumn) ...[
+                          SizedBox.shrink(),
+                        ] else
+                          ...state.kingCords.map((cord) {
+                            if (cord != null) {
+                              return GestureDetector(
+                                  onTap: () {
+                                    if (cmPrivacySet.contains(state.status)) {
+                                      snackBar(
+                                          snackMessage:
+                                              "You must be a member to view",
+                                          context: context);
+                                      return null;
+                                    }
+                                    if (cord.mode == "chat") {
+                                      // handels the navigation to the kingscord screen and also handels the
+                                      // deletion of a noti if it eist. we check if noty eist by through a function insde the bloc.
+                                      bool isMember = context
+                                              .read<CommuinityBloc>()
+                                              .state
+                                              .isMember ??
+                                          false;
+                                      Navigator.of(context)
+                                          .pushNamed(KingsCordScreen.routeName,
+                                              arguments: KingsCordArgs(
+                                                  usr: state.currUserr,
+                                                  userInfo: {
+                                                    "isMember": isMember,
+                                                  },
+                                                  commuinity: cm,
+                                                  kingsCord: cord));
+
+                                      // if (state.mentionedMap[cord.id] !=
+                                      //     false) {
+                                      //   // del the @ notification (del the mention)
+                                      //   String currId = context
+                                      //       .read<AuthBloc>()
+                                      //       .state
+                                      //       .user!
+                                      //       .uid;
+                                      //   FirebaseFirestore.instance
+                                      //       .collection(Paths.mention)
+                                      //       .doc(currId)
+                                      //       .collection(cm.id!)
+                                      //       .doc(cord.id)
+                                      //       .delete();
+                                      // }
+                                    } else {
+                                      Navigator.of(context).pushNamed(
+                                          SaysRoom.routeName,
+                                          arguments: SaysRoomArgs(
+                                              currUsr: state.currUserr,
+                                              cm: cm,
+                                              kcName: cord.cordName,
+                                              kcId: cord.id!));
+                                    }
+                                  },
+                                  onLongPress: () {
+                                    if (cmPrivacySet.contains(state.status)) {
+                                      snackBar(
+                                          snackMessage:
+                                              "You must be a member to view",
+                                          context: context);
+                                      return null;
+                                    }
+                                    _delKcDialog(
+                                        context: context,
+                                        cord: cord,
+                                        commuinity: cm);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 3.0),
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width /
+                                          1.7,
+                                      decoration: BoxDecoration(
+                                          color:
+                                              Color(hc.hexcolorCode("#0a0c14")),
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            cord.mode == "chat"
+                                                ? Text(
+                                                    "#",
+                                                    style:
+                                                        TextStyle(fontSize: 21),
                                                   )
-                                                ],
+                                                : Icon(Icons
+                                                    .record_voice_over_rounded),
+                                            SizedBox(width: 3),
+                                            Container(
+                                              height: 30,
+                                              //width: MediaQuery.of(context).size.width -
+                                              // 50,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 7),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      cord.cordName,
+                                                      overflow:
+                                                          TextOverflow.fade,
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w700),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
+                                          ],
                                         ),
-                                      )
-                                    : SizedBox.shrink();
-                                
-                              })
-                          : Center(
-                              child: state.status == CommuintyStatus.loading
-                                  ? Text("One Second ...")
-                                  : Text(
-                                      "Your Community Events Will Show Here")),
-                    ),
-                  ],
-                ),
+                                      ),
+                                    ),
+                                  ));
+                            } else {
+                              return SizedBox.shrink();
+                            }
+                          }).toList(),
+                      ]),
+                    ],
+                  ),
 
-                // child 3 this is the about 333333333333333333333333333333333333333333333333333333333333333333
+                  // // child 2 this is a display of events 222222222222222222222222222222222222222222222222222222222222222222222222222
 
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "About This Community",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 21,
-                          fontWeight: FontWeight.w800,
-                        ),
-                        overflow: TextOverflow.fade,
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: 75,
-                        minWidth: double.infinity,
-                      ),
-                      child: Container(
-                        margin: Margin.all(10),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: cm.about.isNotEmpty
-                              ? Text(cm.about, textAlign: TextAlign.center)
-                              : Text("Nothing To See Here ..."),
-                        ),
-                        decoration: BoxDecoration(
-                          color: Color(hc.hexcolorCode('#141829')),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    )
-                  ],
-                )
-              ],
+                  // Column(
+                  //   mainAxisAlignment: MainAxisAlignment.start,
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     Row(
+                  //       children: [
+                  //         SizedBox(height: 10),
+                  //         Text(
+                  //           "~ Events ~",
+                  //           textAlign: TextAlign.left,
+                  //           style: TextStyle(
+                  //             color: Colors.grey,
+                  //             fontSize: 21,
+                  //             fontWeight: FontWeight.w800,
+                  //           ),
+                  //           overflow: TextOverflow.fade,
+                  //         ),
+                  //         context
+                  //                     .read<CommuinityBloc>()
+                  //                     .state
+                  //                     .role["permissions"]
+                  //                     .contains("*") ||
+                  //                 context
+                  //                     .read<CommuinityBloc>()
+                  //                     .state
+                  //                     .role["permissions"]
+                  //                     .contains("#") ||
+                  //                 context
+                  //                     .read<CommuinityBloc>()
+                  //                     .state
+                  //                     .role["permissions"]
+                  //                     .contains(CmActions.makeRoom)
+                  //             ? IconButton(
+                  //                 onPressed: () {
+                  //                   Navigator.of(context)
+                  //                       .pushNamed(CreateRoom.routeName,
+                  //                           arguments: CreateRoomArgs(
+                  //                               cmBloc: context
+                  //                                   .read<CommuinityBloc>(),
+                  //                               cm: cm))
+                  //                       .then((value) {
+                  //                     // TODO setState and read the events again.
+                  //                   });
+                  //                 },
+                  //                 icon: Icon(Icons.add))
+                  //             : SizedBox.shrink()
+                  //       ],
+                  //     ),
+                  //     // This is the listview of events that is displayed.
+                  //     Container(
+                  //       height: MediaQuery.of(context).size.height / 1.89,
+                  //       width: double.infinity,
+                  //       child: state.events.length > 0
+                  //           ? ListView.builder(
+                  //               itemCount: state.events.length,
+                  //               scrollDirection: Axis.vertical,
+                  //               itemBuilder: (context, index) {
+                  //                 Event? event = state.events[index];
+                  //                 return event != null
+                  //                     ? GestureDetector(
+                  //                         onTap: () => Navigator.of(context)
+                  //                             .pushNamed(EventView.routeName,
+                  //                                 arguments: EventViewArgs(
+                  //                                   cm: cm,
+                  //                                   cmBloc: context
+                  //                                       .read<CommuinityBloc>(),
+                  //                                   event: event,
+                  //                                 )),
+                  //                         child: Padding(
+                  //                           padding: const EdgeInsets.all(8.0),
+                  //                           child: Container(
+                  //                             decoration: BoxDecoration(
+                  //                                 color: Colors.black87,
+                  //                                 borderRadius:
+                  //                                     BorderRadius.circular(
+                  //                                         15)),
+                  //                             child: Padding(
+                  //                               padding:
+                  //                                   const EdgeInsets.all(8.0),
+                  //                               child: Column(
+                  //                                 mainAxisAlignment:
+                  //                                     MainAxisAlignment.start,
+                  //                                 crossAxisAlignment:
+                  //                                     CrossAxisAlignment.start,
+                  //                                 children: [
+                  //                                   Row(
+                  //                                     children: [
+                  //                                       //        month                             day                                   year
+                  //                                       Padding(
+                  //                                         padding:
+                  //                                             const EdgeInsets
+                  //                                                 .all(2.0),
+                  //                                         child: Text(event
+                  //                                                     .startDateFrontEnd![
+                  //                                                 1] +
+                  //                                             "/" +
+                  //                                             event.startDateFrontEnd![
+                  //                                                 2] +
+                  //                                             "/" +
+                  //                                             event.startDateFrontEnd![
+                  //                                                 0]),
+                  //                                       ),
+                  //                                       SizedBox(width: 5),
+                  //                                       Flexible(
+                  //                                         child: Padding(
+                  //                                           padding:
+                  //                                               const EdgeInsets
+                  //                                                   .all(2.0),
+                  //                                           child: Text(
+                  //                                               event
+                  //                                                   .eventTitle,
+                  //                                               style: TextStyle(
+                  //                                                   fontWeight:
+                  //                                                       FontWeight
+                  //                                                           .w700,
+                  //                                                   color: Colors
+                  //                                                           .blue[
+                  //                                                       700]),
+                  //                                               overflow:
+                  //                                                   TextOverflow
+                  //                                                       .ellipsis),
+                  //                                         ),
+                  //                                       ),
+                  //                                     ],
+                  //                                   ),
+                  //                                   Padding(
+                  //                                     padding:
+                  //                                         const EdgeInsets.only(
+                  //                                             left: 5.0),
+                  //                                     child: Text(
+                  //                                       event.eventDescription,
+                  //                                       style: TextStyle(
+                  //                                           fontStyle: FontStyle
+                  //                                               .italic),
+                  //                                       overflow: TextOverflow
+                  //                                           .ellipsis,
+                  //                                     ),
+                  //                                   )
+                  //                                 ],
+                  //                               ),
+                  //                             ),
+                  //                           ),
+                  //                         ),
+                  //                       )
+                  //                     : SizedBox.shrink();
+                  //               })
+                  //           : Center(
+                  //               child: state.status == CommuintyStatus.loading
+                  //                   ? Text("One Second ...")
+                  //                   : Text(
+                  //                       "Your Community Events Will Show Here")),
+                  //     ),
+                  //  ],
+                  // ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ))
     ]),
   );
@@ -549,46 +668,29 @@ SliverAppBar cmSliverAppBar({
     expandedHeight: MediaQuery.of(context).size.height / 4,
     flexibleSpace: FlexibleSpaceBar(
       title: Text(cm.name),
-      background: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Container(
-                decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(width: .5, color: Colors.blue[900]!),
-              image: DecorationImage(
-                  image: CachedNetworkImageProvider(cm.imageUrl),
-                  fit: BoxFit.cover),
-            )),
+      background: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Center(
+          child: Stack(
+            children: [
+              // Positioned(
+              //   left: 10,
+              //   child: Icon(Icons.golf_course),
+              // ),
+              Container(
+                  height: 120,
+                  width: 170,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(width: .5, color: Colors.blue[900]!),
+                    image: DecorationImage(
+                        image: CachedNetworkImageProvider(cm.imageUrl),
+                        fit: BoxFit.cover),
+                  )),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomCenter, //Alignment(0.8, 1),
-
-                  colors: <Color>[
-                    Colors.transparent,
-                    Colors.black87
-                  ], // Gradient from https://learnui.design/tools/gradient-generator.html
-                  tileMode: TileMode.mirror,
-                ),
-              ),
-            ),
-          )
-        ],
+        ),
       ),
     ),
-    // leading: ,
-    actions: [
-      memberBtn(cmBloc: cmBloc, cm: cm, context: context),
-      inviteButton(cm: cm, context: context),
-      settingsBtn(cmBloc: cmBloc, cm: cm, context: context)
-      // _themePackButton()
-    ],
   );
 }

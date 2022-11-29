@@ -26,11 +26,11 @@ class NavScreen extends StatelessWidget {
   };
 
   final Map<BottomNavItem, Widget> items = const {
-    BottomNavItem.chats: Icon(Icons.home, size: 17,),
-    BottomNavItem.search: Icon(Icons.search, size: 17),
-    BottomNavItem.add: Icon(Iconsax.add_square4, size: 17),
-    BottomNavItem.notifications: Icon(Icons.favorite_border, size: 17),
-    BottomNavItem.profile: Icon(Icons.account_circle, size: 17)
+    BottomNavItem.chats: Icon(Icons.home, size: 20,),
+    BottomNavItem.search: Icon(Icons.search, size: 20),
+    BottomNavItem.add: Icon(Iconsax.add_square4, size: 20),
+    BottomNavItem.notifications: Icon(Icons.favorite_border, size: 20),
+    BottomNavItem.profile: Icon(Icons.account_circle, size: 20)
   };
 
   @override

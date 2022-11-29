@@ -30,6 +30,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/roles/role_types.dart';
 import 'package:kingsfam/screens/build_church/cubit/buildchurch_cubit.dart';
+import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
@@ -39,6 +40,7 @@ import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/main_drawer.dart';
+import 'package:kingsfam/widgets/main_drawer_end.dart';
 import 'package:kingsfam/widgets/show_alert_dialog.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 // ignore: unused_import
@@ -63,28 +65,16 @@ class CommuinityScreenArgs {
 
 class CommuinityScreen extends StatefulWidget {
   final Church commuinity;
+  final List<Church?>? cmStream;
 
-  const CommuinityScreen({Key? key, required this.commuinity})
+  const CommuinityScreen({Key? key, required this.commuinity, this.cmStream})
       : super(key: key);
-
   static const String routeName = '/CommuinityScreen';
   static Route route({required CommuinityScreenArgs args}) {
+    log("do we reach the bloc stuff???");
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
-        builder: (context) => BlocProvider<CommuinityBloc>(
-              create: (context) => CommuinityBloc(
-                callRepository: context.read<CallRepository>(),
-                authBloc: context.read<AuthBloc>(),
-                churchRepository: context.read<ChurchRepository>(),
-                storageRepository: context.read<StorageRepository>(),
-                userrRepository: context.read<UserrRepository>(),
-              )..add(CommunityInitalEvent(
-                  commuinity: args.commuinity,
-                )),
-              child: CommuinityScreen(
-                commuinity: args.commuinity,
-              ),
-            ));
+        builder: (context) => CommuinityScreen(commuinity: Church.empty));
   }
 
   @override
@@ -124,7 +114,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     context.read<BottomnavbarCubit>().showBottomNav(true);
     super.initState();
     _txtController = TextEditingController();
-    _cmTabCtl = TabController(length: 3, vsync: this);
+    _cmTabCtl = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -166,113 +156,139 @@ class _CommuinityScreenState extends State<CommuinityScreen>
 
     // ignore: unused_local_variable
     final userId = context.read<AuthBloc>().state.user!.uid;
-    return BlocConsumer<CommuinityBloc, CommuinityState>(
-        listener: (context, state) {
-      if (state.status == CommuintyStatus.error) {
-        ErrorDialog(
-          content:
-              'hmm, something went worong. check your connection - ecode: commuinityScreenError: ${state.failure.code}',
-        );
-      }
-      if (state.status == CommuintyStatus.armormed) {
-        AlertDialogKf(
-            title: "Request access to join",
+    return BlocProvider<CommuinityBloc>(
+      create: (context) => CommuinityBloc(
+        callRepository: context.read<CallRepository>(),
+        authBloc: context.read<AuthBloc>(),
+        churchRepository: context.read<ChurchRepository>(),
+        storageRepository: context.read<StorageRepository>(),
+        userrRepository: context.read<UserrRepository>(),
+      )..add(CommunityInitalEvent(
+          commuinity: widget.commuinity,
+        )),
+      child: BlocConsumer<CommuinityBloc, CommuinityState>(
+          listener: (context, state) {
+        if (state.status == CommuintyStatus.error) {
+          ErrorDialog(
             content:
-                "This is a armormed community. You must be admitted to join this community",
-            cb: () {
-              context
-                  .read<CommuinityBloc>()
-                  .requestToJoin(widget.commuinity, userId)
-                  .then((value) => snackBar(
-                      snackMessage: "Your request to join has been sent.",
-                      context: context));
-            },
-            cbTxt: "Request");
-      } else if (state.status == CommuintyStatus.shielded) {
-        AlertDialogKf(
-            title: "Request access to join",
-            content:
-                "This is a armormed shielded. You can look around but you must be admitted to join this community",
-            cb: () {
-              context
-                  .read<CommuinityBloc>()
-                  .requestToJoin(widget.commuinity, userId)
-                  .then((value) => snackBar(
-                      snackMessage: "Your request to join has been sent.",
-                      context: context));
-            },
-            cbTxt: "Request");
-      } else if (state.requestStatus == RequestStatus.pending) {
-        AlertDialogKf(
-            title: "Request Pending",
-            content:
-                "Hey, your request to join is currently pending. You will recieve a notification when there is an update",
-            cb: () => Navigator.of(context).pop(),
-            cbTxt: "Thanks");
-      }
-    }, builder: (context, state) {
-      return Scaffold(
-          drawer: MainDrawer(),
-          body: SafeArea(
-            child: state.status == CommuintyStatus.armormed
-                ?
-                // status is armormed
-                Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: double.infinity,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            "This is a armormed community so it is entirley private. Please wait for your request to be approved in order to join",
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: 7),
-                          Icon(Icons.health_and_safety_outlined, size: 50),
-                          SizedBox(height: 7),
-                          ElevatedButton(
-                              onPressed: () {
-                                state.requestStatus == RequestStatus.pending
-                                    ? snackBar(
-                                        snackMessage: "Your Request is pending",
-                                        context: context)
-                                    : context
-                                        .read<CommuinityBloc>()
-                                        .requestToJoin(
-                                            widget.commuinity,
-                                            context
-                                                .read<AuthBloc>()
-                                                .state
-                                                .user!
-                                                .uid);
-                              },
-                              child:
+                'hmm, something went worong. check your connection - ecode: commuinityScreenError: ${state.failure.code}',
+          );
+        }
+        if (state.status == CommuintyStatus.armormed) {
+          AlertDialogKf(
+              title: "Request access to join",
+              content:
+                  "This is a armormed community. You must be admitted to join this community",
+              cb: () {
+                context
+                    .read<CommuinityBloc>()
+                    .requestToJoin(widget.commuinity, userId)
+                    .then((value) => snackBar(
+                        snackMessage: "Your request to join has been sent.",
+                        context: context));
+              },
+              cbTxt: "Request");
+        } else if (state.status == CommuintyStatus.shielded) {
+          AlertDialogKf(
+              title: "Request access to join",
+              content:
+                  "This is a armormed shielded. You can look around but you must be admitted to join this community",
+              cb: () {
+                context
+                    .read<CommuinityBloc>()
+                    .requestToJoin(widget.commuinity, userId)
+                    .then((value) => snackBar(
+                        snackMessage: "Your request to join has been sent.",
+                        context: context));
+              },
+              cbTxt: "Request");
+        } else if (state.requestStatus == RequestStatus.pending) {
+          AlertDialogKf(
+              title: "Request Pending",
+              content:
+                  "Hey, your request to join is currently pending. You will recieve a notification when there is an update",
+              cb: () => Navigator.of(context).pop(),
+              cbTxt: "Thanks");
+        }
+      }, builder: (context, state) {
+        return Scaffold(
+            drawer: widget.cmStream != null
+                ? MainDrawer(widget.cmStream, context)
+                : IconButton(
+                    onPressed: () => Navigator.of(context).pop(), icon: Icon(Icons.arrow_back_ios)),
+            endDrawer: MainDrawerEnd(
+                memberBtn(
+                    cmBloc: context.read<CommuinityBloc>(),
+                    cm: widget.commuinity,
+                    context: context),
+                settingsBtn(
+                    cmBloc: context.read<CommuinityBloc>(),
+                    cm: widget.commuinity,
+                    context: context)
+                //   // _themePackButton()
+                ),
+            body: SafeArea(
+              child: state.status == CommuintyStatus.armormed
+                  ?
+                  // status is armormed
+                  Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: double.infinity,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "This is a armormed community so it is entirley private. Please wait for your request to be approved in order to join",
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 7),
+                            Icon(Icons.health_and_safety_outlined, size: 50),
+                            SizedBox(height: 7),
+                            ElevatedButton(
+                                onPressed: () {
                                   state.requestStatus == RequestStatus.pending
-                                      ? Text("Pending ...")
-                                      : Text("Request To Join")),
-                        ],
+                                      ? snackBar(
+                                          snackMessage:
+                                              "Your Request is pending",
+                                          context: context)
+                                      : context
+                                          .read<CommuinityBloc>()
+                                          .requestToJoin(
+                                              widget.commuinity,
+                                              context
+                                                  .read<AuthBloc>()
+                                                  .state
+                                                  .user!
+                                                  .uid);
+                                },
+                                child:
+                                    state.requestStatus == RequestStatus.pending
+                                        ? Text("Pending ...")
+                                        : Text("Request To Join")),
+                          ],
+                        ),
                       ),
-                    ),
-                  )
-                : state.status == CommuintyStatus.shielded
-                    ?
-                    // status is shielded
-                    _mainScrollView(context, state, widget.commuinity, currRole,
-                        _cmTabCtl, nativeAd)
-                    : _mainScrollView(context, state, widget.commuinity,
-                        currRole, _cmTabCtl, nativeAd),
-          ));
-    });
+                    )
+                  : state.status == CommuintyStatus.shielded
+                      ?
+                      // status is shielded
+                      _mainScrollView(context, state, widget.commuinity,
+                          currRole, nativeAd)
+                      : _mainScrollView(context, state, widget.commuinity,
+                          currRole, nativeAd),
+            ));
+      }),
+    );
   }
 
   Padding contentContaner(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       child: GestureDetector(
-          onTap: () => Navigator.of(context).pushNamed(
+          onTap: () => Navigator.of(context).pushNamed( 
               CommuinityFeedScreen.routeName,
               arguments:
                   CommuinityFeedScreenArgs(commuinity: widget.commuinity)),

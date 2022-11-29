@@ -22,7 +22,6 @@ import 'package:kingsfam/widgets/widgets.dart';
 import 'package:new_version/new_version.dart';
 import 'package:rive/rive.dart';
 import '../../widgets/chats_view_widgets/getting_started.dart';
-import 'chats_widget/tab_dropdown.dart';
 
 class ChatsScreen extends StatefulWidget {
   const ChatsScreen({
@@ -39,8 +38,6 @@ class _ChatsScreenState extends State<ChatsScreen>
     with SingleTickerProviderStateMixin {
   //bool get wantKeepAlive => true;
   // handel permissions for notifications using FCM
-
-  int _tabIdx = 1;
 
   Future<void> setupInteractedMessage() async {
     if (Platform.isIOS) {
@@ -165,23 +162,17 @@ class _ChatsScreenState extends State<ChatsScreen>
 
     advancedStatusCheck(newVersion);
 
-    // this is the tab controller that is used in the appbar. this tab controller will later be
-    // used to navigate to different pages such as chat view and cm view.
 
-    _tabController = TabController(length: 1, vsync: this, initialIndex: 0);
-
-    _tabController.addListener(() => setState(() {}));
     setupInteractedMessage();
     //super.build(context);
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
     super.dispose();
   }
 
-  late TabController _tabController;
+
   bool chatScreenStateUnReadChats = false;
 
   advancedStatusCheck(NewVersion newVersion) async {
@@ -206,41 +197,38 @@ class _ChatsScreenState extends State<ChatsScreen>
     HexColor hexcolor = HexColor();
 
     final userId = context.read<AuthBloc>().state.user!.uid;
-    return DefaultTabController(
-        length: 1,
-        child: Scaffold(
-            body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
-                listener: (context, state) {
-          if (state.status == ChatStatus.error) {
-            ErrorDialog(
-                content: 'chat_screen e-code: ${state.failure.message}');
-          }
-
-          if (state.unreadChats != false) {
-            chatScreenStateUnReadChats = state.unreadChats;
-            setState(() {});
-          }
-        }, builder: (context, state) {
-          return state.chs == null
-              ? CircularProgressIndicator()
-              : state.chs!.length == 0
-                  ? GettingStarted(
-                      bloc: context.read<ChatscreenBloc>(),
-                      state: state,
-                    )
-                  : CommuinityScreen(
-                      commuinity: state.chs!
-                          .first!); // showJoinedCms(currId: currId, state: state),
-          // Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: state.chs!.first));
-          // return Scaffold(
-          //     body: TabBarView(
-          //       controller: _tabController,
-          //       children: [
-          //         ScreensForPageView().commuinity_view(userId, context),
-          //         // ScreensForPageView().chats_view(userId, state, context)
-          //       ],
-          //     ));
-        })));
+    return Scaffold(
+      appBar: null,
+        body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
+            listener: (context, state) {
+      if (state.status == ChatStatus.error) {
+        ErrorDialog(
+            content: 'chat_screen e-code: ${state.failure.message}');
+      }
+      // if (state.unreadChats != false) {
+      //   chatScreenStateUnReadChats = state.unreadChats;
+      //   setState(() {});
+      // }
+    }, builder: (context, state) {
+      return state.chs == null
+          ? Center(child: Text("KingsFam"))
+          : state.chs!.length == 0
+              ? GettingStarted(
+                  bloc: context.read<ChatscreenBloc>(),
+                  state: state,
+                )
+              : CommuinityScreen(commuinity: state.chs!.first!, cmStream: state.chs!,);
+      // showJoinedCms(currId: currId, state: state),
+      // Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: state.chs!.first));
+      // return Scaffold(
+      //     body: TabBarView(
+      //       controller: _tabController,
+      //       children: [
+      //         ScreensForPageView().commuinity_view(userId, context),
+      //         // ScreensForPageView().chats_view(userId, state, context)
+      //       ],
+      //     ));
+    }));
   }
 
   // ignore: non_constant_identifier_names

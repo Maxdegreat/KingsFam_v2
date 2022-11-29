@@ -1,6 +1,5 @@
 part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 
-
 // On Leave A Community
 onLeaveCommuinity(
     {required CommuinityBloc b,
@@ -73,15 +72,16 @@ _onJoinCommuinity(
 }
 
 // content preview: This holds the post
-Widget contentPreview({required Post post, required BuildContext context, required Church cm}) {
+Widget contentPreview(
+    {required Post post, required BuildContext context, required Church cm}) {
   return Padding(
     padding: EdgeInsets.symmetric(horizontal: 7, vertical: 7),
     child: GestureDetector(
-      onTap: () => Navigator.of(context).pushNamed(
-          CommuinityFeedScreen.routeName,
-          arguments: CommuinityFeedScreenArgs(commuinity: cm)).then((_) => context.read<BottomnavbarCubit>().showBottomNav(true)),
+      onTap: () => Navigator.of(context)
+          .pushNamed(CommuinityFeedScreen.routeName,
+              arguments: CommuinityFeedScreenArgs(commuinity: cm))
+          .then((_) => context.read<BottomnavbarCubit>().showBottomNav(true)),
       child: Container(
-      
         height: 80,
         width: 200,
         decoration: BoxDecoration(
@@ -251,21 +251,17 @@ _delKcDialog({
             )));
 
 // This is for the settings button
-memberBtn(
+Widget memberBtn(
     {required CommuinityBloc cmBloc,
     required Church cm,
     required BuildContext context,
     required,
     String? currRole}) {
   return Padding(
-      padding: const EdgeInsets.only(left: 10.0, top: 10),
+      padding: const EdgeInsets.all(10),
       child: Container(
-
         decoration: BoxDecoration(
-          color: Colors.black12,
-          borderRadius: BorderRadius.circular(10)
-        ),
-
+            color: Colors.black12, borderRadius: BorderRadius.circular(10)),
         child: Padding(
           padding: const EdgeInsets.all(4.0),
           child: IconButton(
@@ -284,81 +280,82 @@ Widget settingsBtn(
     {required CommuinityBloc cmBloc,
     required Church cm,
     required BuildContext context}) {
-  return Container(
-
-        decoration: BoxDecoration(
-          color: Colors.black12,
-          borderRadius: BorderRadius.circular(10)
-        ),
-    child: Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: IconButton(
-          onPressed: () {
-
-            if ( context
-                                    .read<CommuinityBloc>()
-                                    .state
-                                    .role["permissions"]
-                                    .contains("*") ||
-                                context
-                                    .read<CommuinityBloc>()
-                                    .state
-                                    .role["permissions"]
-                                    .contains("#")
-                            ) {
-            showModalBottomSheet(
-                context: context,
-                builder: (context) {
-                  return SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        //  update the cm name
-                        ListTile(
-                            title: Text("Update the Community name",
-                                style: Theme.of(context).textTheme.bodyText1),
-                            onTap: () async => _updateCommuinityName(
-                                commuinity: cm,
-                                context: context,
-                                buildchurchCubit:
-                                    context.read<BuildchurchCubit>())),
-                        ListTile(
-                          title: Text(
-                            "Update The About",
-                            style: Theme.of(context).textTheme.bodyText1,
-                            overflow: TextOverflow.fade,
-                          ),
-                          onTap: () async => _updateTheAbout(
-                              commuinity: cm,
-                              buildchurchCubit: context.read<BuildchurchCubit>(),
-                              context: context),
+  return Padding(
+    padding: const EdgeInsets.all(10),
+    child: Container(
+      decoration: BoxDecoration(
+          color: Colors.black12, borderRadius: BorderRadius.circular(10)),
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: IconButton(
+            onPressed: () {
+              if (context
+                      .read<CommuinityBloc>()
+                      .state
+                      .role["permissions"]
+                      .contains("*") ||
+                  context
+                      .read<CommuinityBloc>()
+                      .state
+                      .role["permissions"]
+                      .contains("#")) {
+                showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            //  update the cm name
+                            ListTile(
+                                title: Text("Update the Community name",
+                                    style: Theme.of(context).textTheme.bodyText1),
+                                onTap: () async => _updateCommuinityName(
+                                    commuinity: cm,
+                                    context: context,
+                                    buildchurchCubit:
+                                        context.read<BuildchurchCubit>())),
+                            ListTile(
+                              title: Text(
+                                "Update The About",
+                                style: Theme.of(context).textTheme.bodyText1,
+                                overflow: TextOverflow.fade,
+                              ),
+                              onTap: () async => _updateTheAbout(
+                                  commuinity: cm,
+                                  buildchurchCubit:
+                                      context.read<BuildchurchCubit>(),
+                                  context: context),
+                            ),
+                            ListTile(
+                              title: Text("Update Community ImageUrl",
+                                  overflow: TextOverflow.fade,
+                                  style: Theme.of(context).textTheme.bodyText1),
+                              trailing:
+                                  ProfileImage(radius: 25, pfpUrl: cm.imageUrl),
+                              onTap: () => _updateCommuinityImage(
+                                  context: context,
+                                  commuinity: cm,
+                                  buildchurchCubit:
+                                      context.read<BuildchurchCubit>()),
+                            ),
+                            ListTile(
+                              title: Text("Update Cm Privacy"),
+                              onTap: () => Navigator.of(context).pushNamed(
+                                  UpdatePrivacyCm.routeName,
+                                  arguments: UpdatePrivacyCmArgs(cm: cm)),
+                            )
+                          ],
                         ),
-                        ListTile(
-                          title: Text("Update Community ImageUrl",
-                              overflow: TextOverflow.fade,
-                              style: Theme.of(context).textTheme.bodyText1),
-                          trailing: ProfileImage(radius: 25, pfpUrl: cm.imageUrl),
-                          onTap: () => _updateCommuinityImage(
-                              context: context,
-                              commuinity: cm,
-                              buildchurchCubit: context.read<BuildchurchCubit>()),
-                        ),
-                        ListTile(
-                          title: Text("Update Cm Privacy"),
-                          onTap: () => Navigator.of(context).pushNamed(
-                              UpdatePrivacyCm.routeName,
-                              arguments: UpdatePrivacyCmArgs(cm: cm)),
-                        )
-                      ],
-                    ),
-                  );
-                });
-
-                            } else {
-                              snackBar(snackMessage: "You must be admin to access the settings", context: context);
-                            }
-
-          },
-          icon: Icon(Icons.settings)),
+                      );
+                    });
+              } else {
+                snackBar(
+                    snackMessage: "You must be admin to access the settings",
+                    context: context);
+              }
+            },
+            icon: Icon(Icons.settings)),
+      ),
     ),
   );
 }
@@ -368,11 +365,8 @@ Widget inviteButton({required BuildContext context, required Church cm}) {
   return Padding(
     padding: const EdgeInsets.only(left: 10.0, top: 10),
     child: Container(
-
-        decoration: BoxDecoration(
-          color: Colors.black12,
-          borderRadius: BorderRadius.circular(10)
-        ),
+      decoration: BoxDecoration(
+          color: Colors.black12, borderRadius: BorderRadius.circular(10)),
       child: Padding(
         padding: const EdgeInsets.all(4.0),
         child: IconButton(
@@ -380,7 +374,8 @@ Widget inviteButton({required BuildContext context, required Church cm}) {
             onPressed: () async {
               final following =
                   await context.read<BuildchurchCubit>().grabCurrFollowing();
-              _inviteBottomSheet(following: following, cm: cm, context: context);
+              _inviteBottomSheet(
+                  following: following, cm: cm, context: context);
             }),
       ),
     ),

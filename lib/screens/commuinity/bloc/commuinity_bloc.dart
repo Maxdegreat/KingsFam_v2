@@ -192,8 +192,8 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
       
       // ignore: unused_local_variable
-      final List<KingsCord> allCords = [];
-      final Map<String, bool> mentionedMap = {};
+      final List<KingsCord> cords = [];
+      final List<KingsCord> mentionedCords = [];
       final Userr userr = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
 
       // stream subscription for community cords
@@ -201,9 +201,10 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       _streamSubscriptionKingsCord = _churchRepository
           .getCommuinityCordsStream(commuinity: event.commuinity, limit: 100)
           .listen((kcords) async {
-        final allCords = await Future.wait(kcords);
+            
+       // final allCords = await Future.wait(kcords);
         for (var kcAwait in kcords) {
-          log("we heared something on the kc screen");
+          
           final kc = await kcAwait;
           if (kc != null) {
             //allCords.add(kc);
@@ -215,14 +216,15 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
             docRef.get().then((value) => {
                   if (value.exists)
                     {
-                      mentionedMap[kc.id!] = true,
+                      mentionedCords.add(kc)
                     }
-                  else
-                    {mentionedMap[kc.id!] = false},
+                  else {
+                    cords.add(kc)
+                  },
                   emit(state.copyWith(
-                      mentionedMap: mentionedMap,
+                      mentionedCords: mentionedCords,
                       currUserr: userr,
-                      kingCords: allCords))
+                      kingCords: cords))
                 });
           }
         }

@@ -15,7 +15,7 @@ class CommuinityState extends Equatable {
   final List<KingsCord?> kingCords;
   final CommuintyStatus status;
   final Failure failure;
-  final Map<String, bool> mentionedMap;
+  final List<KingsCord?> mentionedCords;
   final Userr currUserr;
   final String themePack;
   final int boosted;
@@ -33,7 +33,7 @@ class CommuinityState extends Equatable {
     required this.status,
     required this.failure,
     required this.events,
-    required this.mentionedMap,
+    required this.mentionedCords,
     required this.currUserr,
     required this.themePack,
     required this.boosted,
@@ -46,7 +46,7 @@ class CommuinityState extends Equatable {
   @override
   List<Object?> get props => [
         currUserr,
-        mentionedMap,
+        mentionedCords,
         collapseCordColumn,
         collapseVvrColumn,
         events,
@@ -70,7 +70,7 @@ class CommuinityState extends Equatable {
         "permissions" : ["0"] // string 0 means basic role
       },
         currUserr: Userr.empty,
-        mentionedMap: {},
+        mentionedCords: [],
         collapseCordColumn: false,
         collapseVvrColumn: false,
         events: [],
@@ -93,7 +93,7 @@ class CommuinityState extends Equatable {
     List<KingsCord?>? kingCords,
     CommuintyStatus? status,
     Failure? failure,
-    Map<String, bool>? mentionedMap,
+    List<KingsCord?>? mentionedCords,
     List<Event?>? events,
     bool? collapseCordColumn,
     bool? collapseVvrColumn,
@@ -112,7 +112,7 @@ class CommuinityState extends Equatable {
         kingCords: kingCords ?? this.kingCords,
         failure: failure ?? this.failure,
         status: status ?? this.status,
-        mentionedMap: mentionedMap ?? this.mentionedMap,
+        mentionedCords: mentionedCords ?? this.mentionedCords,
         collapseCordColumn: collapseCordColumn ?? this.collapseCordColumn,
         collapseVvrColumn: collapseVvrColumn ?? this.collapseVvrColumn,
         currUserr: currUserr ?? this.currUserr,
