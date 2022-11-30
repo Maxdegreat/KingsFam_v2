@@ -13,6 +13,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/add_users/add_users.dart';
 import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
+import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/nav/widgets/bottom_nav_bar.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
@@ -316,8 +317,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void navToChurch(
       {required BuildContext context, required Church commuinity}) {
-    Navigator.of(context).pushNamed(CommuinityScreen.routeName,
-        arguments: CommuinityScreenArgs(commuinity: commuinity));
+    Navigator.of(context).pushNamed(CommunityHome.routeName,
+        arguments: CommunityHomeArgs(cm: commuinity, cmB: null));
   }
 
   void navToBuildChurch({required context}) {

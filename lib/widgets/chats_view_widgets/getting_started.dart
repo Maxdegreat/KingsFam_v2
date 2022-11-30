@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/church_display_column.dart';
@@ -50,8 +51,8 @@ class _GettingStartedState extends State<GettingStarted> {
           builder: (BuildContext context) {
             return GestureDetector(
                 onTap: () => Navigator.of(context).pushNamed(
-                    CommuinityScreen.routeName,
-                    arguments: CommuinityScreenArgs(commuinity: i)),
+                    CommunityHome.routeName,
+                    arguments: CommunityHomeArgs(cm: i, cmB: null)),
                 child: search_Church_container(church: i, context: context));
           },
         );

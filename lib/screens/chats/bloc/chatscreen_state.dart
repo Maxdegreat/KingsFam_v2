@@ -9,6 +9,7 @@ class ChatscreenState extends Equatable {
   final List<Chat?> chat;
   final Userr currUserr;
   final List<Church?>? chs;
+  final Church selectedCh;
   final List<Church> chsToJoin;
   final Map<String, dynamic> mentionedMap;
   final bool inAChat;
@@ -28,6 +29,7 @@ class ChatscreenState extends Equatable {
     required this.chat,
     required this.currUserr,
     required this.chs,
+    required this.selectedCh,
     required this.chsToJoin,
     required this.inAChat,
     required this.isToggle,
@@ -45,11 +47,12 @@ class ChatscreenState extends Equatable {
   factory ChatscreenState.initial() {
     return ChatscreenState(
       chat: [],
-      chs: null,
+      chs: [],
       chsToJoin: [],
       inAChat: false,
       isToggle: true,
       mentionedMap: {},
+      selectedCh: Church.empty,
       currUserr: Userr.empty,
       status: ChatStatus.initial,
       failure: Failure(),
@@ -71,6 +74,7 @@ class ChatscreenState extends Equatable {
         isToggle,
         chat,
         chs,
+        selectedCh,
         chsToJoin,
         inAChat,
         status,
@@ -85,6 +89,7 @@ class ChatscreenState extends Equatable {
     bool? isToggle,
     Userr? currUserr,
     List<Church?>? chs,
+    Church? selectedCh,
     List<Church>? chsToJoin,
     ChatStatus? status,
     List<Post?>? posts,
@@ -98,6 +103,7 @@ class ChatscreenState extends Equatable {
       posts: posts ?? this.posts,
       currUserr: currUserr ?? this.currUserr,
       chs: chs ?? this.chs,
+      selectedCh: selectedCh ?? this.selectedCh,
       chsToJoin: chsToJoin ?? this.chsToJoin,
       fstatus: fstatus ?? this.fstatus,
       likedPostIds: likedPostIds ?? this.likedPostIds,

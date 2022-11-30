@@ -19,6 +19,8 @@ class ThemeInfo {
         ),
         scaffoldBackgroundColor: Color(hexcolor.hexcolorCode('#20263c')),
         // Color.fromARGB(255, 32, 58, 79),
+
+        cardColor: Color(hexcolor.hexcolorCode('#141829')),
         primaryColorDark: Colors.white,
         splashColor: Color.fromARGB(255, 69, 18, 18),
         textTheme: TextTheme(

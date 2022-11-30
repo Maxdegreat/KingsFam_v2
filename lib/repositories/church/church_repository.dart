@@ -45,7 +45,7 @@ class ChurchRepository extends BaseChurchRepository {
         .collection(Paths.users)
         .doc(currId)
         .collection(Paths.church)
-        .limit(15)
+        .limit(20)
         .snapshots()
         .map((snap) {
           
@@ -53,6 +53,7 @@ class ChurchRepository extends BaseChurchRepository {
             Future<Church> ch = Church.fromId(j.id);
             bucket.add(ch);
           }
+
       return bucket;
     });
   }

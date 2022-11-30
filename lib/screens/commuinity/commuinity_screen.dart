@@ -32,6 +32,7 @@ import 'package:kingsfam/roles/role_types.dart';
 import 'package:kingsfam/screens/build_church/cubit/buildchurch_cubit.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
+import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 // ignore: unused_import
@@ -60,21 +61,24 @@ part 'wrapers/community_screen_methods.dart';
 
 class CommuinityScreenArgs {
   final Church commuinity;
-  CommuinityScreenArgs({required this.commuinity});
+  final bool showDrawer;
+  CommuinityScreenArgs({required this.commuinity, this.showDrawer = false});
 }
 
 class CommuinityScreen extends StatefulWidget {
   final Church commuinity;
-  final List<Church?>? cmStream;
+  final bool showDrawer;
+  final ChatscreenBloc? chatScreenBloc;
 
-  const CommuinityScreen({Key? key, required this.commuinity, this.cmStream})
+  const CommuinityScreen(
+      {Key? key, required this.commuinity, required this.showDrawer, this.chatScreenBloc})
       : super(key: key);
   static const String routeName = '/CommuinityScreen';
   static Route route({required CommuinityScreenArgs args}) {
     log("do we reach the bloc stuff???");
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
-        builder: (context) => CommuinityScreen(commuinity: Church.empty));
+        builder: (context) => CommuinityScreen(commuinity: Church.empty, showDrawer: args.showDrawer,));
   }
 
   @override
@@ -83,9 +87,7 @@ class CommuinityScreen extends StatefulWidget {
 
 class _CommuinityScreenState extends State<CommuinityScreen>
     with SingleTickerProviderStateMixin {
-  late TabController _cmTabCtl;
   late TextEditingController _txtController;
-  Map<String, dynamic> accessMap = {};
   String? currRole;
 
   late NativeAd _nativeAd;
@@ -114,7 +116,6 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     context.read<BottomnavbarCubit>().showBottomNav(true);
     super.initState();
     _txtController = TextEditingController();
-    _cmTabCtl = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -212,10 +213,12 @@ class _CommuinityScreenState extends State<CommuinityScreen>
         }
       }, builder: (context, state) {
         return Scaffold(
-            drawer: widget.cmStream != null
-                ? MainDrawer(widget.cmStream, context)
+            drawerEdgeDragWidth: MediaQuery.of(context).size.width / 1.7,
+            drawer: widget.showDrawer 
+                ? MainDrawer()
                 : IconButton(
-                    onPressed: () => Navigator.of(context).pop(), icon: Icon(Icons.arrow_back_ios)),
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: Icon(Icons.arrow_back_ios)),
             endDrawer: MainDrawerEnd(
                 memberBtn(
                     cmBloc: context.read<CommuinityBloc>(),
@@ -275,8 +278,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                   : state.status == CommuintyStatus.shielded
                       ?
                       // status is shielded
-                      _mainScrollView(context, state, widget.commuinity,
-                          currRole, nativeAd)
+                      _mainScrollView(
+                          context, state, widget.commuinity, currRole, nativeAd)
                       : _mainScrollView(context, state, widget.commuinity,
                           currRole, nativeAd),
             ));
@@ -288,7 +291,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       child: GestureDetector(
-          onTap: () => Navigator.of(context).pushNamed( 
+          onTap: () => Navigator.of(context).pushNamed(
               CommuinityFeedScreen.routeName,
               arguments:
                   CommuinityFeedScreenArgs(commuinity: widget.commuinity)),

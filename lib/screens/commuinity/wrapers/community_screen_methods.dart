@@ -1,48 +1,6 @@
 part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 
-// On Leave A Community
-onLeaveCommuinity(
-    {required CommuinityBloc b,
-    required BuildContext context,
-    required Church cm}) {
-  showLeaveCommuinity(b: b, context: context, cm: cm);
-}
 
-showLeaveCommuinity(
-        {required CommuinityBloc b,
-        required BuildContext context,
-        required Church cm}) =>
-    showModalBottomSheet(
-        context: context,
-        builder: (_context) => Container(
-              //height: 200,
-              color: Color(hc.hexcolorCode('#141829')),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    //height: 200,
-                    // checking for role. a owner must not just leave
-
-                    child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(primary: Colors.red),
-                        onPressed: () {
-                          b.onLeaveCommuinity(commuinity: cm);
-                          cm.members.remove(b.state.currUserr);
-                          b..add(CommunityInitalEvent(commuinity: cm));
-                          Navigator.of(_context).pop();
-                        },
-                        child: Text("... I said bye")),
-                  ),
-                  Container(
-                    child: ElevatedButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        style: ElevatedButton.styleFrom(primary: Colors.green),
-                        child: Text("Chill, I wana stay fam")),
-                  )
-                ],
-              ),
-            ));
 
 // on Join A Community
 Widget joinBtn(
@@ -308,7 +266,8 @@ Widget settingsBtn(
                             //  update the cm name
                             ListTile(
                                 title: Text("Update the Community name",
-                                    style: Theme.of(context).textTheme.bodyText1),
+                                    style:
+                                        Theme.of(context).textTheme.bodyText1),
                                 onTap: () async => _updateCommuinityName(
                                     commuinity: cm,
                                     context: context,

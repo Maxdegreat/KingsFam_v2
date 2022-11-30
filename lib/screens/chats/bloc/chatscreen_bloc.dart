@@ -57,6 +57,8 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
       //yield* _mapLoadChatsToState(event);
     } else if (event is LoadCms) {
       yield* _mapLoadCmsToState();
+    } else if (event is ChatScreenUpdateSelectedCm) {
+      yield* _updateSelectedItem(event);
     }
   }
 
@@ -65,11 +67,13 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
       // geting the currUserr for later use
-      final Userr currUserr = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
+      final Userr currUserr = await _userrRepository.getUserrWithId(
+          userrId: _authBloc.state.user!.uid);
       // ignore: unused_local_variable
       List<Church> chsToJoin = [];
 
-      bool isInCm = await _churchRepository.isInCm(_authBloc.state.user!.uid, _authBloc.state.user!.uid);
+      bool isInCm = await _churchRepository.isInCm(
+          _authBloc.state.user!.uid, _authBloc.state.user!.uid);
 
       if (!isInCm) {
         chsToJoin = await _churchRepository.grabChurchs(limit: 15);
@@ -77,14 +81,12 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
       }
 
       final Map<String, bool> mentionedMap = {};
-      
-    
+
       _churchStreamSubscription?.cancel();
       _churchStreamSubscription = _churchRepository
           .getCmsStream(currId: currUserr.id)
           .listen((churchs) async {
-        log("in cm stream");
-        final allChs = await Future.wait(churchs);
+        var allChs = await Future.wait(churchs);
         for (var ch in churchs) {
           Church? church = await ch;
           log(church.toString());
@@ -101,13 +103,40 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
           else
             mentionedMap[church.id!] = false;
         }
-        emit(state.copyWith(chs: allChs.toSet().toList()));
+        emit(state.copyWith(selectedCh: allChs.first));
+        emit(state.copyWith(chs: allChs));
         emit(state.copyWith(mentionedMap: mentionedMap));
+        await Future.delayed(Duration(seconds: 3));
       });
       yield state.copyWith(status: ChatStatus.sccuess, currUserr: currUserr);
     } catch (e) {
       log("!!!!!!!!!!!!!!!!ERROR: " + e.toString());
-      yield state.copyWith(status: ChatStatus.error, failure: Failure(message: "mmm, there was an error when loading your community's"));
+      yield state.copyWith(
+          status: ChatStatus.error,
+          failure: Failure(
+              message:
+                  "mmm, there was an error when loading your community's"));
+    }
+  }
+
+  Stream<ChatscreenState> _updateSelectedItem(
+      ChatScreenUpdateSelectedCm event) async* {
+    try {
+      // yield state.copyWith(selectedCh: event.cm);
+      emit(state.copyWith(selectedCh: event.cm));
+    } catch (e) {
+      log("Failure in chatScreenBloc when attempting to update selected cm. error log is e: ${e.toString()}");
+    }
+  }
+
+  void leftCm({required String id}) {
+    log("in left cm");
+    var lst = state.chs;
+    for (var c in lst!) {
+      if (c!.id == id) {
+        lst.remove(c);
+        emit(state.copyWith(chs: lst));
+      }
     }
   }
 
@@ -126,7 +155,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   //     _chatsStreamSubscription = _chatRepository
   //         .getUserChats(userId: _authBloc.state.user!.uid)
   //         .listen((chat) async {
-  //           for (var c in chat) { 
+  //           for (var c in chat) {
   //             Chat? ch = await c;
   //             if (ch != null) {
   //               if (ch.readStatus.containsKey(currId)) {

@@ -15,6 +15,7 @@ import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/repositories/says/says_repository.dart';
+import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
@@ -65,6 +66,9 @@ class MyApp extends StatelessWidget {
             create: (context) =>
                 AuthBloc(authRepository: context.read<AuthRepository>()),
           ),
+          BlocProvider<ChatscreenBloc>(
+            create:(context) => ChatscreenBloc(chatRepository: context.read<ChatRepository>(), authBloc: context.read<AuthBloc>(), likedPostCubit: context.read<LikedPostCubit>(), postsRepository: context.read<PostsRepository>(), churchRepository: context.read<ChurchRepository>(), userrRepository: context.read<UserrRepository>()),)
+    ,
           BlocProvider<SearchBloc>(
               create: (context) => SearchBloc(
                   userrRepository: context.read<UserrRepository>(),

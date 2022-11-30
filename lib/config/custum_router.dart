@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
@@ -103,8 +104,6 @@ class CustomRoute {
       case KingsCordScreen.routeName:
         return KingsCordScreen.route(settings.arguments as KingsCordArgs);
 
-
-
       case CommuinityFeedScreen.routeName:
         return CommuinityFeedScreen.route(
             args: settings.arguments as CommuinityFeedScreenArgs);
@@ -169,30 +168,41 @@ class CustomRoute {
 
       case CreateSays.routeName:
         return CreateSays.route(args: settings.arguments as CreateSaysArgs);
-      
+
       case EventView.routeName:
         return EventView.route(args: settings.arguments as EventViewArgs);
-      
+
       case UpdatePrivacyCm.routeName:
-        return UpdatePrivacyCm.route(args: settings.arguments as UpdatePrivacyCmArgs);
+        return UpdatePrivacyCm.route(
+            args: settings.arguments as UpdatePrivacyCmArgs);
 
       case ReviewPendingRequest.routeName:
-        return ReviewPendingRequest.route(args: settings.arguments as ReviewPendingRequestArgs);
+        return ReviewPendingRequest.route(
+            args: settings.arguments as ReviewPendingRequestArgs);
 
       case ParticipantsView.routeName:
-        return ParticipantsView.route(args: settings.arguments as ParticipantsViewArgs);
+        return ParticipantsView.route(
+            args: settings.arguments as ParticipantsViewArgs);
 
       case RolePermissions.routeName:
-        return RolePermissions.route(args: settings.arguments as RolePermissionsArgs);
+        return RolePermissions.route(
+            args: settings.arguments as RolePermissionsArgs);
 
       case CreateRole.routeName:
         return CreateRole.route(args: settings.arguments as CreateRoleArgs);
-      
+
       case KingsCordSettings.routeName:
-        return KingsCordSettings.route(args: settings.arguments as KingsCordSettingsArgs);
+        return KingsCordSettings.route(
+            args: settings.arguments as KingsCordSettingsArgs);
 
       case Participant_deep_view.routeName:
-        return Participant_deep_view.route(args: settings.arguments as ParticipantDeepViewArgs);
+        return Participant_deep_view.route(
+            args: settings.arguments as ParticipantDeepViewArgs);
+
+      case CommunityHome.routeName:
+        return CommunityHome.route(
+          args: settings.arguments as CommunityHomeArgs
+        );
 
       default:
         return _errorRoute();

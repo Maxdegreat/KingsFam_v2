@@ -217,29 +217,9 @@ class _ChatsScreenState extends State<ChatsScreen>
                   bloc: context.read<ChatscreenBloc>(),
                   state: state,
                 )
-              : CommuinityScreen(commuinity: state.chs!.first!, cmStream: state.chs!,);
-      // showJoinedCms(currId: currId, state: state),
-      // Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: state.chs!.first));
-      // return Scaffold(
-      //     body: TabBarView(
-      //       controller: _tabController,
-      //       children: [
-      //         ScreensForPageView().commuinity_view(userId, context),
-      //         // ScreensForPageView().chats_view(userId, state, context)
-      //       ],
-      //     ));
+              : CommuinityScreen(commuinity: state.selectedCh, showDrawer: true,);
+     
     }));
   }
 
-  // ignore: non_constant_identifier_names
-  Padding KfCrownPadded() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: Container(
-        height: 25,
-        width: 25,
-        child: RiveAnimation.asset('assets/icons/add_icon.riv'),
-      ),
-    );
-  }
 }

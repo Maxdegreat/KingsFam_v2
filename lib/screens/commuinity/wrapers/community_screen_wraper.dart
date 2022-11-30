@@ -50,7 +50,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           primary: Color(hc.hexcolorCode("#141829"))),
-                      onPressed: () {},
+                      onPressed: () => Navigator.of(context).pushNamed(CommunityHome.routeName, arguments: CommunityHomeArgs(cm: cm, cmB: context.read<CommuinityBloc>())),
                       child: Text("Home",
                           style: Theme.of(context).textTheme.bodyText1),
                     ),
@@ -232,92 +232,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                         }).toList(),
 
                       SizedBox(height: 10),
-                      // this is the join btn ____________________________________
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.start,
-                      //   children: [
-                      //     state.isMember == null
-                      //         ? SizedBox.shrink()
-                      //         : state.isMember != false
-                      //             ? Padding(
-                      //                 padding: const EdgeInsets.symmetric(
-                      //                     vertical: 5.0),
-                      //                 child: Container(
-                      //                   height: 30,
-                      //                   width: 200,
-                      //                   child: ElevatedButton(
-                      //                       onPressed: () {
-                      //                         if (!context
-                      //                             .read<CommuinityBloc>()
-                      //                             .state
-                      //                             .role["permissions"]
-                      //                             .contains("*")) {
-                      //                           showLeaveCommuinity(
-                      //                               b: context
-                      //                                   .read<CommuinityBloc>(),
-                      //                               cm: cm,
-                      //                               context: context);
-                      //                         } else {
-                      //                           snackBar(
-                      //                               snackMessage:
-                      //                                   "Owners can not abandon ship",
-                      //                               context: context,
-                      //                               bgColor: Colors.red);
-                      //                         }
-                      //                       },
-                      //                       child: Text(
-                      //                         "Leave",
-                      //                         style: TextStyle(color: Colors.red),
-                      //                       ),
-                      //                       style: ElevatedButton.styleFrom(
-                      //                           shape: StadiumBorder(),
-                      //                           primary: Color(
-                      //                               hc.hexcolorCode("#141829")))),
-                      //                 ),
-                      //               )
-                      //             : Padding(
-                      //                 padding: const EdgeInsets.symmetric(
-                      //                     vertical: 8.0),
-                      //                 child: joinBtn(
-                      //                     b: context.read<CommuinityBloc>(),
-                      //                     cm: cm,
-                      //                     context: context),
-                      //               ),
-                      //     SizedBox(width: 10),
-                      //     Text("${cm.size} members")
-                      //   ],
-                      // ),
-                      // Text(
-                      //   "${cm.name}\'s Content",
-                      //   style: TextStyle(
-                      //     color: Colors.grey,
-                      //     fontSize: 21,
-                      //     fontWeight: FontWeight.w800,
-                      //   ),
-                      //   overflow: TextOverflow.fade,
-                      // ),
-                      // Container(
-                      //   height: 85,
-                      //   width: double.infinity,
-                      //   child: state.postDisplay.length > 0
-                      //       ? ListView.builder(
-                      //           itemCount: 2,
-                      //           scrollDirection: Axis.horizontal,
-                      //           itemBuilder: (context, index) {
-                      //             Post? post = state.postDisplay[0];
-                      //             if (post != null && index == 0) {
-                      //               return contentPreview(
-                      //                   cm: cm, context: context, post: post);
-                      //             } else {
-                      //               return _ad !=null ? _ad : SizedBox.shrink();
-                      //             }
-                      //           })
-                      //       : Center(
-                      //           child: state.status == CommuintyStatus.loading
-                      //               ? Text("One Second ...")
-                      //               : Text("Your Community Post Will Show Here")),
-                      // ),
-                      //ContentContaner(context),
+                      
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
