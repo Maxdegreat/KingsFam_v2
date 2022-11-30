@@ -162,7 +162,6 @@ class _ChatsScreenState extends State<ChatsScreen>
 
     advancedStatusCheck(newVersion);
 
-
     setupInteractedMessage();
     //super.build(context);
   }
@@ -171,7 +170,6 @@ class _ChatsScreenState extends State<ChatsScreen>
   void dispose() {
     super.dispose();
   }
-
 
   bool chatScreenStateUnReadChats = false;
 
@@ -194,32 +192,32 @@ class _ChatsScreenState extends State<ChatsScreen>
 
   @override
   Widget build(BuildContext context) {
-    HexColor hexcolor = HexColor();
 
-    final userId = context.read<AuthBloc>().state.user!.uid;
+    // final userId = context.read<AuthBloc>().state.user!.uid;
     return Scaffold(
-      appBar: null,
+        appBar: null,
         body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
             listener: (context, state) {
-      if (state.status == ChatStatus.error) {
-        ErrorDialog(
-            content: 'chat_screen e-code: ${state.failure.message}');
-      }
-      // if (state.unreadChats != false) {
-      //   chatScreenStateUnReadChats = state.unreadChats;
-      //   setState(() {});
-      // }
-    }, builder: (context, state) {
-      return state.chs == null
-          ? Center(child: Text("KingsFam"))
-          : state.chs!.length == 0
-              ? GettingStarted(
-                  bloc: context.read<ChatscreenBloc>(),
-                  state: state,
-                )
-              : CommuinityScreen(commuinity: state.selectedCh, showDrawer: true,);
-     
-    }));
-  }
+          if (state.status == ChatStatus.error) {
+            ErrorDialog(
+                content: 'chat_screen e-code: ${state.failure.message}');
+          }
+        }, builder: (context, state) {
+         var currentScreen ; 
+          if (state.pSelectedCh != state.selectedCh) {
+            log("PASSING THOUGH NEW SCEEN");
+            currentScreen = null;//Container(child: Center(child: Text("KingsFam")),);
+            currentScreen =  CommuinityScreen(commuinity: state.selectedCh, showDrawer: true);
+          }
 
+          return state.chs == null
+              ? Center(child: Text("KingsFam"))
+              : state.chs!.length == 0
+                  ? GettingStarted(
+                      bloc: context.read<ChatscreenBloc>(),
+                      state: state,
+                    )
+                  : currentScreen;
+        }));
+  }
 }

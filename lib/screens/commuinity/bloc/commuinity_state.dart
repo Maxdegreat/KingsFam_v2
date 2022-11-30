@@ -23,6 +23,7 @@ class CommuinityState extends Equatable {
   final List<Userr> banedUsers;
   final RequestStatus requestStatus;
   final Map<String, dynamic> role;
+  final String cmId;
 
   const CommuinityState({
     required this.isMember,
@@ -40,7 +41,8 @@ class CommuinityState extends Equatable {
     required this.isBaned,
     required this.banedUsers,
     required this.requestStatus,
-    required this.role
+    required this.role,
+    required this.cmId,
   });
 
   @override
@@ -61,6 +63,7 @@ class CommuinityState extends Equatable {
         banedUsers,
         requestStatus,
         role,
+        cmId,
       ];
 
   factory CommuinityState.inital() {
@@ -83,6 +86,7 @@ class CommuinityState extends Equatable {
         boosted: 0,
         isBaned: false,
         banedUsers: [],
+        cmId: "",
         requestStatus: RequestStatus.none,
     );
   }
@@ -103,6 +107,7 @@ class CommuinityState extends Equatable {
     bool? isBaned,
     List<Userr>? banedUsers,
     RequestStatus? requestStatus,
+    String? cmId,
   }) {
     return CommuinityState(
       role: role ?? this.role,
@@ -121,6 +126,7 @@ class CommuinityState extends Equatable {
         isBaned: isBaned ?? this.isBaned,
         banedUsers: banedUsers ?? this.banedUsers,
         requestStatus: requestStatus ?? this.requestStatus,
+        cmId: cmId ?? this.cmId,
     );
   }
 }

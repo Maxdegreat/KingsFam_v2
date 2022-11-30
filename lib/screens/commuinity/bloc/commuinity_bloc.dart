@@ -477,6 +477,10 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     emit(state.copyWith(events: events));
   }
 
+  void updateCmId(String id) {
+    emit(state.copyWith(cmId: id));
+  }
+
   // KINGSCORD METHODS
 
 }

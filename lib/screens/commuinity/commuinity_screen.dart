@@ -71,14 +71,20 @@ class CommuinityScreen extends StatefulWidget {
   final ChatscreenBloc? chatScreenBloc;
 
   const CommuinityScreen(
-      {Key? key, required this.commuinity, required this.showDrawer, this.chatScreenBloc})
+      {Key? key,
+      required this.commuinity,
+      required this.showDrawer,
+      this.chatScreenBloc})
       : super(key: key);
   static const String routeName = '/CommuinityScreen';
   static Route route({required CommuinityScreenArgs args}) {
     log("do we reach the bloc stuff???");
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
-        builder: (context) => CommuinityScreen(commuinity: Church.empty, showDrawer: args.showDrawer,));
+        builder: (context) => CommuinityScreen(
+              commuinity: Church.empty,
+              showDrawer: args.showDrawer,
+            ));
   }
 
   @override
@@ -126,6 +132,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     // context.read<CommuinityBloc>().dispose();
     super.dispose();
   }
+  //String _currentCmId = widget.commuinity.id!;
 
   @override
   Widget build(BuildContext context) {
@@ -158,15 +165,16 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     // ignore: unused_local_variable
     final userId = context.read<AuthBloc>().state.user!.uid;
     return BlocProvider<CommuinityBloc>(
-      create: (context) => CommuinityBloc(
-        callRepository: context.read<CallRepository>(),
-        authBloc: context.read<AuthBloc>(),
-        churchRepository: context.read<ChurchRepository>(),
-        storageRepository: context.read<StorageRepository>(),
-        userrRepository: context.read<UserrRepository>(),
-      )..add(CommunityInitalEvent(
-          commuinity: widget.commuinity,
-        )),
+      create: (context) {
+        log("Passing through bloc consumer");
+        return CommuinityBloc(
+          callRepository: context.read<CallRepository>(),
+          authBloc: context.read<AuthBloc>(),
+          churchRepository: context.read<ChurchRepository>(),
+          storageRepository: context.read<StorageRepository>(),
+          userrRepository: context.read<UserrRepository>(),
+        );
+      },
       child: BlocConsumer<CommuinityBloc, CommuinityState>(
           listener: (context, state) {
         if (state.status == CommuintyStatus.error) {
@@ -212,9 +220,17 @@ class _CommuinityScreenState extends State<CommuinityScreen>
               cbTxt: "Thanks");
         }
       }, builder: (context, state) {
+        if (context.read<CommuinityBloc>().state.cmId !=
+            widget.commuinity.id!) {
+          context.read<CommuinityBloc>().updateCmId(widget.commuinity.id!);
+          context.read<CommuinityBloc>()
+            ..add(CommunityInitalEvent(
+              commuinity: widget.commuinity,
+            ));
+        }
         return Scaffold(
             drawerEdgeDragWidth: MediaQuery.of(context).size.width / 1.7,
-            drawer: widget.showDrawer 
+            drawer: widget.showDrawer
                 ? MainDrawer()
                 : IconButton(
                     onPressed: () => Navigator.of(context).pop(),

@@ -15,3 +15,30 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 # KingsFam_v2_IOS
+
+
+
+dynamic nativeAd = Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Container(
+            child: _isNativeAdLoaded
+                ? Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Color(hc.hexcolorCode("#141829")),
+                        gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                              Color(hc.hexcolorCode("#20263c")),
+                              Color(hc.hexcolorCode("#141829"))
+                            ]),
+                        border:
+                            Border.all(width: .5, color: Colors.blue[900]!)),
+                    height: 80,
+                    width: 200,
+                    child: AdWidget(
+                      ad: _nativeAd,
+                    ),
+                  )
+                : null));
