@@ -25,7 +25,12 @@ class MessageLines extends StatefulWidget {
   final String cmId;
   final BuildContext inhearatedCtx;
 
-  MessageLines({required this.message, required this.cmId, required this.kcId, this.previousSenderAsUid, required  this.inhearatedCtx});
+  MessageLines(
+      {required this.message,
+      required this.cmId,
+      required this.kcId,
+      this.previousSenderAsUid,
+      required this.inhearatedCtx});
 
   @override
   State<MessageLines> createState() => _MessageLinesState();
@@ -52,7 +57,8 @@ class _MessageLinesState extends State<MessageLines> {
 
   Container reactionContainer({required String reaction, required int num}) {
     return Container(
-      height: 30,
+       height: MediaQuery.of(context).size.height / 20,
+      width: MediaQuery.of(context).size.width / 8,
       child: Center(
           child: RichText(
         text: TextSpan(
@@ -68,8 +74,8 @@ class _MessageLinesState extends State<MessageLines> {
             ]),
       )),
       decoration: BoxDecoration(
-          color: Colors.white24,
-          border: Border.all(color: Colors.red[800]!, width: 2),
+          color: Color.fromARGB(110, 255, 193, 7),
+          border: Border.all(color: Colors.amber, width: 2),
           borderRadius: BorderRadius.circular(5)),
     );
   }
@@ -78,14 +84,14 @@ class _MessageLinesState extends State<MessageLines> {
     return widget.message.reactions == {} || messageReactions == {'': 0}
         ? SizedBox.shrink()
         : Container(
-            height: 30,
+            height: MediaQuery.of(context).size.height / 20,
             child: Row(
                 children: messageReactions!.keys.map((e) {
               return Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 7.0),
-                child:
-                    reactionContainer(reaction: e, num: widget.message.reactions![e]!),
+                    const EdgeInsets.only(top: 5.0, bottom: 5.0, right: 7 ),
+                child: reactionContainer(
+                    reaction: e, num: widget.message.reactions![e]!),
               );
             }).toList()),
           );
@@ -155,7 +161,6 @@ class _MessageLinesState extends State<MessageLines> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    
                     //  GestureDetector(
                     //    onTap: () {
                     //     // tell ui that this is a replyed message
@@ -163,7 +168,7 @@ class _MessageLinesState extends State<MessageLines> {
                     //       inhearatedCtx.read<KingscordCubit>().onReplyMessage(replyingToMessage: message,);
                     //       Navigator.of(context).pop();
                     //     // add the og msg sender id in data / payload on onbackend
-                        
+
                     //     // send a notification to to og sender onbackend
 
                     //    },
@@ -172,40 +177,64 @@ class _MessageLinesState extends State<MessageLines> {
                     //    ),
                     //  ),
                     //  SizedBox(width: 5,),
-                      GestureDetector(
-                        onTap: () {
-                          if (widget.message.sender!.id == context.read<AuthBloc>().state.user!.uid) {
-                            if (widget.message.text != null && widget.message.text == "(code:unsent 10987345)") {
-                              snackBar(snackMessage: "You can\'t del this fam", context: context, bgColor: Colors.red[400]!);
-                            } else {
-                              Message messageForDel = widget.message.copyWith(text: "(code:unsent 10987345)", imageUrl: null, mentionedIds: null, thumbnailUrl: null, videoUrl: null,);
-                          FirebaseFirestore.instance.collection(Paths.church).doc(this.widget.cmId).collection(Paths.kingsCord).doc(this.widget.kcId).collection(Paths.messages).doc(this.widget.message.id).update(messageForDel.ToDoc(senderId: widget.message.sender!.id));
-                            }
+                    GestureDetector(
+                      onTap: () {
+                        if (widget.message.sender!.id ==
+                            context.read<AuthBloc>().state.user!.uid) {
+                          if (widget.message.text != null &&
+                              widget.message.text == "(code:unsent 10987345)") {
+                            snackBar(
+                                snackMessage: "You can\'t del this fam",
+                                context: context,
+                                bgColor: Colors.red[400]!);
+                          } else {
+                            Message messageForDel = widget.message.copyWith(
+                              text: "(code:unsent 10987345)",
+                              imageUrl: null,
+                              mentionedIds: null,
+                              thumbnailUrl: null,
+                              videoUrl: null,
+                            );
+                            FirebaseFirestore.instance
+                                .collection(Paths.church)
+                                .doc(this.widget.cmId)
+                                .collection(Paths.kingsCord)
+                                .doc(this.widget.kcId)
+                                .collection(Paths.messages)
+                                .doc(this.widget.message.id)
+                                .update(messageForDel.ToDoc(
+                                    senderId: widget.message.sender!.id));
+                          }
                         } else
-                          snackBar(snackMessage: "hmm, can't del a message that is not yours fam", context: context, bgColor: Colors.red[400]!);
-                        },
-                        child: Container(
-                          child: Text("Unsend", style: Theme.of(context).textTheme.bodyMedium),
-                        ),
+                          snackBar(
+                              snackMessage:
+                                  "hmm, can't del a message that is not yours fam",
+                              context: context,
+                              bgColor: Colors.red[400]!);
+                      },
+                      child: Container(
+                        child: Text("Unsend",
+                            style: Theme.of(context).textTheme.bodyMedium),
                       ),
+                    ),
                   ],
                 ),
-                
               ],
             ),
           );
         });
   }
 
-   _showReplyBarUi(String? reply) {
-    return reply != null ? Container(
-      height: 25,
-      width: double.infinity,
-      child: Text(reply, style: TextStyle(fontStyle: FontStyle.italic, fontSize: 15)),
-      decoration: BoxDecoration(
-        color: Color.fromARGB(120, 255, 145, 0)
-      ),
-    ) : SizedBox.shrink();
+  _showReplyBarUi(String? reply) {
+    return reply != null
+        ? Container(
+            height: 25,
+            width: double.infinity,
+            child: Text(reply,
+                style: TextStyle(fontStyle: FontStyle.italic, fontSize: 15)),
+            decoration: BoxDecoration(color: Color.fromARGB(120, 255, 145, 0)),
+          )
+        : SizedBox.shrink();
   }
 
   // if i send the message.
@@ -216,52 +245,57 @@ class _MessageLinesState extends State<MessageLines> {
     List<String> links = [];
     List<Widget> textWithLinksForColumn = [];
     String tempString = "";
-      // checking for strings starting with https:// I do this w/ regex
-     widget.message.text!.split(RegExp("\\s")).forEach((element) {
-
-       if (!element.startsWith('https://')) {
-         if (textWithLinksForColumn.isEmpty && tempString.isEmpty) {
+    // checking for strings starting with https:// I do this w/ regex
+    widget.message.text!.split(RegExp("\\s")).forEach((element) {
+      if (!element.startsWith('https://')) {
+        if (textWithLinksForColumn.isEmpty && tempString.isEmpty) {
           tempString += element;
-         } else {
+        } else {
           tempString += " $element ";
-         }
-
-       }
-
-       else if (element.startsWith('https://')) {
-        textWithLinksForColumn.add(Text(tempString, style: TextStyle(color: Colors.white,
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w800),));
+        }
+      } else if (element.startsWith('https://')) {
+        textWithLinksForColumn.add(Text(
+          tempString,
+          style: TextStyle(
+              color: Colors.white, fontSize: 14.0, fontWeight: FontWeight.w800),
+        ));
         tempString = "";
-         // add the element to the links so that the code knows visually there is a link in a show link preview
-         links.add(element);
-         // make a textbutton so that indivdual links can be taped on
+        // add the element to the links so that the code knows visually there is a link in a show link preview
+        links.add(element);
+        // make a textbutton so that indivdual links can be taped on
 
-         Widget l = GestureDetector(
+        Widget l = GestureDetector(
           onTap: () {
             launch(element);
           },
-          child: Text(element, style: Theme.of(context).textTheme.bodyText1!.merge(TextStyle(color: Colors.blue))),
-         );
-          // add the links to the list below so that the code can later use these txtbuttons w/ links as child
-         textWithLinksForColumn.add(l);
-       } 
-     });
+          child: Text(element,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText1!
+                  .merge(TextStyle(color: Colors.blue))),
+        );
+        // add the links to the list below so that the code can later use these txtbuttons w/ links as child
+        textWithLinksForColumn.add(l);
+      }
+    });
 
     // The return of the build text when there is an unsent message
     if (widget.message.text == "(code:unsent 10987345)") {
-        return Text("deleted", style: TextStyle(
-           color: Colors.grey,
-           fontSize: 14.0,
-           fontStyle: FontStyle.italic,
-           fontWeight: FontWeight.w800, ));
-      }
+      return Text("deleted",
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 14.0,
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.w800,
+          ));
+    }
 
-      if (links.isNotEmpty) {
-        // the return of the build text when the links are not empty
-        return GestureDetector(
-          onLongPress: () => _showReactionsBar(widget.message.id!, widget.message.reactions, context),
-           onTap: () {
+    if (links.isNotEmpty) {
+      // the return of the build text when the links are not empty
+      return GestureDetector(
+          onLongPress: () => _showReactionsBar(
+              widget.message.id!, widget.message.reactions, context),
+          onTap: () {
             if (links.length == 1) {
               launch(links[0]);
             }
@@ -275,33 +309,29 @@ class _MessageLinesState extends State<MessageLines> {
               // if a link was sent only without any text
               // widget.message.text!.trim().length != links[0].trim().length ? Text(widget.message.text!) : Text("#weblink")
               Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: textWithLinksForColumn.map((e) => e).toList()
-              )
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: textWithLinksForColumn.map((e) => e).toList())
             ],
           ));
-      }
+    }
     // the return of the text when there is no links involved
     return GestureDetector(
-      onLongPress: () => _showReactionsBar(widget.message.id!, widget.message.reactions, context),
+      onLongPress: () => _showReactionsBar(
+          widget.message.id!, widget.message.reactions, context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _showReplyBarUi(widget.message.replyed),
-          Padding(
-            padding: const EdgeInsets.only(left: 7),
-            child: Text(widget.message.text!,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w800)),
-          ),
+          Text(widget.message.text!,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.w800)),
           _showReactionBarUi(messageReactions: widget.message.reactions)
         ],
       ),
     );
-
   }
 
   //for an image
@@ -312,8 +342,8 @@ class _MessageLinesState extends State<MessageLines> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onLongPress: () =>
-              _showReactionsBar(widget.message.id!, widget.message.reactions, context),
+          onLongPress: () => _showReactionsBar(
+              widget.message.id!, widget.message.reactions, context),
           onTap: () => Navigator.of(context).pushNamed(UrlViewScreen.routeName,
               arguments: UrlViewArgs(
                   urlImg: widget.message.imageUrl!,
@@ -329,7 +359,8 @@ class _MessageLinesState extends State<MessageLines> {
                 borderRadius: BorderRadius.circular(20.0),
                 image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: CachedNetworkImageProvider(widget.message.imageUrl!))),
+                    image:
+                        CachedNetworkImageProvider(widget.message.imageUrl!))),
           ),
         ),
         _showReactionBarUi(messageReactions: widget.message.reactions)
@@ -348,14 +379,15 @@ class _MessageLinesState extends State<MessageLines> {
             fit: StackFit.expand,
             children: [
               GestureDetector(
-                onLongPress: () =>
-                    _showReactionsBar(widget.message.id!, widget.message.reactions, context),
+                onLongPress: () => _showReactionsBar(
+                    widget.message.id!, widget.message.reactions, context),
                 onTap: () => Navigator.of(context).pushNamed(
                     UrlViewScreen.routeName,
                     arguments: UrlViewArgs(
                         urlVid: widget.message.videoUrl!,
                         urlImg: widget.message.thumbnailUrl!,
-                        heroTag: 'Message/${widget.message.videoUrl}/${widget.message.thumbnailUrl}')),
+                        heroTag:
+                            'Message/${widget.message.videoUrl}/${widget.message.thumbnailUrl}')),
                 child: Container(
                   child: Icon(
                     Icons.play_arrow,
@@ -379,7 +411,8 @@ class _MessageLinesState extends State<MessageLines> {
               borderRadius: BorderRadius.circular(20.0),
               image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: CachedNetworkImageProvider(widget.message.thumbnailUrl!))),
+                  image: CachedNetworkImageProvider(
+                      widget.message.thumbnailUrl!))),
         ),
         _showReactionBarUi(messageReactions: widget.message.reactions)
       ],
@@ -402,52 +435,65 @@ class _MessageLinesState extends State<MessageLines> {
             // a row displaying imageurl of member and name
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 //FancyListTile(username: '${kingsCordMemInfo.memberInfo[message.senderId]['username']}', imageUrl: '${kingsCordMemInfo.memberInfo[message.senderId]['profileImageUrl']}', onTap: null, isBtn: false, BR: 18, height: 18, width: 18),
-                widget.previousSenderAsUid == widget.message.sender!.id ? SizedBox.shrink() :kingsCordAvtar(context),
+                // widget.previousSenderAsUid == widget.message.sender!.id
+                //     ? SizedBox.shrink()
+                //     : 
+                kingsCordAvtar(context),
                 SizedBox(
                   width: 5.0,
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      widget.message.sender!.username,
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900,
-                          color: widget.message.sender!.colorPref == ""
-                              ? Colors.red
-                              : Color(hexcolor
-                                  .hexcolorCode(widget.message.sender!.colorPref))),
-                    ),
-                    Text(
+                    Row(
+                      children: [
+                        Text(
+                          widget.message.sender!.username,
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                              color: widget.message.sender!.colorPref == ""
+                                  ? Colors.red
+                                  : Color(hexcolor.hexcolorCode(
+                                      widget.message.sender!.colorPref))),
+                        ),
+                        SizedBox(width: 2),
+                         Text(
                       '${widget.message.date.timeAgo()}',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
-                        color: Colors.white,
+                        color: Colors.grey,
+                        fontStyle: FontStyle.italic
                       ),
-                    )
+                    ),
+                      ],
+                    ),
+                    SizedBox(height: 2),
+                    Container(
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width / 1.4,
+                        ),
+                        child: widget.message.text != null
+                            ? _buildText(context)
+                            : widget.message.videoUrl != null &&
+                                    widget.message.thumbnailUrl != null
+                                ? _buildVideo(context)
+                                : _buildImage(context)),
                   ],
                 )
               ],
             ),
-            SizedBox(height: 5.0),
-            Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width,
-                ),
-                child: widget.message.text != null
-                    ? _buildText(context)
-                    : widget.message.videoUrl != null && widget.message.thumbnailUrl != null
-                        ? _buildVideo(context)
-                        : _buildImage(context)),
           ],
         ));
   }
 
-  Widget kingsCordAvtar(BuildContext context, ) {
+  Widget kingsCordAvtar(
+    BuildContext context,
+  ) {
     HexColor hexcolor = HexColor();
     Size size = MediaQuery.of(context).size;
     return Container(
@@ -457,22 +503,25 @@ class _MessageLinesState extends State<MessageLines> {
           ? kingsCordProfileImg()
           : kingsCordProfileIcon(),
       decoration: BoxDecoration(
-         border: Border.all(
-             width: 2,
-             color: widget.message.sender!.colorPref == ""
-                 ? Colors.red
-                 : Color(hexcolor.hexcolorCode(widget.message.sender!.colorPref))),
+          border: Border.all(
+              width: 2,
+              color: widget.message.sender!.colorPref == ""
+                  ? Colors.red
+                  : Color(
+                      hexcolor.hexcolorCode(widget.message.sender!.colorPref))),
           color: widget.message.sender!.colorPref == ""
               ? Colors.red
               : Color(hexcolor.hexcolorCode(widget.message.sender!.colorPref)),
-         shape: BoxShape.circle),
+          shape: BoxShape.circle),
     );
   }
 
   Widget? kingsCordProfileImg() => CircleAvatar(
-      backgroundColor: Colors.grey[400],
-      backgroundImage:
-          CachedNetworkImageProvider(widget.message.sender!.profileImageUrl),radius: 8,);
+        backgroundColor: Colors.grey[400],
+        backgroundImage:
+            CachedNetworkImageProvider(widget.message.sender!.profileImageUrl),
+        radius: 8,
+      );
 
   Widget? kingsCordProfileIcon() =>
       Container(child: Icon(Icons.account_circle));

@@ -137,7 +137,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       if (sms != null) {
         if (messageLines.length > 0) {
           messageLine = MessageLines(
-            previousSenderAsUid: null,
+            previousSenderAsUid: message != null ? message.last!.sender!.id : null,
             cmId: widget.commuinity.id!,
             kcId: widget.kingsCord.id!,
             message: sms,
