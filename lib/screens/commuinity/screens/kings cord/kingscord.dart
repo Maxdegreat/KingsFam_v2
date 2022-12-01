@@ -12,6 +12,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/helpers/helpers.dart';
+import 'package:kingsfam/helpers/user_preferences.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
@@ -413,6 +414,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 //============================================================================
   @override
   void initState() {
+    UserPreferences.updateKcTimeStamp(cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!);
     super.initState();
     // isUserUpToDate(context, context.read<AuthBloc>().state.user!.uid, widget.kingsCord.memberInfo);
   }

@@ -346,7 +346,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                         vertical: 3.0),
                                     child: Container(
                                       width: MediaQuery.of(context).size.width /
-                                          1.7,
+                                          1.3,
                                       decoration: BoxDecoration(
                                           color:
                                               Color(hc.hexcolorCode("#0a0c14")),
@@ -386,7 +386,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                                       overflow:
                                                           TextOverflow.fade,
                                                       style: TextStyle(
-                                                          color: Colors.white,
+                                                          color: cord.readStatus!=null && cord.readStatus! ? Colors.white : Colors.grey,
                                                           fontWeight:
                                                               FontWeight.w700),
                                                     ),
@@ -584,7 +584,7 @@ SliverAppBar cmSliverAppBar({
     flexibleSpace: FlexibleSpaceBar(
       title: Text(cm.name),
       background: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(10),
         child: Center(
           child: Stack(
             children: [
@@ -593,8 +593,8 @@ SliverAppBar cmSliverAppBar({
               //   child: Icon(Icons.golf_course),
               // ),
               Container(
-                  height: 120,
-                  width: 170,
+                  height:  MediaQuery.of(context).size.height / 4,
+                  width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(width: .5, color: Colors.blue[900]!),

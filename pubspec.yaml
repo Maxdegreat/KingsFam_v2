@@ -154,7 +154,6 @@ flutter:
     - assets/coin/KFcoin.png
     - assets/KINGSFAM_LOGO_black_bg.png
     # SVG's are below
-    - assets/cm_backgrounds/
     # ANIMATIONS are below
     - assets/animations/
 

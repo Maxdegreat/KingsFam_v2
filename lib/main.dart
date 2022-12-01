@@ -12,6 +12,7 @@ import 'package:kingsfam/blocs/search/search_bloc.dart';
 import 'package:kingsfam/blocs/simple_bloc_observer.dart';
 import 'package:kingsfam/config/custum_router.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
+import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/repositories/says/says_repository.dart';
@@ -34,6 +35,7 @@ void main() async {
   EquatableConfig.stringify = kDebugMode;
   Bloc.observer = SimpleBlocObserver();
   // await Stripe.instance.applySettings();
+  await UserPreferences.init();
   runApp(MyApp());
 }
 

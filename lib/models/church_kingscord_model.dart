@@ -12,6 +12,7 @@ class KingsCord extends Equatable {
   final String? mode;
   final String? rolesAllowed;
   final List<String>? subscribedIds;
+  final bool? readStatus;
   // final Map<String, dynamic> memberInfo;
 
   //make a constructor for fields
@@ -24,11 +25,12 @@ class KingsCord extends Equatable {
     this.members,
     this.mode,
     this.rolesAllowed,
+    this.readStatus,
   });
   
   //gen the props
   @override
-  List<Object?> get props => [id, tag, cordName, members, mode, rolesAllowed, subscribedIds];
+  List<Object?> get props => [id, tag, cordName, members, mode, rolesAllowed, subscribedIds, readStatus];
 
   //gen the copy with
   KingsCord copyWith({
@@ -41,6 +43,7 @@ class KingsCord extends Equatable {
     List<Userr>? members,
     String? mode,
     String? rolesAllowed,
+    bool? readStatus,
     // Map<String, dynamic>? memberInfo
   }) {
     return KingsCord(
@@ -52,6 +55,7 @@ class KingsCord extends Equatable {
       members: members ?? this.members,
       mode: mode ?? "chat",
       rolesAllowed: rolesAllowed ?? Roles.Member,
+      readStatus: readStatus ?? this.readStatus,
       // memberInfo: memberInfo ?? this.memberInfo,
     );
   }
@@ -80,7 +84,8 @@ class KingsCord extends Equatable {
         cordName: data['cordName'] ?? 'MainRoom',
         subscribedIds: List<String>.from(data['subscribedIds']) ?? [],
         mode: data['mode'] ?? 'chat',
-        rolesAllowed: data['rolesAllowed'] ?? Roles.Member);
+        rolesAllowed: data['rolesAllowed'] ?? Roles.Member,
+        );
   }
 
   static Future<KingsCord?> fromDocAsync(DocumentSnapshot doc) async {
