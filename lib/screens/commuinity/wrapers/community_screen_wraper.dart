@@ -18,7 +18,9 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
   Color secondaryColor = Color(hc.hexcolorCode('#141829'));
 
   return Padding(
-    padding: const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
+    padding: const EdgeInsets.only(
+      bottom: 8.0,
+    ),
     child: CustomScrollView(slivers: <Widget>[
       cmSliverAppBar(
           currRole: currRole,
@@ -43,14 +45,17 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                 children: [
                   Container(
                     height: MediaQuery.of(context).size.height / 20,
-                    width: MediaQuery.of(context).size.width / 3.0,
+                    width: MediaQuery.of(context).size.width / 2.3,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(7),
                     ),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           primary: Color(hc.hexcolorCode("#141829"))),
-                      onPressed: () => Navigator.of(context).pushNamed(CommunityHome.routeName, arguments: CommunityHomeArgs(cm: cm, cmB: context.read<CommuinityBloc>())),
+                      onPressed: () => Navigator.of(context).pushNamed(
+                          CommunityHome.routeName,
+                          arguments: CommunityHomeArgs(
+                              cm: cm, cmB: context.read<CommuinityBloc>())),
                       child: Text("Home",
                           style: Theme.of(context).textTheme.bodyText1),
                     ),
@@ -60,7 +65,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                   ),
                   Container(
                     height: MediaQuery.of(context).size.height / 20,
-                    width: MediaQuery.of(context).size.width / 3.0,
+                    width: MediaQuery.of(context).size.width / 2.3,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(7),
                     ),
@@ -129,20 +134,18 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                                 commuinity: cm,
                                                 kingsCord: cord));
 
-                                    
-                                      // del the @ notification (del the mention)
-                                      String currId = context
-                                          .read<AuthBloc>()
-                                          .state
-                                          .user!
-                                          .uid;
-                                      FirebaseFirestore.instance
-                                          .collection(Paths.mention)
-                                          .doc(currId)
-                                          .collection(cm.id!)
-                                          .doc(cord.id)
-                                          .delete();
-                                    
+                                    // del the @ notification (del the mention)
+                                    String currId = context
+                                        .read<AuthBloc>()
+                                        .state
+                                        .user!
+                                        .uid;
+                                    FirebaseFirestore.instance
+                                        .collection(Paths.mention)
+                                        .doc(currId)
+                                        .collection(cm.id!)
+                                        .doc(cord.id)
+                                        .delete();
                                   } else {
                                     Navigator.of(context).pushNamed(
                                         SaysRoom.routeName,
@@ -230,11 +233,9 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                             return SizedBox.shrink();
                           }
                         }).toList(),
-
                       SizedBox(height: 10),
-                      
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
                             "Rooms",
@@ -269,7 +270,6 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                               : SizedBox.shrink(),
                         ],
                       ),
-
                       Column(children: [
                         if (state.collapseCordColumn) ...[
                           SizedBox.shrink(),
@@ -386,7 +386,12 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                                       overflow:
                                                           TextOverflow.fade,
                                                       style: TextStyle(
-                                                          color: cord.readStatus!=null && cord.readStatus! ? Colors.white : Colors.grey,
+                                                          color: cord.readStatus !=
+                                                                      null &&
+                                                                  cord
+                                                                      .readStatus!
+                                                              ? Colors.white
+                                                              : Colors.grey,
                                                           fontWeight:
                                                               FontWeight.w700),
                                                     ),
@@ -580,11 +585,12 @@ SliverAppBar cmSliverAppBar({
   required String? currRole,
 }) {
   return SliverAppBar(
+    actions: [Icon(Icons.minimize)],
     expandedHeight: MediaQuery.of(context).size.height / 4,
     flexibleSpace: FlexibleSpaceBar(
       title: Text(cm.name),
       background: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.only(top: 5, bottom: 10),
         child: Center(
           child: Stack(
             children: [
@@ -592,16 +598,34 @@ SliverAppBar cmSliverAppBar({
               //   left: 10,
               //   child: Icon(Icons.golf_course),
               // ),
-              Container(
-                  height:  MediaQuery.of(context).size.height / 4,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(width: .5, color: Colors.blue[900]!),
-                    image: DecorationImage(
-                        image: CachedNetworkImageProvider(cm.imageUrl),
-                        fit: BoxFit.cover),
-                  )),
+              Stack(
+                children: [
+                  Container(
+                      height: MediaQuery.of(context).size.height / 4,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(7),
+                        border: Border.all(width: .5, color: Colors.blue[900]!),
+                        image: DecorationImage(
+                            image: CachedNetworkImageProvider(cm.imageUrl),
+                            fit: BoxFit.cover),
+                      )),
+                  Container(
+                      decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(7),
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: <Color>[
+                        Colors.black87,
+                        Colors.black26,
+                        Colors.transparent,
+                      ], // Gradient from https://learnui.design/tools/gradient-generator.html
+                      tileMode: TileMode.mirror,
+                    ),
+                  ))
+                ],
+              ),
             ],
           ),
         ),

@@ -112,7 +112,7 @@ collapseOrExpand(CommuinityBloc cmBloc, String type) {
         onPressed: () => cmBloc.onCollapsedCord(),
         icon: !cmBloc.state.collapseCordColumn
             ? Icon(
-                Icons.minimize,
+                Icons.keyboard_arrow_up_outlined,
                 size: 35,
               )
             : Icon(
@@ -124,7 +124,7 @@ collapseOrExpand(CommuinityBloc cmBloc, String type) {
         onPressed: () => cmBloc.onCollapsedVvrColumn(),
         icon: !cmBloc.state.collapseVvrColumn
             ? Icon(
-                Icons.minimize,
+                Icons.keyboard_arrow_up_outlined,
                 size: 35,
               )
             : Icon(
