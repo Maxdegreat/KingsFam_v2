@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
@@ -107,11 +108,13 @@ class _MessageLinesState extends State<MessageLines> {
         context: context,
         builder: (context) {
           return Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.only(bottom: 8.0, left: 8, right: 8),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                SizedBox(height: 3),
+                Icon(Icons.drag_handle),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -426,69 +429,80 @@ class _MessageLinesState extends State<MessageLines> {
 
     // this is for the hex color
     HexColor hexcolor = HexColor();
-    return Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // a row displaying imageurl of member and name
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                //FancyListTile(username: '${kingsCordMemInfo.memberInfo[message.senderId]['username']}', imageUrl: '${kingsCordMemInfo.memberInfo[message.senderId]['profileImageUrl']}', onTap: null, isBtn: false, BR: 18, height: 18, width: 18),
-                // widget.previousSenderAsUid == widget.message.sender!.id
-                //     ? SizedBox.shrink()
-                //     : 
-                kingsCordAvtar(context),
-                SizedBox(
-                  width: 5.0,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          widget.message.sender!.username,
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w900,
-                              color: widget.message.sender!.colorPref == ""
-                                  ? Colors.red
-                                  : Color(hexcolor.hexcolorCode(
-                                      widget.message.sender!.colorPref))),
+    return Draggable<Widget>(
+      axis: Axis.horizontal,
+      affinity: Axis.horizontal,
+      onDragEnd: (DragDownDetails) {},
+      feedback: Container(height: 50, width: 50, child: Text("Thats why i am in the KingsFam")),
+      childWhenDragging: Container(height: 50, width: 50, child: Text("Hey, Jesus is my king!")),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          // color: Colors.white24,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // a row displaying imageurl of member and name
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  //FancyListTile(username: '${kingsCordMemInfo.memberInfo[message.senderId]['username']}', imageUrl: '${kingsCordMemInfo.memberInfo[message.senderId]['profileImageUrl']}', onTap: null, isBtn: false, BR: 18, height: 18, width: 18),
+                  // widget.previousSenderAsUid == widget.message.sender!.id
+                  //     ? SizedBox.shrink()
+                  //     : 
+                  kingsCordAvtar(context),
+                  SizedBox(
+                    width: 5.0,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            widget.message.sender!.username,
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w900,
+                                color: widget.message.sender!.colorPref == ""
+                                    ? Colors.red
+                                    : Color(hexcolor.hexcolorCode(
+                                        widget.message.sender!.colorPref))),
+                          ),
+                          SizedBox(width: 2),
+                           Text(
+                        '${widget.message.date.timeAgo()}',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                          fontStyle: FontStyle.italic
                         ),
-                        SizedBox(width: 2),
-                         Text(
-                      '${widget.message.date.timeAgo()}',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey,
-                        fontStyle: FontStyle.italic
                       ),
-                    ),
-                      ],
-                    ),
-                    SizedBox(height: 2),
-                    Container(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width / 1.4,
-                        ),
-                        child: widget.message.text != null
-                            ? _buildText(context)
-                            : widget.message.videoUrl != null &&
-                                    widget.message.thumbnailUrl != null
-                                ? _buildVideo(context)
-                                : _buildImage(context)),
-                  ],
-                )
-              ],
-            ),
-          ],
-        ));
+                        ],
+                      ),
+                      SizedBox(height: 2),
+                      Container(
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width / 1.4,
+                          ),
+                          child: widget.message.text != null
+                              ? _buildText(context)
+                              : widget.message.videoUrl != null &&
+                                      widget.message.thumbnailUrl != null
+                                  ? _buildVideo(context)
+                                  : _buildImage(context)),
+                    ],
+                  )
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget kingsCordAvtar(

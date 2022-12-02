@@ -49,7 +49,7 @@ class ChatscreenState extends Equatable {
   factory ChatscreenState.initial() {
     return ChatscreenState(
       chat: [],
-      chs: [],
+      chs: null,
       chsToJoin: [],
       inAChat: false,
       isToggle: true,
