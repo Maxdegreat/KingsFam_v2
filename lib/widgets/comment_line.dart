@@ -34,7 +34,7 @@ class _CommentLinesState extends State<CommentLines> {
             text: widget.comment.content, imageUrl: null, 
             thumbnailUrl: null, 
             videoUrl: null, 
-            replyed: null, 
+            reply: null, 
             sender: widget.comment.author, ),
           )
         ],

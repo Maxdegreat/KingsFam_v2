@@ -25,13 +25,15 @@ class MessageLines extends StatefulWidget {
   final String kcId;
   final String cmId;
   final BuildContext inhearatedCtx;
+  final KingscordCubit kcubit;
 
   MessageLines(
       {required this.message,
       required this.cmId,
       required this.kcId,
       this.previousSenderAsUid,
-      required this.inhearatedCtx});
+      required this.inhearatedCtx,
+      required this.kcubit});
 
   @override
   State<MessageLines> createState() => _MessageLinesState();
@@ -325,7 +327,7 @@ class _MessageLinesState extends State<MessageLines> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _showReplyBarUi(widget.message.replyed),
+         // _showReplyBarUi(widget.message.replyed),
           Text(widget.message.text!,
               style: TextStyle(
                   color: Colors.white,
@@ -424,18 +426,35 @@ class _MessageLinesState extends State<MessageLines> {
 
   @override
   Widget build(BuildContext context) {
-    // final bool isMe =
-    //     context.read<AuthBloc>().state.user!.uid == message.senderId;
+    
+    String msgBodyForReply = widget.message.text != null ? widget.message.text! : " Shared something";
 
-    // this is for the hex color
     HexColor hexcolor = HexColor();
-    return Draggable<Widget>(
-      axis: Axis.horizontal,
-      affinity: Axis.horizontal,
-      onDragEnd: (DragDownDetails) {},
-      feedback: Container(height: 50, width: 50, child: Text("Thats why i am in the KingsFam")),
-      childWhenDragging: Container(height: 50, width: 50, child: Text("Hey, Jesus is my king!")),
-      child: Padding(
+    return BlocProvider.value(
+      value: widget.kcubit,
+      
+    
+      child: Draggable<Widget>(
+        onDraggableCanceled: ((velocity, offset) {
+          if (offset.dx >= 100) {
+             widget.kcubit.addReply(widget.message.id! + widget.message.sender!.username + ": " + msgBodyForReply);
+          }
+        }),
+        axis: Axis.horizontal,
+        affinity: Axis.horizontal,
+        onDragEnd: (DragDownDetails) {},
+        feedback: messageLineChild(),
+        childWhenDragging: Text("Replying to " + widget.message.senderUsername!, style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
+        child: messageLineChild()
+      ),
+    
+    );
+
+    
+  }
+
+  Widget messageLineChild() {
+    return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
           // color: Colors.white24,
@@ -501,8 +520,7 @@ class _MessageLinesState extends State<MessageLines> {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget kingsCordAvtar(

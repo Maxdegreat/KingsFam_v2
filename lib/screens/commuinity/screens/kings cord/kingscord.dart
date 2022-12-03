@@ -142,6 +142,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             kcId: widget.kingsCord.id!,
             message: sms,
             inhearatedCtx: context,
+            kcubit: context.read<KingscordCubit>(),
           );
         } else {
           messageLine = MessageLines(
@@ -149,6 +150,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             kcId: widget.kingsCord.id!,
             message: sms,
             inhearatedCtx: context,
+            kcubit: context.read<KingscordCubit>()
           );
         }
         messageLines.add(messageLine);
@@ -291,17 +293,17 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                               };
                             }
                             var msgAsLst = _messageController.text.split(' ');
-                            for (String msg in msgAsLst) {
-                              // handels if a shares a link
+                            // for (String msg in msgAsLst) {
+                            //   // handels if a shares a link
 
-                              if (msg.length > 8 &&
-                                  msg.substring(0, 8) == 'https://') {
-                                messageWithsSmbolesForParsing += '{{a-$msg}}';
-                                // we want to check if the msg is mentioning someone
-                              } else {
-                                messageWithsSmbolesForParsing += '$msg ';
-                              }
-                            }
+                            //   if (msg.length > 8 &&
+                            //       msg.substring(0, 8) == 'https://') {
+                            //     messageWithsSmbolesForParsing += '{{a-$msg}}';
+                            //     // we want to check if the msg is mentioning someone
+                            //   } else {
+                            //     messageWithsSmbolesForParsing += '$msg ';
+                            //   }
+                            // }
                             if (_messageController.text.length > 0 && _messageController.text.trim() != "") {
                               ctx.onSendTxtMsg(
                               churchId: widget.commuinity.id!,
@@ -484,6 +486,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                     //divider of a height 1
                     Divider(height: 1.0),
 
+                    state.replyMessage != null && state.replyMessage!.isNotEmpty
+                      ? _showReplying(state)
+                      : SizedBox.shrink(),
+
                     state.mentions.length > 0
                         ? _showMentioned(state)
                         : SizedBox.shrink(),
@@ -588,6 +594,26 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                icon: Icon(Icons.video_collection_rounded))
           ],
         ),
+      ),
+    );
+  }
+
+  _showReplying(KingscordState state) {
+    return Container(
+      color: Color.fromARGB(110, 255, 193, 7),
+      height: 22,
+      width: double.infinity,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Center(child: Align(
+            alignment: Alignment.center,
+            child: IconButton(onPressed: () {
+              context.read<KingscordCubit>().removeReply();
+            }, icon: Icon(Icons.cancel_outlined, size: 15,)))),
+          Text("Replying to " + state.replyMessage!.split(":")[0].substring(20), overflow: TextOverflow.ellipsis,)
+        ],
       ),
     );
   }

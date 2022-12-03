@@ -14,7 +14,7 @@ class Message {
   final String? senderUsername;
   final List<String>? mentionedIds;
   final Map<String, int>? reactions;
-  final String? replyed;
+  final String? reply; 
 
 //2 gen the constructor
   Message({
@@ -28,7 +28,7 @@ class Message {
     this.mentionedIds,
     required this.date,
     this.reactions,
-    this.replyed,
+    this.reply,
   });
 
   //3  make the props
@@ -43,7 +43,7 @@ class Message {
         date,
         mentionedIds,
         reactions,
-        replyed,
+        reply,
       ];
 
   // 4 make the copy with
@@ -58,7 +58,7 @@ class Message {
     Timestamp? date,
     List<String>? mentionedIds,
     Map<String, int>? reactions,
-    String? replyed,
+    String? reply,
   }) {
     return Message(
       id: id ?? this.id,
@@ -70,7 +70,7 @@ class Message {
       videoUrl: videoUrl ?? this.videoUrl,
       date: date ?? this.date,
       mentionedIds: mentionedIds ?? this.mentionedIds,
-      replyed: replyed ?? this.replyed,
+      reply: reply ?? this.reply,
     );
   }
 
@@ -90,7 +90,7 @@ class Message {
       'date': date, 
       'mentionedIds' : mentionedIds,
       'reactions' : {},
-      'replyed' : replyed,
+      'reply' : reply, // This should be a string where the value is the ID of the og message.
     };
   }
 
@@ -113,7 +113,7 @@ class Message {
       date: (data['date']),
       reactions: Map<String, int>.from(data['reactions'] ?? {}),
       mentionedIds:  List<String>.from(data['mentionedIds'] ?? []),
-      replyed: data['replyed'] ?? null,
+      reply: data['reply'] ?? null,
       
     );
   }
