@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   late VideoPlayerController vc;
   @override
   void initState() {
-    vc = VideoPlayerController.asset('assets/animations/kingsfam_logo_animated.mp4', videoPlayerOptions: VideoPlayerOptions( mixWithOthers: true))
+    vc = VideoPlayerController.asset('assets/animations/kingsfam_logo_animted.mp4', videoPlayerOptions: VideoPlayerOptions( mixWithOthers: true))
     ..addListener(() => setState(() {}))
       ..setLooping(true) // -------------------------------- SET PERKED LOOPING TO TRUE
       ..initialize().then((_) {

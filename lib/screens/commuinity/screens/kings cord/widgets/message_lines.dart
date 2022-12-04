@@ -437,7 +437,8 @@ class _MessageLinesState extends State<MessageLines> {
       child: Draggable<Widget>(
         onDraggableCanceled: ((velocity, offset) {
           if (offset.dx >= 100) {
-             widget.kcubit.addReply(widget.message.id! + widget.message.sender!.username + ": " + msgBodyForReply);
+            if (widget.message.sender!.token.isNotEmpty)
+              widget.kcubit.addReply(widget.message.sender!.token[0] + widget.message.id! + widget.message.sender!.username + ": " + msgBodyForReply);
           }
         }),
         axis: Axis.horizontal,
@@ -503,6 +504,21 @@ class _MessageLinesState extends State<MessageLines> {
                         ],
                       ),
                       SizedBox(height: 2),
+                      widget.message.reply != null && widget.message.reply!.isNotEmpty ?
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4.0, bottom: 5),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white24,
+                            borderRadius: BorderRadius.circular(10)
+                          ),
+                          height: 20,
+                          child: Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: Text("reply to " + widget.message.reply!.split(": ").first.substring(183), style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey, fontSize: 15),),
+                          ),
+                        ),
+                      ) : SizedBox.shrink(),
                       Container(
                           constraints: BoxConstraints(
                             maxWidth: MediaQuery.of(context).size.width / 1.4,

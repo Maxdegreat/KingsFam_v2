@@ -155,6 +155,7 @@ class KingscordCubit extends Cubit<KingscordState> {
     required String cmTitle,
     required KingsCord kingsCordData,
     required String currUserName, // aka sender username
+    required String? reply,
   }) async {
     // log("recent: " + state.recentNotifLst.toString());
     // log("all: " + state.allNotifLst.toString());
@@ -170,15 +171,24 @@ class KingscordCubit extends Cubit<KingscordState> {
             .collection(churchId)
             .doc(kingsCordId)
             .set({
-          'communityName': mentionedInfo[id]['communityName'],
-          'username': mentionedInfo[id]['username'],
-          'token': mentionedInfo[id]['token'],
+              'communityName': mentionedInfo[id]['communityName'],
+              'username': mentionedInfo[id]['username'],
+              'token': mentionedInfo[id]['token'],
+              'messageBody': txtMsgWithOutSymbolesForParcing,
+              'type': 'kc_type',
+            });
+      }
+    }
+
+    if (reply != null) {
+      if (reply.isNotEmpty) {
+        FirebaseFirestore.instance.collection(Paths.mention).doc(reply.substring(163, 183))
+        .collection(churchId).doc(kingsCordId).set({
+          'communityName': cmTitle,
+          'username': currUserName,
+          'token': reply.substring(0, 163),
           'messageBody': txtMsgWithOutSymbolesForParcing,
           'type': 'kc_type',
-          // 'type_id': kingsCordData.id!,
-          // 'type_tag': kingsCordData.tag,
-          // 'type_cordName': kingsCordData.cordName,
-          // 'type_members': kingsCordData.members,
         });
       }
     }
@@ -220,6 +230,7 @@ class KingscordCubit extends Cubit<KingscordState> {
       date: Timestamp.fromDate(DateTime.now()),
       imageUrl: null,
       senderUsername: currUserName,
+      reply: reply,
     );
     // ------------------------------------------------------------- BELOW IS WHERE WE SEND THE MESSAGE -------------------------------------------------------------
     // uploading the message to cloud

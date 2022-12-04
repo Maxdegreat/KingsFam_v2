@@ -36,6 +36,8 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
             state.status == CommuintyStatus.loading
                 ? LinearProgressIndicator()
                 : SizedBox.shrink(),
+                
+            SizedBox(height: 15),
             Padding(
               padding: EdgeInsets.only(right: 10, left: 5, bottom: 8),
               child: Row(
@@ -233,7 +235,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                             return SizedBox.shrink();
                           }
                         }).toList(),
-                      SizedBox(height: 10),
+                       // SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -590,42 +592,34 @@ SliverAppBar cmSliverAppBar({
     flexibleSpace: FlexibleSpaceBar(
       title: Text(cm.name),
       background: Padding(
-        padding: const EdgeInsets.only(top: 5, bottom: 10),
+        padding: const EdgeInsets.only(top: 5, bottom: 5, left: 5, right: 5),
         child: Center(
           child: Stack(
             children: [
-              // Positioned(
-              //   left: 10,
-              //   child: Icon(Icons.golf_course),
-              // ),
-              Stack(
-                children: [
-                  Container(
-                      height: MediaQuery.of(context).size.height / 4,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(7),
-                        border: Border.all(width: .5, color: Colors.blue[900]!),
-                        image: DecorationImage(
-                            image: CachedNetworkImageProvider(cm.imageUrl),
-                            fit: BoxFit.cover),
-                      )),
-                  Container(
-                      decoration: BoxDecoration(
+              Container(
+                  height: MediaQuery.of(context).size.height / 4,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(7),
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: <Color>[
-                        Colors.black87,
-                        Colors.black26,
-                        Colors.transparent,
-                      ], // Gradient from https://learnui.design/tools/gradient-generator.html
-                      tileMode: TileMode.mirror,
-                    ),
-                  ))
-                ],
-              ),
+                    border: Border.all(width: .5, color: Colors.blue[900]!),
+                    image: DecorationImage(
+                        image: CachedNetworkImageProvider(cm.imageUrl),
+                        fit: BoxFit.cover),
+                  )),
+              Container(
+                  decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(7),
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: <Color>[
+                    Colors.black87,
+                    Colors.black26,
+                    Colors.transparent,
+                  ], // Gradient from https://learnui.design/tools/gradient-generator.html
+                  tileMode: TileMode.mirror,
+                ),
+              ))
             ],
           ),
         ),

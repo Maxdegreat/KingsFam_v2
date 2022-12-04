@@ -25,6 +25,7 @@ class Paths {
   static const String activeInCall = 'activeInCall';
   static const String events = 'events';
   static const String mention = 'mention';
+  static const String repy = 'reply';
   static const String kcMsgNotif = "kcMsgNotif";
   static const String permissions = 'permissions';
   static const String perked = 'perked';

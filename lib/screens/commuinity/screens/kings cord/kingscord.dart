@@ -305,6 +305,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                             //   }
                             // }
                             if (_messageController.text.length > 0 && _messageController.text.trim() != "") {
+                              ctx.removeReply();
                               ctx.onSendTxtMsg(
                               churchId: widget.commuinity.id!,
                               kingsCordId: widget.kingsCord.id!,
@@ -317,6 +318,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                               cmTitle: widget.commuinity.name,
                               kingsCordData: widget.kingsCord,
                               currUserName: currUsersName,
+                              reply: state.replyMessage,
                             );
                             }
                             ctx.onIsTyping(false);
