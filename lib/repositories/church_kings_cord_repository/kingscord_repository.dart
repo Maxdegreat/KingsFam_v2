@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
@@ -108,6 +110,8 @@ class KingsCordRepository extends BaseKingsCordRepository {
         }
       }
     }
+
+    log("hey there was an update in the stream");
 
     Map<String, List<KingsCord>> map = {};
     map[mentioned] = mentionedL;

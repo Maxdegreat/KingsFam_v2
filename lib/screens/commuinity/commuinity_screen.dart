@@ -5,36 +5,28 @@
 
 import 'dart:developer';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:helpers/helpers.dart';
 
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/paths.dart';
-import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
 
 import 'package:kingsfam/helpers/helpers.dart';
-import 'package:kingsfam/helpers/navigator_helper.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
-import 'package:kingsfam/roles/role_types.dart';
 import 'package:kingsfam/screens/build_church/cubit/buildchurch_cubit.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
-import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 // ignore: unused_import
 import 'package:kingsfam/extensions/date_time_extension.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
@@ -48,7 +40,6 @@ import 'package:kingsfam/widgets/widgets.dart';
 import 'package:flutter/src/painting/gradient.dart' as paint;
 import 'package:kingsfam/screens/commuinity/actions.dart';
 
-import 'package:video_player/video_player.dart';
 
 // ignore: unused_import
 import '../profile/bloc/profile_bloc.dart';
@@ -302,15 +293,15 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     );
   }
 
-  Padding contentContaner(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      child: GestureDetector(
-          onTap: () => Navigator.of(context).pushNamed(
-              CommuinityFeedScreen.routeName,
-              arguments:
-                  CommuinityFeedScreenArgs(commuinity: widget.commuinity)),
-          child: Text("Content")),
-    );
-  }
+  // Padding contentContaner(BuildContext context) {
+  //   return Padding(
+  //     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+  //     child: GestureDetector(
+  //         onTap: () => Navigator.of(context).pushNamed(
+  //             CommuinityFeedScreen.routeName,
+  //             arguments:
+  //                 CommuinityFeedScreenArgs(commuinity: widget.commuinity)),
+  //         child: Text("Content")),
+  //   );
+  // }
 }

@@ -33,75 +33,57 @@ _onJoinCommuinity(
 Widget contentPreview(
     {required Post post, required BuildContext context, required Church cm}) {
   return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 7, vertical: 7),
+    padding: EdgeInsets.symmetric(horizontal: 7, vertical: 0),
     child: GestureDetector(
       onTap: () => Navigator.of(context)
           .pushNamed(CommuinityFeedScreen.routeName,
               arguments: CommuinityFeedScreenArgs(commuinity: cm))
           .then((_) => context.read<BottomnavbarCubit>().showBottomNav(true)),
-      child: Container(
-        height: 80,
-        width: 200,
-        decoration: BoxDecoration(
-          color: Color(hc.hexcolorCode("#141829")),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(width: .5, color: Colors.blue[900]!),
-          gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              colors: [
-                Color(hc.hexcolorCode("#20263c")),
-                Color(hc.hexcolorCode("#141829"))
-              ]),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                height: 80,
-                width: 80,
-                decoration: BoxDecoration(
-                    image: post.imageUrl != null
-                        ? DecorationImage(
-                            image: CachedNetworkImageProvider(post.imageUrl!),
-                            fit: BoxFit.fitWidth)
-                        : post.thumbnailUrl != null
-                            ? DecorationImage(
-                                image: CachedNetworkImageProvider(
-                                    post.thumbnailUrl!),
-                                fit: BoxFit.fitWidth)
-                            : null,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        bottomLeft: Radius.circular(10))),
+      child: SizedBox(
+        height: 90,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start, 
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 65,
+              width: 70,
+              decoration: BoxDecoration(
+                color: Color(hc.hexcolorCode("#141829")),
+                borderRadius: BorderRadius.circular(10),
+                       image: post.imageUrl != null
+                              ? DecorationImage(
+                                  image: CachedNetworkImageProvider(post.imageUrl!),
+                                  fit: BoxFit.fitWidth)
+                              : post.thumbnailUrl != null
+                                  ? DecorationImage(
+                                      image: CachedNetworkImageProvider(
+                                          post.thumbnailUrl!),
+                                      fit: BoxFit.fitWidth)
+                                  : null,
+                // gradient: LinearGradient(
+                //     begin: Alignment.bottomCenter,
+                //     end: Alignment.topCenter,
+                //     colors: [
+                //       Color(hc.hexcolorCode("#20263c")),
+                //       Color(hc.hexcolorCode("#141829"))
+                //     ]),
               ),
-              SizedBox(width: 10),
-              Flexible(
-                  child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    post.author.username,
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                    maxLines: 1,
-                    overflow: TextOverflow.fade,
-                  ),
-                  Text(
-                    'shared',
-                    style: TextStyle(fontWeight: FontWeight.w500),
-                    maxLines: 1,
-                    overflow: TextOverflow.fade,
-                  ),
-                  // Text(post.date.toString(), style: TextStyle(fontWeight: FontWeight.w400),maxLines: 1, overflow: TextOverflow.fade,)
-                ],
-              ))
-            ],
-          ),
+              ),
+              SizedBox(height: 2),
+              Center(
+                child: Text(
+                        post.author.username,
+                        style: TextStyle(fontWeight: FontWeight.w300, fontStyle: FontStyle.italic, fontSize: 10, color: Colors.grey),
+                        maxLines: 1,
+                        overflow: TextOverflow.fade,
+                ),
+              ),
+              
+          ],
         ),
       ),
-    ),
+      ),
   );
 }
 

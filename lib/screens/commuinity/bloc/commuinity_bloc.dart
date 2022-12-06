@@ -214,6 +214,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
 
         emit(state.copyWith(kingCords: kingsCords["kinscord"], mentionedCords: kingsCords["mentioned"]));
+        add(CommunityLoadingPosts(cm: event.commuinity));
         // add(CommunityLoadingEvents(cm: event.commuinity));
       });
     } catch (e) {
@@ -261,13 +262,15 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
           failure: Failure(message: "Ops something went wrong")));
     }
   }
+  
 
-  // this is the loaded for the community content.
+  // this is the loaded for the community content. _____________
+  
   Stream<CommuinityState> _mapCommunityLoadingPostToState(
       CommunityLoadingPosts event) async* {
     try {
-      List<Post?> posts = [];
-      // await _churchRepository.getCommuinityPosts(cm: event.cm);
+      List<Post?> posts = 
+      await _churchRepository.getCommuinityPosts(cm: event.cm);
       emit(state.copyWith(postDisplay: posts, status: CommuintyStatus.loaded));
     } catch (e) {
       emit(state.copyWith(

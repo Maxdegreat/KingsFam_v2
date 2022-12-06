@@ -332,34 +332,5 @@ class _CommunityHomemState extends State<CommunityHome> {
               ));
 }
 
-  // Text(
-  //                       "${cm.name}\'s Content",
-  //                       style: TextStyle(
-  //                         color: Colors.grey,
-  //                         fontSize: 21,
-  //                         fontWeight: FontWeight.w800,
-  //                       ),
-  //                       overflow: TextOverflow.fade,
-  //                     ),
-  //                     Container(
-  //                       height: 85,
-  //                       width: double.infinity,
-  //                       child: state.postDisplay.length > 0
-  //                           ? ListView.builder(
-  //                               itemCount: 2,
-  //                               scrollDirection: Axis.horizontal,
-  //                               itemBuilder: (context, index) {
-  //                                 Post? post = state.postDisplay[0];
-  //                                 if (post != null && index == 0) {
-  //                                   return contentPreview(
-  //                                       cm: cm, context: context, post: post);
-  //                                 } else {
-  //                                   return _ad !=null ? _ad : SizedBox.shrink();
-  //                                 }
-  //                               })
-  //                           : Center(
-  //                               child: state.status == CommuintyStatus.loading
-  //                                   ? Text("One Second ...")
-  //                                   : Text("Your Community Post Will Show Here")),
-  //                     ),
+  
                       //ContentContaner(context)

@@ -90,7 +90,31 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                 children: [
                   // child 1. this is a display of post and ooms 111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 
-                  SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.all(7.0),
+                        child: Container(
+                          height: state.postDisplay.isNotEmpty ? 90 : null,
+                          width: double.infinity,
+                          child: state.postDisplay.length > 0
+                              ? ListView.builder(
+                                  itemCount: 2,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) {
+                                    Post? post = state.postDisplay[0];
+                                    if (post != null && index == 0) {
+                                      return contentPreview(
+                                          cm: cm, context: context, post: post);
+                                    } else {
+                                      return _ad !=null ? /*_ad*/ SizedBox.shrink() : SizedBox.shrink();
+                                    }
+                                  })
+                              : Center(
+                                  child: state.status == CommuintyStatus.loading
+                                      ? Text("One Second ...")
+                                      : Text("Share Whats Going on")),
+                        ),
+                      ),
+
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
