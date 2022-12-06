@@ -8,6 +8,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
 import 'package:kingsfam/models/user_model.dart';
+import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/widgets/says_container.dart';
 
 import '../../../config/paths.dart';
@@ -100,10 +101,7 @@ class _showJoinedCmsState extends State<showJoinedCms> {
         padding: const EdgeInsets.all(8.0),
         child: GestureDetector(
           onTap: () =>
-              Navigator.of(context).pushNamed(CommuinityScreen.routeName,
-                  arguments: CommuinityScreenArgs(
-                    commuinity: cm!,
-                  )),
+              Navigator.of(context).pushNamed(CommunityHome.routeName, arguments: CommunityHomeArgs(cm: cm!, cmB: null)),
           child: FancyListTile(
             // ------------------------- update hee
             isMentioned: widget.state.mentionedMap[cm!.id],
@@ -111,9 +109,7 @@ class _showJoinedCmsState extends State<showJoinedCms> {
             location: cm.location.length > 1 ? cm.location : null,
             username: cm.name,
             imageUrl: cm.imageUrl,
-            onTap: () => Navigator.of(context).pushNamed(
-                CommuinityScreen.routeName,
-                arguments: CommuinityScreenArgs(commuinity: cm)),
+            onTap: () => Navigator.of(context).pushNamed(CommunityHome.routeName, arguments: CommunityHomeArgs(cm: cm, cmB: null)),
             isBtn: false,
             BR: 12.0,
             height: 12.0,

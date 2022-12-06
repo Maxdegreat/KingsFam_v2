@@ -19,8 +19,6 @@ import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart'
 
 import 'package:kingsfam/widgets/chats_view_widgets/screens_for_page_view.dart';
 import 'package:kingsfam/widgets/widgets.dart';
-import 'package:new_version/new_version.dart';
-import 'package:rive/rive.dart';
 import '../../widgets/chats_view_widgets/getting_started.dart';
 
 class ChatsScreen extends StatefulWidget {
@@ -116,8 +114,9 @@ class _ChatsScreenState extends State<ChatsScreen>
       Church? cm = await Church.fromDoc(snap);
       if (cm != null) {
         // log ("PROOF U CAN GET THE KC STILL: " + kc.cordName);
-        Navigator.of(context).pushNamed(CommuinityScreen.routeName,
-            arguments: CommuinityScreenArgs(commuinity: cm));
+        // update the selected ch of chatscreen bloc w/ ch that is pulled from the noty. or also nav to the message room.
+        // Navigator.of(context).pushNamed(CommuinityScreen.routeName,
+          //  arguments: CommuinityScreenArgs(commuinity: cm));
         return;
       }
       return;
@@ -155,13 +154,6 @@ class _ChatsScreenState extends State<ChatsScreen>
   @override
   void initState() {
     super.initState();
-    final newVersion = NewVersion(
-      iOSId: 'com.kingbiz.kingsfam',
-      androidId: 'com.kingbiz.kingsfam',
-    );
-
-    advancedStatusCheck(newVersion);
-
     setupInteractedMessage();
     //super.build(context);
   }
@@ -173,22 +165,6 @@ class _ChatsScreenState extends State<ChatsScreen>
 
   bool chatScreenStateUnReadChats = false;
 
-  advancedStatusCheck(NewVersion newVersion) async {
-    final status = await newVersion.getVersionStatus();
-    if (status != null) {
-      debugPrint(status.releaseNotes);
-      debugPrint(status.appStoreLink);
-      debugPrint(status.localVersion);
-      debugPrint(status.storeVersion);
-      debugPrint(status.canUpdate.toString());
-      newVersion.showUpdateDialog(
-        context: context,
-        versionStatus: status,
-        dialogTitle: 'Update Available',
-        dialogText: 'Hey Fam Please Update KingsFam In Your App Store',
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -205,7 +181,6 @@ class _ChatsScreenState extends State<ChatsScreen>
         }, builder: (context, state) {
          var currentScreen ; 
           if (state.pSelectedCh != state.selectedCh) {
-            log("PASSING THOUGH NEW SCEEN");
             currentScreen = null;//Container(child: Center(child: Text("KingsFam")),);
             currentScreen =  CommuinityScreen(commuinity: state.selectedCh, showDrawer: true);
           }

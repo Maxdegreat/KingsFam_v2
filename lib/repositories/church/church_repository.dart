@@ -268,6 +268,7 @@ class ChurchRepository extends BaseChurchRepository {
 
   Stream<List<Future<KingsCord?>>> getCommuinityCordsStream(
       {required Church commuinity, required int limit}) {
+        log(" in the get cm we are loading the cm cords to a stream");
     return FirebaseFirestore.instance
         .collection(Paths.church)
         .doc(commuinity.id)

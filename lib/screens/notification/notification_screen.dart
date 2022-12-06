@@ -9,6 +9,8 @@ import 'package:kingsfam/screens/notification/bloc/noty_bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
+import '../commuinity/community_home/home.dart';
+
 class NotificationsScreen extends StatelessWidget {
   static const String routeName = '/notification';
 
@@ -90,7 +92,7 @@ class NotyTile extends StatelessWidget {
    if (noty.fromCm != null) {
       final DocumentSnapshot cmSnap = await FirebaseFirestore.instance.collection(Paths.church).doc(noty.fromCm).get();
       final Church cm = await Church.fromDoc(cmSnap);
-     return  Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: cm));
+     return  Navigator.of(context).pushNamed(CommunityHome.routeName, arguments: CommunityHomeArgs(cm: cm, cmB: null));
    } 
     else 
        return Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: noty.fromUser.id));

@@ -70,7 +70,8 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   Stream<CommuinityState> _mapCommunityInitalEventToState(
       CommunityInitalEvent event) async* {
-    emit(state.copyWith(status: CommuintyStatus.loading));
+    emit(state.copyWith(
+        status: CommuintyStatus.loading, kingCords: [], mentionedCords: []));
     try {
       String uid = _authBloc.state.user!.uid;
       // just some pre-reqs
@@ -192,84 +193,28 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   Stream<CommuinityState> _mapCommuinityLoadingCordsToState(
       CommunityLoadingCords event) async* {
-    // make calls sream
+    // make calls stream
     // add calls to loaded then yield
     // also add this.event to loaded yield ... now has both list (this event has the cord and cm)
-    // STILL LOAFDING SO NO YIELD YET
+    // STILL LOADING SO NO YIELD YET
     try {
       // ignore: unused_local_variable
-      final List<KingsCord> cords = [];
-      final List<KingsCord> mentionedCords = [];
       final Userr userr = await _userrRepository.getUserrWithId(
           userrId: _authBloc.state.user!.uid);
-      List<String>? savedKcTimeStmap = await UserPreferences.getKcTimeStamps(event.commuinity.id!);
-      log(savedKcTimeStmap.toString() + " is the val of savedKcTimeStmap");
+      
+
       // stream subscription for community cords
       _streamSubscriptionKingsCord?.cancel();
       _streamSubscriptionKingsCord = _churchRepository
           .getCommuinityCordsStream(commuinity: event.commuinity, limit: 50)
           .listen((kcords) async {
         // final allCords = await Future.wait(kcords);
-        for (var kcAwait in kcords) {
-          DateTime? tFromMsg;
-          DateTime? localT;
-          bool? readStatus;
-          final kc = await kcAwait;
-          if (kc != null && savedKcTimeStmap != null) {
-            QuerySnapshot qs = await FirebaseFirestore.instance
-                .collection(Paths.church)
-                .doc(event.commuinity.id!)
-                .collection(Paths.kingsCord)
-                .doc(kc.id!)
-                .collection(Paths.messages)
-                .orderBy('date', descending: true)
-                .limit(1)
-                .get();
-              if (qs.docs.isNotEmpty) {
-                log("qs is not empty");
-                Message m =  await Message.fromDoc(qs.docs[0]);
-                tFromMsg = DateTime.fromMicrosecondsSinceEpoch(m.date.microsecondsSinceEpoch);
-                log("is val of tFromMsg: " + tFromMsg.toString());
-                for (int i = 0; i < savedKcTimeStmap.length; i++) {
+        final Map<String, List<KingsCord?>> kingsCords = 
+          await KingsCordRepository().futureWaitCord(kcords, event.commuinity.id!);
 
-                  if (savedKcTimeStmap[i].substring(0, 20) == kc.id!) {
-                    log("found a match");
-                    localT = DateTime.tryParse(savedKcTimeStmap[i].substring(21));
-                    log("The local time is " + localT.toString());
-                    if (localT != null) {
-                      readStatus = !localT.isBefore(tFromMsg) ? false : true;
-                      log("the read status is " + readStatus.toString());
-                    }
-                  }
-                }
 
-              }
-          }
-          if (kc != null) {
-            //allCords.add(kc);
-            var docRef = await FirebaseFirestore.instance
-                .collection(Paths.mention)
-                .doc(_authBloc.state.user!.uid)
-                .collection(event.commuinity.id!)
-                .doc(kc.id);
-            docRef.get().then((value) => {
-                  if (value.exists)
-                    {
-                      mentionedCords.add(kc.copyWith(readStatus: readStatus))
-                    }
-                  else
-                    {
-                      cords.add(kc.copyWith(readStatus: readStatus))
-                    },
-                  emit(state.copyWith(
-                      mentionedCords: mentionedCords,
-                      currUserr: userr,
-                      kingCords: cords))
-                });
-          }
-        }
-
-        add(CommunityLoadingEvents(cm: event.commuinity));
+        emit(state.copyWith(kingCords: kingsCords["kinscord"]));
+        // add(CommunityLoadingEvents(cm: event.commuinity));
       });
     } catch (e) {
       emit(state.copyWith(
@@ -308,7 +253,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
       emit(state.copyWith(events: initEvents));
 
-      add(CommunityLoadingPosts(cm: event.cm));
+      // add(CommunityLoadingPosts(cm: event.cm));
     } catch (e) {
       log("There was an error in the cmBloc communityLoadingEvents: " +
           e.toString());
@@ -322,7 +267,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       CommunityLoadingPosts event) async* {
     try {
       List<Post?> posts = [];
-          // await _churchRepository.getCommuinityPosts(cm: event.cm);
+      // await _churchRepository.getCommuinityPosts(cm: event.cm);
       emit(state.copyWith(postDisplay: posts, status: CommuintyStatus.loaded));
     } catch (e) {
       emit(state.copyWith(
@@ -507,13 +452,25 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     return newName;
   }
 
-  dispose() {
+  Future<void> dispose() async {
     state.copyWith(
-        failure: Failure(),
-        isMember: false,
-        kingCords: [],
-        postDisplay: [],
-        status: CommuintyStatus.inital);
+      currUserr: Userr.empty,
+      mentionedCords: [],
+      collapseCordColumn: false,
+      collapseVvrColumn: false,
+      events: [],
+      isMember: null,
+      postDisplay: [],
+      kingCords: [],
+      status: CommuintyStatus.inital,
+      failure: Failure(),
+      themePack: 'none',
+      boosted: 0,
+      isBaned: false,
+      banedUsers: [],
+      cmId: "",
+      requestStatus: RequestStatus.none,
+    );
   }
 
   void onCollapsedCord() {
@@ -536,8 +493,9 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     emit(state.copyWith(events: events));
   }
 
-  void updateCmId(String id) {
+  void updateCmId(String id, Church cm) {
     emit(state.copyWith(cmId: id));
+   add(CommunityInitalEvent(commuinity: cm));
   }
 
   // KINGSCORD METHODS

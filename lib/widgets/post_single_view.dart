@@ -22,6 +22,7 @@ import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import '../config/paths.dart';
+import '../screens/commuinity/community_home/home.dart';
 
 class PostSingleView extends StatefulWidget {
   final Post? post;
@@ -134,10 +135,7 @@ class _PostSingleViewState extends State<PostSingleView> {
                             padding: const EdgeInsets.symmetric(
                                 vertical: 5, horizontal: 3),
                             child: GestureDetector(
-                              onTap: () => Navigator.of(context).pushNamed(
-                                  CommuinityScreen.routeName,
-                                  arguments: CommuinityScreenArgs(
-                                      commuinity: commuinity)),
+                              onTap: () =>Navigator.of(context).pushNamed(CommunityHome.routeName, arguments: CommunityHomeArgs(cm: commuinity, cmB: null)),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
@@ -173,10 +171,7 @@ class _PostSingleViewState extends State<PostSingleView> {
                               padding: const EdgeInsets.symmetric(
                                   vertical: 5, horizontal: 3),
                               child: GestureDetector(
-                                onTap: () => Navigator.of(context).pushNamed(
-                                    CommuinityScreen.routeName,
-                                    arguments: CommuinityScreenArgs(
-                                        commuinity: commuinity)),
+                                onTap: () => Navigator.of(context).pushNamed(CommunityHome.routeName, arguments: CommunityHomeArgs(cm: commuinity, cmB: null)),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   mainAxisSize: MainAxisSize.min,

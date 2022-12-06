@@ -108,9 +108,9 @@ class CustomRoute {
         return CommuinityFeedScreen.route(
             args: settings.arguments as CommuinityFeedScreenArgs);
 
-      case CommuinityScreen.routeName:
-        return CommuinityScreen.route(
-            args: settings.arguments as CommuinityScreenArgs);
+      // case CommuinityScreen.routeName:
+      //   return CommuinityScreen.route(
+      //       args: settings.arguments as CommuinityScreenArgs);
 
       case FeedNewScreen.routeName:
         return FeedNewScreen.route(

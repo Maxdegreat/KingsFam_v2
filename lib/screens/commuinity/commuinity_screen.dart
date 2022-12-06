@@ -70,22 +70,22 @@ class CommuinityScreen extends StatefulWidget {
   final bool showDrawer;
   final ChatscreenBloc? chatScreenBloc;
 
-  const CommuinityScreen(
-      {Key? key,
-      required this.commuinity,
-      required this.showDrawer,
-      this.chatScreenBloc})
-      : super(key: key);
-  static const String routeName = '/CommuinityScreen';
-  static Route route({required CommuinityScreenArgs args}) {
-    log("do we reach the bloc stuff???");
-    return MaterialPageRoute(
-        settings: const RouteSettings(name: routeName),
-        builder: (context) => CommuinityScreen(
-              commuinity: Church.empty,
-              showDrawer: args.showDrawer,
-            ));
-  }
+  const CommuinityScreen({
+    Key? key,
+    required this.commuinity,
+    required this.showDrawer,
+    this.chatScreenBloc
+  }) : super(key: key);
+  // static const String routeName = '/CommuinityScreen';
+  // static Route route({required CommuinityScreenArgs args}) {
+  //   log("do we reach the bloc stuff???");
+  //   return MaterialPageRoute(
+  //       settings: const RouteSettings(name: routeName),
+  //       builder: (context) => CommuinityScreen(
+  //             commuinity: Church.empty,
+  //             showDrawer: args.showDrawer,
+  //           ));
+  // }
 
   @override
   _CommuinityScreenState createState() => _CommuinityScreenState();
@@ -93,6 +93,7 @@ class CommuinityScreen extends StatefulWidget {
 
 class _CommuinityScreenState extends State<CommuinityScreen>
     with SingleTickerProviderStateMixin {
+  
   late TextEditingController _txtController;
   String? currRole;
 
@@ -222,11 +223,9 @@ class _CommuinityScreenState extends State<CommuinityScreen>
       }, builder: (context, state) {
         if (context.read<CommuinityBloc>().state.cmId !=
             widget.commuinity.id!) {
-          context.read<CommuinityBloc>().updateCmId(widget.commuinity.id!);
-          context.read<CommuinityBloc>()
-            ..add(CommunityInitalEvent(
-              commuinity: widget.commuinity,
-            ));
+              log("cm id's are not equal so restarting...");
+          context.read<CommuinityBloc>().updateCmId(widget.commuinity.id!, widget.commuinity);
+          
         }
         return Scaffold(
             drawerEdgeDragWidth: MediaQuery.of(context).size.width / 1.7,

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/models/says_model.dart';
 import 'package:kingsfam/repositories/church_kings_cord_repository/base_kingscord_repository.dart';
@@ -51,4 +52,55 @@ class KingsCordRepository extends BaseKingsCordRepository {
         .collection(Paths.messages)
         .add(message.ToDoc(senderId: senderId));
   }
+
+  Future<Map<String, List<KingsCord?>>> futureWaitCord(
+      List<Future<KingsCord?>> futures, String cmId) async {
+    String mentioned = "mentioned";
+    String kingsCord = "kinscord";
+
+    List<KingsCord> mentionedL = [];
+    List<KingsCord> kingsCordL = [];
+
+    for (Future<KingsCord?> future in futures) {
+      DateTime? tFromMsg;
+      DateTime? localT;
+      bool? readStatus;
+
+      KingsCord? kc = await future;
+      if (kc != null) {
+        List<String>? savedKcTimeStmap =
+            await UserPreferences.getKcTimeStamps(cmId);
+        if (savedKcTimeStmap != null) {
+          QuerySnapshot qs = await FirebaseFirestore.instance
+              .collection(Paths.church)
+              .doc(cmId)
+              .collection(Paths.kingsCord)
+              .doc(kc.id!)
+              .collection(Paths.messages)
+              .orderBy('date', descending: true)
+              .limit(1)
+              .get();
+          if (qs.docs.isNotEmpty) {
+            Message m = await Message.fromDoc(qs.docs[0]);
+            tFromMsg = DateTime.fromMicrosecondsSinceEpoch(
+                m.date.microsecondsSinceEpoch);
+            for (int i = 0; i < savedKcTimeStmap.length; i++) {
+              if (savedKcTimeStmap[i].substring(0, 20) == kc.id!) {
+                localT = DateTime.tryParse(savedKcTimeStmap[i].substring(21));
+                if (localT != null) {
+                  readStatus = !localT.isBefore(tFromMsg) ? false : true;
+                }
+              }
+            }
+          }
+        }
+        kingsCordL.add(kc);
+      }
+    }
+    Map<String, List<KingsCord>> map = {};
+    map[mentioned] = mentionedL;
+    map[kingsCord] = kingsCordL;
+    return map;
+  }
+
 }

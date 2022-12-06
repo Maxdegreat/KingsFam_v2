@@ -19,6 +19,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
+import '../screens/commuinity/community_home/home.dart';
+
 class PostSingleViewPfp extends StatefulWidget {
   final Post post;
   final bool isLiked;
@@ -75,9 +77,7 @@ class _PostSingleViewState extends State<PostSingleViewPfp> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
                 child: GestureDetector(
-                  onTap: () => Navigator.of(context).pushNamed(
-                      CommuinityScreen.routeName,
-                      arguments: CommuinityScreenArgs(commuinity: commuinity)),
+                  onTap: () => Navigator.of(context).pushNamed(CommunityHome.routeName, arguments: CommunityHomeArgs(cm: commuinity, cmB: null)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,

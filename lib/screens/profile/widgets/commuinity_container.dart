@@ -7,6 +7,8 @@ import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
+import '../../commuinity/community_home/home.dart';
+
 // a list view of commuinitys that i am a part of yeahhhh
 
 // howto: ---> 1) i need user crdentials to access the users commuinty list
@@ -79,7 +81,7 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
                         itemBuilder: (BuildContext context, int index) {
                           Church ch = snapshot.data![index];
                           return GestureDetector(
-                            onTap: () => Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: ch)),
+                            onTap: () => Navigator.of(context).pushNamed(CommunityHome.routeName, arguments: CommunityHomeArgs(cm: ch, cmB: null)),
                             child: ListTile(
                               leading: ProfileImage(pfpUrl: ch.imageUrl, radius: 25,),
                               title: Text(ch.name),

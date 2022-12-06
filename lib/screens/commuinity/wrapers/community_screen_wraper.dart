@@ -8,6 +8,7 @@ Set<dynamic> cmPrivacySet = {
 
 Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
     String? currRole, Widget? _ad) {
+      
   // create list for mentioned rooms and reg rooms
 
   // load an ad for the cm content
