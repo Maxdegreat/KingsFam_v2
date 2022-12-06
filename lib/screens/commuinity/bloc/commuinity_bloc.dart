@@ -210,10 +210,10 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
           .listen((kcords) async {
         // final allCords = await Future.wait(kcords);
         final Map<String, List<KingsCord?>> kingsCords = 
-          await KingsCordRepository().futureWaitCord(kcords, event.commuinity.id!);
+          await KingsCordRepository().futureWaitCord(kcords, event.commuinity.id!, _authBloc.state.user!.uid);
 
 
-        emit(state.copyWith(kingCords: kingsCords["kinscord"]));
+        emit(state.copyWith(kingCords: kingsCords["kinscord"], mentionedCords: kingsCords["mentioned"]));
         // add(CommunityLoadingEvents(cm: event.commuinity));
       });
     } catch (e) {

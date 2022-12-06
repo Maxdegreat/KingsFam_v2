@@ -25,9 +25,7 @@ class KingsCordRepository extends BaseKingsCordRepository {
   }
 
   Future<void> postSays(
-      {required Says says, 
-      required Church cm, 
-      required String kcId}) async {
+      {required Says says, required Church cm, required String kcId}) async {
     _firebaseFirestore
         .collection(Paths.church)
         .doc(cm.id)
@@ -54,7 +52,7 @@ class KingsCordRepository extends BaseKingsCordRepository {
   }
 
   Future<Map<String, List<KingsCord?>>> futureWaitCord(
-      List<Future<KingsCord?>> futures, String cmId) async {
+      List<Future<KingsCord?>> futures, String cmId, String uid) async {
     String mentioned = "mentioned";
     String kingsCord = "kinscord";
 
@@ -94,13 +92,26 @@ class KingsCordRepository extends BaseKingsCordRepository {
             }
           }
         }
-        kingsCordL.add(kc);
+        // kingsCordL.add(kc);
+        var docRef = await FirebaseFirestore.instance
+            .collection(Paths.mention)
+            .doc(uid)
+            .collection(cmId)
+            .doc(kc.id);
+
+        DocumentSnapshot docSnap = await docRef.get();
+
+        if (docSnap.exists) {
+          mentionedL.add(kc.copyWith(readStatus: readStatus));
+        } else {
+          kingsCordL.add(kc.copyWith(readStatus: readStatus));
+        }
       }
     }
+
     Map<String, List<KingsCord>> map = {};
     map[mentioned] = mentionedL;
     map[kingsCord] = kingsCordL;
     return map;
   }
-
 }
