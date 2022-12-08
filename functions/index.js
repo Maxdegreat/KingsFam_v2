@@ -167,6 +167,7 @@ exports.onFollowUserr = functions.firestore.document("/followers/{userrId}/userF
       const snap = snapshot.data(); // can access any val of snap as i would any js obj
       const mentionedId = context.params.mentionedId;
       const communityId = context.params.churchId;
+      const kingsCordId = context.params.kingsCordId;
       
       // make the FCM
       const message = {
@@ -176,7 +177,7 @@ exports.onFollowUserr = functions.firestore.document("/followers/{userrId}/userF
             'body': snap.messageBody,
           },
           'data': {
-            'kcId': String(snap.type_id),
+            'kcId': kingsCordId,
             'type': String(snap.type),
             'cmId': communityId,
             //'tag': String(snap.type_tag),
@@ -203,6 +204,7 @@ exports.onFollowUserr = functions.firestore.document("/followers/{userrId}/userF
       const snap = snapshot.data(); // can access any val of snap as i would any js obj
       const mentionedId = context.params.mentionedId;
       const communityId = context.params.churchId;
+      const kingsCordId = context.params.kingsCordId;
       
       // make the FCM
       const message = {
@@ -212,7 +214,7 @@ exports.onFollowUserr = functions.firestore.document("/followers/{userrId}/userF
             'body': snap.messageBody,
           },
           'data': {
-            'kcId': String(snap.type_id),
+            'kcId': kingsCordId,
             'type': String(snap.type),
             'cmId': communityId,
             //'tag': String(snap.type_tag),
@@ -360,9 +362,9 @@ exports.onKingsCordMessageSent = functions.firestore
       'recentMsgTime' : kcMsgData.date
     });
     kcRef.update({
-      'recentSender' : [senderId, kcMsgData.senderUsername ],
+      // 'recentSender' : [senderId, kcMsgData.senderUsername ],
       'recentTimestamp' : kcMsgData.date,
-      'recentMessage' : recentMessage,
+      // 'recentMessage' : recentMessage,
     })
   })
 

@@ -456,7 +456,7 @@ class _MessageLinesState extends State<MessageLines> {
 
   Widget messageLineChild() {
     return Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.only(top:2.5, bottom:2.5, left: 8.0, right: 8.0),
         child: Container(
           // color: Colors.white24,
           child: Column(

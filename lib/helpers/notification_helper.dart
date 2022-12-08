@@ -23,7 +23,7 @@ final List<DarwinNotificationCategory> darwinNotificationCategories =
 final StreamController<ReceivedNotification> didReceiveLocalNotificationStream =
     StreamController<ReceivedNotification>.broadcast();
 
-final StreamController<String?> selectNotificationStream =
+final StreamController<String?>  selectNotificationStream =
     StreamController<String?>.broadcast();
 
 class ReceivedNotification {
@@ -66,7 +66,25 @@ final DarwinInitializationSettings initializationSettingsDarwin =
   },
 );
 
+@pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse notificationResponse) {
+  // ignore: avoid_print
+  print("This is a notification taped from the background");
+  print('notification(${notificationResponse.id}) action tapped: '
+      '${notificationResponse.actionId} with'
+      ' payload: ${notificationResponse.payload}');
+  if (notificationResponse.input?.isNotEmpty ?? false) {
+    // ignore: avoid_print
+    print( 'notification action tapped with input: ${notificationResponse.input}');
+  }
+}
+
+
+
 class NotificationHelper {
+
+  
+
   // inatialization method.
   static Future initalize(
       FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
@@ -82,13 +100,20 @@ class NotificationHelper {
     );
 
     log("about to initalize local notifs");
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse:
+        (NotificationResponse notificationResponse) {
+          log("recieved a notification via the onDidRecieveNotification");
+          // selectNotificationStream.add(notificationResponse.payload);
+    },
+      onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
+    );
     log("local notifs are now initalized");
   }
 
   // show notification
   static Future<void> showNotification(RemoteMessage remoteMessage) async {
-    log("show notification!!!!!!!");
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails('channelId2', 'your channel name',
             channelDescription: 'your channel description',

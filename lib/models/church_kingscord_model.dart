@@ -77,7 +77,7 @@ class KingsCord extends Equatable {
 
   //make the from doc
   static KingsCord? fromDoc(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return KingsCord(
         id: doc.id,
         tag: data['tag'],
