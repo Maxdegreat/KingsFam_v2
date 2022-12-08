@@ -31,7 +31,7 @@ class PrayerRepo {
         // get first limit prayers
         var snap =
             await fireb.where("userId", isEqualTo: usrId).limit(limit).get();
-        log("snap obtained");
+        log("UPDATE NEEDED IN THE PRAYER REPO...");
         for (var x in snap.docs) {
           plist.add(PrayerModal.fromDoc(x));
         }

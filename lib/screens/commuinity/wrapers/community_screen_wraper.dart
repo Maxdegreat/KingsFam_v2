@@ -47,7 +47,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Container(
-                    height: MediaQuery.of(context).size.height / 20,
+                    height: MediaQuery.of(context).size.height / 27,
                     width: MediaQuery.of(context).size.width / 2.3,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(7),
@@ -67,7 +67,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                     width: 10,
                   ),
                   Container(
-                    height: MediaQuery.of(context).size.height / 20,
+                    height: MediaQuery.of(context).size.height / 27,
                     width: MediaQuery.of(context).size.width / 2.3,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(7),
@@ -93,7 +93,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                       Padding(
                         padding: const EdgeInsets.all(7.0),
                         child: Container(
-                          height: state.postDisplay.isNotEmpty ? 90 : null,
+                          height: state.postDisplay.isNotEmpty ? 95 : null,
                           width: double.infinity,
                           child: state.postDisplay.length > 0
                               ? ListView.builder(
@@ -105,7 +105,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                       return contentPreview(
                                           cm: cm, context: context, post: post);
                                     } else {
-                                      return _ad !=null ? /*_ad*/ SizedBox.shrink() : SizedBox.shrink();
+                                      return _ad !=null ? _ad : SizedBox.shrink();
                                     }
                                   })
                               : Center(
@@ -120,16 +120,15 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       state.mentionedCords.isNotEmpty
-                          ? Center(
-                              child: Text(
-                              "Mentions",
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 21,
-                                fontWeight: FontWeight.w800,
-                              ),
-                              overflow: TextOverflow.fade,
-                            ))
+                          ? Text(
+                          "Mentions",
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 21,
+                            fontWeight: FontWeight.w800,
+                          ),
+                          overflow: TextOverflow.fade,
+                            )
                           : SizedBox.shrink(),
                       if (state.mentionedCords.isNotEmpty)
                         ...state.mentionedCords.map((cord) {
@@ -196,62 +195,60 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                       cord: cord,
                                       commuinity: cm);
                                 },
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 3.0),
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width /
-                                          1.4,
-                                      decoration: BoxDecoration(
-                                          color:
-                                              Color(hc.hexcolorCode("#0a0c14")),
-                                          borderRadius:
-                                              BorderRadius.circular(8)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            cord.mode == "chat"
-                                                ? Text(
-                                                    "#",
-                                                    style:
-                                                        TextStyle(fontSize: 21),
-                                                  )
-                                                : Icon(Icons
-                                                    .record_voice_over_rounded),
-                                            SizedBox(width: 3),
-                                            Container(
-                                              height: 30,
-                                              //width: MediaQuery.of(context).size.width -
-                                              // 50,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 7),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      cord.cordName,
-                                                      overflow:
-                                                          TextOverflow.fade,
-                                                      style: TextStyle(
-                                                          color: Colors.amber,
-                                                          fontWeight:
-                                                              FontWeight.w900),
-                                                    ),
-                                                  ],
-                                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 3.0),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width /
+                                        1.3,
+                                    decoration: BoxDecoration(
+                                        color:
+                                            Color(hc.hexcolorCode("#0a0c14")),
+                                        borderRadius:
+                                            BorderRadius.circular(8)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          cord.mode == "chat"
+                                              ? Text(
+                                                  "#",
+                                                  style:
+                                                      TextStyle(fontSize: 21),
+                                                )
+                                              : Icon(Icons
+                                                  .record_voice_over_rounded),
+                                          SizedBox(width: 3),
+                                          Container(
+                                            height: 30,
+                                            //width: MediaQuery.of(context).size.width -
+                                            // 50,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 7),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    cord.cordName,
+                                                    overflow:
+                                                        TextOverflow.fade,
+                                                    style: TextStyle(
+                                                        color: Colors.amber,
+                                                        fontWeight:
+                                                            FontWeight.w900),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),

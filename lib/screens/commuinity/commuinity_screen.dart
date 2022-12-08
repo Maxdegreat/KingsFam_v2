@@ -40,7 +40,6 @@ import 'package:kingsfam/widgets/widgets.dart';
 import 'package:flutter/src/painting/gradient.dart' as paint;
 import 'package:kingsfam/screens/commuinity/actions.dart';
 
-
 // ignore: unused_import
 import '../profile/bloc/profile_bloc.dart';
 import 'helper.dart';
@@ -61,12 +60,12 @@ class CommuinityScreen extends StatefulWidget {
   final bool showDrawer;
   final ChatscreenBloc? chatScreenBloc;
 
-  const CommuinityScreen({
-    Key? key,
-    required this.commuinity,
-    required this.showDrawer,
-    this.chatScreenBloc
-  }) : super(key: key);
+  const CommuinityScreen(
+      {Key? key,
+      required this.commuinity,
+      required this.showDrawer,
+      this.chatScreenBloc})
+      : super(key: key);
   // static const String routeName = '/CommuinityScreen';
   // static Route route({required CommuinityScreenArgs args}) {
   //   log("do we reach the bloc stuff???");
@@ -84,7 +83,6 @@ class CommuinityScreen extends StatefulWidget {
 
 class _CommuinityScreenState extends State<CommuinityScreen>
     with SingleTickerProviderStateMixin {
-  
   late TextEditingController _txtController;
   String? currRole;
 
@@ -134,22 +132,14 @@ class _CommuinityScreenState extends State<CommuinityScreen>
         child: Container(
             child: _isNativeAdLoaded
                 ? Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Color(hc.hexcolorCode("#141829")),
-                        gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [
-                              Color(hc.hexcolorCode("#20263c")),
-                              Color(hc.hexcolorCode("#141829"))
-                            ]),
-                        border:
-                            Border.all(width: .5, color: Colors.blue[900]!)),
-                    height: 80,
-                    width: 200,
+                    width: 150,
+                    height: 50,
                     child: AdWidget(
                       ad: _nativeAd,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Color(hc.hexcolorCode("#0a0c14")),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   )
                 : null));
@@ -214,9 +204,10 @@ class _CommuinityScreenState extends State<CommuinityScreen>
       }, builder: (context, state) {
         if (context.read<CommuinityBloc>().state.cmId !=
             widget.commuinity.id!) {
-              log("cm id's are not equal so restarting...");
-          context.read<CommuinityBloc>().updateCmId(widget.commuinity.id!, widget.commuinity);
-          
+          log("cm id's are not equal so restarting...");
+          context
+              .read<CommuinityBloc>()
+              .updateCmId(widget.commuinity.id!, widget.commuinity);
         }
         return Scaffold(
             drawerEdgeDragWidth: MediaQuery.of(context).size.width / 1.7,

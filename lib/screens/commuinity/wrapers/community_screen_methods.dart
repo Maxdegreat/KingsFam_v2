@@ -39,49 +39,61 @@ Widget contentPreview(
           .pushNamed(CommuinityFeedScreen.routeName,
               arguments: CommuinityFeedScreenArgs(commuinity: cm))
           .then((_) => context.read<BottomnavbarCubit>().showBottomNav(true)),
-      child: SizedBox(
-        height: 90,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start, 
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 65,
-              width: 70,
-              decoration: BoxDecoration(
-                color: Color(hc.hexcolorCode("#141829")),
-                borderRadius: BorderRadius.circular(10),
-                       image: post.imageUrl != null
-                              ? DecorationImage(
-                                  image: CachedNetworkImageProvider(post.imageUrl!),
-                                  fit: BoxFit.fitWidth)
-                              : post.thumbnailUrl != null
-                                  ? DecorationImage(
-                                      image: CachedNetworkImageProvider(
-                                          post.thumbnailUrl!),
-                                      fit: BoxFit.fitWidth)
-                                  : null,
-                // gradient: LinearGradient(
-                //     begin: Alignment.bottomCenter,
-                //     end: Alignment.topCenter,
-                //     colors: [
-                //       Color(hc.hexcolorCode("#20263c")),
-                //       Color(hc.hexcolorCode("#141829"))
-                //     ]),
-              ),
-              ),
-              SizedBox(height: 2),
-              Center(
-                child: Text(
-                        post.author.username,
-                        style: TextStyle(fontWeight: FontWeight.w300, fontStyle: FontStyle.italic, fontSize: 10, color: Colors.grey),
-                        maxLines: 1,
-                        overflow: TextOverflow.fade,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start, 
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 150,
+            decoration: BoxDecoration(
+              color: Color(hc.hexcolorCode("#0a0c14")),
+              borderRadius: BorderRadius.circular(10)
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Row(
+                children: [
+                  Container(
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      color: Color(hc.hexcolorCode("#141829")),
+                      borderRadius: BorderRadius.circular(10),
+                             image: post.imageUrl != null
+                                    ? DecorationImage(
+                                        image: CachedNetworkImageProvider(post.imageUrl!),
+                                        fit: BoxFit.fitWidth)
+                                    : post.thumbnailUrl != null
+                                        ? DecorationImage(
+                                            image: CachedNetworkImageProvider(
+                                                post.thumbnailUrl!),
+                                            fit: BoxFit.fitWidth)
+                                        : null,
+      
+                    ),
+                    ),
+              SizedBox(width: 5),
+              Flexible(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 5.0),
+                    child: Text(
+                            post.author.username,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontWeight: FontWeight.w300, fontStyle: FontStyle.italic, fontSize: 14, color: Colors.grey),
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
+                    ),
+                  ),
                 ),
               ),
-              
-          ],
-        ),
+                ],
+              ),
+            ),
+          ),
+            
+            
+        ],
       ),
       ),
   );

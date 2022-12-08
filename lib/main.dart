@@ -26,6 +26,8 @@ import 'package:kingsfam/theme_club_house/theme_info.dart';
 import 'screens/build_church/cubit/buildchurch_cubit.dart';
 import 'screens/screens.dart';
 
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // lets keep the splash till app is one initializing

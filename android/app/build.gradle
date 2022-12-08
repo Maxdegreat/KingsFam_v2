@@ -60,7 +60,7 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
         minSdkVersion 24 //---------------- this was changed from 21 to 23 bc of package (flutter_sound)
-        targetSdkVersion 32 //31
+        targetSdkVersion 32 // 32 //31
         multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

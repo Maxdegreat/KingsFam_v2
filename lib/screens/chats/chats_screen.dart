@@ -5,9 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kingsfam/config/paths.dart';
-import 'package:kingsfam/extensions/hexcolor.dart';
+import 'package:kingsfam/helpers/notification_helper.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/chat_room/chat_room.dart';
 
@@ -17,9 +17,11 @@ import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 
-import 'package:kingsfam/widgets/chats_view_widgets/screens_for_page_view.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import '../../widgets/chats_view_widgets/getting_started.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = 
+  FlutterLocalNotificationsPlugin();
 
 class ChatsScreen extends StatefulWidget {
   const ChatsScreen({
@@ -63,23 +65,25 @@ class _ChatsScreenState extends State<ChatsScreen>
 
     // Also handle any interaction when the app is in the background via a
     // Stream listener
-    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+    FirebaseMessaging.onMessageOpenedApp.listen(NotificationHelper.showNotification /*_handleMessage*/);
 
     // listen if app is in the foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) {
+      NotificationHelper.showNotification(remoteMessage);
       snackBar(
           snackMessage: "you recieved a notfication",
           context: context,
           bgColor: Colors.blueGrey);
-      log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+      // log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
     });
   }
 
   Future<void> _handleMessage(RemoteMessage message) async {
-    log("MESSAGE.DATA['TYPE'] IS OF VAL: " + message.data['type'].toString());
+    // log("MESSAGE.DATA['TYPE'] IS OF VAL: " + message.data['type'].toString());
     if (message.data['type'] == 'kc_type') {
       // type: kc_type has a cmId and a kcId. see cloud functions onMentionedUser for reference
       // var snap = await FirebaseFirestore.instance.collection(Paths.church).doc(message.data['cmId']).collection(Paths.kingsCord).doc(message.data['kcId']).get();
+
       var snap = await FirebaseFirestore.instance
           .collection(Paths.church)
           .doc(message.data['cmId'])
@@ -113,11 +117,13 @@ class _ChatsScreenState extends State<ChatsScreen>
       // ignore: unnecessary_null_comparison
       Church? cm = await Church.fromDoc(snap);
       if (cm != null) {
+
         // log ("PROOF U CAN GET THE KC STILL: " + kc.cordName);
         // update the selected ch of chatscreen bloc w/ ch that is pulled from the noty. or also nav to the message room.
         // Navigator.of(context).pushNamed(CommuinityScreen.routeName,
           //  arguments: CommuinityScreenArgs(commuinity: cm));
         return;
+        
       }
       return;
     } else if (message.data['type'] == 'directMsg_type') {
@@ -155,6 +161,7 @@ class _ChatsScreenState extends State<ChatsScreen>
   void initState() {
     super.initState();
     setupInteractedMessage();
+    NotificationHelper.initalize(flutterLocalNotificationsPlugin);
     //super.build(context);
   }
 

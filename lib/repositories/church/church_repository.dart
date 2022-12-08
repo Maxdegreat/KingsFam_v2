@@ -137,7 +137,6 @@ class ChurchRepository extends BaseChurchRepository {
 
   Future<List<Church>> getCommuinitysUserIn( {required String userrId, required int limit, String? lastStringId}) async {
     try {
-      log("The userId: " + userrId);
       if (lastStringId == null) {
         List<Church> bucket = [];
        
@@ -146,7 +145,7 @@ class ChurchRepository extends BaseChurchRepository {
             .get(); //'members.$currId.userReference', isEqualTo: userRef
         for (var snap in querys.docs) {
           var ch = await Church.fromId(snap.id);
-          log("The ch is " + ch.toString());
+        
           bucket.add(ch);
         }
 
