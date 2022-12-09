@@ -29,6 +29,20 @@ _onJoinCommuinity(
   b.onJoinCommuinity(commuinity: cm, context: c);
 }
 
+  Widget nativeAdWidget(NativeAd ad, bool hasAdLoaded, BuildContext context) {
+    return hasAdLoaded ?
+    Container(
+      height: 50,
+      width: MediaQuery.of(context).size.width / 2.3,
+      child: AdWidget(ad: ad),
+      decoration: BoxDecoration(
+        color: Color(hc.hexcolorCode("#0a0c14")),
+        borderRadius: BorderRadius.circular(10),
+      ),
+    ) :
+    SizedBox.shrink();
+  }
+
 // content preview: This holds the post
 Widget contentPreview(
     {required Post post, required BuildContext context, required Church cm}) {
@@ -44,7 +58,7 @@ Widget contentPreview(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: 150,
+            width: MediaQuery.of(context).size.width / 2.3,
             decoration: BoxDecoration(
               color: Color(hc.hexcolorCode("#0a0c14")),
               borderRadius: BorderRadius.circular(10)
@@ -213,7 +227,7 @@ Widget memberBtn(
       padding: const EdgeInsets.all(10),
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.black12, borderRadius: BorderRadius.circular(10)),
+            borderRadius: BorderRadius.circular(10)),
         child: Padding(
           padding: const EdgeInsets.all(4.0),
           child: IconButton(
@@ -236,7 +250,7 @@ Widget settingsBtn(
     padding: const EdgeInsets.all(10),
     child: Container(
       decoration: BoxDecoration(
-          color: Colors.black12, borderRadius: BorderRadius.circular(10)),
+          borderRadius: BorderRadius.circular(10)),
       child: Padding(
         padding: const EdgeInsets.all(4.0),
         child: IconButton(

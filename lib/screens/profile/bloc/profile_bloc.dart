@@ -180,12 +180,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       // log("seen id's: $seen");
       // whenever a new post is posted it will update the home page post view
       yield state.copyWith(post: []);
-      List<Post?> lst = await _postsRepository.getUserPosts(
-          userId: event.userId, 
-          limit: 2, 
-          lastPostDoc: null,
-        );
-        add(ProfileUpdatePost(post: lst ));
+      List<Post?> lst = []; 
+      // await _postsRepository.getUserPosts(
+      //     userId: event.userId, 
+      //     limit: 2, 
+      //     lastPostDoc: null,
+      //   );
+      //   add(ProfileUpdatePost(post: lst ));
 
       yield state.copyWith(
           seen: seen,

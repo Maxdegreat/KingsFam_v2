@@ -95,21 +95,21 @@ class _CreateComuinityState extends State<CreateComuinity> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               //for a new gc
-              Container(
-                width: double.infinity,
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 7, 139, 255)),
-                    child: Text("✨ Share A Post ✨"),
-                    onPressed: () {
-                      requestPhotoPermission(context).then((value) {
-                        if (value) {
-                          Navigator.of(context)
-                              .pushNamed(CreatePostScreen.routeName);
-                        }
-                      });
-                    }),
-              ),
+              // Container(
+              //   width: double.infinity,
+              //   child: ElevatedButton(
+              //       style: ElevatedButton.styleFrom(
+              //           primary: Color.fromARGB(255, 7, 139, 255)),
+              //       child: Text("✨ Share A Post ✨"),
+              //       onPressed: () {
+              //         requestPhotoPermission(context).then((value) {
+              //           if (value) {
+              //             Navigator.of(context)
+              //                 .pushNamed(CreatePostScreen.routeName);
+              //           }
+              //         });
+              //       }),
+              // ),
 
               SizedBox(height: 10.0),
               //for a new commuinity
@@ -122,18 +122,18 @@ class _CreateComuinityState extends State<CreateComuinity> {
                         Navigator.of(context).pushNamed(BuildChurch.routeName)),
               ),
               // Container(height: 400,child: RiveAnimation.asset('assets/phone_idle/phone_idle.riv'))
-              SizedBox(height: 10.0),
-              Container(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style:
-                      ElevatedButton.styleFrom(primary: Colors.deepPurple[200]),
-                  child: Text("✨ Make A Chat / Group Chat"),
-                  onPressed: () => Navigator.of(context).pushNamed(
-                      AddUsers.routeName,
-                      arguments: CreateNewGroupArgs(typeOf: 'chat')),
-                ),
-              ),
+              // SizedBox(height: 10.0),
+              // Container(
+              //   width: double.infinity,
+              //   child: ElevatedButton(
+              //     style:
+              //         ElevatedButton.styleFrom(primary: Colors.deepPurple[200]),
+              //     child: Text("✨ Make A Chat / Group Chat"),
+              //     onPressed: () => Navigator.of(context).pushNamed(
+              //         AddUsers.routeName,
+              //         arguments: CreateNewGroupArgs(typeOf: 'chat')),
+              //   ),
+              // ),
             ],
           ),
         ),

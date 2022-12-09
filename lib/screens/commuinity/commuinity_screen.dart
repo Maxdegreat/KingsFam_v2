@@ -124,25 +124,9 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   }
   //String _currentCmId = widget.commuinity.id!;
 
+
   @override
   Widget build(BuildContext context) {
-    // nativeAd widget that can be used when passing ad to the mainAxis scroll view
-    dynamic nativeAd = Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Container(
-            child: _isNativeAdLoaded
-                ? Container(
-                    width: 150,
-                    height: 50,
-                    child: AdWidget(
-                      ad: _nativeAd,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Color(hc.hexcolorCode("#0a0c14")),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  )
-                : null));
 
     // ignore: unused_local_variable
     final userId = context.read<AuthBloc>().state.user!.uid;
@@ -276,9 +260,9 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                       ?
                       // status is shielded
                       _mainScrollView(
-                          context, state, widget.commuinity, currRole, nativeAd)
+                          context, state, widget.commuinity, currRole, nativeAdWidget(_nativeAd, _isNativeAdLoaded, context))
                       : _mainScrollView(context, state, widget.commuinity,
-                          currRole, nativeAd),
+                          currRole, nativeAdWidget(_nativeAd, _isNativeAdLoaded, context)),
             ));
       }),
     );

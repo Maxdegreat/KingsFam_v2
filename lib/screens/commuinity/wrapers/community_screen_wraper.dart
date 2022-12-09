@@ -38,7 +38,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                 ? LinearProgressIndicator()
                 : SizedBox.shrink(),
                 
-            SizedBox(height: 15),
+            SizedBox(height: 5),
             Padding(
               padding: EdgeInsets.only(right: 10, left: 5, bottom: 8),
               child: Row(
@@ -46,28 +46,49 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height / 27,
-                    width: MediaQuery.of(context).size.width / 2.3,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(7),
-                    ),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          primary: Color(hc.hexcolorCode("#141829"))),
-                      onPressed: () => Navigator.of(context).pushNamed(
-                          CommunityHome.routeName,
-                          arguments: CommunityHomeArgs(
-                              cm: cm, cmB: context.read<CommuinityBloc>())),
-                      child: Text("Home",
-                          style: Theme.of(context).textTheme.bodyText1),
-                    ),
+                  Row(
+                    children: [
+                      Container(
+                        height: MediaQuery.of(context).size.height / 27,
+                        width: MediaQuery.of(context).size.width / (2.3*2.25),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Color(hc.hexcolorCode("#141829"))),
+                          onPressed: () => Navigator.of(context).pushNamed(
+                              CreatePostScreen.routeName),
+                          child: Icon(Icons.add),
+                        ),
+                      ),
+                      
+                      SizedBox(width: 10),
+
+                      Container(
+                        height: MediaQuery.of(context).size.height / 27,
+                        width: MediaQuery.of(context).size.width / (2.3*1.8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Color(hc.hexcolorCode("#141829"))),
+                          onPressed: () => Navigator.of(context).pushNamed(
+                              CommunityHome.routeName,
+                              arguments: CommunityHomeArgs(
+                                  cm: cm, cmB: context.read<CommuinityBloc>())),
+                          child: Text("Home",
+                              style: Theme.of(context).textTheme.bodyText1),
+                        ),
+                      ),
+                    ],
                   ),
                   SizedBox(
                     width: 10,
                   ),
                   Container(
-                    height: MediaQuery.of(context).size.height / 27,
+                    height: MediaQuery.of(context).size.height / (27),
                     width: MediaQuery.of(context).size.width / 2.3,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(7),
@@ -93,7 +114,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                       Padding(
                         padding: const EdgeInsets.all(7.0),
                         child: Container(
-                          height: state.postDisplay.isNotEmpty ? 95 : null,
+                          height: state.postDisplay.isNotEmpty ? 60 : null,
                           width: double.infinity,
                           child: state.postDisplay.length > 0
                               ? ListView.builder(
@@ -111,7 +132,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                               : Center(
                                   child: state.status == CommuintyStatus.loading
                                       ? Text("One Second ...")
-                                      : Text("Share Whats Going on")),
+                                      :SizedBox.shrink()),
                         ),
                       ),
 
@@ -609,8 +630,11 @@ SliverAppBar cmSliverAppBar({
   required String? currRole,
 }) {
   return SliverAppBar(
-    actions: [Icon(Icons.minimize)],
-    expandedHeight: MediaQuery.of(context).size.height / 4,
+    actions: [Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: Icon(Icons.people),
+    )],
+    expandedHeight: MediaQuery.of(context).size.height / 4.4,
     flexibleSpace: FlexibleSpaceBar(
       title: Text(cm.name),
       background: Padding(
@@ -619,11 +643,10 @@ SliverAppBar cmSliverAppBar({
           child: Stack(
             children: [
               Container(
-                  height: MediaQuery.of(context).size.height / 4,
+                  height: MediaQuery.of(context).size.height / 4.4,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(7),
-                    border: Border.all(width: .5, color: Colors.blue[900]!),
                     image: DecorationImage(
                         image: CachedNetworkImageProvider(cm.imageUrl),
                         fit: BoxFit.cover),

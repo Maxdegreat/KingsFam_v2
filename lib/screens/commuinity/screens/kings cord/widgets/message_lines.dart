@@ -438,7 +438,7 @@ class _MessageLinesState extends State<MessageLines> {
         onDraggableCanceled: ((velocity, offset) {
           if (offset.dx >= 100) {
             if (widget.message.sender!.token.isNotEmpty)
-              widget.kcubit.addReply(widget.message.sender!.token[0] + widget.message.id! + widget.message.sender!.username + ": " + msgBodyForReply);
+              widget.kcubit.addReply(widget.message.sender!.token[0] + widget.message.id! + widget.message.sender!.username + ": " + msgBodyForReply, widget.message.sender!);
           }
         }),
         axis: Axis.horizontal,

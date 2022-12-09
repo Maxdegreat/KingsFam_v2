@@ -375,11 +375,14 @@ class KingscordCubit extends Cubit<KingscordState> {
     }
   }
 
-  addReply(String msg) {
+  addReply(String msg, Userr sender) {
+    selectMention(userr: sender);
     emit(state.copyWith(replyMessage: msg));
   }
 
-  removeReply() => emit(state.copyWith(replyMessage: ""));
+  removeReply() {
+   emit(state.copyWith(replyMessage: "", mentions: []));
+  } 
 
   // for upword pagination just go to the top and add the next 10 or so to the begining of the list.
 

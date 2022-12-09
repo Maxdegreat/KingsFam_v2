@@ -209,6 +209,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                 textAlignVertical: TextAlignVertical.center,
                                 style: TextStyle(fontSize: 18),
                                 autocorrect: true,
+                                
                                 controller: _messageController,
                                 keyboardType: TextInputType.multiline,
                                 maxLines: null,
