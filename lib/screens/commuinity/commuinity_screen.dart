@@ -19,6 +19,7 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
 
 import 'package:kingsfam/helpers/helpers.dart';
+import 'package:kingsfam/helpers/kingscord_path.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
@@ -127,7 +128,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
 
   @override
   Widget build(BuildContext context) {
-
+    log("This is the test room id from the helper: " + CurrentKingsCordRoomId.currentKingsCordRoomId.toString());
     // ignore: unused_local_variable
     final userId = context.read<AuthBloc>().state.user!.uid;
     return BlocProvider<CommuinityBloc>(

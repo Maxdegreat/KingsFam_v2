@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/firebase_notifs.dart';
+import 'package:kingsfam/helpers/kingscord_path.dart';
 import 'package:kingsfam/helpers/notification_helper.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/chat_room/chat_room.dart';
@@ -71,7 +72,11 @@ class _ChatsScreenState extends State<ChatsScreen>
     // listen if app is in the foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) {
       //  NotificationHelper.showNotification(remoteMessage);
-      notifSnackBar(remoteMessage: remoteMessage, context: context);
+
+      // do not show a notif if alredy in that room.
+      if (CurrentKingsCordRoomId.currentKingsCordRoomId != remoteMessage.data['kcId']) {
+        notifSnackBar(remoteMessage: remoteMessage, context: context);
+      }
     });
   }
 
@@ -81,6 +86,7 @@ class _ChatsScreenState extends State<ChatsScreen>
   void initState() {
     super.initState();
     setupInteractedMessage();
+    CurrentKingsCordRoomId();
     // NotificationHelper.initalize(flutterLocalNotificationsPlugin);
     //super.build(context);
   }
@@ -95,15 +101,13 @@ class _ChatsScreenState extends State<ChatsScreen>
 
   @override
   Widget build(BuildContext context) {
-
     // final userId = context.read<AuthBloc>().state.user!.uid;
     return Scaffold(
         appBar: null,
         body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
             listener: (context, state) {
           if (state.status == ChatStatus.error) {
-            ErrorDialog(
-                content: 'chat_screen e-code: ${state.failure.message}');
+            ErrorDialog( content: 'chat_screen e-code: ${state.failure.message}');
           }
         }, builder: (context, state) {
          var currentScreen ; 

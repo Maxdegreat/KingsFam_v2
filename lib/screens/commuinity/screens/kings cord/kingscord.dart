@@ -12,6 +12,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/helpers/helpers.dart';
+import 'package:kingsfam/helpers/kingscord_path.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
 
 import 'package:kingsfam/models/models.dart';
@@ -20,6 +21,8 @@ import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/widgets/media_bottom_sheet.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
+import 'package:kingsfam/widgets/snackbar.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 import 'widgets/message_lines.dart';
 
@@ -88,6 +91,7 @@ class KingsCordScreen extends StatefulWidget {
 }
 
 class _KingsCordScreenState extends State<KingsCordScreen> {
+  ScrollController? scrollCtrl;
   final TextEditingController _messageController = TextEditingController();
   // this controller is used to know when a user is mentioned
   String? _mentionedController;
@@ -106,6 +110,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
   @override
   void dispose() {
+    CurrentKingsCordRoomId.updateRoomId(roomId: null);
     _messageController.dispose();
     super.dispose();
   }
@@ -121,6 +126,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
     return Expanded(
         child: ListView(
+      controller: scrollCtrl,
       padding: EdgeInsets.symmetric(horizontal: 7.0),
       physics: AlwaysScrollableScrollPhysics(),
       reverse: true,
@@ -181,98 +187,118 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   //border: Border.all(color: Colors.blue[900]!, width: .5),
                   borderRadius: BorderRadius.circular(7),
                 ),
-                child: Row(
-                  children: [
-                    IconButton(
-                        // onPressed: () async => mediaBottomSheet(
-                        //     kingscordCubit: ctx,
-                        //     context: context,
-                        //     cmId: widget.commuinity.id!,
-                        //     kcId: widget.kingsCord.id!,
-                        //     seenderUsername: currUsersName,
-                        // ),
-                        onPressed: () {
-                          showMediaPopUp = !showMediaPopUp;
-                          setState(() {});
-                        },
-                        icon: Icon(Icons.add)),
-                    Expanded(
-                      child: Container(
-                        height: textHeight,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: TextFormField(
-                                // validator: (value) {},
+                child: VisibilityDetector(
+                  key: ObjectKey(scrollCtrl),
+                  onVisibilityChanged: (vis) {
+                    if (vis.visibleFraction == 1) {
+                      log("the visibility is one");
+                      log("room id is: " + widget.kingsCord.id!);
+                      CurrentKingsCordRoomId.updateRoomId(roomId: widget.kingsCord.id!);
+                    } else {
+                      log("the visibility is null");
+                      CurrentKingsCordRoomId.updateRoomId(roomId: null);
+                    }
+                  },
+                  child: Row(
+                    children: [
+                      IconButton(
+                          // onPressed: () async => mediaBottomSheet(
+                          //     kingscordCubit: ctx,
+                          //     context: context,
+                          //     cmId: widget.commuinity.id!,
+                          //     kcId: widget.kingsCord.id!,
+                          //     seenderUsername: currUsersName,
+                          // ),
+                          onPressed: () {
+                            showMediaPopUp = !showMediaPopUp;
+                            setState(() {});
+                          },
+                          icon: Icon(Icons.add)),
+                      Expanded(
+                        child: Container(
+                          height: textHeight,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 3.0),
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: TextFormField(
+                                  // validator: (value) {},
 
-                                textAlignVertical: TextAlignVertical.center,
-                                style: TextStyle(fontSize: 18),
-                                autocorrect: true,
-                                controller: _messageController,
-                                keyboardType: TextInputType.multiline,
-                                maxLines: null,
-                                expands: true,
-                                textCapitalization:
-                                    TextCapitalization.sentences,
-                                onChanged: (messageText) {
-                                  if (messageText == '' || messageText == ' ') {
-                                    _mentionedController = null;
-                                    containsAt = false;
-                                  }
-                                  if (messageText[messageText.length - 1] ==
-                                      '@') {
-                                    containsAt = true;
-                                    idxWhereStartWithat =
-                                        messageText.length - 1;
-                                    log("here you can add the @ container");
-                                  }
-                                  if (containsAt)
-                                    setState(() => _mentionedController =
-                                        messageText.substring(
-                                            idxWhereStartWithat + 1,
-                                            messageText.length));
-                                  if (messageText.endsWith(' ')) {
-                                    containsAt = false;
-                                    idxWhereStartWithat = 0;
-                                    _mentionedController = null;
-                                    setState(() {});
-                                  }
-                                  if (messageText.length > 26)
-                                    setState(() => textHeight = 70.0);
-                                  else if (messageText.length > 57)
-                                    setState(() {
-                                      textHeight = 90;
-                                    });
-                                  else if (messageText.length < 24)
-                                    setState(() => textHeight = 50.0);
-                                  if (_messageController.text.length > 0) {
-                                    ctx.onIsTyping(true);
-                                    setState(() {});
-                                  } else {
-                                    ctx.onIsTyping(false);
-                                    setState(() {});
-                                  }
-                                },
-                                decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.all(2),
-                                  border: InputBorder.none,
-                                  // filled: true,
-                                  hintText: 'Think first',
-                                  isCollapsed: true,
-                                  // fillColor: Color(hc.hexcolorCode("#141829")!)
-                                )),
+                                  textAlignVertical: TextAlignVertical.center,
+                                  style: TextStyle(fontSize: 18),
+                                  autocorrect: true,
+                                  controller: _messageController,
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
+                                  expands: true,
+                                  textCapitalization:
+                                      TextCapitalization.sentences,
+                                  onChanged: (messageText) {
+                                    if (messageText == '' ||
+                                        messageText == ' ') {
+                                      _mentionedController = null;
+                                      containsAt = false;
+                                    }
+                                    if (messageText[messageText.length - 1] ==
+                                        '@') {
+                                      containsAt = true;
+                                      idxWhereStartWithat =
+                                          messageText.length - 1;
+                                      log("here you can add the @ container");
+                                    }
+                                    if (containsAt)
+                                      setState(() => _mentionedController =
+                                          messageText.substring(
+                                              idxWhereStartWithat + 1,
+                                              messageText.length));
+                                    if (messageText.endsWith(' ')) {
+                                      containsAt = false;
+                                      idxWhereStartWithat = 0;
+                                      _mentionedController = null;
+                                      setState(() {});
+                                    }
+                                    if (messageText.length > 26)
+                                      setState(() => textHeight = 70.0);
+                                    else if (messageText.length > 57)
+                                      setState(() {
+                                        textHeight = 90;
+                                      });
+                                    else if (messageText.length < 24)
+                                      setState(() => textHeight = 50.0);
+                                    if (_messageController.text.length > 0) {
+                                      ctx.onIsTyping(true);
+                                      setState(() {});
+                                    } else {
+                                      ctx.onIsTyping(false);
+                                      setState(() {});
+                                    }
+                                  },
+                                  decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.all(2),
+                                    border: InputBorder.none,
+                                    // filled: true,
+                                    hintText: 'Think first',
+                                    isCollapsed: true,
+                                    // fillColor: Color(hc.hexcolorCode("#141829")!)
+                                  )),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               Container(
                   margin: const EdgeInsets.symmetric(horizontal: 4.0),
                   child: IconButton(
-                    icon: state.isTyping ? Icon(Iconsax.send_1) : Icon(Iconsax.send_21),
+                    icon: !state.isTyping
+                        ? Icon(Iconsax.send_1)
+                        : Icon(
+                            Iconsax.send_21,
+                            size: 18,
+                          ),
                     color: state.isTyping ? Colors.red[400] : Colors.white,
                     onPressed: state.isTyping
                         ? () {
@@ -419,12 +445,21 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   void initState() {
     UserPreferences.updateKcTimeStamp(
         cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!);
+    scrollCtrl = ScrollController();
+    scrollCtrl!.addListener(() {
+      if (scrollCtrl!.position.maxScrollExtent == scrollCtrl!.position.pixels) {
+        
+      }
+    });
     super.initState();
     // isUserUpToDate(context, context.read<AuthBloc>().state.user!.uid, widget.kingsCord.memberInfo);
   }
 
   @override
   Widget build(BuildContext context) {
+    log("this is the id while we are in the kingc actuall room " +
+        CurrentKingsCordRoomId.currentKingsCordRoomId.toString() +
+        " !!!!");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(hc.hexcolorCode("#141829")),
@@ -641,17 +676,19 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             child: Text(
               "clear mentions",
             )),
-
-            Container(
+        Container(
           color: Colors.green,
-              height: 14,
+          height: 14,
           width: double.infinity,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: state.mentions.length,
             itemBuilder: (BuildContext context, int index) {
               Userr m = state.mentions[index];
-              return Text(m.username, style: TextStyle(fontStyle: FontStyle.italic, fontSize: 14),);
+              return Text(
+                m.username,
+                style: TextStyle(fontStyle: FontStyle.italic, fontSize: 14),
+              );
             },
           ),
         ),

@@ -269,8 +269,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   Stream<CommuinityState> _mapCommunityLoadingPostToState(
       CommunityLoadingPosts event) async* {
     try {
-      List<Post?> posts = 
-      await _churchRepository.getCommuinityPosts(cm: event.cm);
+      List<Post?> posts = await _churchRepository.getCommuinityPosts(cm: event.cm);
       emit(state.copyWith(postDisplay: posts, status: CommuintyStatus.loaded));
     } catch (e) {
       emit(state.copyWith(
