@@ -47,7 +47,7 @@ _onJoinCommuinity(
 Widget contentPreview(
     {required Post post, required BuildContext context, required Church cm}) {
   return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 7, vertical: 0),
+    padding: EdgeInsets.only(right: 5,),
     child: GestureDetector(
       onTap: () => Navigator.of(context)
           .pushNamed(CommuinityFeedScreen.routeName,

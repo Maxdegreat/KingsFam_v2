@@ -77,36 +77,23 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
       if (!isInCm) {
         chsToJoin = await _churchRepository.grabChurchs(limit: 15);
-        emit(state.copyWith(chsToJoin: chsToJoin));
+        emit(state.copyWith(chsToJoin: chsToJoin, chs: []));
       }
-
-      final Map<String, bool> mentionedMap = {};
 
       _churchStreamSubscription?.cancel();
       _churchStreamSubscription = _churchRepository
           .getCmsStream(currId: currUserr.id)
           .listen((churchs) async {
-        var allChs = await Future.wait(churchs);
-        for (var ch in churchs) {
-          Church? church = await ch;
-          log(church.toString());
+        // var allChs = await Future.wait(churchs);
+        log("updatesssssssssssssssssssssssssssssssssssss");
+        Map<String, dynamic> chsAndMentionedMap = await
+            _churchRepository.FutureChurchsAndMentioned(
+                c: churchs, uid: _authBloc.state.user!.uid);
 
-          var hasSnap = await FirebaseFirestore.instance
-              .collection(Paths.mention)
-              .doc(_authBloc.state.user!.uid)
-              .collection(church!.id!)
-              .limit(1)
-              .get();
-          var snaps = hasSnap.docs;
-          if (snaps.length > 0)
-            mentionedMap[church.id!] = true;
-          else
-            mentionedMap[church.id!] = false;
-        }
-        emit(state.copyWith(selectedCh: allChs.first));
-        emit(state.copyWith(chs: allChs));
-        emit(state.copyWith(mentionedMap: mentionedMap));
-        await Future.delayed(Duration(seconds: 3));
+        log("obtained chs is " + chsAndMentionedMap["c"].length.toString());
+        emit(state.copyWith(selectedCh: chsAndMentionedMap["c"].first));
+        emit(state.copyWith(chs: chsAndMentionedMap["c"]));
+        emit(state.copyWith(mentionedMap: chsAndMentionedMap["m"]));
       });
       yield state.copyWith(status: ChatStatus.sccuess, currUserr: currUserr);
     } catch (e) {

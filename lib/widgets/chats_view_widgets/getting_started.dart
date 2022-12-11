@@ -25,21 +25,25 @@ class GettingStarted extends StatefulWidget {
 class _GettingStartedState extends State<GettingStarted> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Align(
-          alignment: Alignment.center,
-          child: Text("Find A Community To Join", style: TextStyle(fontSize: 40))),
-        SizedBox(height: 10),
-        Container(
-          height: 300,
-          child: carousel()),
-        gettingStartedBtn(),
-      
-        _kfLogo()
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Center(
+            child: Align(
+                alignment: Alignment.center,
+                child: Text("Find A Community To Join",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 40))),
+          ),
+          SizedBox(height: 10),
+          Container(height: 400, child: carousel()),
+          gettingStartedBtn(),
+          _kfLogo()
+        ],
+      ),
     );
   }
 
@@ -61,9 +65,9 @@ class _GettingStartedState extends State<GettingStarted> {
   }
 
   CarouselOptions _options() => CarouselOptions(
-        height: 225,
+        height: 285,
         aspectRatio: 16 / 9,
-        viewportFraction: 0.7,
+        viewportFraction: 0.5,
         initialPage: 0,
         enableInfiniteScroll: true,
         reverse: false,
@@ -91,22 +95,22 @@ class gettingStartedBtn extends StatelessWidget {
         child: Container(
             width: double.infinity,
             child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    primary: Colors.white),
+                style: ElevatedButton.styleFrom(primary: Colors.white),
                 onPressed: () async {
                   helpDialog(context);
                 },
                 child: Text(
                   "Getting Started",
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.black),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1!
+                      .copyWith(color: Colors.black),
                 ))),
       ),
     );
   }
 }
-
-
 
 class _kfLogo extends StatelessWidget {
   const _kfLogo({

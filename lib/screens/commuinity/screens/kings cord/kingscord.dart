@@ -137,7 +137,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       if (sms != null) {
         if (messageLines.length > 0) {
           messageLine = MessageLines(
-            previousSenderAsUid: message != null ? message.last!.sender!.id : null,
+            previousSenderAsUid:
+                message != null ? message.last!.sender!.id : null,
             cmId: widget.commuinity.id!,
             kcId: widget.kingsCord.id!,
             message: sms,
@@ -146,12 +147,11 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           );
         } else {
           messageLine = MessageLines(
-            cmId: widget.commuinity.id!,
-            kcId: widget.kingsCord.id!,
-            message: sms,
-            inhearatedCtx: context,
-            kcubit: context.read<KingscordCubit>()
-          );
+              cmId: widget.commuinity.id!,
+              kcId: widget.kingsCord.id!,
+              message: sms,
+              inhearatedCtx: context,
+              kcubit: context.read<KingscordCubit>());
         }
         messageLines.add(messageLine);
       }
@@ -209,7 +209,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                 textAlignVertical: TextAlignVertical.center,
                                 style: TextStyle(fontSize: 18),
                                 autocorrect: true,
-                                
                                 controller: _messageController,
                                 keyboardType: TextInputType.multiline,
                                 maxLines: null,
@@ -237,6 +236,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                     containsAt = false;
                                     idxWhereStartWithat = 0;
                                     _mentionedController = null;
+                                    setState(() {});
                                   }
                                   if (messageText.length > 26)
                                     setState(() => textHeight = 70.0);
@@ -248,14 +248,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                     setState(() => textHeight = 50.0);
                                   if (_messageController.text.length > 0) {
                                     ctx.onIsTyping(true);
-                                    setState(() {
-                                      
-                                    });
+                                    setState(() {});
                                   } else {
                                     ctx.onIsTyping(false);
-                                    setState(() {
-                                      
-                                    });
+                                    setState(() {});
                                   }
                                 },
                                 decoration: InputDecoration(
@@ -276,9 +272,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
               Container(
                   margin: const EdgeInsets.symmetric(horizontal: 4.0),
                   child: IconButton(
-                    icon: Icon(Iconsax.send_1),
-                      color: state.isTyping ? Colors.red[400] : Colors.white,
-                    
+                    icon: state.isTyping ? Icon(Iconsax.send_1) : Icon(Iconsax.send_21),
+                    color: state.isTyping ? Colors.red[400] : Colors.white,
                     onPressed: state.isTyping
                         ? () {
                             // this will be passed to the cubit then to the db. upon a get msg lines will psrse for a good look
@@ -305,22 +300,23 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                             //     messageWithsSmbolesForParsing += '$msg ';
                             //   }
                             // }
-                            if (_messageController.text.length > 0 && _messageController.text.trim() != "") {
+                            if (_messageController.text.length > 0 &&
+                                _messageController.text.trim() != "") {
                               ctx.removeReply();
                               ctx.onSendTxtMsg(
-                              churchId: widget.commuinity.id!,
-                              kingsCordId: widget.kingsCord.id!,
-                              txtMsgBodyWithSymbolsForParcing:
-                                  _messageController
-                                      .text, //messageWithsSmbolesForParsing,
-                              txtMsgWithOutSymbolesForParcing:
-                                  _messageController.text,
-                              mentionedInfo: mentionedInfo,
-                              cmTitle: widget.commuinity.name,
-                              kingsCordData: widget.kingsCord,
-                              currUserName: currUsersName,
-                              reply: state.replyMessage,
-                            );
+                                churchId: widget.commuinity.id!,
+                                kingsCordId: widget.kingsCord.id!,
+                                txtMsgBodyWithSymbolsForParcing:
+                                    _messageController
+                                        .text, //messageWithsSmbolesForParsing,
+                                txtMsgWithOutSymbolesForParcing:
+                                    _messageController.text,
+                                mentionedInfo: mentionedInfo,
+                                cmTitle: widget.commuinity.name,
+                                kingsCordData: widget.kingsCord,
+                                currUserName: currUsersName,
+                                reply: state.replyMessage,
+                              );
                             }
                             ctx.onIsTyping(false);
                             _messageController.clear();
@@ -390,6 +386,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                       context
                           .read<KingscordCubit>()
                           .selectMention(userr: _mentioned);
+                      username = null;
+                      setState(() {});
                     },
                   );
                 }),
@@ -419,7 +417,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 //============================================================================
   @override
   void initState() {
-    UserPreferences.updateKcTimeStamp(cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!);
+    UserPreferences.updateKcTimeStamp(
+        cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!);
     super.initState();
     // isUserUpToDate(context, context.read<AuthBloc>().state.user!.uid, widget.kingsCord.memberInfo);
   }
@@ -490,8 +489,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                     Divider(height: 1.0),
 
                     state.replyMessage != null && state.replyMessage!.isNotEmpty
-                      ? _showReplying(state)
-                      : SizedBox.shrink(),
+                        ? _showReplying(state)
+                        : SizedBox.shrink(),
 
                     state.mentions.length > 0
                         ? _showMentioned(state)
@@ -549,7 +548,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   }
 
   showMedias() {
-
     return Container(
       width: double.infinity,
       height: 55,
@@ -560,41 +558,38 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             IconButton(
-       onPressed: () async {
+              onPressed: () async {
                 showMediaPopUp = !showMediaPopUp;
-        setState(() {});
-                      final pickedFile = await ImageHelper.pickImageFromGallery(
-                          context: context,
-                          cropStyle: CropStyle.rectangle,
-                          title: 'send');
-                      if (pickedFile != null) {
-                        context.read<KingscordCubit>().onUploadImage(pickedFile);
-                        context.read<KingscordCubit>().onSendTxtImg(
+                setState(() {});
+                final pickedFile = await ImageHelper.pickImageFromGallery(
+                    context: context,
+                    cropStyle: CropStyle.rectangle,
+                    title: 'send');
+                if (pickedFile != null) {
+                  context.read<KingscordCubit>().onUploadImage(pickedFile);
+                  context.read<KingscordCubit>().onSendTxtImg(
                       churchId: widget.commuinity.id!,
                       kingsCordId: widget.kingsCord.id!,
                       senderUsername: widget.usr.username);
-                      }
-                    },
+                }
+              },
               icon: Icon(Icons.image),
             ),
             IconButton(
-              
-              onPressed: () async {
-                        showMediaPopUp = !showMediaPopUp;
-        setState(() {});
-                final pickedFile =
-                    await ImageHelper.pickVideoFromGallery(context);
-                if (pickedFile != null) {
-                  context.read<KingscordCubit>().onUploadVideo(
-                      videoFile: pickedFile,
-                      cmId: widget.commuinity.id!,
-                      kcId: widget.kingsCord.id!,
-                      senderUsername: widget.usr.username);
-                } else {}
-              },
-              
-              
-               icon: Icon(Icons.video_collection_rounded))
+                onPressed: () async {
+                  showMediaPopUp = !showMediaPopUp;
+                  setState(() {});
+                  final pickedFile =
+                      await ImageHelper.pickVideoFromGallery(context);
+                  if (pickedFile != null) {
+                    context.read<KingscordCubit>().onUploadVideo(
+                        videoFile: pickedFile,
+                        cmId: widget.commuinity.id!,
+                        kcId: widget.kingsCord.id!,
+                        senderUsername: widget.usr.username);
+                  } else {}
+                },
+                icon: Icon(Icons.video_collection_rounded))
           ],
         ),
       ),
@@ -604,26 +599,38 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   _showReplying(KingscordState state) {
     return Container(
       color: Color.fromARGB(110, 255, 193, 7),
-      height: 22,
+      height: 40,
       width: double.infinity,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Center(child: Align(
-            alignment: Alignment.center,
-            child: IconButton(onPressed: () {
-              context.read<KingscordCubit>().removeReply();
-            }, icon: Icon(Icons.cancel_outlined, size: 15,)))),
-          Text("Replying to " + state.replyMessage!.split(":")[0].substring(20), overflow: TextOverflow.ellipsis,)
+          Center(
+            child: IconButton(
+                icon: Icon(Iconsax.trash),
+                onPressed: () {
+                  log(state.replyMessage.toString());
+                  context.read<KingscordCubit>().removeReply();
+                }),
+          ),
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 4.0),
+              child: Text(
+                "Replying to " + state.replyMessage!.split("[#-=]")[1],
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          )
         ],
       ),
     );
   }
 
   _showMentioned(KingscordState state) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextButton(
@@ -631,23 +638,20 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
               context.read<KingscordCubit>().clearMention();
               // log(state.mentions.length.toString());
             },
-            child: Row(
-              children: [
-                Text("Clear mentions  "),
-                Icon(Icons.cancel_outlined),
-              ],
+            child: Text(
+              "clear mentions",
             )),
-        Container(
-          height: 25,
+
+            Container(
+          color: Colors.green,
+              height: 14,
           width: double.infinity,
           child: ListView.builder(
+            scrollDirection: Axis.horizontal,
             itemCount: state.mentions.length,
             itemBuilder: (BuildContext context, int index) {
               Userr m = state.mentions[index];
-              return Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Text(m.username),
-              );
+              return Text(m.username, style: TextStyle(fontStyle: FontStyle.italic, fontSize: 14),);
             },
           ),
         ),

@@ -70,7 +70,7 @@ class AuthRepository extends BaseAuthRepository {
           AdvancedQuerry().advancedSearch(query: username);
       // String? token = await _messaging.getToken();
       _firebaseFirestore.collection(Paths.users).doc(user!.uid).set({
-        'username': username,
+        'username': username.toLowerCase(),
         'email': email,
         'usernameSearchCase': usernameSearchCase,
         'token': [],
@@ -197,7 +197,7 @@ class AuthRepository extends BaseAuthRepository {
         _firebaseFirestore.collection(Paths.users).doc(user!.uid).set({
           'profileImageUrl': user.photoURL,
           // 'username': "!" + formatUsername(user.displayName, user.uid),
-          'username': formatUsername(user.displayName, user.uid),
+          'username': formatUsername(user.displayName, user.uid).toLowerCase(),
           'usernameSearchCase': usernameSearchCase,
           'email': user.email,
           'followers': 0,
@@ -272,7 +272,7 @@ Future<auth.User?> signInWithApple(BuildContext context) async {
   _firebaseFirestore.collection(Paths.users).doc(currUser!.uid).set({
        'profileImageUrl': currUser!.photoURL ?? "",
        // 'username': "!" + formatUsername(null, currUser!.uid),
-       'username': formatUsername(currUser!.displayName, currUser!.uid),
+       'username': formatUsername(currUser!.displayName, currUser!.uid).toLowerCase(),
        'email': appleCredential.email,
        'followers': 0,
        'following': 0,

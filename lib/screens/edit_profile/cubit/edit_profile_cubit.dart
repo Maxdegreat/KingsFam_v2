@@ -44,7 +44,7 @@ class EditProfileCubit extends Cubit<EditProfileState> {
   }
 
   void usernameChanged(String username) {
-    emit(state.copyWith(username: username, status: EditProfileStatus.initial));
+    emit(state.copyWith(username: username.toLowerCase(), status: EditProfileStatus.initial));
   }
 
   void locationChanged(String location) {
@@ -91,7 +91,7 @@ class EditProfileCubit extends Cubit<EditProfileState> {
       print("The user color preff is ${userr.colorPref}");
 
       final updatedUserr = userr.copyWith(
-          username: state.username,
+          username: state.username.toLowerCase(),
           usernameSearchCase: usernameSearchCase ,
           bio: state.bio,
           profileImageUrl: profileImageUrl,

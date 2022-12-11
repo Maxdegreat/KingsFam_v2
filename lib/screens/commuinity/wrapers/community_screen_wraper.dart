@@ -40,9 +40,9 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                 
             SizedBox(height: 5),
             Padding(
-              padding: EdgeInsets.only(right: 10, left: 5, bottom: 8),
+              padding: EdgeInsets.only(right: 10, left: 7, bottom: 8),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [

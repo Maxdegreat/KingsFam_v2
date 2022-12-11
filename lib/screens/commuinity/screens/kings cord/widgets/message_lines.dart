@@ -9,6 +9,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
+import 'package:kingsfam/helpers/clipboard.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/extensions/extensions.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
@@ -60,7 +61,7 @@ class _MessageLinesState extends State<MessageLines> {
 
   Container reactionContainer({required String reaction, required int num}) {
     return Container(
-       height: MediaQuery.of(context).size.height / 20,
+      height: MediaQuery.of(context).size.height / 20,
       width: MediaQuery.of(context).size.width / 8,
       child: Center(
           child: RichText(
@@ -91,8 +92,7 @@ class _MessageLinesState extends State<MessageLines> {
             child: Row(
                 children: messageReactions!.keys.map((e) {
               return Padding(
-                padding:
-                    const EdgeInsets.only(top: 5.0, bottom: 5.0, right: 7 ),
+                padding: const EdgeInsets.only(top: 5.0, bottom: 5.0, right: 7),
                 child: reactionContainer(
                     reaction: e, num: widget.message.reactions![e]!),
               );
@@ -163,7 +163,7 @@ class _MessageLinesState extends State<MessageLines> {
                 ),
                 SizedBox(height: 7),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     //  GestureDetector(
@@ -222,6 +222,18 @@ class _MessageLinesState extends State<MessageLines> {
                             style: Theme.of(context).textTheme.bodyMedium),
                       ),
                     ),
+                    SizedBox(width: 7),
+                    GestureDetector(
+                        onTap: () {
+                          if (widget.message.text != null) {
+                            copyTextToClip(widget.message.text!);
+                            snackBar(snackMessage: "copied", context: context);
+                          } else {
+                            snackBar(
+                                snackMessage: "can not copy", context: context);
+                          }
+                        },
+                        child: Text("Copy"))
                   ],
                 ),
               ],
@@ -272,6 +284,10 @@ class _MessageLinesState extends State<MessageLines> {
         Widget l = GestureDetector(
           onTap: () {
             launch(element);
+          },
+          onLongPress: () {
+            _showReactionsBar(
+                widget.message.id!, widget.message.reactions, context);
           },
           child: Text(element,
               style: Theme.of(context)
@@ -327,7 +343,7 @@ class _MessageLinesState extends State<MessageLines> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-         // _showReplyBarUi(widget.message.replyed),
+          // _showReplyBarUi(widget.message.replyed),
           Text(widget.message.text!,
               style: TextStyle(
                   color: Colors.white,
@@ -426,117 +442,133 @@ class _MessageLinesState extends State<MessageLines> {
 
   @override
   Widget build(BuildContext context) {
-    
-    String msgBodyForReply = widget.message.text != null ? widget.message.text! : " Shared something";
+    String msgBodyForReply = widget.message.text != null
+        ? widget.message.text!
+        : " Shared something";
 
     HexColor hexcolor = HexColor();
     return BlocProvider.value(
       value: widget.kcubit,
-      
-    
       child: Draggable<Widget>(
-        onDraggableCanceled: ((velocity, offset) {
-          if (offset.dx >= 100) {
-            if (widget.message.sender!.token.isNotEmpty)
-              widget.kcubit.addReply(widget.message.sender!.token[0] + widget.message.id! + widget.message.sender!.username + ": " + msgBodyForReply, widget.message.sender!);
-          }
-        }),
-        axis: Axis.horizontal,
-        affinity: Axis.horizontal,
-        onDragEnd: (DragDownDetails) {},
-        feedback: messageLineChild(),
-        childWhenDragging: Text("Replying to " + widget.message.senderUsername!, style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
-        child: messageLineChild()
-      ),
-    
+          onDraggableCanceled: ((velocity, offset) {
+            if (offset.dx >= 100) {
+              if (widget.message.sender!.token.isNotEmpty)
+                widget.kcubit.addReply(
+                    widget.message.sender!.token[0] +
+                        widget.message.id! +
+                        "[#-=]" +
+                        widget.message.sender!.username +
+                        ": " +
+                        msgBodyForReply,
+                    widget.message.sender!);
+            }
+          }),
+          axis: Axis.horizontal,
+          affinity: Axis.horizontal,
+          onDragEnd: (DragDownDetails) {},
+          feedback: messageLineChild(),
+          childWhenDragging: Text(
+              "Replying to " + widget.message.senderUsername!,
+              style:
+                  TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
+          child: messageLineChild()),
     );
-
-    
   }
 
   Widget messageLineChild() {
     return Padding(
-        padding: const EdgeInsets.only(top:2.5, bottom:2.5, left: 8.0, right: 8.0),
-        child: Container(
-          // color: Colors.white24,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // a row displaying imageurl of member and name
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  //FancyListTile(username: '${kingsCordMemInfo.memberInfo[message.senderId]['username']}', imageUrl: '${kingsCordMemInfo.memberInfo[message.senderId]['profileImageUrl']}', onTap: null, isBtn: false, BR: 18, height: 18, width: 18),
-                  // widget.previousSenderAsUid == widget.message.sender!.id
-                  //     ? SizedBox.shrink()
-                  //     : 
-                  kingsCordAvtar(context),
-                  SizedBox(
-                    width: 5.0,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            widget.message.sender!.username,
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w900,
-                                color: widget.message.sender!.colorPref == ""
-                                    ? Colors.red
-                                    : Color(hexcolor.hexcolorCode(
-                                        widget.message.sender!.colorPref))),
-                          ),
-                          SizedBox(width: 2),
-                           Text(
-                        '${widget.message.date.timeAgo()}',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey,
-                          fontStyle: FontStyle.italic
+      padding:
+          const EdgeInsets.only(top: 2.5, bottom: 2.5, left: 8.0, right: 8.0),
+      child: Container(
+        // color: Colors.white24,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // a row displaying imageurl of member and name
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                //FancyListTile(username: '${kingsCordMemInfo.memberInfo[message.senderId]['username']}', imageUrl: '${kingsCordMemInfo.memberInfo[message.senderId]['profileImageUrl']}', onTap: null, isBtn: false, BR: 18, height: 18, width: 18),
+                // widget.previousSenderAsUid == widget.message.sender!.id
+                //     ? SizedBox.shrink()
+                //     :
+                kingsCordAvtar(context),
+                SizedBox(
+                  width: 5.0,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          widget.message.sender!.username,
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                              color: widget.message.sender!.colorPref == ""
+                                  ? Colors.red
+                                  : Color(hexcolor.hexcolorCode(
+                                      widget.message.sender!.colorPref))),
                         ),
-                      ),
-                        ],
-                      ),
-                      SizedBox(height: 2),
-                      widget.message.reply != null && widget.message.reply!.isNotEmpty ?
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4.0, bottom: 5),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white24,
-                            borderRadius: BorderRadius.circular(10)
-                          ),
-                          height: 20,
-                          child: Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: Text("reply to " + widget.message.reply!.split(": ").first.substring(183), style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey, fontSize: 15),),
-                          ),
+                        SizedBox(width: 2),
+                        Text(
+                          '${widget.message.date.timeAgo()}',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey,
+                              fontStyle: FontStyle.italic),
                         ),
-                      ) : SizedBox.shrink(),
-                      Container(
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width / 1.4,
-                          ),
-                          child: widget.message.text != null
-                              ? _buildText(context)
-                              : widget.message.videoUrl != null &&
-                                      widget.message.thumbnailUrl != null
-                                  ? _buildVideo(context)
-                                  : _buildImage(context)),
-                    ],
-                  )
-                ],
-              ),
-            ],
-          ),
+                      ],
+                    ),
+                    SizedBox(height: 2),
+                    widget.message.reply != null &&
+                            widget.message.reply!.isNotEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.only(top: 4.0, bottom: 5),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.white24,
+                                  borderRadius: BorderRadius.circular(10)),
+                              height: 20,
+                              child: Padding(
+                                padding: const EdgeInsets.all(2.0),
+                                child: Text(
+                                  "reply to " +
+                                      widget.message.reply!
+                                          .split(": ")
+                                          .first
+                                          .substring(183),
+                                  style: TextStyle(
+                                      fontStyle: FontStyle.italic,
+                                      color: Colors.grey,
+                                      fontSize: 15),
+                                ),
+                              ),
+                            ),
+                          )
+                        : SizedBox.shrink(),
+                    Container(
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width / 1.4,
+                        ),
+                        child: widget.message.text != null
+                            ? _buildText(context)
+                            : widget.message.videoUrl != null &&
+                                    widget.message.thumbnailUrl != null
+                                ? _buildVideo(context)
+                                : _buildImage(context)),
+                  ],
+                )
+              ],
+            ),
+          ],
         ),
-      );
+      ),
+    );
   }
 
   Widget kingsCordAvtar(

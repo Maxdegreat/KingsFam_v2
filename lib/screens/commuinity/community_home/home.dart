@@ -2,16 +2,10 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/models/church_model.dart';
-import 'package:kingsfam/repositories/call/call_repository.dart';
-import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
-import 'package:kingsfam/repositories/storage/storage_repository.dart';
-import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
 import 'package:kingsfam/widgets/snackbar.dart';
@@ -107,34 +101,34 @@ class _CommunityHomemState extends State<CommunityHome> {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 20),
-                              Text("Shared Content"),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              SizedBox(
-                                height: 100,
-                                width: double.infinity,
-                                child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: 3,
-                                    itemBuilder: (context, builder) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Container(
-                                            height: 111,
-                                            width: 111,
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(7),
-                                                image: DecorationImage(
-                                                    image:
-                                                        CachedNetworkImageProvider(
-                                                            widget.cm.imageUrl),
-                                                    fit: BoxFit.cover))),
-                                      );
-                                    }),
-                              )
+                              // SizedBox(height: 20),
+                              // Text("Shared Content"),
+                              // SizedBox(
+                              //   height: 5,
+                              // ),
+                              // SizedBox(
+                              //   height: 100,
+                              //   width: double.infinity,
+                              //   child: ListView.builder(
+                              //       scrollDirection: Axis.horizontal,
+                              //       itemCount: 3,
+                              //       itemBuilder: (context, builder) {
+                              //         return Padding(
+                              //           padding: const EdgeInsets.all(8.0),
+                              //           child: Container(
+                              //               height: 111,
+                              //               width: 111,
+                              //               decoration: BoxDecoration(
+                              //                   borderRadius:
+                              //                       BorderRadius.circular(7),
+                              //                   image: DecorationImage(
+                              //                       image:
+                              //                           CachedNetworkImageProvider(
+                              //                               widget.cm.imageUrl),
+                              //                       fit: BoxFit.cover))),
+                              //         );
+                              //       }),
+                              // )
                             ],
                           ),
                         );
@@ -187,34 +181,6 @@ class _CommunityHomemState extends State<CommunityHome> {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 20),
-                              Text("Shared Content"),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              SizedBox(
-                                height: 100,
-                                width: double.infinity,
-                                child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: 3,
-                                    itemBuilder: (context, builder) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Container(
-                                            height: 111,
-                                            width: 111,
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(7),
-                                                image: DecorationImage(
-                                                    image:
-                                                        CachedNetworkImageProvider(
-                                                            widget.cm.imageUrl),
-                                                    fit: BoxFit.cover))),
-                                      );
-                                    }),
-                              )
                             ],
                           ),
                         );
@@ -246,6 +212,7 @@ class _CommunityHomemState extends State<CommunityHome> {
                                 .state
                                 .role["permissions"]
                                 .contains("*")) {
+
                               context
                                   .read<CommuinityBloc>()
                                   .onLeaveCommuinity(commuinity: cm);
@@ -253,8 +220,9 @@ class _CommunityHomemState extends State<CommunityHome> {
                                   .read<CommuinityBloc>()
                                   .state
                                   .currUserr);
-                              context.read<ChatscreenBloc>().leftCm(id: cm.id!);
-                              // b..add(CommunityInitalEvent(commuinity: cm));
+                              
+                              context
+                                  .read<CommuinityBloc>()..add(CommunityInitalEvent(commuinity: cm));
                               Navigator.of(context).pop();
                             } else {
                               snackBar(
@@ -314,7 +282,7 @@ class _CommunityHomemState extends State<CommunityHome> {
                           onPressed: () {
                             b.onLeaveCommuinity(commuinity: cm);
                             cm.members.remove(b.state.currUserr);
-                            context.read<ChatscreenBloc>().leftCm(id: cm.id!);
+                           
                             // b..add(CommunityInitalEvent(commuinity: cm));
                             Navigator.of(_context).pop();
                           },

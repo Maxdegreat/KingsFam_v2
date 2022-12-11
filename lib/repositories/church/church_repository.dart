@@ -674,6 +674,34 @@ class ChurchRepository extends BaseChurchRepository {
     fb.doc(cmId).set({"themePack": theme}, SetOptions(merge: true));
   }
 
+  Future<Map<String, dynamic>> FutureChurchsAndMentioned(
+      {required List<Future<Church?>> c, required String uid}) async {
+    final Map<String, bool> mentionedMap = {};
+    List<Church?> chsJoined = [];
+    for (var ch in c) {
+      Church? church = await ch;
+      if (church != null) {
+        chsJoined.add(church);
+        var hasSnap = await FirebaseFirestore.instance
+            .collection(Paths.mention)
+            .doc(uid)
+            .collection(church.id!)
+            .limit(1)
+            .get();
+        var snaps = hasSnap.docs;
+        if (snaps.length > 0)
+          mentionedMap[church.id!] = true;
+        else
+          mentionedMap[church.id!] = false;
+      }
+    }
+
+    Map<String, dynamic> rMap = {};
+    rMap["c"] = chsJoined;
+    rMap["m"] = mentionedMap;
+    return rMap;
+  }
+
   // Future<List<Userr>> searchForUsersInCommuinity(
   //     {required String query, required String doc}) async {
   //   final churchSnap = await FirebaseFirestore.instance

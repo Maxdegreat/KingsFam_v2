@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/cubits/cubits.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
 import 'package:kingsfam/models/models.dart';
@@ -100,8 +101,9 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
         // TODO: implement listener
       },
       builder: (context, state) {
+        double height = MediaQuery.of(context).size.height / 20;
         return Scaffold(
-            backgroundColor: Colors.black,
+            backgroundColor: Color(hc.hexcolorCode("#141829")),
             appBar: AppBar(
               backgroundColor: Colors.black,
               title: Text(
@@ -111,71 +113,62 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
               ),
             ),
             body: state.posts.length > 0
-                ? VisibilityDetector(
-                  key: ObjectKey(this),
-                    onVisibilityChanged: (vis) {
-                      if (vis.visibleFraction == 1) 
-                        context.read<BottomnavbarCubit>().showBottomNav(false);
-                      else
-                        context.read<BottomnavbarCubit>().showBottomNav(true);
-                    },
-                    child: SafeArea(
-                      child: PageView.builder(
-                          onPageChanged: (pageNum) {
-                            if (pageNum == state.posts.length - 1) {
-                              if (state.posts.length != 0) {
-                                context.read<FeedBloc>()
-                                  ..add(CommunityFeedPaginatePost(
-                                      commuinityId: widget.commuinity.id!));
-                              }
-                            }
-                          },
-                          itemCount: state.posts.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            if (state.posts[index]?.author ==
-                                Post.empty.author) {
-                              return PostSingleView(
-                                isLiked: false,
-                                post: null,
-                                adWidget: AdWidget(ad: _bannerAd),
-                                recentlyLiked: false,
-                                onLike: () {},
-                              );
-                            } else {
-                              final Post? post = state.posts[index];
-                              if (post != null) {
-                                // ignore: non_constant_identifier_names
-                                final LikedPostState =
-                                    context.watch<LikedPostCubit>().state;
-                                final isLiked = LikedPostState.likedPostsIds
-                                    .contains(post.id!);
-                                final recentlyLiked = LikedPostState
-                                    .recentlyLikedPostIds
-                                    .contains(post.id!);
+                ? SafeArea(
+                  child: PageView.builder(
+                      onPageChanged: (pageNum) {
+                        if (pageNum == state.posts.length - 1) {
+                          if (state.posts.length != 0) {
+                            context.read<FeedBloc>()
+                              ..add(CommunityFeedPaginatePost(
+                                  commuinityId: widget.commuinity.id!));
+                          }
+                        }
+                      },
+                      itemCount: state.posts.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (state.posts[index]?.author ==
+                            Post.empty.author) {
+                          return PostSingleView(
+                            isLiked: false,
+                            post: null,
+                            adWidget: AdWidget(ad: _bannerAd),
+                            recentlyLiked: false,
+                            onLike: () {},
+                          );
+                        } else {
+                          final Post? post = state.posts[index];
+                          if (post != null) {
+                            // ignore: non_constant_identifier_names
+                            final LikedPostState =
+                                context.watch<LikedPostCubit>().state;
+                            final isLiked = LikedPostState.likedPostsIds
+                                .contains(post.id!);
+                            final recentlyLiked = LikedPostState
+                                .recentlyLikedPostIds
+                                .contains(post.id!);
 
-                                return PostSingleView(
-                                  isLiked: isLiked,
-                                  post: post,
-                                  // adWidget: AdWidget(ad: _bannerAd),
-                                  recentlyLiked: recentlyLiked,
-                                  onLike: () {
-                                    if (isLiked) {
-                                      context
-                                          .read<LikedPostCubit>()
-                                          .unLikePost(post: post);
-                                    } else {
-                                      context
-                                          .read<LikedPostCubit>()
-                                          .likePost(post: post);
-                                    }
-                                  },
-                                );
-                              }
-                              return SizedBox.shrink();
-                            }
-                          }),
-                    ),
-                  )
+                            return PostSingleView(
+                              isLiked: isLiked,
+                              post: post,
+                              // adWidget: AdWidget(ad: _bannerAd),
+                              recentlyLiked: recentlyLiked,
+                              onLike: () {
+                                if (isLiked) {
+                                  context
+                                      .read<LikedPostCubit>()
+                                      .unLikePost(post: post);
+                                } else {
+                                  context
+                                      .read<LikedPostCubit>()
+                                      .likePost(post: post);
+                                }
+                              },
+                            );
+                          }
+                          return SizedBox.shrink();
+                        }
+                      }),
+                )
                 : Center(
                     child: Text("Loading ..."),
                   ));
