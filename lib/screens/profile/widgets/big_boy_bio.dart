@@ -19,7 +19,7 @@ class BigBoyBio extends StatelessWidget {
               padding: const EdgeInsets.only(left: 10),
               child: Text(
                   bio!,
-                  style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w500),
+                  style: Theme.of(context).textTheme.caption,
                 ),
             )
             : SizedBox.shrink()

@@ -106,12 +106,13 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
   List<String> UrlBucket = [];
 
-  HexColor hexColor = HexColor();
 
   @override
   void dispose() {
     CurrentKingsCordRoomId.updateRoomId(roomId: null);
     _messageController.dispose();
+    UserPreferences.updateKcTimeStamp(
+        cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!);
     super.dispose();
   }
 
@@ -183,7 +184,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 width: MediaQuery.of(context).size.width / 1.28,
                 height: textHeight,
                 decoration: BoxDecoration(
-                  color: Color(hc.hexcolorCode("#20263c")),
+                  color: Theme.of(context).colorScheme.secondary,
                   //border: Border.all(color: Colors.blue[900]!, width: .5),
                   borderRadius: BorderRadius.circular(7),
                 ),
@@ -193,7 +194,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                     if (vis.visibleFraction == 1) {
                       log("the visibility is one");
                       log("room id is: " + widget.kingsCord.id!);
-                      CurrentKingsCordRoomId.updateRoomId(roomId: widget.kingsCord.id!);
+                      CurrentKingsCordRoomId.updateRoomId(
+                          roomId: widget.kingsCord.id!);
                     } else {
                       log("the visibility is null");
                       CurrentKingsCordRoomId.updateRoomId(roomId: null);
@@ -398,11 +400,12 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                     title: Text(
                       _mentioned.username,
                       style: TextStyle(
-                          color: Color(
-                              hexColor.hexcolorCode(_mentioned.colorPref))),
+                          color: Theme.of(context).colorScheme.secondary),
                       overflow: TextOverflow.fade,
                     ),
                     onTap: () {
+                      
+
                       var oldMessageControllerBody = _messageController.text
                           .substring(0, idxWhereStartWithat);
                       _messageController.text = oldMessageControllerBody +=
@@ -413,6 +416,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                           .read<KingscordCubit>()
                           .selectMention(userr: _mentioned);
                       username = null;
+                      state.mentions.length = 0;
                       setState(() {});
                     },
                   );
@@ -448,7 +452,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     scrollCtrl = ScrollController();
     scrollCtrl!.addListener(() {
       if (scrollCtrl!.position.maxScrollExtent == scrollCtrl!.position.pixels) {
-        
+        context.read<KingscordCubit>().paginateMsg(
+            cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!, limit: 12);
       }
     });
     super.initState();
@@ -462,7 +467,12 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         " !!!!");
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(hc.hexcolorCode("#141829")),
+        leading: IconButton(
+            onPressed: () => Navigator.of(context).pop(),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Theme.of(context).iconTheme.color,
+            )),
         centerTitle: false,
         toolbarHeight: 50,
         title: Text(
@@ -470,19 +480,21 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
               ? '${widget.kingsCord.cordName.substring(0, 15)}'
               : '# ${widget.kingsCord.cordName}',
           overflow: TextOverflow.fade,
+          style: Theme.of(context).textTheme.bodyText1,
         ),
         actions: [
           IconButton(
-              onPressed: () {
-                // Nav to a settings room that will
-                // 1) allow only certian roles to enter the room. only an owner / admin can do this
-                // 2) allow someone to subscribe to get notifications
-                Navigator.of(context).pushNamed(KingsCordSettings.routeName,
-                    arguments: KingsCordSettingsArgs(
-                        cmId: widget.commuinity.id!,
-                        kcId: widget.kingsCord.id!));
-              },
-              icon: Icon(Icons.notifications_on_outlined))
+            onPressed: () {
+              // Nav to a settings room that will
+              // 1) allow only certian roles to enter the room. only an owner / admin can do this
+              // 2) allow someone to subscribe to get notifications
+              Navigator.of(context).pushNamed(KingsCordSettings.routeName,
+                  arguments: KingsCordSettingsArgs(
+                      cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!));
+            },
+            icon: Icon(Icons.notifications_on_outlined),
+            color: Theme.of(context).iconTheme.color,
+          )
         ],
       ),
       // the body is a collumn containeing message widgets... with a bottom sheet for the txt controller
@@ -498,20 +510,28 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 kcId: widget.kingsCord.id!,
                 limit: 17,
               );
-          return GestureDetector(
+          return Stack(
+            children: [
+              Positioned.fill(
+                  child: Container(
+                height: MediaQuery.of(context).size.height,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                gradient:  LinearGradient(
+              begin: Alignment.bottomLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Theme.of(context).colorScheme.background,
+                Theme.of(context).colorScheme.secondary,
+                Theme.of(context).colorScheme.primary
+              ]),
+                ),
+              )),
+              GestureDetector(
             onTap: () => FocusScope.of(context).unfocus(),
             child: Stack(
               children: [
-                Container(
-                  alignment: Alignment.topCenter,
-                  child: SvgPicture.asset(
-                    widget.commuinity.themePack,
-                    alignment: Alignment.topCenter,
-                  ),
-                  height: MediaQuery.of(context).size.height,
-                  width: double.infinity,
-                  decoration: BoxDecoration(color: Colors.black45),
-                ),
+                
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -527,10 +547,12 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                         ? _showReplying(state)
                         : SizedBox.shrink(),
 
+                    // this shows all the users that you have mentioned so far in the chat.
                     state.mentions.length > 0
                         ? _showMentioned(state)
                         : SizedBox.shrink(),
 
+                    // this shows all possible mentions
                     _mentionUserContainer(username: _mentionedController),
 
                     // this is can only ocour if the user is apart of the commuinity. in this case they can share
@@ -576,6 +598,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 ),
               ],
             ),
+          )
+            ],
           );
         },
       ),
@@ -642,7 +666,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         children: [
           Center(
             child: IconButton(
-                icon: Icon(Iconsax.trash),
+                icon: Icon(Iconsax.trash, color: Colors.grey),
                 onPressed: () {
                   log(state.replyMessage.toString());
                   context.read<KingscordCubit>().removeReply();
@@ -653,6 +677,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
               padding: const EdgeInsets.only(right: 4.0),
               child: Text(
                 "Replying to " + state.replyMessage!.split("[#-=]")[1],
+                style: TextStyle(color: Colors.grey, fontSize: 15),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -664,35 +689,40 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   }
 
   _showMentioned(KingscordState state) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TextButton(
-            onPressed: () {
-              context.read<KingscordCubit>().clearMention();
-              // log(state.mentions.length.toString());
-            },
+    return Container(
+      height: 17,
+      color: Color.fromARGB(110, 255, 193, 7),
+      width: MediaQuery.of(context).size.width,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(width: 10),
+          GestureDetector(
+            onTap: () =>  context.read<KingscordCubit>().clearMention(),
             child: Text(
-              "clear mentions",
-            )),
-        Container(
-          color: Colors.green,
-          height: 14,
-          width: double.infinity,
-          child: ListView.builder(
+              "clear @",
+              style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
+            ),
+          ),
+              SizedBox(width: 5),
+              Container(
+            height: 15,
+            width: MediaQuery.of(context).size.width / 1.8,
+            child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: state.mentions.length,
             itemBuilder: (BuildContext context, int index) {
               Userr m = state.mentions[index];
               return Text(
                 m.username,
-                style: TextStyle(fontStyle: FontStyle.italic, fontSize: 14),
+                style: TextStyle(fontStyle: FontStyle.italic, fontSize: 14, color: Colors.grey),
               );
             },
           ),
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }

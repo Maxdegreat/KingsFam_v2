@@ -111,8 +111,6 @@ class KingsCordRepository extends BaseKingsCordRepository {
       }
     }
 
-    log("hey there was an update in the stream");
-
     Map<String, List<KingsCord>> map = {};
     map[mentioned] = mentionedL;
     map[kingsCord] = kingsCordL;

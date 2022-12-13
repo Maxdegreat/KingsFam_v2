@@ -500,6 +500,39 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
    add(CommunityInitalEvent(commuinity: cm));
   }
 
+  void updateReadStatusOnKc({required String id, required bool isMentioned}) {
+    // we need to update the read status on the mentionedCords.
+    // rmv from the mentionedCords lst and insert in cords lst.
+    if (isMentioned) {
+      for (int i = 0; i < state.mentionedCords.length; i ++) {
+
+      KingsCord? kcFromStateM = state.mentionedCords[i];
+
+      if (kcFromStateM != null && kcFromStateM.id == id) {
+        state.mentionedCords.remove(kcFromStateM);
+        kcFromStateM.copyWith(readStatus: false);
+        state.kingCords.insert(0, kcFromStateM);
+        emit(state.copyWith(kingCords: state.kingCords));
+      }
+    }
+
+    } else {
+    // we need to update the read status on the Cords.  
+    for (int i = 0; i < state.kingCords.length; i ++) {
+
+      KingsCord? kcFromState = state.kingCords[i];
+
+      if (kcFromState != null && kcFromState.id == id) {
+        state.kingCords.remove(kcFromState);
+        kcFromState.copyWith(readStatus: false);
+        state.kingCords.insert(0, kcFromState);
+        emit(state.copyWith(kingCords: state.kingCords));
+      }
+    }
+
+    }
+  }
+
   // KINGSCORD METHODS
 
 }

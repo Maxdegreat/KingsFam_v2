@@ -63,9 +63,6 @@ class CustomRoute {
           args: settings.arguments as EditProfileScreenArgs,
         );
 
-      case CreatePostScreen.routeName:
-        return CreatePostScreen.route();
-
       case ProfileScreen.routeName:
         return ProfileScreen.route(
             args: settings.arguments as ProfileScreenArgs);
@@ -153,6 +150,8 @@ class CustomRoute {
 
       case CreateRoom.routeName:
         return CreateRoom.route(args: settings.arguments as CreateRoomArgs);
+
+      case 
 
       case SaysRoom.routeName:
         return SaysRoom.route(args: settings.arguments as SaysRoomArgs);

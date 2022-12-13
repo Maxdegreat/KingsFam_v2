@@ -50,11 +50,11 @@ class ProfileStats extends StatelessWidget {
 
   GestureDetector followingInfoBtn(context) => GestureDetector(onTap:(){
     NavHelper().navToShowFollowing(context, profileBloc.state.userr.id, profileBloc, ctxFromPf, Paths.following);
-  }, child: Text("$following Following", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)));
+  }, child: Text("$following Following", style: Theme.of(context).textTheme.caption));
 
   GestureDetector followersInfoBtn(context) => GestureDetector(onTap:(){
     NavHelper().navToShowFollowing(context, profileBloc.state.userr.id, profileBloc, ctxFromPf, Paths.followers);
-  },child: Text("$followers Followers", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)));
+  },child: Text("$followers Followers", style: Theme.of(context).textTheme.caption));
 
 
 }

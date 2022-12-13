@@ -132,7 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 SliverAppBar(
                   floating: true,
                   pinned: true,
-                  title: Text(state.userr.username),
+                  title: Text(state.userr.username, style: Theme.of(context).textTheme.bodyText1,),
                   actions: [
                     // if (state.isCurrentUserr)
                     //    GestureDetector(
@@ -210,7 +210,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         CommuinityContainer(cms: state.cms, ownerId: widget.ownerId),
                         GestureDetector(
                           onTap: () => state.prayer != null ? PrayerChunk(context, state.prayer!, state.userr) : null,
-                          child: prayerSnipit(state.prayer, hexcolor.hexcolorCode(state.userr.colorPref))),
+                          child: prayerSnipit(state.prayer, hexcolor.hexcolorCode(state.userr.colorPref), context)),
 
                       ]),
                       

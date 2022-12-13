@@ -70,12 +70,12 @@ class ProfileButton extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: StadiumBorder(),
-          primary: Color(hc.hexcolorCode("#141829"))
+          primary: Theme.of(context).colorScheme.secondary
         ),
         onPressed: () => Navigator.of(context).pushNamed(
             EditProfileScreen.routeName,
             arguments: EditProfileScreenArgs(context: context)),
-        child: Text("Edit"),
+        child: Text("Edit", style: Theme.of(context).textTheme.caption,),
       ),
     );
   }

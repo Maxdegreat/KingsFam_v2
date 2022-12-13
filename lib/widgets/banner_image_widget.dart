@@ -17,26 +17,30 @@ class BannerImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      Column(
-        children: [
-          Container(
-            width: double.infinity,
-            height: passedheight != null ? passedheight :  MediaQuery.of(context).size.height / 8,
-            decoration: BoxDecoration(
-              color: Color(hc.hexcolorCode('#141829')),
-              image: bannerImage != null
-                  ? DecorationImage(
-                      image: FileImage(bannerImage!), fit: BoxFit.fitWidth)
-                  : bannerImageUrl!.isNotEmpty
-                      ? DecorationImage(
-                          image: CachedNetworkImageProvider(bannerImageUrl!),
-                          fit: BoxFit.fitWidth)
-                      : null,
+      Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              height: passedheight != null ? passedheight :  MediaQuery.of(context).size.height / 8,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: Color(hc.hexcolorCode('#141829')),
+                image: bannerImage != null
+                    ? DecorationImage(
+                        image: FileImage(bannerImage!), fit: BoxFit.fitWidth)
+                    : bannerImageUrl!.isNotEmpty
+                        ? DecorationImage(
+                            image: CachedNetworkImageProvider(bannerImageUrl!),
+                            fit: BoxFit.fitWidth)
+                        : null,
+              ),
             ),
-          ),
-          passedColor != null ? Container(height: 1, width: double.infinity, color: Color(passedColor!),) : SizedBox.shrink(),
-          
-        ],
+            passedColor != null ? Container(height: 1, width: double.infinity, color: Color(passedColor!),) : SizedBox.shrink(),
+            
+          ],
+        ),
       ),
       Container(
         color: isOpasaty ? Colors.black45 : Colors.transparent,

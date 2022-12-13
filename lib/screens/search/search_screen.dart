@@ -294,6 +294,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
                         child: FancyListTile(
+                          context: context,
                           username: users.username,
                           imageUrl: users.profileImageUrl,
                           onTap: () {},

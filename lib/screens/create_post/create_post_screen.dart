@@ -18,40 +18,32 @@ import '../../repositories/church/church_repository.dart';
 import '../../repositories/storage/storage_repository.dart';
 import '../search/search_screen.dart';
 
-class CreatePostScreen extends StatefulWidget {
-  const CreatePostScreen({Key? key}) : super(key: key);
+createMediaPopUpSheet({required BuildContext context}) {
+  return showModalBottomSheet(
+    isScrollControlled: true,
+    context: context,
+    builder: (_) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
 
-  @override
-  State<CreatePostScreen> createState() => _CreatePostScreenState();
-
-  //1 make route name
-  static const String routeName = '/createPost';
-  //2 make the route function
-  static Route route() {
-    return MaterialPageRoute(
-      settings: const RouteSettings(name: routeName),
-      builder: (_) => CreatePostScreen(),
-    );
-  }
+          children: [
+            Center(child: Icon(Icons.drag_handle)),
+            columnView(context),
+          ],
+        ),
+      );
+    } 
+  );
 }
 
-class _CreatePostScreenState extends State<CreatePostScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: SafeArea(
-        child: columnView(),
-      ),
-    );
-  }
-
-  // =======================================================================================================================================
-
-  Widget columnView() {
+ Widget columnView(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
           onTap: () async {
@@ -65,35 +57,33 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             }
           },
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 height: 25,
                 width: 75,
-                child: Icon(Icons.image),
+                child: Icon(Icons.image, color: Theme.of(context).iconTheme.color),
                 decoration: (BoxDecoration(
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(5))),
               ),
               Text(
-                "Upload Image From Gallery",
-                style: GoogleFonts.aBeeZee(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 20),
+                "Upload image from gallery",
+                style: Theme.of(context).textTheme.bodyText1,
               )
             ],
           ),
         ),
         // ------------------------------------------------> video from gall below image above <<<<<<<<<<<<<<<<<<< READ THAT B4 ATTEMPT TO READ CODE
         SizedBox(
-          height: 10,
+          height: 20,
         ),
         GestureDetector(
           onTap: () async {
             final pickedFile = await ImageHelper.pickVideoFromGallery(context);
             if (pickedFile != null) {
-              log("we can see that the picked file is not null, moving to the vid editor");
+             
               // await NavHelper().navToVideoEditor(context, pickedFile) /* .then((value) => Navigator.of(context).pop())  */ ;
               // NavHelper().navToPostContent(context, pickedFile, 'video');
               NavHelper().navToPostContent(context, pickedFile, 'video');
@@ -102,25 +92,22 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             }
           },
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 height: 25,
                 width: 75,
-                child: Icon(Icons.video_library),
+                child: Icon(Icons.video_library, color: Theme.of(context).iconTheme.color),
                 decoration: (BoxDecoration(
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(5))),
               ),
-              Text("Upload Video From Gallery",
-                  style: GoogleFonts.aBeeZee(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20))
+              Text("Upload video from gallery",
+                  style: Theme.of(context).textTheme.bodyText1)
             ],
           ),
         ),
       ],
     );
   }
-}

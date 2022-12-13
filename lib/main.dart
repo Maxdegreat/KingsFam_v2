@@ -121,7 +121,9 @@ class MyApp extends StatelessWidget {
         ],
         child: MaterialApp(
           //THEME DATA
-          theme: ThemeInfo().themeClubHouseDark(),
+          themeMode: ThemeMode.system,
+          theme: ThemeInfo().themeClubHouseLight(),
+          darkTheme: ThemeInfo().themeClubHouseDark(),
           debugShowCheckedModeBanner: false,
           title: 'KingsFam',
           onGenerateRoute: CustomRoute.onGenerateRoute,

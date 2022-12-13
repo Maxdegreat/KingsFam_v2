@@ -17,6 +17,7 @@ class FancyListTile extends StatelessWidget {
   final bool? isMentioned;
   final String? location;
   final Post? post;
+  final BuildContext context;
   const FancyListTile(
       {Key? key,
       required this.username,
@@ -27,6 +28,7 @@ class FancyListTile extends StatelessWidget {
       required this.BR,
       required this.height,
       required this.width,
+      required this.context,
       this.location,
       this.isMentioned,
       this.post})
@@ -47,7 +49,7 @@ class FancyListTile extends StatelessWidget {
   }
 
   Container child1(BuildContext context, HexColor hc) {
-    TextStyle s = TextStyle(color: Colors.grey, fontStyle: FontStyle.italic);
+    
     return Container(
         
         height: MediaQuery.of(context).size.height / height,
@@ -74,22 +76,16 @@ class FancyListTile extends StatelessWidget {
                   Text('$username.',
                       overflow: TextOverflow.fade,
                       style: newNotification == null || newNotification == false
-                          ? TextStyle(
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white)
-                          : TextStyle(
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.amber[200])),
+                          ? Theme.of(context).textTheme.bodyText1
+                          : Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.amber)),
                   SizedBox(height: 3),
                   location != null || location == ""
                       ? Text('$location.',
                           overflow: TextOverflow.fade,
-                          style: s)
+                          style: Theme.of(context).textTheme.caption)
                       : Text('Remote.',
                           overflow: TextOverflow.fade,
-                          style: s),
+                          style: Theme.of(context).textTheme.caption),
                 ],
               ),
               SizedBox(width: width - (width * .10)),
@@ -109,10 +105,9 @@ class FancyListTile extends StatelessWidget {
               begin: Alignment.bottomLeft,
               end: Alignment.topCenter,
               colors: [
-                Color(hc.hexcolorCode("#20263c")),
-                Color(hc.hexcolorCode("#141829"))
+                Theme.of(context).colorScheme.secondary,
+                Theme.of(context).colorScheme.primary
               ]),
-            color: Color(hc.hexcolorCode('#141829')),
             borderRadius: BorderRadius.circular(15),
             border: Border.all(
                 color: isMentioned == null || isMentioned == false

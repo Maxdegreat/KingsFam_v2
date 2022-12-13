@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kingsfam/config/constants.dart';
 
-Widget prayerSnipit(String? prayer, int? passedColor) {
+Widget prayerSnipit(String? prayer, int? passedColor, BuildContext context) {
   if (prayer == null) return SizedBox.shrink();
   if (prayer.length > 70) {
     prayer = prayer.substring(0, 70);
@@ -13,18 +13,24 @@ Widget prayerSnipit(String? prayer, int? passedColor) {
       height: 70,
       width: double.infinity,
       decoration: BoxDecoration(
+        gradient: LinearGradient(
+              begin: Alignment.bottomLeft,
+              end: Alignment.topRight,
+              colors: [
+                Theme.of(context).colorScheme.secondary,
+                Theme.of(context).colorScheme.primary
+              ]),
         borderRadius: BorderRadius.circular(15),
-        color: Color(hc.hexcolorCode("#141829")),
-      ),
+        color: Theme.of(context).colorScheme.secondary),
       child: Padding(
         padding: const EdgeInsets.all(5.5),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("PRAYER ~ "),
-            Text(prayer, overflow: TextOverflow.ellipsis, style: GoogleFonts.aBeeZee(fontWeight: FontWeight.w700),),
-            Container(width: double.infinity, height: 1.5, color: Color(passedColor!),)
+            Text("Prayer ~ ", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.grey),),
+            Text(prayer, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.caption,),
+            Container(width: double.infinity, height: 1, color: Color(passedColor!),)
           ],
         ),
       ),

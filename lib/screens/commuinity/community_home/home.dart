@@ -7,6 +7,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
+import 'package:kingsfam/screens/profile/widgets/prayer_chunck.dart';
 import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
 import 'package:kingsfam/widgets/snackbar.dart';
 
@@ -44,7 +45,13 @@ class _CommunityHomemState extends State<CommunityHome> {
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
-              title: Text(widget.cm.name),
+              leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).iconTheme.color,
+              )),
+              title: Text(widget.cm.name, style: Theme.of(context).textTheme.bodyText1),
             ),
             body: widget.cmB == null
                 ? BlocProvider<CommuinityBloc>(
@@ -76,26 +83,28 @@ class _CommunityHomemState extends State<CommunityHome> {
                                   width: double.infinity,
                                   imgUrl: widget.cm.imageUrl),
                               SizedBox(height: 10),
+                              Container(
+                                width: double.infinity,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(11.0),
+                                  child: Text("Members: ${widget.cm.size}", style: Theme.of(context).textTheme.caption,),
+                                ),
+                              ),
                               joinLeaveBtn(
                                   state: state,
                                   context: context,
                                   cm: widget.cm),
                               Container(
                                 width: double.infinity,
-                                child: Card(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(11.0),
-                                    child: Text("Members: ${widget.cm.size}"),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                width: double.infinity,
-                                child: Card(
+                                color: Theme.of(context).colorScheme.secondary,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    PrayerChunk(context, widget.cm.about, null);
+                                  },
                                   child: Padding(
                                     padding: const EdgeInsets.all(11.0),
                                     child: Text(
-                                      "About: ${widget.cm.about}",
+                                      "About: ${widget.cm.about}", style: Theme.of(context).textTheme.caption,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
@@ -156,31 +165,61 @@ class _CommunityHomemState extends State<CommunityHome> {
                                   width: double.infinity,
                                   imgUrl: widget.cm.imageUrl),
                               SizedBox(height: 10),
+                              Container(
+                                width: double.infinity,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(11.0),
+                                  child: Text("Members: ${widget.cm.size}", style: Theme.of(context).textTheme.caption,),
+                                ),
+                              ),
                               joinLeaveBtn(
                                   state: state,
                                   context: context,
                                   cm: widget.cm),
                               Container(
                                 width: double.infinity,
-                                child: Card(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(11.0),
-                                    child: Text("Members: ${widget.cm.size}"),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                width: double.infinity,
-                                child: Card(
+                                color: Theme.of(context).colorScheme.secondary,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    PrayerChunk(context, widget.cm.about, null);
+                                  },
                                   child: Padding(
                                     padding: const EdgeInsets.all(11.0),
                                     child: Text(
-                                      "About: ${widget.cm.about}",
+                                      "About: ${widget.cm.about}", style: Theme.of(context).textTheme.caption,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 ),
                               ),
+                              // SizedBox(height: 20),
+                              // Text("Shared Content"),
+                              // SizedBox(
+                              //   height: 5,
+                              // ),
+                              // SizedBox(
+                              //   height: 100,
+                              //   width: double.infinity,
+                              //   child: ListView.builder(
+                              //       scrollDirection: Axis.horizontal,
+                              //       itemCount: 3,
+                              //       itemBuilder: (context, builder) {
+                              //         return Padding(
+                              //           padding: const EdgeInsets.all(8.0),
+                              //           child: Container(
+                              //               height: 111,
+                              //               width: 111,
+                              //               decoration: BoxDecoration(
+                              //                   borderRadius:
+                              //                       BorderRadius.circular(7),
+                              //                   image: DecorationImage(
+                              //                       image:
+                              //                           CachedNetworkImageProvider(
+                              //                               widget.cm.imageUrl),
+                              //                       fit: BoxFit.cover))),
+                              //         );
+                              //       }),
+                              // )
                             ],
                           ),
                         );
@@ -237,7 +276,7 @@ class _CommunityHomemState extends State<CommunityHome> {
                           ),
                           style: ElevatedButton.styleFrom(
                               shape: StadiumBorder(),
-                              primary: Color(hc.hexcolorCode("#141829")))),
+                              primary: Theme.of(context).colorScheme.secondary)),
                     ),
                   )
                 : Padding(

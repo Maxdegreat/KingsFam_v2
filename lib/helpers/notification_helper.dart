@@ -69,17 +69,23 @@ final DarwinInitializationSettings initializationSettingsDarwin =
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
   // ignore: avoid_print
-  print("This is a notification taped from the background");
-  print('notification(${notificationResponse.id}) action tapped: '
+  log("This is a notification taped from the background");
+  log('notification(${notificationResponse.id}) action tapped: '
       '${notificationResponse.actionId} with'
       ' payload: ${notificationResponse.payload}');
   if (notificationResponse.input?.isNotEmpty ?? false) {
-    // ignore: avoid_print
-    print( 'notification action tapped with input: ${notificationResponse.input}');
+
   }
 }
 
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_importance_channel', // id
+  'High Importance Notifications', // title
+  description: 'This channel is used for important notifications.', // description
+  importance: Importance.max,
+  enableVibration: true,
 
+);
 
 class NotificationHelper {
 
@@ -87,36 +93,35 @@ class NotificationHelper {
 
   // inatialization method.
   static Future initalize(
-      FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
+      FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin
+  ) async {
 
-    flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestPermission();
-        
+    AndroidFlutterLocalNotificationsPlugin? fl = 
+      flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+
+      fl?.createNotificationChannel(channel).then((value) => log("notif channel has been created"));
+      fl?.requestPermission();
+  
     final InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsDarwin,
     );
 
-    log("about to initalize local notifs");
     await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse:
-        (NotificationResponse notificationResponse) {
-          log("recieved a notification via the onDidRecieveNotification");
-          // selectNotificationStream.add(notificationResponse.payload);
-    },
+      initializationSettings,               
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
-    log("local notifs are now initalized");
+    
   }
 
   // show notification
   static Future<void> showNotification(RemoteMessage remoteMessage) async {
+
+    
     const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails('channelId2', 'your channel name',
-            channelDescription: 'your channel description',
+        AndroidNotificationDetails('high_importance_channel', 'High Importance Notifications',
+            channelDescription: 'This channel is used for important notifications.',
             importance: Importance.max,
             priority: Priority.high,
             ticker: 'ticker');
@@ -125,7 +130,11 @@ class NotificationHelper {
         NotificationDetails(android: androidNotificationDetails);
 
     await flutterLocalNotificationsPlugin.show(
-        1, 'KingsFam example title', 'so this is an ex body. it will most often contain text', notificationDetails,
-        payload: 'item x');
+        1, 
+        remoteMessage.notification!.title, 
+        remoteMessage.notification!.body, 
+        notificationDetails,
+        payload: 'item x'
+      );
   }
 }

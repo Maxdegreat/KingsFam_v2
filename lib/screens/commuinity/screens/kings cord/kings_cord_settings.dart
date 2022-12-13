@@ -117,6 +117,12 @@ class _KingsCordSettingsState extends State<KingsCordSettings> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).iconTheme.color,
+              )),
           title: Text("Chat Room Settings"),
           actions: [],
         ),

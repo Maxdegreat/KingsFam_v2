@@ -43,7 +43,7 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          FancyListTile(username: commuinity1!.name, imageUrl: commuinity1.imageUrl, onTap: null, isBtn: false, BR: 12, height: 12 , width: 12),
+          FancyListTile(username: commuinity1!.name, imageUrl: commuinity1.imageUrl, onTap: null, isBtn: false, BR: 12, height: 12 , width: 12, context: context,),
         ],
       );
   
@@ -52,8 +52,8 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(padding: const EdgeInsets.only(bottom: 5),
-          child: FancyListTile(username: commuinity1.name, imageUrl: commuinity1.imageUrl, onTap: null, isBtn: false, BR: 12, height: 12 , width: 12),),
-          greaterThan2 ? FancyListTile(username: commuinity2!.name, imageUrl: commuinity2.imageUrl, onTap: null, isBtn: false, BR: 12, height: 12 , width: 12) : SizedBox.shrink() ,
+          child: FancyListTile(context: context, username: commuinity1.name, imageUrl: commuinity1.imageUrl, onTap: null, isBtn: false, BR: 12, height: 12 , width: 12),),
+          greaterThan2 ? FancyListTile(context: context, username: commuinity2!.name, imageUrl: commuinity2.imageUrl, onTap: null, isBtn: false, BR: 12, height: 12 , width: 12) : SizedBox.shrink() ,
         ],
       );
 
@@ -64,8 +64,6 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
     padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0,),
     child: GestureDetector(
       onTap: () => showModalBottomSheet(
-        
-        backgroundColor: Color(hc.hexcolorCode('#141829')),
         context: context, builder: (context) {
 
                 final _churchRepo = context.read<ChurchRepository>();

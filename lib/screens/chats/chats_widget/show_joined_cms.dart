@@ -104,6 +104,7 @@ class _showJoinedCmsState extends State<showJoinedCms> {
               Navigator.of(context).pushNamed(CommunityHome.routeName, arguments: CommunityHomeArgs(cm: cm!, cmB: null)),
           child: FancyListTile(
             // ------------------------- update hee
+            context: context,
             isMentioned: widget.state.mentionedMap[cm!.id],
             newNotification: false,
             location: cm.location.length > 1 ? cm.location : null,

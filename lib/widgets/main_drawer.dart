@@ -66,7 +66,7 @@ class _MainDrawerState extends State<MainDrawer> {
 
     return SafeArea(
       child: Drawer(
-        backgroundColor: Color(hc.hexcolorCode("#20263c")),
+        backgroundColor: Theme.of(context).drawerTheme.backgroundColor,
         width: MediaQuery.of(context).size.width - 45,
         // Add a ListView to the drawer. This ensures the user can scroll
         // through the options in the drawer if there isn't enough vertical

@@ -384,6 +384,18 @@ class KingscordCubit extends Cubit<KingscordState> {
    emit(state.copyWith(replyMessage: "", mentions: []));
   } 
 
+  void paginateMsg({required String cmId, required String kcId, required int limit}) async {
+    if (state.msgs.isEmpty) return;
+    String? lastDocId = state.msgs.last!.id;
+    // paginate in repo and store lst in new lst.
+    List<Message?> messages = await _churchRepository.paginateMsg(cmId: cmId, kcId: kcId, lastDocId: lastDocId, limit: limit);
+    log(messages.length.toString());
+    List<Message?> updatedLst = List<Message?>.from(state.msgs)..addAll( messages);
+    // pass that updated lst into kc.
+    emit(state.copyWith(msgs: updatedLst));
+    
+  }
+
   // for upword pagination just go to the top and add the next 10 or so to the begining of the list.
 
   String getShortReply(String? txt) {

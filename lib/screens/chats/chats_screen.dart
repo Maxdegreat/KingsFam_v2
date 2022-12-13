@@ -25,6 +25,10 @@ import '../../widgets/chats_view_widgets/getting_started.dart';
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = 
   FlutterLocalNotificationsPlugin();
 
+  Future<dynamic> onBackgroundMessage(RemoteMessage message) async {
+    // NotificationHelper.showNotification(message);
+  }
+
 class ChatsScreen extends StatefulWidget {
   const ChatsScreen({
     Key? key,
@@ -65,7 +69,7 @@ class _ChatsScreenState extends State<ChatsScreen>
       // NotificationHelper.showNotification(initialMessage);
       handleMessage(initialMessage, context);
     }
-
+    FirebaseMessaging.onBackgroundMessage((onBackgroundMessage));
     // Also handle any interaction when the app is in the background via a
     // Stream listener
     FirebaseMessaging.onMessageOpenedApp.listen( (r) => handleMessage(r, context));
@@ -87,7 +91,7 @@ class _ChatsScreenState extends State<ChatsScreen>
     super.initState();
     setupInteractedMessage();
     CurrentKingsCordRoomId();
-    // NotificationHelper.initalize(flutterLocalNotificationsPlugin);
+    NotificationHelper.initalize(flutterLocalNotificationsPlugin);
     //super.build(context);
   }
 

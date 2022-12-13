@@ -20,7 +20,7 @@ Widget joinBtn(
         ),
         style: ElevatedButton.styleFrom(
             shape: StadiumBorder(),
-            primary: Color(hc.hexcolorCode("#141829")))),
+            primary: Theme.of(context).colorScheme.secondary)),
   );
 }
 
@@ -36,7 +36,7 @@ _onJoinCommuinity(
       width: MediaQuery.of(context).size.width / 2.3,
       child: AdWidget(ad: ad),
       decoration: BoxDecoration(
-        color: Color(hc.hexcolorCode("#0a0c14")),
+        color: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(10),
       ),
     ) :
@@ -60,7 +60,7 @@ Widget contentPreview(
           Container(
             width: MediaQuery.of(context).size.width / 2.3,
             decoration: BoxDecoration(
-              color: Color(hc.hexcolorCode("#0a0c14")),
+              color: Theme.of(context).colorScheme.secondary,
               borderRadius: BorderRadius.circular(10)
             ),
             child: Padding(
@@ -94,7 +94,7 @@ Widget contentPreview(
                     child: Text(
                             post.author.username,
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontWeight: FontWeight.w300, fontStyle: FontStyle.italic, fontSize: 14, color: Colors.grey),
+                            style: Theme.of(context).textTheme.caption,
                             maxLines: 1,
                             overflow: TextOverflow.fade,
                     ),

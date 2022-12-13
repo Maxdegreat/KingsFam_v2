@@ -70,7 +70,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Edit Profile Fam'),
+          leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).iconTheme.color,
+              )),
+          title: Text(
+            'Edit Profile',
+            style: Theme.of(context).textTheme.bodyText1,
+          ),
         ),
         body: BlocConsumer<EditProfileCubit, EditProfileState>(
             listener: (context, state) {
@@ -97,29 +106,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               children: [
                 if (state.status == EditProfileStatus.submitting)
                   const LinearProgressIndicator(),
-                Stack(
-                  children: [
-                    GestureDetector(
-                      onTap: () => _pickBannerImage(context),
-                      child: BannerImage(
-                        isOpasaty: false,
-                        bannerImageUrl: widget.userr.bannerImageUrl,
-                        bannerImage: state.bannerImage,
-                      ),
-                    ),
-                    Positioned(
-                        top: 30,
-                        left: 10,
-                        child: GestureDetector(
-                          onTap: () => _pickProfileImage(context),
-                          child: ProfileImage(
-                            radius: 40.0,
-                            pfpUrl: widget.userr.profileImageUrl,
-                            pfpImage: state.profileImage,
+                GestureDetector(
+                  onTap: () => _pickBannerImage(context),
+                  child: BannerImage(
+                    isOpasaty: false,
+                    bannerImageUrl: widget.userr.bannerImageUrl,
+                    bannerImage: state.bannerImage,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                      child: ElevatedButton(
+                    onPressed: () => _pickBannerImage(context),
+                    child: Text("Edit banner image", style: Theme.of(context).textTheme.bodyText1,),
+                    style: ElevatedButton.styleFrom(shadowColor: Colors.transparent),
+                  )),
+                ),
+                Container(
+                    child: GestureDetector(
+                  onTap: () => _pickProfileImage(context),
+                  child: ProfileImage(
+                    radius: 40.0,
+                    pfpUrl: widget.userr.profileImageUrl,
+                    pfpImage: state.profileImage,
+                  ),
+                )),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                      child: ElevatedButton(
+                          onPressed: () => _pickProfileImage(context),
+                          child: Text("Edit banner image", style: Theme.of(context).textTheme.bodyText1,),
+                          style: ElevatedButton.styleFrom(shadowColor: Colors.transparent),),
                           ),
-                        ))
-                  ],
-                  clipBehavior: Clip.none,
                 ),
                 Padding(
                     padding: const EdgeInsets.symmetric(
@@ -236,7 +256,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                 "Long Press For 5 Seconds To Log Out"))),
                                     child: Text(
                                       "Log Me Out",
-                                      style: TextStyle(color: Colors.white),
+                                      style: Theme.of(context).textTheme.bodyText1,
                                     ),
                                   ),
                                   SizedBox(
@@ -244,7 +264,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                   TextButton(
                                     onLongPress: () {
-                                      context.read<AuthRepository>().deleteAccount();
+                                      context
+                                          .read<AuthRepository>()
+                                          .deleteAccount();
                                       // Navigator.of(context).pushNamed(routeName)
                                       // showDialog(context: context, builder: (context) {
                                       //   return AlertDialog(
@@ -272,7 +294,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       //           snackBar(snackMessage: "hold for 5 seconds to delete your account", context: context);
                                       //         },
                                       //         onLongPress: () {
-                                      //           
+                                      //
                                       //         },
                                       //       ),
                                       //     ]);

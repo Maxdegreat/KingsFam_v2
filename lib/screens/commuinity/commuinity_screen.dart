@@ -128,7 +128,6 @@ class _CommuinityScreenState extends State<CommuinityScreen>
 
   @override
   Widget build(BuildContext context) {
-    log("This is the test room id from the helper: " + CurrentKingsCordRoomId.currentKingsCordRoomId.toString());
     // ignore: unused_local_variable
     final userId = context.read<AuthBloc>().state.user!.uid;
     return BlocProvider<CommuinityBloc>(
@@ -209,8 +208,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                 settingsBtn(
                     cmBloc: context.read<CommuinityBloc>(),
                     cm: widget.commuinity,
-                    context: context)
-                //   // _themePackButton()
+                    context: context),
+                    context,
                 ),
             body: SafeArea(
               child: state.status == CommuintyStatus.armormed

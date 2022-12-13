@@ -219,7 +219,7 @@ class _MessageLinesState extends State<MessageLines> {
                       },
                       child: Container(
                         child: Text("Unsend",
-                            style: Theme.of(context).textTheme.bodyMedium),
+                            style: Theme.of(context).textTheme.bodyText1),
                       ),
                     ),
                     SizedBox(width: 7),
@@ -233,7 +233,7 @@ class _MessageLinesState extends State<MessageLines> {
                                 snackMessage: "can not copy", context: context);
                           }
                         },
-                        child: Text("Copy"))
+                        child: Text("Copy", style: Theme.of(context).textTheme.bodyText1))
                   ],
                 ),
               ],
@@ -273,8 +273,7 @@ class _MessageLinesState extends State<MessageLines> {
       } else if (element.startsWith('https://')) {
         textWithLinksForColumn.add(Text(
           tempString,
-          style: TextStyle(
-              color: Colors.white, fontSize: 14.0, fontWeight: FontWeight.w800),
+          style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.w300)
         ));
         tempString = "";
         // add the element to the links so that the code knows visually there is a link in a show link preview
@@ -303,12 +302,7 @@ class _MessageLinesState extends State<MessageLines> {
     // The return of the build text when there is an unsent message
     if (widget.message.text == "(code:unsent 10987345)") {
       return Text("deleted",
-          style: TextStyle(
-            color: Colors.grey,
-            fontSize: 14.0,
-            fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.w800,
-          ));
+          style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.w300));
     }
 
     if (links.isNotEmpty) {
@@ -326,13 +320,13 @@ class _MessageLinesState extends State<MessageLines> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               LinkPreviewContainer(link: links.last),
-              SizedBox(height: 2),
               // if a link was sent only without any text
               // widget.message.text!.trim().length != links[0].trim().length ? Text(widget.message.text!) : Text("#weblink")
               Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: textWithLinksForColumn.map((e) => e).toList())
+                  children: textWithLinksForColumn.map((e) => e).toList()),
+              _showReactionBarUi(messageReactions: widget.message.reactions)
             ],
           ));
     }
@@ -345,10 +339,7 @@ class _MessageLinesState extends State<MessageLines> {
         children: [
           // _showReplyBarUi(widget.message.replyed),
           Text(widget.message.text!,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.w800)),
+              style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.w300)),
           _showReactionBarUi(messageReactions: widget.message.reactions)
         ],
       ),
@@ -516,11 +507,7 @@ class _MessageLinesState extends State<MessageLines> {
                         SizedBox(width: 2),
                         Text(
                           '${widget.message.date.timeAgo()}',
-                          style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey,
-                              fontStyle: FontStyle.italic),
+                          style: Theme.of(context).textTheme.caption!.copyWith(fontStyle: FontStyle.italic)
                         ),
                       ],
                     ),
