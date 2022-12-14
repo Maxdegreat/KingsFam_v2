@@ -293,7 +293,7 @@ class ChurchRepository extends BaseChurchRepository {
   Future<void> newChurch(
       {required Church church,
       required Userr recentSender,
-      required String userId}) async {
+      required String userId, String mode = "chat"}) async {
     try {
       fb.add(church.toDoc()).then((value) async {
         final doc = await value.get();
@@ -306,6 +306,7 @@ class ChurchRepository extends BaseChurchRepository {
             userId: userId,
             isNewCm: true); //isNewCm is not required. only called on creation
         final kingsCord = KingsCord(
+          mode: mode,
           tag: doc.id,
           cordName: "Welcome To ${church.name}!",
           subscribedIds: [],

@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
+import 'package:kingsfam/screens/commuinity/screens/events/create_event.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
@@ -151,13 +152,11 @@ class CustomRoute {
       case CreateRoom.routeName:
         return CreateRoom.route(args: settings.arguments as CreateRoomArgs);
 
-      case 
+      case CreateEvent.routeName:
+        return CreateEvent.route(args: settings.arguments as CreateEventArgs);
 
       case SaysRoom.routeName:
         return SaysRoom.route(args: settings.arguments as SaysRoomArgs);
-
-      case SaysPopUp.routeName:
-        return SaysPopUp.route(args: settings.arguments as SaysPopUpArgs);
 
       // case VideoEditor.routeName:
       //   return VideoEditor.route(settings.arguments as VideoEditorArgs);

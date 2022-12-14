@@ -28,7 +28,6 @@ export 'snack_time/buy_perk.dart';
 export 'package:kingsfam/screens/create_post/post_content_screen.dart';
 export 'commuinity/screens/show_baned_users.dart';
 export 'package:kingsfam/screens/commuinity/screens/says_room/says_room.dart';
-export 'says_extra/says_pop_up.dart';
 // switch to modle sheet when u get the chance
 export 'comment_ui/comment_screen.dart';
 export 'package:kingsfam/screens/commuinity/screens/create_room/create_room.dart';

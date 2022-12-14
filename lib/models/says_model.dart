@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:kingsfam/config/paths.dart';
@@ -6,7 +8,7 @@ import 'package:kingsfam/models/models.dart';
 class Says extends Equatable {
   final String? id;
   final String? kcId;
-  final String cmName;
+  final String? title;
   final String contentTxt;
   // can be used for thumbnail. check if vidurl is null or not
   final String? contentImgUrl;
@@ -18,8 +20,8 @@ class Says extends Equatable {
 
   Says({
     this.id,
+    this.title,
     this.kcId,
-    required this.cmName,
     required this.contentTxt,
     this.contentImgUrl,
     this.contentVidUrl,
@@ -30,7 +32,7 @@ class Says extends Equatable {
   });
 
   static Says empty = Says(
-      cmName: "---",
+      title: "Untitled",
       contentTxt: "...",
       likes: 0,
       commentsCount: 0,
@@ -41,7 +43,7 @@ class Says extends Equatable {
   List<Object?> get props => [
         id,
         kcId,
-        cmName,
+        title,
         contentTxt,
         contentImgUrl,
         contentVidUrl,
@@ -55,7 +57,7 @@ class Says extends Equatable {
     return {
       'author':
           FirebaseFirestore.instance.collection(Paths.users).doc(author!.id),
-      'cmName': cmName,
+      'title' : title ?? 'Untitled',
       "kcId": kcId,
       "contentTxt": contentTxt,
       "contentImgUrl": contentImgUrl,
@@ -67,33 +69,31 @@ class Says extends Equatable {
   }
 
   static Future<Says> fromDoc(DocumentSnapshot doc) async {
-    final data = doc.data() as Map<String, dynamic>;
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     // grab the authorRef from author
-    var authDoc = null;
-    Userr author = Userr.empty;
-    final authorRef = data['author'] as DocumentReference?;
-    if (authorRef != null) {
-      authDoc = await authorRef.get();
-      author = Userr.fromDoc(authDoc);
-    } else {
-      author = Userr.empty;
-    }
+
+    DocumentReference userDoc = data['author'] as DocumentReference;
+    DocumentSnapshot userSnap = await userDoc.get();
+    Userr user = await Userr.fromDoc(userSnap);
+    log("user is: " + user.username);
+
+
     // return
     return Says(
         kcId: data['kcId'] ?? null,
-        cmName: data['cmName'] ?? "---",
+        title: data['title'],
         contentTxt: data['contentTxt'] ?? "---",
         contentImgUrl: data['contentImgUrl'] ?? null,
         contentVidUrl: data['contentVidUrl'] ?? null,
         likes: data["likes"] ?? 0,
         commentsCount: data["commentsCount"] ?? 0,
         date: data["date"] ?? Timestamp.now(),
-        author: author);
+        author: user);
   }
 
   Says copywith({
     String? id,
-    String? cmName,
+    String? title,
     String? contentTxt,
     String? contentImgUrl,
     String? contentVidUrl,
@@ -104,7 +104,7 @@ class Says extends Equatable {
     Userr? author,
   }) {
     return Says(
-        cmName: cmName ?? this.cmName,
+        title: title,
         contentTxt: contentTxt ?? this.contentTxt,
         likes: likes ?? this.likes,
         commentsCount: commentsCount ?? this.commentsCount,

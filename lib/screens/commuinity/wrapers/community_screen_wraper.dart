@@ -216,6 +216,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                             .doc(cord.id)
                                             .delete();
                                       } else {
+                                        log("pushing to a says");
                                         Navigator.of(context).pushNamed(
                                             SaysRoom.routeName,
                                             arguments: SaysRoomArgs(
@@ -362,6 +363,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                               SizedBox.shrink(),
                             ] else
                               ...state.kingCords.map((cord) {
+                                log("cord: " + cord!.toString());
                                 if (cord != null) {
                                   return GestureDetector(
                                       onTap: () {
@@ -407,7 +409,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                           //       .doc(cord.id)
                                           //       .delete();
                                           // }
-                                        } else {
+                                        } else if (cord.mode == "says") {
                                           Navigator.of(context).pushNamed(
                                               SaysRoom.routeName,
                                               arguments: SaysRoomArgs(

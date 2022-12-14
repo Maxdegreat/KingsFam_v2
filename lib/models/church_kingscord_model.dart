@@ -9,7 +9,7 @@ class KingsCord extends Equatable {
   final String tag;
   final String cordName;
   final List<Userr>? members;
-  final String? mode;
+  final String mode;
   final String? rolesAllowed;
   final List<String>? subscribedIds;
   final bool? readStatus;
@@ -23,7 +23,7 @@ class KingsCord extends Equatable {
     required this.cordName,
     // required this.recentSender,
     this.members,
-    this.mode,
+    required this.mode,
     this.rolesAllowed,
     this.readStatus,
   });
@@ -53,7 +53,7 @@ class KingsCord extends Equatable {
       // recentSender: recentSender ?? this.recentSender,
       subscribedIds: subscribedIds ?? this.subscribedIds,
       members: members ?? this.members,
-      mode: mode ?? "chat",
+      mode: mode ?? this.mode,
       rolesAllowed: rolesAllowed ?? Roles.Member,
       readStatus: readStatus ?? this.readStatus,
       // memberInfo: memberInfo ?? this.memberInfo,
@@ -67,7 +67,7 @@ class KingsCord extends Equatable {
       'cordName': cordName,
       // 'recentSender': recentSender,
       'subscribedIds' : subscribedIds ?? [],
-      'mode': mode ?? 'chat',
+      'mode': mode,
       'rolesAllowed': rolesAllowed ?? Roles.Member,
       // members, get members from parent commuinity, this is if a user sends msg store only then that way
       // on leave it does not cause a null err on their msg
@@ -83,7 +83,7 @@ class KingsCord extends Equatable {
         tag: data['tag'],
         cordName: data['cordName'] ?? 'MainRoom',
         subscribedIds: List<String>.from(data['subscribedIds']) ?? [],
-        mode: data['mode'] ?? 'chat',
+        mode: data['mode'],
         rolesAllowed: data['rolesAllowed'] ?? Roles.Member,
         );
   }
@@ -95,7 +95,7 @@ class KingsCord extends Equatable {
         tag: data['tag'],
         cordName: data['cordName'] ?? 'MainRoom',
         subscribedIds: List<String>.from(data['subscribedIds']) ?? [],
-        mode: data['mode'] ?? 'chat',
+        mode: data['mode'],
         rolesAllowed: data['rolesAllowed'] ?? Roles.Member);
   }
 }

@@ -74,6 +74,8 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
         status: CommuintyStatus.loading, kingCords: [], mentionedCords: []));
     try {
       String uid = _authBloc.state.user!.uid;
+      Userr currUserr = await _userrRepository.getUserrWithId(userrId: uid);
+      emit(state.copyWith(currUserr: currUserr));
       // just some pre-reqs
       Church cm = Church.empty.copyWith(
         id: event.commuinity.id,

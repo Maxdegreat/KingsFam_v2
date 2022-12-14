@@ -4,7 +4,6 @@ import 'package:helpers/helpers.dart';
 import 'package:kingsfam/extensions/date_time_extension.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/models/says_model.dart';
-import 'package:kingsfam/screens/says_extra/says_pop_up.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 class SaysContainer extends StatefulWidget {
@@ -33,81 +32,98 @@ class _SaysContainerState extends State<SaysContainer> {
       color: Color(hc.hexcolorCode(widget.says.author!.colorPref)),
       fontWeight: FontWeight.bold,
     );
+
     TextStyle title2 = TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.w500,
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
     );
+
     return GestureDetector(
       onTap: () {
         if (taped > 1) return;
-        Navigator.of(context).pushNamed(SaysPopUp.routeName,
-            arguments: SaysPopUpArgs(
-                says: widget.says));
+
       },
-      child: Card(
-        margin: Margin.all(4),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        color: Color(hc.hexcolorCode('#1b2136')),
-        elevation: 2,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-              height: 200,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ProfileImage(
-                      radius: 25,
-                      pfpUrl: widget.says.author!.profileImageUrl == null || widget.says.author!.profileImageUrl.isEmpty ? 
-                        "https://firebasestorage.googleapis.com/v0/b/kingsfam-9b1f8.appspot.com/o/images%2Fchurches%2FchurchAvatar_eb0c7061-a124-41b4-b948-60dcb0dffc49.jpg?alt=media&token=7e2fc437-9448-48bd-95bc-78e977fbcad8" :
-                         widget.says.author!.profileImageUrl
-                          ),
-                  SizedBox(width: 5),
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 35),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // cm name as title
-                          Row(
-                            children: [
-                              Text(
-                                widget.says.author!.username,
-                                style: title,
-                                overflow: TextOverflow.fade,
-                                maxLines: 1,
-                              ),
-                              Text(
-                                " ~ " + widget.says.cmName,
-                                style: title2,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            widget.says.contentTxt,
-                            maxLines: 4,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          SizedBox(height: 7),
-                          // dynamic code based on  extra content
-                          footer(),
-                          SizedBox(height: 1),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              )),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2.0),
+        child: Container(
+          color: Theme.of(context).colorScheme.primary,
+          height: 200,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                header_says(title),
+                SizedBox(height: 5),
+                title_says(context),
+                SizedBox(height: 5),
+                contentTxt_says(),
+                SizedBox(height: 10),
+                footer(),
+              ],
+            ),
+          ),
         ),
       ),
+    );
+  }
+
+  Widget title_says(BuildContext context) {
+    return Text(widget.says.title!,
+        style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 20));
+  }
+
+  Widget contentTxt_says() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Text(
+        widget.says.contentTxt,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 17),
+      ),
+    );
+  }
+
+  Row header_says(TextStyle title) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ProfileImage(
+            radius: 25,
+            pfpUrl: widget.says.author!.profileImageUrl == null ||
+                    widget.says.author!.profileImageUrl.isEmpty
+                ? "https://firebasestorage.googleapis.com/v0/b/kingsfam-9b1f8.appspot.com/o/images%2Fchurches%2FchurchAvatar_eb0c7061-a124-41b4-b948-60dcb0dffc49.jpg?alt=media&token=7e2fc437-9448-48bd-95bc-78e977fbcad8"
+                : widget.says.author!.profileImageUrl),
+        SizedBox(width: 10),
+        Flexible(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // cm name as title
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Text(
+                        widget.says.author!.username,
+                        style: title,
+                        overflow: TextOverflow.fade,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -126,20 +142,26 @@ class _SaysContainerState extends State<SaysContainer> {
 
   Widget oneLineReactions() {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(Icons.keyboard_double_arrow_up_outlined),
-            Text(widget.says.likes.toString()),
+            Text(widget.says.likes.toString(),
+                style: Theme.of(context).textTheme.caption),
             SizedBox(width: 7),
             Icon(Icons.mode_comment_outlined),
             SizedBox(width: 1),
-            Text(widget.says.commentsCount.toString()),
+            Text(widget.says.commentsCount.toString(),
+                style: Theme.of(context).textTheme.caption),
             SizedBox(width: 7),
-            
           ],
         ),
-        Text(widget.says.date.timeAgo())
+        Text(widget.says.date.timeAgo(),
+            style: Theme.of(context).textTheme.caption)
       ],
     );
   }

@@ -1,7 +1,5 @@
 part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 
-
-
 // on Join A Community
 Widget joinBtn(
     {required CommuinityBloc b,
@@ -29,40 +27,41 @@ _onJoinCommuinity(
   b.onJoinCommuinity(commuinity: cm, context: c);
 }
 
-  Widget nativeAdWidget(NativeAd ad, bool hasAdLoaded, BuildContext context) {
-    return hasAdLoaded ?
-    Container(
-      height: 50,
-      width: MediaQuery.of(context).size.width / 2.3,
-      child: AdWidget(ad: ad),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary,
-        borderRadius: BorderRadius.circular(10),
-      ),
-    ) :
-    SizedBox.shrink();
-  }
+Widget nativeAdWidget(NativeAd ad, bool hasAdLoaded, BuildContext context) {
+  return hasAdLoaded
+      ? Container(
+          height: 50,
+          width: MediaQuery.of(context).size.width / 2.3,
+          child: AdWidget(ad: ad),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.secondary,
+            borderRadius: BorderRadius.circular(10),
+          ),
+        )
+      : SizedBox.shrink();
+}
 
 // content preview: This holds the post
 Widget contentPreview(
     {required Post post, required BuildContext context, required Church cm}) {
   return Padding(
-    padding: EdgeInsets.only(right: 5,),
+    padding: EdgeInsets.only(
+      right: 5,
+    ),
     child: GestureDetector(
       onTap: () => Navigator.of(context)
           .pushNamed(CommuinityFeedScreen.routeName,
               arguments: CommuinityFeedScreenArgs(commuinity: cm))
           .then((_) => context.read<BottomnavbarCubit>().showBottomNav(true)),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start, 
+        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             width: MediaQuery.of(context).size.width / 2.3,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondary,
-              borderRadius: BorderRadius.circular(10)
-            ),
+                color: Theme.of(context).colorScheme.secondary,
+                borderRadius: BorderRadius.circular(10)),
             child: Padding(
               padding: const EdgeInsets.all(5.0),
               child: Row(
@@ -73,43 +72,40 @@ Widget contentPreview(
                     decoration: BoxDecoration(
                       color: Color(hc.hexcolorCode("#141829")),
                       borderRadius: BorderRadius.circular(10),
-                             image: post.imageUrl != null
-                                    ? DecorationImage(
-                                        image: CachedNetworkImageProvider(post.imageUrl!),
-                                        fit: BoxFit.fitWidth)
-                                    : post.thumbnailUrl != null
-                                        ? DecorationImage(
-                                            image: CachedNetworkImageProvider(
-                                                post.thumbnailUrl!),
-                                            fit: BoxFit.fitWidth)
-                                        : null,
-      
-                    ),
-                    ),
-              SizedBox(width: 5),
-              Flexible(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 5.0),
-                    child: Text(
-                            post.author.username,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.caption,
-                            maxLines: 1,
-                            overflow: TextOverflow.fade,
+                      image: post.imageUrl != null
+                          ? DecorationImage(
+                              image: CachedNetworkImageProvider(post.imageUrl!),
+                              fit: BoxFit.fitWidth)
+                          : post.thumbnailUrl != null
+                              ? DecorationImage(
+                                  image: CachedNetworkImageProvider(
+                                      post.thumbnailUrl!),
+                                  fit: BoxFit.fitWidth)
+                              : null,
                     ),
                   ),
-                ),
-              ),
+                  SizedBox(width: 5),
+                  Flexible(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 5.0),
+                        child: Text(
+                          post.author.username,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.caption,
+                          maxLines: 1,
+                          overflow: TextOverflow.fade,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-            
-            
         ],
       ),
-      ),
+    ),
   );
 }
 
@@ -156,14 +152,20 @@ Widget new_kingscord(
       cmBloc.state.role["permissions"].contains("#") ||
       cmBloc.state.role["permissions"].contains(CmActions.makeRoom)) {
     return GestureDetector(
-        onTap: () => Navigator.of(context).pushNamed(CreateRoom.routeName,
-            arguments: CreateRoomArgs(cmBloc: cmBloc, cm: cm)),
+        onTap: () {
+          log("taped...");
+          Navigator.of(context).pushNamed(
+                      CreateRoom.routeName,
+                      arguments: CreateRoomArgs(cmBloc: cmBloc, cm: cm));
+        },
         child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
             child: Icon(Icons.add)));
   } else
     return SizedBox.shrink();
 }
+
+
 
 // this is a widget used to del a kingscord or an event
 _delKcDialog({
@@ -226,8 +228,7 @@ Widget memberBtn(
   return Padding(
       padding: const EdgeInsets.all(10),
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10)),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
         child: Padding(
           padding: const EdgeInsets.all(4.0),
           child: IconButton(
@@ -249,8 +250,7 @@ Widget settingsBtn(
   return Padding(
     padding: const EdgeInsets.all(10),
     child: Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: Padding(
         padding: const EdgeInsets.all(4.0),
         child: IconButton(

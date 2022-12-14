@@ -46,12 +46,13 @@ class _CommunityHomemState extends State<CommunityHome> {
         child: Scaffold(
             appBar: AppBar(
               leading: IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: Icon(
-                Icons.arrow_back_ios,
-                color: Theme.of(context).iconTheme.color,
-              )),
-              title: Text(widget.cm.name, style: Theme.of(context).textTheme.bodyText1),
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: Icon(
+                    Icons.arrow_back_ios,
+                    color: Theme.of(context).iconTheme.color,
+                  )),
+              title: Text(widget.cm.name,
+                  style: Theme.of(context).textTheme.bodyText1),
             ),
             body: widget.cmB == null
                 ? BlocProvider<CommuinityBloc>(
@@ -87,7 +88,10 @@ class _CommunityHomemState extends State<CommunityHome> {
                                 width: double.infinity,
                                 child: Padding(
                                   padding: const EdgeInsets.all(11.0),
-                                  child: Text("Members: ${widget.cm.size}", style: Theme.of(context).textTheme.caption,),
+                                  child: Text(
+                                    "Members: ${widget.cm.size}",
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
                                 ),
                               ),
                               joinLeaveBtn(
@@ -97,16 +101,26 @@ class _CommunityHomemState extends State<CommunityHome> {
                               Container(
                                 width: double.infinity,
                                 color: Theme.of(context).colorScheme.secondary,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    PrayerChunk(context, widget.cm.about, null);
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(11.0),
-                                    child: Text(
-                                      "About: ${widget.cm.about}", style: Theme.of(context).textTheme.caption,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(height: 10),
+                                      Container(
+                                        width: double.infinity,
+                                        child: Text(
+                                          widget.cm.about,
+                                          softWrap: true,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1,
+                                        ),
+                                      )
+                                    ],
                                   ),
                                 ),
                               ),
@@ -169,7 +183,10 @@ class _CommunityHomemState extends State<CommunityHome> {
                                 width: double.infinity,
                                 child: Padding(
                                   padding: const EdgeInsets.all(11.0),
-                                  child: Text("Members: ${widget.cm.size}", style: Theme.of(context).textTheme.caption,),
+                                  child: Text(
+                                    "Members: ${widget.cm.size}",
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
                                 ),
                               ),
                               joinLeaveBtn(
@@ -179,16 +196,26 @@ class _CommunityHomemState extends State<CommunityHome> {
                               Container(
                                 width: double.infinity,
                                 color: Theme.of(context).colorScheme.secondary,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    PrayerChunk(context, widget.cm.about, null);
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(11.0),
-                                    child: Text(
-                                      "About: ${widget.cm.about}", style: Theme.of(context).textTheme.caption,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(height: 10),
+                                      Container(
+                                        width: double.infinity,
+                                        child: Text(
+                                          widget.cm.about,
+                                          softWrap: true,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1,
+                                        ),
+                                      )
+                                    ],
                                   ),
                                 ),
                               ),
@@ -251,7 +278,6 @@ class _CommunityHomemState extends State<CommunityHome> {
                                 .state
                                 .role["permissions"]
                                 .contains("*")) {
-
                               context
                                   .read<CommuinityBloc>()
                                   .onLeaveCommuinity(commuinity: cm);
@@ -259,9 +285,9 @@ class _CommunityHomemState extends State<CommunityHome> {
                                   .read<CommuinityBloc>()
                                   .state
                                   .currUserr);
-                              
-                              context
-                                  .read<CommuinityBloc>()..add(CommunityInitalEvent(commuinity: cm));
+
+                              context.read<CommuinityBloc>()
+                                ..add(CommunityInitalEvent(commuinity: cm));
                               Navigator.of(context).pop();
                             } else {
                               snackBar(
@@ -276,7 +302,8 @@ class _CommunityHomemState extends State<CommunityHome> {
                           ),
                           style: ElevatedButton.styleFrom(
                               shape: StadiumBorder(),
-                              primary: Theme.of(context).colorScheme.secondary)),
+                              primary:
+                                  Theme.of(context).colorScheme.secondary)),
                     ),
                   )
                 : Padding(
@@ -321,7 +348,7 @@ class _CommunityHomemState extends State<CommunityHome> {
                           onPressed: () {
                             b.onLeaveCommuinity(commuinity: cm);
                             cm.members.remove(b.state.currUserr);
-                           
+
                             // b..add(CommunityInitalEvent(commuinity: cm));
                             Navigator.of(_context).pop();
                           },

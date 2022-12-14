@@ -23,7 +23,7 @@ class ThemeInfo {
       scaffoldBackgroundColor: Colors.white,
       colorScheme: ColorScheme.fromSwatch().copyWith(
         secondary: Color.fromARGB(255, 207, 207, 207),
-        primary: Colors.white24,
+        primary: Colors.white,
         background: Colors.grey),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: Colors.white,
@@ -58,25 +58,29 @@ class ThemeInfo {
     return ThemeData(
 
         brightness: Brightness.dark,
+        primaryColor: Colors.purple,
         appBarTheme: AppBarTheme( 
           // thats it! but what looks better. the app bar or screen body?
           toolbarHeight: 45,
           color: Color(hexcolor.hexcolorCode('#20263c')),// whats the hex val?
-          // Color.fromARGB(255, 32, 58, 79), to use hex i have to do some extra stuff. its too much
-          elevation: 0,
+          elevation: 1,
         ),
         iconTheme: IconThemeData(color: Colors.white),
-        drawerTheme: DrawerThemeData(backgroundColor: Colors.white),
-        scaffoldBackgroundColor: Color(hexcolor.hexcolorCode('#20263c')),
-        // Color.fromARGB(255, 32, 58, 79),
+        drawerTheme: DrawerThemeData(backgroundColor: Color(hexcolor.hexcolorCode('#20263c'))),
+        scaffoldBackgroundColor: Color(hexcolor.hexcolorCode('#20263d')),
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+brightness: Brightness.dark,
+        secondary: Color(hexcolor.hexcolorCode('282f4b')),
+        primary: Color(hexcolor.hexcolorCode("1c2841")),
+        background: Color.fromARGB(255, 17, 22, 121)),
         bottomSheetTheme: BottomSheetThemeData(backgroundColor: Color(hexcolor.hexcolorCode("#141829"))),
         cardColor: Color(hexcolor.hexcolorCode('#141829')),
         primaryColorDark: Colors.white,
-        splashColor: Color.fromARGB(255, 69, 18, 18),
+        splashColor: Color.fromARGB(255, 13, 15, 63),
         textTheme: TextTheme(
             bodyText1: TextStyle(color: Colors.white, fontSize: 18),//GoogleFonts.acme(color: Colors.white, fontSize: 18),
-            bodyText2: GoogleFonts.aBeeZee(color: Colors.white, fontSize: 17),
-            subtitle1: GoogleFonts.aBeeZee(color: Colors.white),
+            bodyText2: TextStyle(color: Color.fromARGB(255, 194, 194, 194), fontSize: 18),
+            caption: TextStyle(color: Color.fromARGB(255, 194, 194, 194), fontSize: 14),
             headline1: TextStyle(
                 fontSize: 25.0,
                 color: Colors.white,

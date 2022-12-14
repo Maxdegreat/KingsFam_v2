@@ -36,8 +36,7 @@ class SaysBloc extends Bloc<SaysEvent, SaysState> {
   Stream<SaysState> _mapSaysFetchSaysToState(SaysFetchSays event) async* {
     yield state.copyWith(status: SaysStatus.loading, says: []);
     try {
-      List<Says?> says = [];
-      says = await _saysRepository.fetchSays(
+      List<Says?> says = await _saysRepository.fetchSays(
           cmId: event.cmId, kcId: event.kcId, lastPostId: null, limit: null);
       log("The Len of Says is: " + says.length.toString());
       yield state.copyWith(says: says, status: SaysStatus.inital);

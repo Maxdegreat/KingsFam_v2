@@ -88,7 +88,6 @@ class _SaysRoomState extends State<SaysRoom> {
           colorPref: "#FFC050",
           username: "mockTester",
         ),
-        cmName: "Mock",
         // contentImgUrl: "https://firebasestorage.googleapis.com/v0/b/kingsfam-9b1f8.appspot.com/o/images%2Fchurches%2FchurchAvatar_eb0c7061-a124-41b4-b948-60dcb0dffc49.jpg?alt=media&token=7e2fc437-9448-48bd-95bc-78e977fbcad8",
         contentTxt:
             "Mock Testing this feature, so lets see how it works withi a kinda long text. do note users will make this actually very long tho lol. thats no cappp",
@@ -98,10 +97,17 @@ class _SaysRoomState extends State<SaysRoom> {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Color(hc.hexcolorCode("#141829")),
+               backgroundColor: Theme.of(context).colorScheme.secondary, //Color(hc.hexcolorCode("#141829")),
+
         appBar: AppBar(
-          backgroundColor: Color(hc.hexcolorCode("#141829")),
-          title: Text(widget.kcName),
+          // backgroundColor: Color(hc.hexcolorCode("#141829")),
+          title: Text(widget.kcName, style: Theme.of(context).textTheme.bodyText1),
+          leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).iconTheme.color,
+              )),
           actions: [
             TextButton(
                 onPressed: () {
@@ -113,7 +119,7 @@ class _SaysRoomState extends State<SaysRoom> {
                               id: widget.cm.id!, name: widget.cm.name),
                           kcId: widget.kcId));
                 },
-                child: Text("New Says"))
+                child: Text("New Says", style: Theme.of(context).textTheme.bodyText1))
           ],
         ),
         body: BlocConsumer<SaysBloc, SaysState>(
@@ -122,7 +128,7 @@ class _SaysRoomState extends State<SaysRoom> {
           },
           builder: (context, state) {
             return Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 1),
                 child: Expanded(
                   child: ListView.builder(
                       // itemCount: state.status == SaysStatus.loading

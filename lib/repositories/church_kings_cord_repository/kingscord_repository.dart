@@ -82,13 +82,19 @@ class KingsCordRepository extends BaseKingsCordRepository {
               .get();
           if (qs.docs.isNotEmpty) {
             Message m = await Message.fromDoc(qs.docs[0]);
-            tFromMsg = DateTime.fromMicrosecondsSinceEpoch(
-                m.date.microsecondsSinceEpoch);
-            for (int i = 0; i < savedKcTimeStmap.length; i++) {
-              if (savedKcTimeStmap[i].substring(0, 20) == kc.id!) {
-                localT = DateTime.tryParse(savedKcTimeStmap[i].substring(21));
-                if (localT != null) {
-                  readStatus = !localT.isBefore(tFromMsg) ? false : true;
+            DocumentReference userRef =
+                FirebaseFirestore.instance.collection(Paths.users).doc(uid);
+            // sender is a docRef on the cloud
+            // if curr is last to send leave the readStatus as default which is false or null
+            if (m.sender != userRef) {
+              tFromMsg = DateTime.fromMicrosecondsSinceEpoch(
+                  m.date.microsecondsSinceEpoch);
+              for (int i = 0; i < savedKcTimeStmap.length; i++) {
+                if (savedKcTimeStmap[i].substring(0, 20) == kc.id!) {
+                  localT = DateTime.tryParse(savedKcTimeStmap[i].substring(21));
+                  if (localT != null) {
+                    readStatus = !localT.isBefore(tFromMsg) ? false : true;
+                  }
                 }
               }
             }

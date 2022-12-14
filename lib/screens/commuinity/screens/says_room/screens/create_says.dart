@@ -4,10 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:kingsfam/config/constants.dart';
-import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/models/says_model.dart';
 import 'package:kingsfam/repositories/says/says_repository.dart';
+import 'package:kingsfam/widgets/snackbar.dart';
 
 class CreateSaysArgs {
   final String kcId;
@@ -46,16 +46,19 @@ class CreateSays extends StatefulWidget {
 
 class _CreateSaysState extends State<CreateSays> {
   late TextEditingController _controller;
+  late TextEditingController _controllerT;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
+    _controllerT = TextEditingController();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _controllerT.dispose();
     super.dispose();
   }
 
@@ -66,18 +69,13 @@ class _CreateSaysState extends State<CreateSays> {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).iconTheme.color,
+              )),
         title: Text("Post New Says"),
-        leading: TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text(
-            "X",
-            style: TextStyle(
-              fontSize: 20,
-            ),
-          ),
-        ),
         actions: [_sendSays()],
       ),
       body: GestureDetector(
@@ -92,6 +90,12 @@ class _CreateSaysState extends State<CreateSays> {
             children: [
               KingsCordUserDisplay(),
               SizedBox(height: 5),
+              TextField(
+                controller: _controllerT,
+                decoration: InputDecoration(
+                  label: Text("Title")
+                ),
+              ),
               Container(
                 height: 300,
                 child: TextField(
@@ -144,15 +148,26 @@ class _CreateSaysState extends State<CreateSays> {
           child: Text("Done"),
           onPressed: () {
             try {
+              // ignore: unnecessary_null_comparison
+              String? title = _controllerT.value.text.isEmpty ||  _controllerT.value.text.isEmpty == null 
+                ? null
+                : _controllerT.value.text;
+
+                if (title != null) {
+                  if (_controllerT.value.text.length > 15) {
+                    snackBar(snackMessage: "Make sure your title is 15 or less chars", context: context, bgColor: Colors.red[400]);
+                    return;
+                  }
+                }
               // make the says
             Says says = Says(
                 author: widget.currUsr,
-                cmName: widget.cm.name,
                 contentTxt: _controller.value.text,
                 likes: 0,
                 commentsCount: 0,
                 date: Timestamp.now(),
-                kcId: widget.kcId
+                kcId: widget.kcId,
+                title: title
             );
             // send the Says using repo
             SaysRepository()
