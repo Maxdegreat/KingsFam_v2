@@ -262,17 +262,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 4.0),
-              child: Text(
-                "View all Posts",
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyText1!
-                    .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushNamed(ProfilePostView.routeName,
+                      arguments: ProfilePostViewArgs(
+                          startIndex: 0,
+                          posts: state.post,
+                          currUsrId: context.read<AuthBloc>().state.user!.uid));
+                },
+                child: Text(
+                  "View all Posts",
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1!
+                      .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
+                ),
               ),
             ),
             Container(
-              color: Color.fromARGB(127, 87, 192, 90),
               height: MediaQuery.of(context).size.height / 3,
               width: double.infinity,
               child: ListView.builder(
@@ -280,7 +288,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 itemCount: state.post.length,
                 itemBuilder: (context, index) {
                   Post? post = state.post[index];
-                  if (post != null) return displayPfpPost(post);
+                  if (post != null)
+                    return displayPfpPost(post, index, state.post);
                   return SizedBox.shrink();
                 },
               ),
@@ -289,10 +298,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ));
 
-  Widget displayPfpPost(Post post) {
+  Widget displayPfpPost(Post post, int index, List<Post?> lst) {
     String displayImg = (post.imageUrl ?? post.thumbnailUrl)!;
     return GestureDetector(
-      onTap: () => Navigator.of(context).pushNamed(routeName),
+      onTap: () => Navigator.of(context).pushNamed(ProfilePostView.routeName,
+          arguments: ProfilePostViewArgs(
+              startIndex: index,
+              posts: lst,
+              currUsrId: context.read<AuthBloc>().state.user!.uid)),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
