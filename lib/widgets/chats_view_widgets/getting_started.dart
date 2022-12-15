@@ -35,8 +35,9 @@ class _GettingStartedState extends State<GettingStarted> {
             child: Align(
                 alignment: Alignment.center,
                 child: Text("Find A Community To Join",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 40))),
+                style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 40)
+,                    textAlign: TextAlign.center,
+                    )),
           ),
           SizedBox(height: 10),
           Container(height: 400, child: carousel()),
@@ -95,7 +96,7 @@ class gettingStartedBtn extends StatelessWidget {
         child: Container(
             width: double.infinity,
             child: ElevatedButton(
-                style: ElevatedButton.styleFrom(primary: Colors.white),
+                style: ElevatedButton.styleFrom(primary: Theme.of(context).colorScheme.secondary),
                 onPressed: () async {
                   helpDialog(context);
                 },
@@ -104,8 +105,7 @@ class gettingStartedBtn extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
-                      .bodyText1!
-                      .copyWith(color: Colors.black),
+                      .bodyText1
                 ))),
       ),
     );

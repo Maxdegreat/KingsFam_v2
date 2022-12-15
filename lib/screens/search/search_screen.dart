@@ -119,6 +119,7 @@ class _SearchScreenState extends State<SearchScreen> {
             builder: (context, state) {
               return Scaffold(
                 appBar: AppBar(
+                  elevation: 0,
                   toolbarHeight: 56,
                   title: Padding(
                     padding: const EdgeInsets.only(top: 10),
@@ -126,13 +127,14 @@ class _SearchScreenState extends State<SearchScreen> {
                       height: 45,
                       width: double.infinity,
                       child: TextField(
+                        textAlign: TextAlign.center,
                         controller:  _textEditingController,
                         decoration: InputDecoration(
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
                         filled: true,
-                        hintStyle: TextStyle(color: Colors.grey),
-                        hintText: "Search Cm or Fam",
-                        fillColor: Color(hc.hexcolorCode("#141829")!),
+                        hintStyle: Theme.of(context).textTheme.bodyText1,
+                        hintText: "Search for the fam",
+                        fillColor: Theme.of(context).colorScheme.background,
 
                         suffixIcon: IconButton(
                                 onPressed: () {

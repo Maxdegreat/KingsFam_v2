@@ -154,9 +154,8 @@ Widget new_kingscord(
     return GestureDetector(
         onTap: () {
           log("taped...");
-          Navigator.of(context).pushNamed(
-                      CreateRoom.routeName,
-                      arguments: CreateRoomArgs(cmBloc: cmBloc, cm: cm));
+          Navigator.of(context).pushNamed(CreateRoom.routeName,
+              arguments: CreateRoomArgs(cmBloc: cmBloc, cm: cm));
         },
         child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -164,8 +163,6 @@ Widget new_kingscord(
   } else
     return SizedBox.shrink();
 }
-
-
 
 // this is a widget used to del a kingscord or an event
 _delKcDialog({
@@ -696,4 +693,63 @@ Future<dynamic> _updateCommuinityName({
               ],
             ),
           ));
+}
+
+communityInvitePopUp(BuildContext context, String deepLink) {
+  return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.drag_handle),
+              SizedBox(height: 5),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.amber, width: 2),
+                  borderRadius: BorderRadius.circular(7),
+                  color: Theme.of(context).colorScheme.background,
+                ),
+                child: Center(
+                  child: Text(deepLink,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyText1),
+                ),
+              ),
+              SizedBox(height: 5),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(7),
+                  color: Colors.amber,
+                ),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(primary: Colors.amber),
+                  child: Text("Copy share link",
+                      style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.bold)),
+                  onPressed: () {
+                    copyTextToClip(deepLink);
+                    snackBar(
+                        snackMessage: "Share link coppied",
+                        context: context,
+                        bgColor: Colors.green);
+                  },
+                ),
+              ),
+              SizedBox(height: 5),
+              Text(
+                  "Copy this share link and send it to a friend. They can then join this community. If they do not have the app they will be directed to the app store.",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.caption),
+            ],
+          ),
+        );
+      });
 }

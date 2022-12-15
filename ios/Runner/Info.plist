@@ -27,9 +27,11 @@
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>Bundle ID</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.628805532994-o906jbhqkikj6nj971ligib06cejta9u</string>
+				<string>com.kingbiz.kingsfam</string>
 			</array>
 		</dict>
 	</array>
@@ -41,10 +43,10 @@
 	<string>true</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>KingsFam will access gallery when you are attempting to post. KingsFam only sees what you post when you are making a new post.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>KingsFam will only access your camera when you are attempting to make a new post</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>KingsFam will access gallery when you are attempting to post. KingsFam only sees what you post when you are making a new post.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

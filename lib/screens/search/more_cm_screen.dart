@@ -90,7 +90,13 @@ class _MoreCmState extends State<MoreCm> {
     bool loading = false;
     return Scaffold(
       appBar: AppBar(
-        title: Text("${widget.type} Communities"),
+        leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).iconTheme.color,
+              )),
+        title: Text("${widget.type} Communities", style: Theme.of(context).textTheme.bodyText1),
       ),
       body: BlocProvider.value(
         value: widget.bloc,
@@ -173,15 +179,15 @@ class _MoreCmState extends State<MoreCm> {
             children: [
               Text(
                 name,
-                style: GoogleFonts.aBeeZee(color: Colors.white),
+                style: Theme.of(context).textTheme.bodyText1,
               ),
               Text(
                 "members: " + count,
-                style: GoogleFonts.aBeeZee(color: Colors.white),
+                style: Theme.of(context).textTheme.caption,
               ),
               Text(
                 location,
-                style: GoogleFonts.aBeeZee(color: Colors.white),
+                style: Theme.of(context).textTheme.caption,
               )
             ],
           ),

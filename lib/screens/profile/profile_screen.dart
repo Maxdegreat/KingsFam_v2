@@ -50,8 +50,7 @@ class ProfileScreen extends StatefulWidget {
                   authBloc: context.read<AuthBloc>(),
                   postRepository: context.read<PostsRepository>(),
                   chatRepository: context.read<ChatRepository>())
-                ..add(ProfileLoadUserr(
-                    userId: args.userId, vidCtrl: null)),
+                ..add(ProfileLoadUserr(userId: args.userId, vidCtrl: null)),
               child: ProfileScreen(
                 ownerId: args.userId,
               ),
@@ -66,14 +65,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // controllers
 
   ScrollController scrollController = ScrollController();
- // late VideoPlayerController _perkedVideoPlayerController;
+  // late VideoPlayerController _perkedVideoPlayerController;
   @override
   void initState() {
     super.initState();
-    
-   // scrollController.addListener(listenToScrolling);
-  }
 
+    // scrollController.addListener(listenToScrolling);
+  }
 
   // void listenToScrolling() {
   //   //TODO you need to add this later make it a p1 requirment
@@ -117,12 +115,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   //---------------------------------------------------------body widget extracted
   Widget _bodyBabbyyyy(ProfileState state) {
-
     switch (state.status) {
       case ProfileStatus.initial:
         return Center(child: CircularProgressIndicator(color: Colors.red[400]));
       default:
-        return RefreshIndicator( // ---------------- LOOK HERE NEEDS SOME INTERNAL WORK TODO
+        return RefreshIndicator(
+            // ---------------- LOOK HERE NEEDS SOME INTERNAL WORK TODO
             onRefresh: () async => context
                 .read<ProfileBloc>()
                 .add(ProfileLoadUserr(userId: state.userr.id)),
@@ -132,7 +130,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 SliverAppBar(
                   floating: true,
                   pinned: true,
-                  title: Text(state.userr.username, style: Theme.of(context).textTheme.bodyText1,),
+                  title: Text(
+                    state.userr.username,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
                   actions: [
                     // if (state.isCurrentUserr)
                     //    GestureDetector(
@@ -192,7 +193,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
 
                         Padding(
-                          padding: state.userr.bio.isNotEmpty ? EdgeInsets.symmetric(vertical: 10) : EdgeInsets.symmetric(vertical: 0),
+                          padding: state.userr.bio.isNotEmpty
+                              ? EdgeInsets.symmetric(vertical: 10)
+                              : EdgeInsets.symmetric(vertical: 0),
                           child: BigBoyBio(
                               username: state.userr.username,
                               bio: state.userr.bio),
@@ -207,13 +210,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ctxFromPf: context),
 
                         // add a linked list of commuinitys that I am in ... lol im done with this alredy but linked list dont make me laugh
-                        CommuinityContainer(cms: state.cms, ownerId: widget.ownerId),
+                        CommuinityContainer(
+                            cms: state.cms, ownerId: widget.ownerId),
                         GestureDetector(
-                          onTap: () => state.prayer != null ? PrayerChunk(context, state.prayer!, state.userr) : null,
-                          child: prayerSnipit(state.prayer, hexcolor.hexcolorCode(state.userr.colorPref), context)),
-
+                            onTap: () => state.prayer != null
+                                ? PrayerChunk(
+                                    context, state.prayer!, state.userr)
+                                : null,
+                            child: prayerSnipit(
+                                state.prayer,
+                                hexcolor.hexcolorCode(state.userr.colorPref),
+                                context)),
                       ]),
-                      
                 ),
                 state.loadingPost
                     ? SliverToBoxAdapter(
@@ -235,66 +243,81 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // eternal life. Amen.
 
   imageGrids({required ProfileState state}) => SliverToBoxAdapter(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 10.0, // x axis
-              mainAxisSpacing: 10.0, // y axis
-              mainAxisExtent: 205.0, // -> 230
+          child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4.0, top: 5),
+              child: Text(
+                state.userr.username + " Post's",
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1!
+                    .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
+              ),
             ),
-            primary: false,
-            shrinkWrap: true,
-            itemCount: state.post.length,
-            itemBuilder: (BuildContext context, int index) {
-              Post? post = state.post[index];
-              return Column(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).pushNamed(
-                        ProfilePostView.routeName,
-                        arguments: ProfilePostViewArgs(
-                            posts: state.post,
-                            startIndex: index,
-                             currUsrId: widget.ownerId,
-                            isFromPfpScreen: true)),
-                    //Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(startIndex: index, posts: state.post)),
-                    child: Container(
-                      height: 100,
-                      width: 130,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          image: post!.imageUrl != null
-                              ? DecorationImage(
-                                  image:
-                                      CachedNetworkImageProvider(post.imageUrl!),
-                                  fit: BoxFit.cover)
-                              : DecorationImage(
-                                  image: CachedNetworkImageProvider(
-                                      post.thumbnailUrl!),
-                                  fit: BoxFit.cover),
-                          borderRadius: BorderRadius.circular(18)),
-                    ),
-                  ),
-                   SizedBox(height: 10),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      commuinity_pf_img(post.author.profileImageUrl, 35, 35),
-                      SizedBox(width: 5),
-                      Flexible(
-                          child: Text(
-                        post.author.username.length > 18 ? post.author.username.substring(0, 18) : post.author.username,
-                        style: Theme.of(context).textTheme.bodyText1,
-                        overflow: TextOverflow.fade,
-                      ))
-                    ],
-                  )
-                ],
-              );
-            },
-          ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: Text(
+                "View all Posts",
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1!
+                    .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
+              ),
+            ),
+            Container(
+              color: Color.fromARGB(127, 87, 192, 90),
+              height: MediaQuery.of(context).size.height / 3,
+              width: double.infinity,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: state.post.length,
+                itemBuilder: (context, index) {
+                  Post? post = state.post[index];
+                  if (post != null) return displayPfpPost(post);
+                  return SizedBox.shrink();
+                },
+              ),
+            )
+          ],
         ),
-      );
+      ));
+
+  Widget displayPfpPost(Post post) {
+    String displayImg = (post.imageUrl ?? post.thumbnailUrl)!;
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pushNamed(routeName),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          height: MediaQuery.of(context).size.height / 5,
+          width: MediaQuery.of(context).size.width * .70,
+          child: Container(
+              height: MediaQuery.of(context).size.height / 5,
+              width: MediaQuery.of(context).size.width * .70,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: CachedNetworkImageProvider(displayImg),
+                    fit: BoxFit.cover),
+              )),
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    Theme.of(context).colorScheme.secondary,
+                    Theme.of(context).colorScheme.primary,
+                  ]),
+              border: Border.all(color: Colors.amber, width: 1),
+              borderRadius: BorderRadius.circular(2.0)),
+        ),
+      ),
+    );
+  }
 }

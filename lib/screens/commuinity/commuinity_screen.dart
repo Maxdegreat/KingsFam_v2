@@ -14,9 +14,12 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/cm_type.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
+import 'package:kingsfam/helpers/clipboard.dart';
+import 'package:kingsfam/helpers/dynamic_links.dart';
 
 import 'package:kingsfam/helpers/helpers.dart';
 import 'package:kingsfam/helpers/kingscord_path.dart';

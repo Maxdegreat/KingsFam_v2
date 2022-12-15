@@ -19,22 +19,24 @@ class BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     HexColor hc = HexColor();
     return BottomNavigationBar(
-      
       elevation: 0,
-      backgroundColor: Color(hc.hexcolorCode('#141829')), // Color.fromARGB(255, 27, 49, 67),
+      backgroundColor: Colors.black, // Color.fromARGB(255, 27, 49, 67),
       showSelectedLabels: false,
       showUnselectedLabels: false,
       type: BottomNavigationBarType.fixed,
-      selectedItemColor:  Colors.amber[600],
+      selectedItemColor: Colors.amber[600],
       unselectedItemColor: Colors.white,
       currentIndex: BottomNavItem.values.indexOf(selectedItem),
       onTap: onTap,
-      items: items.map((item, icon) => MapEntry(
-        item.toString(), 
-        BottomNavigationBarItem(
-          label: '',
-          icon:  Container(child: icon),
-        ))).values.toList(),
+      items: items
+          .map((item, icon) => MapEntry(
+              item.toString(),
+              BottomNavigationBarItem(
+                label: '',
+                icon: Container(child: icon),
+              )))
+          .values
+          .toList(),
     );
   }
 }

@@ -116,7 +116,12 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                               primary: Theme.of(context).colorScheme.secondary),
-                          onPressed: () {},
+                          onPressed: () async {
+                            String generatedDeepLink =
+                                await FirebaseDynamicLinkService
+                                    .createDynamicLink(cm, true);
+                            communityInvitePopUp(context, generatedDeepLink);
+                          },
                           child: Text("Invite",
                               style: Theme.of(context).textTheme.bodyText1),
                         ),
@@ -193,15 +198,21 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                                 .state
                                                 .isMember ??
                                             false;
-                                        Navigator.of(context).pushNamed(
-                                            KingsCordScreen.routeName,
-                                            arguments: KingsCordArgs(
-                                                usr: state.currUserr,
-                                                userInfo: {
-                                                  "isMember": isMember,
-                                                },
-                                                commuinity: cm,
-                                                kingsCord: cord)).then((_) => context.read<CommuinityBloc>().updateReadStatusOnKc(id: cord.id!, isMentioned: false));
+                                        Navigator.of(context)
+                                            .pushNamed(
+                                                KingsCordScreen.routeName,
+                                                arguments: KingsCordArgs(
+                                                    usr: state.currUserr,
+                                                    userInfo: {
+                                                      "isMember": isMember,
+                                                    },
+                                                    commuinity: cm,
+                                                    kingsCord: cord))
+                                            .then((_) => context
+                                                .read<CommuinityBloc>()
+                                                .updateReadStatusOnKc(
+                                                    id: cord.id!,
+                                                    isMentioned: false));
 
                                         // del the @ notification (del the mention)
                                         String currId = context
@@ -247,8 +258,9 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                             MediaQuery.of(context).size.width /
                                                 1.3,
                                         decoration: BoxDecoration(
-                                            color:
-                                                Theme.of(context).colorScheme.secondary,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
                                             borderRadius:
                                                 BorderRadius.circular(8)),
                                         child: Padding(
@@ -259,7 +271,9 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                             children: [
                                               cord.mode == "chat"
                                                   ? Row(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
                                                       children: [
                                                         Text(
                                                           "#",
@@ -363,7 +377,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                               SizedBox.shrink(),
                             ] else
                               ...state.kingCords.map((cord) {
-                                log("cord: " + cord!.toString());
+                                // log("cord: " + cord!.toString());
                                 if (cord != null) {
                                   return GestureDetector(
                                       onTap: () {
@@ -383,16 +397,22 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                                   .state
                                                   .isMember ??
                                               false;
-                                          
-                                          Navigator.of(context).pushNamed(
-                                              KingsCordScreen.routeName,
-                                              arguments: KingsCordArgs(
-                                                  usr: state.currUserr,
-                                                  userInfo: {
-                                                    "isMember": isMember,
-                                                  },
-                                                  commuinity: cm,
-                                                  kingsCord: cord)).then((_) => context.read<CommuinityBloc>().updateReadStatusOnKc(id: cord.id!, isMentioned: false));
+
+                                          Navigator.of(context)
+                                              .pushNamed(
+                                                  KingsCordScreen.routeName,
+                                                  arguments: KingsCordArgs(
+                                                      usr: state.currUserr,
+                                                      userInfo: {
+                                                        "isMember": isMember,
+                                                      },
+                                                      commuinity: cm,
+                                                      kingsCord: cord))
+                                              .then((_) => context
+                                                  .read<CommuinityBloc>()
+                                                  .updateReadStatusOnKc(
+                                                      id: cord.id!,
+                                                      isMentioned: false));
 
                                           // if (state.mentionedMap[cord.id] !=
                                           //     false) {
@@ -456,28 +476,31 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                               children: [
                                                 cord.mode == "chat"
                                                     ? Row(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text(
-                                                          "#",
-                                                          style:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodyText1,
-                                                        ),
-                                                        cord.readStatus !=
-                                                                    null &&
-                                                                cord.readStatus!
-                                                            ? CircleAvatar(
-                                                              
-                                                                backgroundColor:
-                                                                    Colors
-                                                                        .amber,
-                                                                radius: 5,
-                                                              )
-                                                            : SizedBox.shrink()
-                                                      ],
-                                                    )
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            "#",
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .bodyText1,
+                                                          ),
+                                                          cord.readStatus !=
+                                                                      null &&
+                                                                  cord
+                                                                      .readStatus!
+                                                              ? CircleAvatar(
+                                                                  backgroundColor:
+                                                                      Colors
+                                                                          .amber,
+                                                                  radius: 5,
+                                                                )
+                                                              : SizedBox
+                                                                  .shrink()
+                                                        ],
+                                                      )
                                                     : Icon(Icons
                                                         .record_voice_over_rounded),
                                                 SizedBox(width: 3),

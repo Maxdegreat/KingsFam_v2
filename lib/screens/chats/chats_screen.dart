@@ -122,7 +122,7 @@ class _ChatsScreenState extends State<ChatsScreen>
 
           return state.chs == null
               ? Center(child: Text("KingsFam"))
-              : state.chs!.length == 0
+              : state.chs!.length == 0 || state.chs!.isEmpty
                   ? GettingStarted(
                       bloc: context.read<ChatscreenBloc>(),
                       state: state,

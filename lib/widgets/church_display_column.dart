@@ -37,7 +37,10 @@ Widget search_Church_container(
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 10),
-                Text("Members: ${church.size}"),
+                Text(
+                  "Members: ${church.size}",
+                  style: Theme.of(context).textTheme.caption,
+                ),
               ],
             ),
           )
@@ -48,11 +51,11 @@ Widget search_Church_container(
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,
               colors: [
-                Color(hc.hexcolorCode("#20263c")),
-                Color(hc.hexcolorCode("#141829"))
+                Theme.of(context).colorScheme.secondary,
+                Theme.of(context).colorScheme.primary,
               ]),
           border:
-              Border.all(color: Color.fromARGB(255, 27, 99, 158), width: .5),
+              Border.all(color: Colors.amber, width: .5),
           borderRadius: BorderRadius.circular(2.0)),
     ),
   );
