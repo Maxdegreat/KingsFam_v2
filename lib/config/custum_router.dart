@@ -6,6 +6,7 @@ import 'package:kingsfam/screens/commuinity/screens/events/create_event.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
+import 'package:kingsfam/screens/commuinity/screens/says_room/says_view.dart';
 import 'package:kingsfam/screens/commuinity/screens/says_room/screens/create_says.dart';
 import 'package:kingsfam/screens/commuinity/wrapers/create_new_role.dart';
 import 'package:kingsfam/screens/commuinity/wrapers/role_permissions.dart';
@@ -157,6 +158,9 @@ class CustomRoute {
 
       case SaysRoom.routeName:
         return SaysRoom.route(args: settings.arguments as SaysRoomArgs);
+
+      case SaysView.routeName:
+        return SaysView.route(args: settings.arguments as SaysViewArgs);
 
       // case VideoEditor.routeName:
       //   return VideoEditor.route(settings.arguments as VideoEditorArgs);

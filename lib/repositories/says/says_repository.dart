@@ -49,4 +49,29 @@ class SaysRepository {
         .collection(Paths.says)
         .add(says.toDoc());
   }
+
+
+  Future<bool> onLikeSays({required String uid, required String cmId, required String kcId, required String sayId}) async {
+    // should never read this as a batch or limit this. I should only query this.
+    DocumentSnapshot snap = await
+    _firebaseFirestore.collection(Paths.church).doc(cmId).collection(Paths.kingsCord).doc(kcId).collection(Paths.says).doc(sayId).collection(Paths.likes).doc(uid) .get();
+
+    DocumentReference sayRef = _firebaseFirestore.collection(Paths.church).doc(cmId).collection(Paths.kingsCord).doc(kcId).collection(Paths.says).doc(sayId);
+    // this is a collection of docs that are used as an id if user has liked the says.
+    DocumentReference likesRef = _firebaseFirestore.collection(Paths.church).doc(cmId).collection(Paths.kingsCord).doc(kcId).collection(Paths.says).doc(sayId).collection(Paths.likes).doc(uid);
+    var likes = snap.get('likes');
+    if (snap.exists) {
+      // we unlike
+      if (likes == 0) return false;
+      sayRef.set({'likes' : likes - 1 }, SetOptions(merge: true));
+      likesRef.delete();
+      return false;
+    } else {
+      // we add a like
+      sayRef.set({'likes' : likes + 1}, SetOptions(merge: true));
+      likesRef.set({});
+      return true;
+    }
+
+  }
 }

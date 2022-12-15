@@ -2,16 +2,13 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kingsfam/cubits/liked_says/liked_says_cubit.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/config/constants.dart';
-import 'package:kingsfam/cubits/cubits.dart';
-import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/models/says_model.dart';
 import 'package:kingsfam/repositories/says/says_repository.dart';
+import 'package:kingsfam/screens/commuinity/screens/says_room/says_view.dart';
 import 'package:kingsfam/screens/commuinity/screens/says_room/screens/create_says.dart';
 import 'package:kingsfam/widgets/says_container.dart';
 
@@ -51,7 +48,7 @@ class SaysRoom extends StatefulWidget {
             create: (context) => SaysBloc(
               saysRepository: context.read<SaysRepository>(),
               authBloc: context.read<AuthBloc>(),
-              likedPostCubit: context.read<LikedPostCubit>(),
+              likedSaysCubit: context.read<LikedSaysCubit>(),
             ),
             child: SaysRoom(
               kcId: args.kcId,
@@ -140,7 +137,12 @@ class _SaysRoomState extends State<SaysRoom> {
                         return Column(
                           children: [
                             SizedBox(height: 4),
-                            SaysContainer(says: says, context: context,),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pushNamed(SaysView.routeName, arguments: SaysViewArgs(s: says));
+                                log("fired");
+                              },
+                              child: SaysContainer(says: says, context: context, localLikesSays: context.read<LikedSaysCubit>().state.localLikedSaysIds)),
                             SizedBox(height: 4),
                           ],
                         );

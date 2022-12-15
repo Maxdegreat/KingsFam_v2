@@ -12,6 +12,7 @@ import 'package:kingsfam/blocs/search/search_bloc.dart';
 import 'package:kingsfam/blocs/simple_bloc_observer.dart';
 import 'package:kingsfam/config/custum_router.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
+import 'package:kingsfam/cubits/liked_says/liked_says_cubit.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
@@ -25,8 +26,6 @@ import 'package:kingsfam/theme_club_house/theme_info.dart';
 
 import 'screens/build_church/cubit/buildchurch_cubit.dart';
 import 'screens/screens.dart';
-
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +41,6 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations(
@@ -52,15 +50,18 @@ class MyApp extends StatelessWidget {
       providers: [
         RepositoryProvider<SaysRepository>(create: (_) => SaysRepository()),
         RepositoryProvider<ChurchRepository>(create: (_) => ChurchRepository()),
-        RepositoryProvider<KingsCordRepository>(create: (_) => KingsCordRepository()),
+        RepositoryProvider<KingsCordRepository>(
+            create: (_) => KingsCordRepository()),
         RepositoryProvider<ChatRepository>(create: (_) => ChatRepository()),
         RepositoryProvider<AuthRepository>(create: (_) => AuthRepository()),
         RepositoryProvider<PrayerRepo>(create: (_) => PrayerRepo()),
         RepositoryProvider<UserrRepository>(create: (_) => UserrRepository()),
-        RepositoryProvider<StorageRepository>(create: (_) => StorageRepository()),
+        RepositoryProvider<StorageRepository>(
+            create: (_) => StorageRepository()),
         RepositoryProvider<PostsRepository>(create: (_) => PostsRepository()),
         RepositoryProvider<CallRepository>(create: (_) => CallRepository()),
-        RepositoryProvider<NotificationRepository>(create: (_) => NotificationRepository(),
+        RepositoryProvider<NotificationRepository>(
+          create: (_) => NotificationRepository(),
         ),
         //TODO ADD PERKSREPO
       ],
@@ -71,27 +72,36 @@ class MyApp extends StatelessWidget {
                 AuthBloc(authRepository: context.read<AuthRepository>()),
           ),
           BlocProvider<ChatscreenBloc>(
-            create:(context) => ChatscreenBloc(chatRepository: context.read<ChatRepository>(), authBloc: context.read<AuthBloc>(), likedPostCubit: context.read<LikedPostCubit>(), postsRepository: context.read<PostsRepository>(), churchRepository: context.read<ChurchRepository>(), userrRepository: context.read<UserrRepository>()),)
-    ,
+            create: (context) => ChatscreenBloc(
+                chatRepository: context.read<ChatRepository>(),
+                authBloc: context.read<AuthBloc>(),
+                likedPostCubit: context.read<LikedPostCubit>(),
+                postsRepository: context.read<PostsRepository>(),
+                churchRepository: context.read<ChurchRepository>(),
+                userrRepository: context.read<UserrRepository>()),
+          ),
           BlocProvider<SearchBloc>(
               create: (context) => SearchBloc(
                   userrRepository: context.read<UserrRepository>(),
                   churchRepository: context.read<ChurchRepository>(),
-                  authBloc: context.read<AuthBloc>())
-                ),
+                  authBloc: context.read<AuthBloc>())),
           BlocProvider<LikedPostCubit>(
             create: (context) => LikedPostCubit(
                 postsRepository: context.read<PostsRepository>(),
                 authBloc: context.read<AuthBloc>()),
           ),
-         
-           BlocProvider<BuildchurchCubit>( // TODO                                        PLEASE NOTE THIS DOES NOT NEED TO BE A GLOBAL THING. NOTE IT IS USED IN CM SCREEN ON A GLOBAL SCOPE BUT IT CAN BE REFACTORED.
-               create: (context) => BuildchurchCubit(
-                   callRepository: context.read<CallRepository>(),
-                   churchRepository: context.read<ChurchRepository>(),
-                   storageRepository: context.read<StorageRepository>(),
-                   authBloc: context.read<AuthBloc>(),
-                   userrRepository: context.read<UserrRepository>())),
+          BlocProvider<LikedSaysCubit>(
+              create: (context) => LikedSaysCubit(
+                  saysRepository: context.read<SaysRepository>(),
+                  authBloc: context.read<AuthBloc>())),
+          BlocProvider<BuildchurchCubit>(
+              // TODO                                        PLEASE NOTE THIS DOES NOT NEED TO BE A GLOBAL THING. NOTE IT IS USED IN CM SCREEN ON A GLOBAL SCOPE BUT IT CAN BE REFACTORED.
+              create: (context) => BuildchurchCubit(
+                  callRepository: context.read<CallRepository>(),
+                  churchRepository: context.read<ChurchRepository>(),
+                  storageRepository: context.read<StorageRepository>(),
+                  authBloc: context.read<AuthBloc>(),
+                  userrRepository: context.read<UserrRepository>())),
           BlocProvider<BottomnavbarCubit>(
             create: (context) => BottomnavbarCubit(),
           ),
@@ -108,16 +118,18 @@ class MyApp extends StatelessWidget {
                   storageRepository: context.read<StorageRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   userrRepository: context.read<UserrRepository>())),
-           BlocProvider<ProfileBloc>(
-             create: (context) => ProfileBloc(
-              prayerRepo: context.read<PrayerRepo>(),
-              chatRepository: context.read<ChatRepository>(),
-                 userrRepository: context.read<UserrRepository>(),
-                 authBloc: context.read<AuthBloc>(),
-                 postRepository: context.read<PostsRepository>(),
-                 likedPostCubit: context.read<LikedPostCubit>(),
-                 churchRepository: context.read<ChurchRepository>())..add(ProfileLoadUserr(userId: context.read<AuthBloc>().state.user!.uid)),
-           ),
+          BlocProvider<ProfileBloc>(
+            create: (context) => ProfileBloc(
+                prayerRepo: context.read<PrayerRepo>(),
+                chatRepository: context.read<ChatRepository>(),
+                userrRepository: context.read<UserrRepository>(),
+                authBloc: context.read<AuthBloc>(),
+                postRepository: context.read<PostsRepository>(),
+                likedPostCubit: context.read<LikedPostCubit>(),
+                churchRepository: context.read<ChurchRepository>())
+              ..add(ProfileLoadUserr(
+                  userId: context.read<AuthBloc>().state.user!.uid)),
+          ),
         ],
         child: MaterialApp(
           //THEME DATA

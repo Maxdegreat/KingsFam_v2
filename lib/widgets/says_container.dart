@@ -11,10 +11,12 @@ class SaysContainer extends StatefulWidget {
   final BuildContext? context;
   final double? height;
   final int? taps;
+  final Set<String?> localLikesSays;
   const SaysContainer(
       {Key? key,
       required this.says,
       required this.context,
+      required this.localLikesSays,
       this.height,
       this.taps})
       : super(key: key);
@@ -26,7 +28,6 @@ class SaysContainer extends StatefulWidget {
 class _SaysContainerState extends State<SaysContainer> {
   @override
   Widget build(BuildContext context) {
-    int taped = widget.taps ?? 0 + 1;
     TextStyle title = TextStyle(
       fontSize: 18,
       color: Color(hc.hexcolorCode(widget.says.author!.colorPref)),
@@ -38,31 +39,25 @@ class _SaysContainerState extends State<SaysContainer> {
       fontWeight: FontWeight.bold,
     );
 
-    return GestureDetector(
-      onTap: () {
-        if (taped > 1) return;
-
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2.0),
-        child: Container(
-          color: Theme.of(context).colorScheme.primary,
-          height: 200,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                header_says(title),
-                SizedBox(height: 5),
-                title_says(context),
-                SizedBox(height: 5),
-                contentTxt_says(),
-                SizedBox(height: 10),
-                footer(),
-              ],
-            ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: Container(
+        color: Theme.of(context).colorScheme.primary,
+        height: 200,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              header_says(title),
+              SizedBox(height: 5),
+              title_says(context),
+              SizedBox(height: 5),
+              contentTxt_says(),
+              SizedBox(height: 10),
+              footer(),
+            ],
           ),
         ),
       ),
