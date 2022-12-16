@@ -126,7 +126,9 @@ class _SaysRoomState extends State<SaysRoom> {
           builder: (context, state) {
             return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 1),
-                child: Expanded(
+                child: Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
                   child: ListView.builder(
                       // itemCount: state.status == SaysStatus.loading
                       // ? state.says.length + 1 : state.says.length,

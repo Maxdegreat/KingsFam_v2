@@ -9,6 +9,7 @@ class ThemeInfo {
   ThemeData themeClubHouseLight() {
     HexColor hexcolor = HexColor();
     return ThemeData(
+      cursorColor: Colors.black,
       brightness: Brightness.light,
       primaryColor: Colors.blue,
       appBarTheme: AppBarTheme(
@@ -56,7 +57,7 @@ class ThemeInfo {
   ThemeData themeClubHouseDark() {
     HexColor hexcolor = HexColor(); 
     return ThemeData(
-
+        cursorColor: Colors.white,
         brightness: Brightness.dark,
         primaryColor: Colors.purple,
         appBarTheme: AppBarTheme( 

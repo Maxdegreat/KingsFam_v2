@@ -98,29 +98,27 @@ class _SaysContainerState extends State<SaysContainer> {
                 ? "https://firebasestorage.googleapis.com/v0/b/kingsfam-9b1f8.appspot.com/o/images%2Fchurches%2FchurchAvatar_eb0c7061-a124-41b4-b948-60dcb0dffc49.jpg?alt=media&token=7e2fc437-9448-48bd-95bc-78e977fbcad8"
                 : widget.says.author!.profileImageUrl),
         SizedBox(width: 10),
-        Flexible(
-          child: Padding(
-            padding: const EdgeInsets.only(right: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // cm name as title
-                Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Text(
-                        widget.says.author!.username,
-                        style: title,
-                        overflow: TextOverflow.fade,
-                        maxLines: 1,
-                      ),
+        Padding(
+          padding: const EdgeInsets.only(right: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // cm name as title
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Text(
+                      widget.says.author!.username,
+                      style: title,
+                      overflow: TextOverflow.fade,
+                      maxLines: 1,
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ],

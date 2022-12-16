@@ -75,7 +75,27 @@ class _CreateSaysState extends State<CreateSays> {
                 Icons.arrow_back_ios,
                 color: Theme.of(context).iconTheme.color,
               )),
-        title: Text("Post New Says"),
+        title: Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Container(
+                      height: 30,
+                      width: double.infinity,
+                      child: TextField(
+                        cursorColor: Theme.of(context).cursorColor,
+                        controller:  _controllerT,
+                        decoration: InputDecoration(
+                        border: OutlineInputBorder( borderRadius: BorderRadius.circular(10.0)),
+                        filled: true,
+                        hintStyle: Theme.of(context).textTheme.bodyText1,
+                        hintText: "Add a title",
+                        fillColor: Theme.of(context).colorScheme.secondary,
+                        contentPadding: EdgeInsets.all(10.0),
+                        ),
+                        textInputAction: TextInputAction.search,
+                        textAlignVertical: TextAlignVertical.center,
+                      ),
+                    ),
+                  ),
         actions: [_sendSays()],
       ),
       body: GestureDetector(
@@ -90,15 +110,11 @@ class _CreateSaysState extends State<CreateSays> {
             children: [
               KingsCordUserDisplay(),
               SizedBox(height: 5),
-              TextField(
-                controller: _controllerT,
-                decoration: InputDecoration(
-                  label: Text("Title")
-                ),
-              ),
+              
               Container(
-                height: 300,
+                height: MediaQuery.of(context).size.height / 2.8,
                 child: TextField(
+                  cursorColor: Theme.of(context).cursorColor,
                   keyboardType: TextInputType.multiline,
                   expands: true,
                   minLines: null,
