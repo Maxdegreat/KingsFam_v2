@@ -70,10 +70,7 @@ class MessageBubble extends StatelessWidget {
                         isMe
                             ? '${message.date.timeAgo()}' //.timeAgo()
                             : '${message.sender!.username} ${message.date.timeAgo()}', //.timeAgo()
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          color: Colors.white,
-                        ),
+                        style: Theme.of(context).textTheme.bodyText1,
                       ),
                     ),
                     const SizedBox(height: 7.0),
@@ -86,8 +83,8 @@ class MessageBubble extends StatelessWidget {
                                 ? passedColor != null
                                     ? passedColor
                                     : isMe
-                                        ? Color(hc.hexcolorCode('#042b6e'))
-                                        : Color(hc.hexcolorCode('#a11dde'))
+                                        ? Theme.of(context).colorScheme.background
+                                        : Theme.of(context).colorScheme.primary
                                 : Colors.transparent,
                             borderRadius:
                                 BorderRadius.all(Radius.circular(10.0))),

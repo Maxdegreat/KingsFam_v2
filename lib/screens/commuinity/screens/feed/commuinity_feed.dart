@@ -103,7 +103,7 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
       builder: (context, state) {
         double height = MediaQuery.of(context).size.height / 20;
         return Scaffold(
-            backgroundColor: Color(hc.hexcolorCode("#141829")),
+            backgroundColor: Colors.black,
             appBar: AppBar(
               backgroundColor: Colors.black,
               title: Text(

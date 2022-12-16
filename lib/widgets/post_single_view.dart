@@ -121,40 +121,36 @@ class _PostSingleViewState extends State<PostSingleView> {
     return commuinity != null
         ? Column(children: [
             !isImage
-                ? Positioned(
-                    bottom: 170,
-                    left: 0,
-                    child: Padding(
-                        padding: const EdgeInsets.only(
-                            top: 7.0, right: 12.0, left: 12.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.white),
-                              borderRadius: BorderRadius.circular(3)),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 3),
-                            child: GestureDetector(
-                              onTap: () =>Navigator.of(context).pushNamed(CommunityHome.routeName, arguments: CommunityHomeArgs(cm: commuinity, cmB: null)),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // ok add the commuinity image
-                                  commuinity_pf_img(
-                                      commuinity.imageUrl, 25, 25),
-                                  SizedBox(width: 7),
-                                  // add the commuinity name
-                                  Text(
-                                    commuinity.name,
-                                    style: TextStyle(
-                                        color: Colors.grey[350], fontSize: 17),
-                                  )
-                                ],
-                              ),
-                            ),
+                ? Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white),
+                          borderRadius: BorderRadius.circular(3)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 3),
+                        child: GestureDetector(
+                          onTap: () =>Navigator.of(context).pushNamed(CommunityHome.routeName, arguments: CommunityHomeArgs(cm: commuinity, cmB: null)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // ok add the commuinity image
+                              commuinity_pf_img(
+                                  commuinity.imageUrl, 25, 25),
+                              SizedBox(width: 7),
+                              // add the commuinity name
+                              Text(
+                                commuinity.name,
+                                style: TextStyle(
+                                    color: Colors.grey[350], fontSize: 17),
+                              )
+                            ],
                           ),
-                        )))
+                        ),
+                      ),
+                    ))
                 : _visible
                     ? Positioned(
                         top: 90,
@@ -249,7 +245,7 @@ class _PostSingleViewState extends State<PostSingleView> {
                 onPressed: () => Navigator.of(context).pushNamed(
                     CommentScreen.routeName,
                     arguments: CommentScreenArgs(post: widget.post!)),
-                icon: Icon(Icons.message)),
+                icon: Icon(Icons.message, color: Colors.white)),
           ),
         ],
       )
@@ -421,38 +417,35 @@ class _PostSingleViewState extends State<PostSingleView> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          interactions(),
+          
           widget.post!=null?viewCommuinity(commuinity: widget.post!.commuinity,
                 isImage: widget.post!.imageUrl != null):SizedBox.shrink(),
-          interactions(),
          
           Container(
             height: size + 25,
             width: double.infinity,
-            child: Stack(children: [
-              Positioned(
-                  bottom: 10,
-                  right: 30,
-                  left: 0,
-                  child: RichText(
-                    text: TextSpan(
-                      style: DefaultTextStyle.of(context).style,
-                      children: <TextSpan>[
-                        TextSpan(
-                            text: widget.post != null ? widget.post!.date.timeAgo().toString() + '\n' : Timestamp.now().timeAgo().toString(),
-                            style: GoogleFonts.adventPro(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 19,
-                                color: Colors.white)),
-                        TextSpan(
-                            text: author + " ~ " + caption,
-                            style: GoogleFonts.adventPro(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 19,
-                                color: Colors.white)),
-                      ],
-                    ),
-                  ))
-            ]),
+            child: RichText(
+              maxLines: 3,
+              text: TextSpan(
+                style: DefaultTextStyle.of(context).style,
+                children: <TextSpan>[
+                  TextSpan(
+                      text: widget.post != null ? widget.post!.date.timeAgo().toString() + '\n' : Timestamp.now().timeAgo().toString(),
+                      style: GoogleFonts.adventPro(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 19,
+                          color: Colors.white)),
+                  TextSpan(
+                      text: author + " ~ " + caption,
+                      
+                      style: GoogleFonts.adventPro(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 19,
+                          color: Colors.white)),
+                ],
+              ),
+            ),
           ),
         ],
       ),

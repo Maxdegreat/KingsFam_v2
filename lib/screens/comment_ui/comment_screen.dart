@@ -48,7 +48,13 @@ class _CommentScreenState extends State<CommentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Comments"),
+        leading:  IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).iconTheme.color,
+              )),
+        title: Text("Comments", style: Theme.of(context).textTheme.bodyText1, ),
       ),
       body: SafeArea(
           child: BlocConsumer<CommentBloc, CommentState>(
@@ -94,8 +100,8 @@ class _CommentScreenState extends State<CommentScreen> {
                   ? Column(
                       children: [
                         CommentLines(comment: comment),
-                        _replyBtns(comment: comment, postId: widget.post.id!),
-                        _showReplys(state: state, comment: comment),
+                        // _replyBtns(comment: comment, postId: widget.post.id!),
+                        // _showReplys(state: state, comment: comment),
                       ],
                     )
                   : Text("ops, something went wrong");
