@@ -15,8 +15,10 @@ class ChurchRepository extends BaseChurchRepository {
   final fire = FirebaseFirestore.instance;
 
   Stream<List<Future<Message?>>> getMsgStream(
-      {required String cmId, required String kcId, required int limit}) {
-    return fb
+      {required String cmId, required String kcId, required int limit, required DocumentSnapshot? lastPostDoc}) {
+    
+        if (lastPostDoc == null) {
+          return fb
         .doc(cmId)
         .collection(Paths.kingsCord)
         .doc(kcId)
@@ -32,6 +34,11 @@ class ChurchRepository extends BaseChurchRepository {
       });
       return bucket;
     });
+        } else {
+          log("returning an empty stream");
+          return Stream.empty();
+        }
+
   }
 
   Future<List<Message?>> paginateMsg(
@@ -39,7 +46,19 @@ class ChurchRepository extends BaseChurchRepository {
       required String kcId,
       required String? lastDocId,
       required int limit}) async {
+        
     final List<Message?> bucket = [];
+    QuerySnapshot snaps;
+    if (lastDocId == null) {
+      snaps = await fb
+        .doc(cmId)
+        .collection(Paths.kingsCord)
+        .doc(kcId)
+        .collection(Paths.messages)
+        .orderBy('date', descending: true)
+        .limit(limit)
+        .get();
+    } else {
     DocumentSnapshot docSnap = await fb
         .doc(cmId)
         .collection(Paths.kingsCord)
@@ -50,7 +69,7 @@ class ChurchRepository extends BaseChurchRepository {
 
     if (!docSnap.exists) return [];
 
-    QuerySnapshot snaps = await fb
+      snaps = await fb
         .doc(cmId)
         .collection(Paths.kingsCord)
         .doc(kcId)
@@ -59,6 +78,9 @@ class ChurchRepository extends BaseChurchRepository {
         .startAfterDocument(docSnap)
         .limit(limit)
         .get();
+
+    }
+
 
     if (snaps.docs.length > 0) {
       for (var s in snaps.docs) {
