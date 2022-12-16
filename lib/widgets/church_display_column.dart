@@ -21,8 +21,8 @@ Widget search_Church_container(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                    height: 100,
-                    width: 100,
+                    height: MediaQuery.of(context).size.height / 10,
+                    width: MediaQuery.of(context).size.width / 3,
                     decoration: BoxDecoration(
                       image: DecorationImage(
                           image: CachedNetworkImageProvider(church.imageUrl),

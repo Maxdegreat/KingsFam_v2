@@ -80,6 +80,7 @@ class Says extends Equatable {
 
     // return
     return Says(
+        id: doc.id,
         kcId: data['kcId'] ?? null,
         title: data['title'],
         contentTxt: data['contentTxt'] ?? "---",

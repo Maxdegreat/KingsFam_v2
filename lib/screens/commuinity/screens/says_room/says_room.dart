@@ -133,13 +133,12 @@ class _SaysRoomState extends State<SaysRoom> {
                       itemCount: state.says.length,
                       itemBuilder: (context, index) {
                         Says says = state.says[index]!;
-                        log("The val of says: !!!!!!!!: " + says.toString());
                         return Column(
                           children: [
                             SizedBox(height: 4),
                             GestureDetector(
                               onTap: () {
-                                Navigator.of(context).pushNamed(SaysView.routeName, arguments: SaysViewArgs(s: says));
+                                Navigator.of(context).pushNamed(SaysView.routeName, arguments: SaysViewArgs(s: says ,cmId: widget.cm.id!, kcId: widget.kcId));
                                 log("fired");
                               },
                               child: SaysContainer(says: says, context: context, localLikesSays: context.read<LikedSaysCubit>().state.localLikedSaysIds)),

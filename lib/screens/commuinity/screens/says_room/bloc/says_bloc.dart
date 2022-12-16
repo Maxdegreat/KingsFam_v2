@@ -42,18 +42,12 @@ class SaysBloc extends Bloc<SaysEvent, SaysState> {
           cmId: event.cmId, kcId: event.kcId, lastPostId: null, limit: null);
 
       // because limit is only 7 and I just want to launch im going to loop again (first in fetch says) and get the liked says
-      Set<String> likedSaysIds = {};
-      for (Says? s in says ) {
-        // check if the like exsist
-        DocumentSnapshot snap = await FirebaseFirestore.instance.collection(Paths.church).doc(event.cmId).collection(Paths.kingsCord).doc(event.kcId).collection(Paths.says).doc(s!.id!).collection(Paths.likes).doc(_authBloc.state.user!.uid).get();
-        if (snap.exists) {
-          likedSaysIds.add(s.id!);
-        }
-      }
+      Set<String> likedSaysIds = await _saysRepository.getLikedSaysIds(cmId: event.cmId, kcId: event.kcId, says: says, uid: _authBloc.state.user!.uid);
+      
       _likedSaysCubit.updateLocalLikes(saysIds: likedSaysIds);
 
-      log("The Len of Says is: " + says.length.toString());
-      
+      // log("The Len of Says is: " + says.length.toString());
+
       yield state.copyWith(says: says, status: SaysStatus.inital);
     } catch (e) {
       log("There was an error when fetching says in saysbloc: " + e.toString());

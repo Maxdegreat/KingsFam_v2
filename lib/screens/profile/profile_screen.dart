@@ -231,9 +231,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     : state.post.length > 0
                         ? imageGrids(state: state)
                         : SliverToBoxAdapter(
-                            child: CenterdText(
-                                text:
-                                    "${state.userr.username} Has No Post To Display Fam"))
+                            child: Center(child: Text("${state.userr.username} Has No Post To Display Fam", style: Theme.of(context).textTheme.caption)))
               ],
             ));
     }

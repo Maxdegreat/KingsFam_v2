@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
@@ -28,9 +30,10 @@ class LikedSaysCubit extends Cubit<LikedSaysState> {
   }
 
   // update the like on cloud
-  Future<void> updateOnCloudLike({required String cmId, required String kcId, required String sayId}) async {
+  Future<void> updateOnCloudLike({required String cmId, required String kcId, required String sayId, required int currLikes}) async {
      Set<String> ids = Set<String>.from(state.localLikedSaysIds);
-    await _saysRepository.onLikeSays(uid: _authBloc.state.user!.uid, cmId: cmId, kcId: kcId, sayId: sayId).then((value) {
+     log("len of likedSaysIds is: " + state.localLikedSaysIds.toString());
+    await _saysRepository.onLikeSays(uid: _authBloc.state.user!.uid, cmId: cmId, kcId: kcId, sayId: sayId, currLikes: currLikes).then((value) {
       if (value) {
         if (!ids.contains(sayId)) {
           ids.add(sayId);

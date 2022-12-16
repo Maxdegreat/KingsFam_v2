@@ -51,27 +51,62 @@ class SaysRepository {
   }
 
 
-  Future<bool> onLikeSays({required String uid, required String cmId, required String kcId, required String sayId}) async {
-    // should never read this as a batch or limit this. I should only query this.
+  Future<bool> onLikeSays({required String uid, required String cmId, required String kcId, required String sayId, required int currLikes}) async {
+    
+    try {
+      // should never read this as a batch or limit this. I should only query this.
     DocumentSnapshot snap = await
-    _firebaseFirestore.collection(Paths.church).doc(cmId).collection(Paths.kingsCord).doc(kcId).collection(Paths.says).doc(sayId).collection(Paths.likes).doc(uid) .get();
-
+    _firebaseFirestore.collection(Paths.church).doc(cmId).collection(Paths.kingsCord).doc(kcId).collection(Paths.says).doc(sayId).collection(Paths.likes).doc(uid).get();
+    log("passed first test");
     DocumentReference sayRef = _firebaseFirestore.collection(Paths.church).doc(cmId).collection(Paths.kingsCord).doc(kcId).collection(Paths.says).doc(sayId);
+    log("passed second test");
     // this is a collection of docs that are used as an id if user has liked the says.
     DocumentReference likesRef = _firebaseFirestore.collection(Paths.church).doc(cmId).collection(Paths.kingsCord).doc(kcId).collection(Paths.says).doc(sayId).collection(Paths.likes).doc(uid);
-    var likes = snap.get('likes');
+    log("log third test");
+
+
     if (snap.exists) {
       // we unlike
-      if (likes == 0) return false;
-      sayRef.set({'likes' : likes - 1 }, SetOptions(merge: true));
+      if (currLikes == 0) return false;
+      log("we are del the like atm");
+      sayRef.set({'likes' : currLikes - 1 }, SetOptions(merge: true));
       likesRef.delete();
       return false;
     } else {
       // we add a like
-      sayRef.set({'likes' : likes + 1}, SetOptions(merge: true));
-      likesRef.set({});
+      log("we are seting the like");
+      sayRef.set({'likes' : currLikes + 1}, SetOptions(merge: true)).then((value) { 
+         _firebaseFirestore.collection(Paths.church).doc(cmId).collection(Paths.kingsCord).doc(kcId).collection(Paths.says).doc(sayId).collection(Paths.likes).doc(uid).set({});
+      });
       return true;
     }
+    } catch (e) {
+      log("error in says repository method: onLikeSays");
+      log("error meessage is: " + e.toString()); 
+      return false;
+    }
+  }
 
+  Future<Set<String>> getLikedSaysIds({required List<Says?> says, required String cmId, required String kcId, required String uid}) async {
+    Set<String> likedSaysIds = {};
+    for (Says? s in says) {
+        // check if the like exsist
+        if (s != null && s.id != null) {
+          DocumentSnapshot snap = await FirebaseFirestore.instance
+              .collection(Paths.church)
+              .doc(cmId)
+              .collection(Paths.kingsCord)
+              .doc(kcId)
+              .collection(Paths.says)
+              .doc(s.id)
+              .collection(Paths.likes)
+              .doc(uid)
+              .get();
+          if (snap.exists) {
+            likedSaysIds.add(s.id!);
+          }
+        }
+      }
+      return likedSaysIds;
   }
 }

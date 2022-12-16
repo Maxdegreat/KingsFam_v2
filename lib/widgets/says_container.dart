@@ -1,6 +1,11 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:helpers/helpers.dart';
+import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/cubits/liked_says/liked_says_cubit.dart';
 import 'package:kingsfam/extensions/date_time_extension.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/models/says_model.dart';
@@ -136,6 +141,8 @@ class _SaysContainerState extends State<SaysContainer> {
   }
 
   Widget oneLineReactions() {
+    String uid = context.read<AuthBloc>().state.user!.uid;
+    log("len of locallikedsays from says container: " + context.read<LikedSaysCubit>().state.localLikedSaysIds.toString());
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,8 +151,16 @@ class _SaysContainerState extends State<SaysContainer> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.keyboard_double_arrow_up_outlined),
-            Text(widget.says.likes.toString(),
+            Icon(
+              Icons.keyboard_double_arrow_up_outlined,
+               color: context.read<LikedSaysCubit>().state.localLikedSaysIds.contains(widget.says.id) 
+                ? Colors.amber
+                : Theme.of(context).iconTheme.color,
+              ),
+            Text(
+              context.read<LikedSaysCubit>().state.localLikedSaysIds.contains(widget.says.id)
+               ? (widget.says.likes + 1).toString()
+               : widget.says.likes.toString(),
                 style: Theme.of(context).textTheme.caption),
             SizedBox(width: 7),
             Icon(Icons.mode_comment_outlined),
