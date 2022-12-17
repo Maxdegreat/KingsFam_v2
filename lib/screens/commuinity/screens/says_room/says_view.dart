@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
@@ -17,13 +19,19 @@ class SaysView extends StatefulWidget {
   final Says s;
   final String cmId;
   final String kcId;
-  const SaysView({Key? key, required this.s, required this.kcId, required this.cmId}) : super(key: key);
+  const SaysView(
+      {Key? key, required this.s, required this.kcId, required this.cmId})
+      : super(key: key);
   static const String routeName = "says_view";
   static Route route({required SaysViewArgs args}) {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
         builder: (context) {
-          return SaysView(s: args.s, cmId: args.cmId, kcId: args.kcId,);
+          return SaysView(
+            s: args.s,
+            cmId: args.cmId,
+            kcId: args.kcId,
+          );
         });
   }
 
@@ -39,6 +47,13 @@ class _SaysViewState extends State<SaysView> {
 
   @override
   Widget build(BuildContext context) {
+    bool hasLiked;
+    hasLiked = context
+        .read<LikedSaysCubit>()
+        .state
+        .localLikedSaysIds
+        .contains(widget.s.id!);
+
     return SafeArea(
       child: Scaffold(
           appBar: AppBar(
@@ -51,15 +66,22 @@ class _SaysViewState extends State<SaysView> {
             title: _header(context, widget.s),
           ),
           body: GestureDetector(
-
             onDoubleTap: () {
-              if (widget.s.id != null)
-                context.read<LikedSaysCubit>().updateOnCloudLike(cmId: widget.cmId, kcId: widget.kcId, sayId: widget.s.id!, currLikes: widget.s.likes);
-              else 
-                snackBar(snackMessage: "s.id is null", context: context, bgColor: Colors.red);
+              if (widget.s.id != null) {
+                context
+                    .read<LikedSaysCubit>()
+                    .updateOnCloudLike(
+                        cmId: widget.cmId,
+                        kcId: widget.kcId,
+                        sayId: widget.s.id!,
+                        currLikes: widget.s.likes)
+                    .then((value) => setState(() {}));
+              } else
+                snackBar(
+                    snackMessage: "s.id is null",
+                    context: context,
+                    bgColor: Colors.red);
             },
-
-
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -73,7 +95,41 @@ class _SaysViewState extends State<SaysView> {
             ),
           ),
           persistentFooterButtons: [
-            _oneLineReactions(),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.keyboard_double_arrow_up_outlined,
+                      size: 25,
+                      color: hasLiked
+                          ? Colors.amber
+                          : Theme.of(context).iconTheme.color,
+                    ),
+                    Text(
+                        hasLiked
+                            ? (widget.s.likes + 1).toString()
+                            : widget.s.likes.toString(),
+                        style: Theme.of(context).textTheme.caption),
+                    SizedBox(width: 7),
+                    Icon(Icons.mode_comment_outlined),
+                    SizedBox(width: 1),
+                    Text(widget.s.commentsCount.toString(),
+                        style: Theme.of(context).textTheme.caption),
+                    SizedBox(width: 7),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 5.0),
+                  child: Text(widget.s.date.timeAgo(),
+                      style: Theme.of(context).textTheme.caption),
+                )
+              ],
+            )
           ]),
     );
   }
@@ -93,14 +149,12 @@ class _SaysViewState extends State<SaysView> {
         right: 8,
         bottom: 10,
       ),
-      child: Center(
-        child: Text(
-          s.title!,
-          style: Theme.of(context)
-              .textTheme
-              .bodyText1!
-              .copyWith(fontWeight: FontWeight.bold, fontSize: 25),
-        ),
+      child: Text(
+        s.title!,
+        style: Theme.of(context)
+            .textTheme
+            .bodyText1!
+            .copyWith(fontWeight: FontWeight.bold, fontSize: 25),
       ),
     );
   }
@@ -116,45 +170,6 @@ class _SaysViewState extends State<SaysView> {
           style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 17),
         ),
       ),
-    );
-  }
-
-  Widget _oneLineReactions() {
-    String uid = context.read<AuthBloc>().state.user!.uid;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(
-              Icons.keyboard_double_arrow_up_outlined,
-              color: context
-                      .read<LikedSaysCubit>()
-                      .state
-                      .localLikedSaysIds
-                      .contains(widget.s.id)
-                  ? Colors.amber
-                  : Theme.of(context).iconTheme.color,
-            ),
-            Text(
-                context.read<LikedSaysCubit>().state.localLikedSaysIds.contains(widget.s.id)
-                    ? (widget.s.likes + 1).toString()
-                    : widget.s.likes.toString(),
-                style: Theme.of(context).textTheme.caption),
-            SizedBox(width: 7),
-            Icon(Icons.mode_comment_outlined),
-            SizedBox(width: 1),
-            Text(widget.s.commentsCount.toString(),
-                style: Theme.of(context).textTheme.caption),
-            SizedBox(width: 7),
-          ],
-        ),
-        Text(widget.s.date.timeAgo(),
-            style: Theme.of(context).textTheme.caption)
-      ],
     );
   }
 }

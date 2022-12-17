@@ -81,7 +81,6 @@ class CommuinityScreen extends StatefulWidget {
   //             showDrawer: args.showDrawer,
   //           ));
   // }
-
   @override
   _CommuinityScreenState createState() => _CommuinityScreenState();
 }

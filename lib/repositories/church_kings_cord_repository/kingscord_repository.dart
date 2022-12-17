@@ -97,6 +97,9 @@ class KingsCordRepository extends BaseKingsCordRepository {
                   }
                 }
               }
+            } else {
+              // when sender is equal to current users doc ref
+              readStatus = false;
             }
           }
         }

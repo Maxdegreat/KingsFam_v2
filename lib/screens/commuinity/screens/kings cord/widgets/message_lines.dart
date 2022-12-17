@@ -563,23 +563,26 @@ class _MessageLinesState extends State<MessageLines> {
   ) {
     HexColor hexcolor = HexColor();
     Size size = MediaQuery.of(context).size;
-    return Container(
-      height: size.height / 18.5,
-      width: size.width / 8,
-      child: widget.message.sender!.profileImageUrl != "null"
-          ? kingsCordProfileImg()
-          : kingsCordProfileIcon(),
-      decoration: BoxDecoration(
-          border: Border.all(
-              width: 2,
-              color: widget.message.sender!.colorPref == ""
-                  ? Colors.red
-                  : Color(
-                      hexcolor.hexcolorCode(widget.message.sender!.colorPref))),
-          color: widget.message.sender!.colorPref == ""
-              ? Colors.red
-              : Color(hexcolor.hexcolorCode(widget.message.sender!.colorPref)),
-          shape: BoxShape.circle),
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: widget.message.sender!.id)),
+      child: Container(
+        height: size.height / 18.5,
+        width: size.width / 8,
+        child: widget.message.sender!.profileImageUrl != "null"
+            ? kingsCordProfileImg()
+            : kingsCordProfileIcon(),
+        decoration: BoxDecoration(
+            border: Border.all(
+                width: 2,
+                color: widget.message.sender!.colorPref == ""
+                    ? Colors.red
+                    : Color(
+                        hexcolor.hexcolorCode(widget.message.sender!.colorPref))),
+            color: widget.message.sender!.colorPref == ""
+                ? Colors.red
+                : Color(hexcolor.hexcolorCode(widget.message.sender!.colorPref)),
+            shape: BoxShape.circle),
+      ),
     );
   }
 

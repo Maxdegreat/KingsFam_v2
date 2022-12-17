@@ -50,9 +50,4 @@ class LikedSaysCubit extends Cubit<LikedSaysState> {
 
   
   // clear liked post in the case you refresh
-
-  
-
-
-
 }

@@ -48,7 +48,7 @@ class _SaysContainerState extends State<SaysContainer> {
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Container(
         color: Theme.of(context).colorScheme.primary,
-        height: 200,
+        height: 210,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
