@@ -123,7 +123,7 @@ class _KingsCordSettingsState extends State<KingsCordSettings> {
                 Icons.arrow_back_ios,
                 color: Theme.of(context).iconTheme.color,
               )),
-          title: Text("Chat Room Settings"),
+          title: Text("Chat Room Settings", style: Theme.of(context).textTheme.bodyText1),
           actions: [],
         ),
         body: Padding(
@@ -133,52 +133,52 @@ class _KingsCordSettingsState extends State<KingsCordSettings> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               loadingIndecator ? LinearProgressIndicator() : SizedBox.shrink(),
-              // child 1 : we want to allow people subscribe to a cord this way they will get notifications
-              Text("Receive notifications if you are within the last 15 to send a message in this room."),
-              Text(
-                roomSettingsLocal["recent"] == true
-                    ? "You will be notified if your activity was recent."
-                    : "You are currently not being notified",
-                style: roomSettingsLocal["recent"] == true
-                    ? TextStyle(color: Colors.green)
-                    : TextStyle(color: Colors.red),
-              ),
-              SizedBox(
-                height: 7,
-              ),
-              ElevatedButton(
-                  onPressed: () {
-                    if (roomSettingsLocal["recent"] == true) {
-                      roomSettingsLocal["recent"] = false;
-                      setState(() {});
-                      snackBar(
-                          snackMessage: "settings updated",
-                          context: context,
-                          bgColor: Colors.green);
-                      roomOptions["recent"].remove(currId);
-                      update(_path);
-                      updateRoomSettings(currId: currId, data: roomSettingsLocal);
-                    } else {
-                      roomSettingsLocal["recent"] = true;
-                      setState(() {});
-                      snackBar(
-                          snackMessage: "settings updated",
-                          context: context,
-                          bgColor: Colors.green);
-                      roomOptions["recent"].add(currId);
-                      update(_path);
-                      updateRoomSettings(currId: currId, data: roomSettingsLocal);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                      primary: Color(hc.hexcolorCode("#141829")),
-                      shape: StadiumBorder(),
-                      elevation: 0),
-                  child: Text("Notify Me")),
+              // // child 1 : we want to allow people subscribe to a cord this way they will get notifications
+              // Text("Receive notifications if you are within the last 15 to send a message in this room."),
+              // Text(
+              //   roomSettingsLocal["recent"] == true
+              //       ? "You will be notified if your activity was recent."
+              //       : "You are currently not being notified",
+              //   style: roomSettingsLocal["recent"] == true
+              //       ? TextStyle(color: Colors.green)
+              //       : TextStyle(color: Colors.red),
+              // ),
+              // SizedBox(
+              //   height: 7,
+              // ),
+              // ElevatedButton(
+              //     onPressed: () {
+              //       if (roomSettingsLocal["recent"] == true) {
+              //         roomSettingsLocal["recent"] = false;
+              //         setState(() {});
+              //         snackBar(
+              //             snackMessage: "settings updated",
+              //             context: context,
+              //             bgColor: Colors.green);
+              //         roomOptions["recent"].remove(currId);
+              //         update(_path);
+              //         updateRoomSettings(currId: currId, data: roomSettingsLocal);
+              //       } else {
+              //         roomSettingsLocal["recent"] = true;
+              //         setState(() {});
+              //         snackBar(
+              //             snackMessage: "settings updated",
+              //             context: context,
+              //             bgColor: Colors.green);
+              //         roomOptions["recent"].add(currId);
+              //         update(_path);
+              //         updateRoomSettings(currId: currId, data: roomSettingsLocal);
+              //       }
+              //     },
+              //     style: ElevatedButton.styleFrom(
+              //         primary: Color(hc.hexcolorCode("#141829")),
+              //         shape: StadiumBorder(),
+              //         elevation: 0),
+              //     child: Text("Notify Me")),
 
               // child 2
 
-              Text("Receive all notifications from this room."),
+              Text("Receive all notifications from this room.", style: Theme.of(context).textTheme.bodyText1,),
               Text(
                 roomSettingsLocal["all"] == true
                     ? "You will be notified of all notifications."

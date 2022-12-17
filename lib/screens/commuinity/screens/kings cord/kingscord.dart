@@ -140,6 +140,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     List<MessageLines> messageLines = [];
 
     message.forEach((sms) {
+      log("GOT A NEW SMS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       MessageLines messageLine;
       if (sms != null) {
         if (messageLines.length > 0) {
@@ -192,12 +193,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   key: ObjectKey(scrollCtrl),
                   onVisibilityChanged: (vis) {
                     if (vis.visibleFraction == 1) {
-                      log("the visibility is one");
-                      log("room id is: " + widget.kingsCord.id!);
                       CurrentKingsCordRoomId.updateRoomId(
                           roomId: widget.kingsCord.id!);
                     } else {
-                      log("the visibility is null");
                       CurrentKingsCordRoomId.updateRoomId(roomId: null);
                     }
                   },
@@ -453,18 +451,16 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     scrollCtrl!.addListener(() {
       if (scrollCtrl!.position.maxScrollExtent == scrollCtrl!.position.pixels) {
         context.read<KingscordCubit>().paginateMsg(
-            cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!, limit: 12);
+            cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!, limit: 12).then((_) => setState(() {}));
       }
     });
     super.initState();
     // isUserUpToDate(context, context.read<AuthBloc>().state.user!.uid, widget.kingsCord.memberInfo);
   }
-
+  bool initCubit = true;
   @override
   Widget build(BuildContext context) {
-    log("this is the id while we are in the kingc actuall room " +
-        CurrentKingsCordRoomId.currentKingsCordRoomId.toString() +
-        " !!!!");
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -497,19 +493,24 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           )
         ],
       ),
+      
       // the body is a collumn containeing message widgets... with a bottom sheet for the txt controller
       body: BlocConsumer<KingscordCubit, KingscordState>(
         listener: (context, state) {
-          // TODO: implement listener
+
         },
         builder: (context, state) {
           currUsersName = widget.usr.username;
-
-          context.read<KingscordCubit>().onLoadInit(
+          if (initCubit) {
+            context.read<KingscordCubit>().onLoadInit(
                 cmId: widget.commuinity.id!,
                 kcId: widget.kingsCord.id!,
                 limit: 17,
               );
+              initCubit = false;
+          }
+
+          
           return Stack(
             children: [
               Positioned.fill(
@@ -535,6 +536,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    state.status == KingsCordStatus.pagMsgs || state.status == KingsCordStatus.getInitmsgs 
+                    ? LinearProgressIndicator(color: Colors.amber[200], backgroundColor: Colors.white,) : SizedBox.shrink(),
                     // bulid message stream
                     _buildMessageStream(
                         commuinity: widget.commuinity,

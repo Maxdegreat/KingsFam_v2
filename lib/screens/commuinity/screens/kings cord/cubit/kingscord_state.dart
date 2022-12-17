@@ -1,6 +1,6 @@
 part of 'kingscord_cubit.dart';
 
-enum KingsCordStatus { initial, loading, sucess, failure }
+enum KingsCordStatus { initial, loading, sucess, failure, getInitmsgs, pagMsgs }
 
 enum FileShareStatus { inital, imgSharing, vidSharing, failure }
 

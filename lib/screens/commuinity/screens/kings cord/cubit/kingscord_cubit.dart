@@ -90,17 +90,26 @@ class KingscordCubit extends Cubit<KingscordState> {
       {required String cmId, required String kcId, required int limit}) async {
     // I need to load the all list and the recent list
     // then update the state with the users who are opt in
-
+    emit(state.copyWith(status: KingsCordStatus.getInitmsgs));
     await getNotifLst(cmId: cmId, kcId: kcId);
 
-    // this is a temp set to be used for copywith. copy x num most recent users
+    paginateMsg(cmId: cmId, kcId: kcId, limit: limit);
+  }
+  
+  Future<void> paginateMsg({required String cmId, required String kcId, required int limit}) async {
+    try {
+
+      log("called");
+
+      if (state.msgs.isEmpty) {
+            // this is a temp set to be used for copywith. copy x num most recent users
     // into the recentnotif list (granted not all of them will get a noty bc opt options)
     Map<String, dynamic> recentMsgIdTokenForOpt = {};
 
     //int limit = 45;
     _msgStreamSubscription?.cancel();
     _msgStreamSubscription = _churchRepository
-        .getMsgStream(cmId: cmId, kcId: kcId, limit: limit)
+        .getMsgStream(cmId: cmId, kcId: kcId, limit: limit, lastPostDoc: null)
         .listen((msgs) async {
       // final allMsgs = await Future.wait(msgs);
       List<Message> allMsgs = [];
@@ -128,19 +137,37 @@ class KingscordCubit extends Cubit<KingscordState> {
           msgs: allMsgs, recentMsgIdToTokenMap: recentMsgIdTokenForOpt));
       // log("recentMsgIds: " + state.recentMsgIdToTokenMap.toString());
       // log("roomSettings: " + state.recentNotifLst.toString() + " all now: " + state.allNotifLst.toString());
+    emit(state.copyWith(status: KingsCordStatus.initial));
     });
-  }
-  // time for some methods babby
 
-  // onReply
-  // void onReplyMessage({required Message? replyingToMessage}) {
-  //   if (replyingToMessage == null) {
-  //     replyingToMessage = Message.empty();
-  //   }
-  //   log("val of replymsg is: " + replyingToMessage.toString());
-  //   emit(state.copyWith(replyMessage: replyingToMessage, replying: replyingToMessage == Message.empty() ? false : true));
-  // }
-  // is typing
+      } else {
+        emit(state.copyWith(status: KingsCordStatus.pagMsgs));
+        log("okay we should now pag");
+
+
+
+      if (state.msgs.isEmpty) return;
+    String? lastDocId = state.msgs.last!.id;
+    // paginate in repo and store lst in new lst.
+    List<Message?> messages = await _churchRepository.paginateMsg(cmId: cmId, kcId: kcId, lastDocId: lastDocId, limit: limit);
+    log(messages.length.toString());
+    List<Message?> stateMsg = state.msgs;
+    for (var msg in messages) {
+      stateMsg.add(msg);
+    }
+    // pass that updated lst into kc.
+    // log("value OF STATE.MSG IS (before) " + state.msgs.toString());
+
+    emit(state.copyWith(msgs: stateMsg, status: KingsCordStatus.initial));
+    // log("value OF STATE.MSG IS " + state.msgs.toString());
+    }
+    
+    } catch (e) {
+      log("There was an error in the kingscord cubit");
+      log("error in method paginateMsg, code is: " + e.toString());
+    }
+  }
+
   void onIsTyping(bool isTyping) {
     emit(state.copyWith(isTyping: isTyping, status: KingsCordStatus.initial));
   }
@@ -383,18 +410,6 @@ class KingscordCubit extends Cubit<KingscordState> {
   removeReply() {
    emit(state.copyWith(replyMessage: "", mentions: []));
   } 
-
-  void paginateMsg({required String cmId, required String kcId, required int limit}) async {
-    if (state.msgs.isEmpty) return;
-    String? lastDocId = state.msgs.last!.id;
-    // paginate in repo and store lst in new lst.
-    List<Message?> messages = await _churchRepository.paginateMsg(cmId: cmId, kcId: kcId, lastDocId: lastDocId, limit: limit);
-    log(messages.length.toString());
-    List<Message?> updatedLst = List<Message?>.from(state.msgs)..addAll( messages);
-    // pass that updated lst into kc.
-    emit(state.copyWith(msgs: updatedLst));
-    
-  }
 
   // for upword pagination just go to the top and add the next 10 or so to the begining of the list.
 
