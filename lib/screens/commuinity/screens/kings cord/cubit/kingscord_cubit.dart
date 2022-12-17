@@ -411,8 +411,6 @@ class KingscordCubit extends Cubit<KingscordState> {
    emit(state.copyWith(replyMessage: "", mentions: []));
   } 
 
-  
-
   // for upword pagination just go to the top and add the next 10 or so to the begining of the list.
 
   String getShortReply(String? txt) {

@@ -7,7 +7,7 @@ Set<dynamic> cmPrivacySet = {
 };
 
 Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
-    String? currRole, Widget? _ad) {
+    String? currRole, Widget? _ad, VoidCallback setStateCallBack) {
   // create list for mentioned rooms and reg rooms
 
   // load an ad for the cm content
@@ -169,7 +169,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                         children: [
                           state.mentionedCords.isNotEmpty
                               ? Text(
-                                  "Mentions",
+                                  "Mentions", // ---------------------------------------------- MENTIONS
                                   style: TextStyle(
                                     color: Colors.grey,
                                     fontSize: 21,
@@ -210,9 +210,12 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                                     kingsCord: cord))
                                             .then((_) => context
                                                 .read<CommuinityBloc>()
-                                                .updateReadStatusOnKc(
-                                                    id: cord.id!,
-                                                    isMentioned: false));
+                                                .setMentionedToFalse(kcId: cord.id!));
+
+                                                // Future.delayed(Duration(seconds: 1)).then((value) {
+                                                //   log("setting the state");
+                                                //   setStateCallBack();
+                                                // });
 
                                         // del the @ notification (del the mention)
                                         String currId = context
@@ -340,7 +343,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
-                                "Rooms",
+                                "Rooms", // ----------------------------------------------------------------- Rooms
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontSize: 21,
@@ -408,11 +411,14 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                                       },
                                                       commuinity: cm,
                                                       kingsCord: cord))
-                                              .then((_) => context
-                                                  .read<CommuinityBloc>()
-                                                  .updateReadStatusOnKc(
-                                                      id: cord.id!,
-                                                      isMentioned: false));
+                                              .then((_) {
+                                                context.read<CommuinityBloc>().setReadStatusFalse(kcId: cord.id!);
+                                                // Future.delayed(Duration(seconds: 1)).then((value) {
+                                                //   log("setting the state");
+                                                //   setStateCallBack();
+                                                // });
+                                              }
+                                              );
 
                                           // if (state.mentionedMap[cord.id] !=
                                           //     false) {

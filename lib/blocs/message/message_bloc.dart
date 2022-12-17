@@ -35,10 +35,10 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   }
 
   Stream<MessageState> _mapMessageToState(MessageSentEvent event) async* {
-    int limit = 30;
+    int limit = 20;
     _msgStreamSubscription?.cancel();
     _msgStreamSubscription = _churchRepository.
-     getMsgStream(cmId: event.cmId, kcId: event.kcId, limit: limit)
+     getMsgStream(cmId: event.cmId, kcId: event.kcId, limit: limit, lastPostDoc: null)
      .listen((msgs) async { 
        final allMsgs = await Future.wait(msgs);
        // ignore: invalid_use_of_visible_for_testing_member

@@ -132,6 +132,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
 
   @override
   Widget build(BuildContext context) {
+
     // ignore: unused_local_variable
     final userId = context.read<AuthBloc>().state.user!.uid;
     return BlocProvider<CommuinityBloc>(
@@ -147,6 +148,12 @@ class _CommuinityScreenState extends State<CommuinityScreen>
       },
       child: BlocConsumer<CommuinityBloc, CommuinityState>(
           listener: (context, state) {
+          if (state.status == CommuintyStatus.updated) {
+            log("we are updating the state of the cm ya dig");
+            setState(() {
+              
+            });
+          }
         if (state.status == CommuintyStatus.error) {
           ErrorDialog(
             content:
@@ -264,9 +271,13 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                       ?
                       // status is shielded
                       _mainScrollView(
-                          context, state, widget.commuinity, currRole, nativeAdWidget(_nativeAd, _isNativeAdLoaded, context))
+                          context, state, widget.commuinity, currRole, nativeAdWidget(_nativeAd, _isNativeAdLoaded, context), () {
+                            if (mounted)
+                              setState(() {});
+                              else log("not mounted so not setting state in cmscreen mainScrollWheel");
+                            })
                       : _mainScrollView(context, state, widget.commuinity,
-                          currRole, nativeAdWidget(_nativeAd, _isNativeAdLoaded, context)),
+                          currRole, nativeAdWidget(_nativeAd, _isNativeAdLoaded, context), () {if (mounted) setState(() {}); else log("not mounted so not setting state in cmscreen mainScrollWheel");}),
             ));
       }),
     );

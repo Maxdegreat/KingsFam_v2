@@ -215,10 +215,11 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
           await KingsCordRepository().futureWaitCord(kcords, event.commuinity.id!, _authBloc.state.user!.uid);
 
 
-        emit(state.copyWith(kingCords: kingsCords["kinscord"], mentionedCords: kingsCords["mentioned"]));
-        add(CommunityLoadingPosts(cm: event.commuinity));
+        emit(state.copyWith(kingCords: kingsCords["kinscord"], mentionedCords: kingsCords["mentioned"], status: CommuintyStatus.updated));
+        Future.delayed(Duration(milliseconds: 50)).then((value) => emit(state.copyWith(status: CommuintyStatus.inital)));
         // add(CommunityLoadingEvents(cm: event.commuinity));
       });
+        add(CommunityLoadingPosts(cm: event.commuinity));
     } catch (e) {
       emit(state.copyWith(
           failure: Failure(message: failed, code: e.toString())));
@@ -502,38 +503,64 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
    add(CommunityInitalEvent(commuinity: cm));
   }
 
-  void updateReadStatusOnKc({required String id, required bool isMentioned}) {
-    // we need to update the read status on the mentionedCords.
-    // rmv from the mentionedCords lst and insert in cords lst.
-    if (isMentioned) {
-      for (int i = 0; i < state.mentionedCords.length; i ++) {
-
-      KingsCord? kcFromStateM = state.mentionedCords[i];
-
-      if (kcFromStateM != null && kcFromStateM.id == id) {
-        state.mentionedCords.remove(kcFromStateM);
-        kcFromStateM.copyWith(readStatus: false);
-        state.kingCords.insert(0, kcFromStateM);
-        emit(state.copyWith(kingCords: state.kingCords));
+    setReadStatusFalse({required String kcId}) {
+    // seting the read status false for a given kc tracked by the KCid.
+    log("this is the method to the read status");
+    for(KingsCord? kc in state.kingCords) {
+      if (kc != null && kc.id! == kcId) {
+        log("we found the kc that we want to update its state"); 
+        state.kingCords.remove(kc); 
+        state.kingCords.add(kc.copyWith(readStatus: false)); 
+        emit(state.copyWith(status: CommuintyStatus.updated));   
       }
-    }
-
-    } else {
-    // we need to update the read status on the Cords.  
-    for (int i = 0; i < state.kingCords.length; i ++) {
-
-      KingsCord? kcFromState = state.kingCords[i];
-
-      if (kcFromState != null && kcFromState.id == id) {
-        state.kingCords.remove(kcFromState);
-        kcFromState.copyWith(readStatus: false);
-        state.kingCords.insert(0, kcFromState);
-        emit(state.copyWith(kingCords: state.kingCords));
-      }
-    }
-
     }
   }
+
+  setMentionedToFalse({ required String kcId}) { 
+    // also will update the read status
+    for (KingsCord? kc in state.mentionedCords) {
+      if (kc != null && kc.id! == kcId) {
+        state.mentionedCords.remove(kc);
+        state.kingCords.add(kc.copyWith(readStatus: false));
+        emit(state.copyWith(status: CommuintyStatus.updated)); 
+      }
+    }
+  }
+
+
+
+  // void updateReadStatusOnKc({required String id, required bool isMentioned}) {
+  //   // we need to update the read status on the mentionedCords.
+  //   // rmv from the mentionedCords lst and insert in cords lst.
+  //   if (isMentioned) {
+  //     for (int i = 0; i < state.mentionedCords.length; i ++) {
+
+  //     KingsCord? kcFromStateM = state.mentionedCords[i];
+
+  //     if (kcFromStateM != null && kcFromStateM.id == id) {
+  //       state.mentionedCords.remove(kcFromStateM);
+  //       kcFromStateM.copyWith(readStatus: false);
+  //       state.kingCords.insert(0, kcFromStateM);
+  //       emit(state.copyWith(kingCords: state.kingCords));
+  //     }
+  //   }
+
+  //   } else {
+  //   // we need to update the read status on the Cords.  
+  //   for (int i = 0; i < state.kingCords.length; i ++) {
+
+  //     KingsCord? kcFromState = state.kingCords[i];
+
+  //     if (kcFromState != null && kcFromState.id == id) {
+  //       state.kingCords.remove(kcFromState);
+  //       kcFromState.copyWith(readStatus: false);
+  //       state.kingCords.insert(0, kcFromState);
+  //       emit(state.copyWith(kingCords: state.kingCords));
+  //     }
+  //   }
+
+  //   }
+  // }
 
   // KINGSCORD METHODS
 
