@@ -25,7 +25,7 @@ class ThemeInfo {
       colorScheme: ColorScheme.fromSwatch().copyWith(
         secondary: Color.fromARGB(255, 207, 207, 207),
         primary: Colors.white,
-        background: Colors.grey),
+        background: Colors.grey[900]),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
@@ -73,7 +73,7 @@ class ThemeInfo {
 brightness: Brightness.dark,
         secondary: Color(hexcolor.hexcolorCode('282f4b')),
         primary: Color(hexcolor.hexcolorCode("1c2841")),
-        background: Color.fromARGB(255, 17, 22, 121)),
+        background: Color(hexcolor.hexcolorCode("#434e7d"))),
         bottomSheetTheme: BottomSheetThemeData(backgroundColor: Color(hexcolor.hexcolorCode("#141829"))),
         cardColor: Color(hexcolor.hexcolorCode('#141829')),
         primaryColorDark: Colors.white,

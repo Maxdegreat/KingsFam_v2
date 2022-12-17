@@ -127,9 +127,9 @@ flutter_native_splash:
   image: assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png
 
 flutter_icons:
-  android: true
+  android: false
   ios: true
-  image_path: "assets/KINGSFAM_LOGO_black_bg.png"
+  image_path: "assets/purplebgCrown.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
