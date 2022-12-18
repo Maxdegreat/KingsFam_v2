@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/cm_perm_handler.dart';
@@ -241,6 +242,8 @@ class _ParticipantsViewState extends State<ParticipantsView>
                                                                       .then((value) =>
                                                                           Navigator.of(context)
                                                                               .pop());
+                                                                } else {
+                                                                  snackBar(snackMessage: "You do not have the right permissions.", context: context);
                                                                 }
                                                               },
                                                               child: Padding(
@@ -264,11 +267,18 @@ class _ParticipantsViewState extends State<ParticipantsView>
                                                                       .all(8.0),
                                                               child: GestureDetector(
                                                                 onTap: () {
+                                                                  if (user[0].id == context.read<AuthBloc>().state.user!.uid) 
+                                                                    snackBar(snackMessage: "You can not remove yourself", context: context);
+
+                                                                  if (CmPermHandler.canRemoveMember(givenRole:null, cmBloc: widget.cmBloc)) {
                                                                   widget.cmBloc.onLeaveCommuinity(commuinity: widget.cm, leavingUid: user[0].id).then((value) {
                                                                    snackBar(snackMessage: user[0].username + " has been kicked. " + user[0].username + "can join back. Use Ban if you do not want this user to join again. you can un-ban later.", context: context, bgColor: Color.fromARGB(37, 50, 235, 62)); 
                                                                    users.remove(user);
                                                                    Navigator.of(context).pop();
                                                                   });
+                                                                  } else {
+                                                                    snackBar(snackMessage: "You do not have the right permissions.", context: context);
+                                                                  }
                                                                 },
                                                                 child: Text(
                                                                     "Kick ${user[0].username}",
@@ -285,10 +295,17 @@ class _ParticipantsViewState extends State<ParticipantsView>
                                                                       .all(8.0),
                                                               child: GestureDetector(
                                                                 onTap: () {
-                                                                  widget.cmBloc.ban(cm: widget.cm, uid: user[0].id);
+                                                                  if (user[0].id == context.read<AuthBloc>().state.user!.uid) 
+                                                                    snackBar(snackMessage: "You can not remove yourself", context: context);
+
+                                                                  if (CmPermHandler.canRemoveMember(cmBloc: widget.cmBloc, givenRole: null)) {
+                                                                    widget.cmBloc.ban(cm: widget.cm, uid: user[0].id);
                                                                   snackBar(snackMessage: user[0].username + " has been baned. " + user[0].username + "can NOT join back. you can un-ban later.", context: context, bgColor: Color.fromARGB(37, 50, 235, 62)); 
                                                                    users.remove(user);
                                                                    Navigator.of(context).pop();
+                                                                  } else {
+                                                                    snackBar(snackMessage: "You do not have the right permissions.", context: context);
+                                                                  }
                                                                 },
                                                                 child: Text(
                                                                     "Ban ${user[0].username}",
@@ -303,7 +320,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
                                                       );
                                                     })
                                                 .then(
-                                                    (value) => setState(() {}));
+(value) => setState(() {}));
 
                                             // Navigator.of(context).pushNamed(
                                             //     Participant_deep_view.routeName,

@@ -28,21 +28,40 @@ class CmPermHandler {
   // permission for del a room (same as creating room)
 
   // permission for kicking / baning a user
-  static bool canRemoveMember(CommuinityBloc cmBloc) {
-    var p = cmBloc.state.role["permissions"];
-    return p.contains("*") || p.contains("#") || p.contains('mod');
+  static bool canRemoveMember({required CommuinityBloc? cmBloc, required String? givenRole}) {
+    if (givenRole != null) {
+      return roleNameToPerm[givenRole].contains("*") || roleNameToPerm[givenRole].contains("#") || roleNameToPerm[givenRole].contains("mod");
+    } else if (cmBloc != null) {
+      var p = cmBloc.state.role["permissions"];
+      return p.contains("*") || p.contains("#") || p.contains('mod');
+    } else {
+      return false;
+    }
+
   }
 
   // psemission for updating the cm privacy
-  static bool canUpdatePrivacy(CommuinityBloc cmBloc) {
-    var p = cmBloc.state.role["permissions"];
-    return p.contains("*") || p.contains("#") || p.contains('mod');
+  static bool canUpdatePrivacy({required CommuinityBloc? cmBloc, required String? givenRole}) {
+    if (givenRole != null) {
+      return roleNameToPerm[givenRole].contains("*") || roleNameToPerm[givenRole].contains("#") || roleNameToPerm[givenRole].contains("mod");
+    } else if (cmBloc != null) {
+      var p = cmBloc.state.role["permissions"];
+      return p.contains("*") || p.contains("#") || p.contains('mod');
+    } else {
+      return false;
+    }
   }
 
   // permission for updating roles (can not change the owners role)
-  static bool canUpdateRole(CommuinityBloc cmBloc) {
-    var p = cmBloc.state.role["permissions"];
-    return p.contains("*") || p.contains("#");
+  static bool canUpdateRole({required CommuinityBloc? cmBloc, required String? givenRole}) {
+    if (givenRole != null) {
+      return roleNameToPerm[givenRole].contains("*") || roleNameToPerm[givenRole].contains("#");
+    } else if (cmBloc != null) {
+      var p = cmBloc.state.role["permissions"];
+      return p.contains("*") || p.contains("#");
+    } else {
+      return false;
+    }
   }
 
   // list of actions can be used to depict or calculate actions
