@@ -18,6 +18,7 @@ import 'package:kingsfam/screens/commuinity/wrapers/create_new_role.dart';
 import 'package:kingsfam/screens/commuinity/wrapers/role_permissions.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
+import 'package:kingsfam/widgets/snackbar.dart';
 
 class ParticipantsViewArgs {
   final CommuinityBloc cmBloc;
@@ -157,69 +158,152 @@ class _ParticipantsViewState extends State<ParticipantsView>
                                                 .textTheme
                                                 .bodyText1,
                                           ),
-                                          trailing: Text(user[1] ?? "Member", style: Theme.of(context).textTheme.caption!.copyWith(fontStyle: FontStyle.italic)),
+                                          trailing: Text(user[1] ?? "Member",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .caption!
+                                                  .copyWith(
+                                                      fontStyle:
+                                                          FontStyle.italic)),
                                           onTap: () {
+                                            showModalBottomSheet(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Align(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .topRight,
+                                                                child: Text(
+                                                                    "Role: " +
+                                                                        user[1],
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .caption),
+                                                              ),
+                                                            ),
+                                                            // show name,
+                                                            GestureDetector(
+                                                              onTap: () {
+                                                                Navigator.of(context).pushNamed(
+                                                                    ProfileScreen
+                                                                        .routeName,
+                                                                    arguments: ProfileScreenArgs(
+                                                                        userId:
+                                                                            user[0].id));
+                                                              },
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        8.0),
+                                                                child: Text(
+                                                                    "view " +
+                                                                        user[0]
+                                                                            .username +
+                                                                        "\'s profile",
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .caption),
+                                                              ),
+                                                            ),
+                                                            // view profile
+                                                            // promote
 
+                                                            GestureDetector(
+                                                              onTap: () {
+                                                                if (CmPermHandler
+                                                                    .isAdmin(widget
+                                                                        .cmBloc)) {
+                                                                  // Admins and up have the ability to update roles
+                                                                  promotionOptionsBottomSheet(
+                                                                          context,
+                                                                          user)
+                                                                      .then((value) =>
+                                                                          Navigator.of(context)
+                                                                              .pop());
+                                                                }
+                                                              },
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        8.0),
+                                                                child: Text(
+                                                                    "Promote",
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .caption),
+                                                              ),
+                                                            ),
 
-                                              showModalBottomSheet(
-                                                context: context, 
-                                                builder: (context) {
-                                                  return Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      mainAxisSize: MainAxisSize.min,
-                                                      children: [
-                                                        Padding(
-                                                          padding: const EdgeInsets.all(8.0),
-                                                          child: Align(
-                                                            alignment: Alignment.topRight,
-                                                            child: Text("Role: " + user[1], style: Theme.of(context).textTheme.caption),
-                                                          ),
+                                                            // kick name,
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: GestureDetector(
+                                                                onTap: () {
+                                                                  widget.cmBloc.onLeaveCommuinity(commuinity: widget.cm, leavingUid: user[0].id).then((value) {
+                                                                   snackBar(snackMessage: user[0].username + " has been kicked. " + user[0].username + "can join back. Use Ban if you do not want this user to join again. you can un-ban later.", context: context, bgColor: Color.fromARGB(37, 50, 235, 62)); 
+                                                                   users.remove(user);
+                                                                   Navigator.of(context).pop();
+                                                                  });
+                                                                },
+                                                                child: Text(
+                                                                    "Kick ${user[0].username}",
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .caption),
+                                                              ),
+                                                            ),
+                                                            // ban name,
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: GestureDetector(
+                                                                onTap: () {
+                                                                  widget.cmBloc.ban(cm: widget.cm, uid: user[0].id);
+                                                                  snackBar(snackMessage: user[0].username + " has been baned. " + user[0].username + "can NOT join back. you can un-ban later.", context: context, bgColor: Color.fromARGB(37, 50, 235, 62)); 
+                                                                   users.remove(user);
+                                                                   Navigator.of(context).pop();
+                                                                },
+                                                                child: Text(
+                                                                    "Ban ${user[0].username}",
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .caption),
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
-                                                        // show name,
-                                                        GestureDetector(
-                                                          onTap: () {
-                                                            Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: user[0].id));
-                                                          },
-                                                          child: Padding(
-                                                            padding: const EdgeInsets.all(8.0),
-                                                            child: Text( "view " + user[0].username + "\'s profile", style: Theme.of(context).textTheme.caption),
-                                                          ),
-                                                        ),
-                                                        // view profile
-                                                        // promote 
-
-                                                        GestureDetector(
-                                                          onTap: () {
-                                                            if (CmPermHandler.isAdmin(widget.cmBloc)) {
-                                                              // Admins and up have the ability to update roles
-                                                              promotionOptionsBottomSheet(context, user).then((value) => Navigator.of(context).pop());
-                                                            }
-                                                          },
-                                                          child: Padding(
-                                                            padding: const EdgeInsets.all(8.0),
-                                                            child: Text("Promote", style: Theme.of(context).textTheme.caption),
-                                                          ),
-                                                        ),
-
-                                                        // kick name,
-                                                        Padding(
-                                                          padding: const EdgeInsets.all(8.0),
-                                                          child: Text("Kick ${user[0].username}", style: Theme.of(context).textTheme.caption),
-                                                        ),
-                                                        // ban name,
-                                                        Padding(
-                                                          padding: const EdgeInsets.all(8.0),
-                                                          child: Text("Ban ${user[0].username}", style: Theme.of(context).textTheme.caption ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  );
-                                                }
-                                              ).then((value) => setState((){})); 
-
+                                                      );
+                                                    })
+                                                .then(
+                                                    (value) => setState(() {}));
 
                                             // Navigator.of(context).pushNamed(
                                             //     Participant_deep_view.routeName,
@@ -308,48 +392,67 @@ class _ParticipantsViewState extends State<ParticipantsView>
 
   Future<dynamic> promotionOptionsBottomSheet(BuildContext context, user) {
     return showModalBottomSheet(
-                                                              context: context, 
-                                                              builder: (context) {
-                                                                return Column(
-                                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                                  children: [
-                                                                    Padding(
-                                                                      padding: const EdgeInsets.all(8.0),
-                                                                      child: GestureDetector(
-                                                                        onTap: () {
-                                                                          CmPermHandler.promoteMember(memId: user[0].id, cmId: widget.cm.id!, promotionRoleName: "Admin");
-                                                                          user[1] = "Admin";
-                                                                          Navigator.of(context).pop;
-                                                                        },
-                                                                        child: Text("Make Admin", style: Theme.of(context).textTheme.caption)),
-                                                                    ),
-                                                                    GestureDetector(
-                                                                      onTap: () {
-                                                                          CmPermHandler.promoteMember(memId: user[0].id, cmId: widget.cm.id!, promotionRoleName: "Mod");
-                                                                          user[1] = "Mod";
-                                                                          Navigator.of(context).pop;
-                                                                      },
-                                                                      child: Padding(
-                                                                        padding: const EdgeInsets.all(8.0),
-                                                                        child: Text("Make Mod", style: Theme.of(context).textTheme.caption),
-                                                                      ),
-                                                                    ),
-                                                                    GestureDetector(
-                                                                      onTap: () {
-                                                                          CmPermHandler.promoteMember(memId: user[0].id, cmId: widget.cm.id!, promotionRoleName: "Member");
-                                                                          user[1] = "Member";
-                                                                          Navigator.of(context).pop;
-                                                                      },
-                                                                      child: Padding(
-                                                                        padding: const EdgeInsets.all(8.0),
-                                                                        child: Text("Make Member" , style: Theme.of(context).textTheme.caption),
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                );
-                                                              }
-                                                            );
+        context: context,
+        builder: (context) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GestureDetector(
+                    onTap: () {
+                      if (user[1] == "Lead") {
+                        snackBar(
+                            snackMessage:
+                                "You can not change the role of a Lead at the moment.",
+                            context: context,
+                            bgColor: Colors.red[400]);
+                        return;
+                      }
+                      CmPermHandler.promoteMember(
+                          memId: user[0].id,
+                          cmId: widget.cm.id!,
+                          promotionRoleName: "Admin");
+                      user[1] = "Admin";
+                      Navigator.of(context).pop;
+                    },
+                    child: Text("Make Admin",
+                        style: Theme.of(context).textTheme.caption)),
+              ),
+              GestureDetector(
+                onTap: () {
+                  CmPermHandler.promoteMember(
+                      memId: user[0].id,
+                      cmId: widget.cm.id!,
+                      promotionRoleName: "Mod");
+                  user[1] = "Mod";
+                  Navigator.of(context).pop;
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Make Mod",
+                      style: Theme.of(context).textTheme.caption),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  CmPermHandler.promoteMember(
+                      memId: user[0].id,
+                      cmId: widget.cm.id!,
+                      promotionRoleName: "Member");
+                  user[1] = "Member";
+                  Navigator.of(context).pop;
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Make Member",
+                      style: Theme.of(context).textTheme.caption),
+                ),
+              ),
+            ],
+          );
+        });
   }
 
   Widget pendingAndBandRow() {

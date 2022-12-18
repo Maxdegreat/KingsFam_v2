@@ -259,8 +259,8 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                 },
                                 child:
                                     state.requestStatus == RequestStatus.pending
-                                        ? Text("Pending ...")
-                                        : Text("Request To Join")),
+                                        ? Text("Pending ...", style: Theme.of(context).textTheme.bodyText1,)
+                                        : Text("Request To Join", style: Theme.of(context).textTheme.bodyText1,)),
                           ],
                         ),
                       ),

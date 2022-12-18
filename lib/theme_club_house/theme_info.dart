@@ -5,7 +5,7 @@ import '../extensions/hexcolor.dart';
 // background color: Color(hexcolor.hexcolorCode('#20263c'))
 // scondary color: Color(hc.hexcolorCode('#141829'))
 class ThemeInfo {
-
+  
   ThemeData themeClubHouseLight() {
     HexColor hexcolor = HexColor();
     return ThemeData(
@@ -25,7 +25,9 @@ class ThemeInfo {
       colorScheme: ColorScheme.fromSwatch().copyWith(
         secondary: Color.fromARGB(255, 207, 207, 207),
         primary: Colors.white,
-        background: Colors.grey[900]),
+        background: Colors.grey[900],
+        
+        ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),

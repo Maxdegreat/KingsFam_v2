@@ -268,7 +268,6 @@ class ChurchRepository extends BaseChurchRepository {
   Future<void> createRole(
       {required String cmId,
       required String roleName,
-      required List<String> permissions,
       required String userId,
       bool? isNewCm}) async {
     await fire
@@ -277,19 +276,20 @@ class ChurchRepository extends BaseChurchRepository {
         .collection(Paths.communityRoles)
         .add({
       "roleName": roleName,
-      "permissions": permissions,
     }).then((role) async {
       if (isNewCm != null && isNewCm) {
         // we only need the rid aka roleId
-        await addCommunityMember(userId: userId, cmId: cmId, roleId: role.id);
+        await addCommunityMember(userId: userId, cmId: cmId, roleName: roleName);
       }
     });
   }
 
   Future<void> addCommunityMember(
-      {required String userId,
-      required String cmId,
-      required String? roleId}) async {
+      {
+        required String userId,
+        required String cmId,
+        required String roleName
+      }) async {
     DocumentSnapshot userSnap =
         await fire.collection(Paths.users).doc(userId).get();
     Userr user = Userr.fromDoc(userSnap);
@@ -301,7 +301,8 @@ class ChurchRepository extends BaseChurchRepository {
         .doc(cmId)
         .collection(Paths.members)
         .doc(userId)
-        .set({"roleId": roleId, "userNameCaseList": user.usernameSearchCase});
+        .set({"kfRole": roleName, "userNameCaseList": user.usernameSearchCase});
+        // .set({"roleId": roleId, "userNameCaseList": user.usernameSearchCase});
 
     // I also need to add the cmId somewhere so that I can find all cm's the user is a part of
     FirebaseFirestore.instance
@@ -323,14 +324,16 @@ class ChurchRepository extends BaseChurchRepository {
         // will also hold doc id which will map to a role. a role is a list of permissions
         createRole(
             cmId: doc.id,
-            roleName: "Owner",
-            permissions: ["*"],
+            //roleName: "Owner",
+            //permissions: ["*"],
+            roleName: "Lead",
             userId: userId,
             isNewCm: true); //isNewCm is not required. only called on creation
+
         final kingsCord = KingsCord(
           mode: mode,
           tag: doc.id,
-          cordName: "Welcome To ${church.name}!",
+          cordName: "${church.name}!",
           subscribedIds: [],
           // recentSender: [recentSender.id, recentSender.username],
         );
@@ -726,7 +729,7 @@ class ChurchRepository extends BaseChurchRepository {
             "User is found in the CmMembers path. so how can they try joining? In Church repo onJoinCommunity");
       }
 
-      addCommunityMember(cmId: commuinity.id!, roleId: "0", userId: user.id);
+      addCommunityMember(cmId: commuinity.id!, userId: user.id, roleName: "Member");
 
       final docRef = fb.doc(commuinity.id);
       if (commuinity.size == null)

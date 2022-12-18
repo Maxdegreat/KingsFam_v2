@@ -40,7 +40,7 @@ snackBar(
     required BuildContext context,
     Color? bgColor,
     bool? showLoading}) {
-  bgColor = bgColor == null ? Colors.white : bgColor;
+  bgColor = bgColor == null ? Color.fromARGB(85, 255, 255, 255) : bgColor;
   return showLoading == null
       ? ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(snackMessage),

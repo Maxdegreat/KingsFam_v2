@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -43,6 +45,7 @@ class _UpdatePrivacyCmState extends State<UpdatePrivacyCm> {
     () => vcHelp(CmPrivacy.open);
 
   vcHelp(String cmPrivacy) {
+    log("updating your cm privacy");
     snackBar(snackMessage: "Updating your commuinity privacy", context: context);
     return FirebaseFirestore.instance.collection(Paths.cmPrivacy).doc(widget.cm.id).set({"privacy":cmPrivacy});
   }
@@ -51,7 +54,7 @@ class _UpdatePrivacyCmState extends State<UpdatePrivacyCm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Updating ${widget.cm.name}'s privacy"),
+        title: Text("Updating ${widget.cm.name}'s privacy", style: Theme.of(context).textTheme.bodyText1,),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -62,18 +65,19 @@ class _UpdatePrivacyCmState extends State<UpdatePrivacyCm> {
           //   width: MediaQuery.of(context).size.width/1.7,
           //   child: Text("If your"),
           // )
-          imbedTextIcon(context: context, iconData: Icons.health_and_safety_outlined, text: "armored", voidCallback: armored()),
-          imbedTextIcon(context: context, iconData: Icons.shield_outlined, text: "shielded", voidCallback: shielded()),
-          imbedTextIcon(context: context, iconData: FontAwesomeIcons.lockOpen, text: "open", voidCallback: open()),
+          EmbedTextIcon(context: context, iconData: Icons.health_and_safety_outlined, text: "armored", voidCallback: armored()),
+          // EmbedTextIcon(context: context, iconData: Icons.shield_outlined, text: "shielded", voidCallback: shielded()),
+          EmbedTextIcon(context: context, iconData: FontAwesomeIcons.lockOpen, text: "open", voidCallback: open()),
         ],
       ),
     );
   }
 
-  GestureDetector imbedTextIcon({ required BuildContext context, required String text, required IconData iconData, required VoidCallback voidCallback}) {
+  GestureDetector EmbedTextIcon({ required BuildContext context, required String text, required IconData iconData, required VoidCallback voidCallback}) {
     return GestureDetector(
           onTap: () {
             voidCallback();
+            snackBar(snackMessage: "The Status has been updated", context: context);
             Navigator.of(context).pop();
           },
           child: Card(
@@ -82,13 +86,16 @@ class _UpdatePrivacyCmState extends State<UpdatePrivacyCm> {
             ),
             color: Color(hc.hexcolorCode('#1b2136')),
             elevation: 2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(text + " ", style: Theme.of(context).textTheme.bodyText1,),
-                Icon(iconData)
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(text + " ", style: Theme.of(context).textTheme.bodyText1,),
+                  Icon(iconData)
+                ],
+              ),
             ),
           ),
         );

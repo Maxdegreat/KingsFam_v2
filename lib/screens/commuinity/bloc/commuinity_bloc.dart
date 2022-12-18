@@ -85,6 +85,11 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       _churchRepository.updateUserTimestampOnOpenCm(
           cm, _authBloc.state.user!.uid);
 
+      bool isBan = await _churchRepository.isBaned(
+          usrId: _authBloc.state.user!.uid, cmId: event.commuinity.id!);
+
+      emit(state.copyWith(isBaned: isBan));
+
       // load if member and handel as the cm requires
       late bool isMem;
 
@@ -331,10 +336,12 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   // ============== funcs =======================
 
-  Future<void> onLeaveCommuinity({required Church commuinity}) async {
-    final userrId = _authBloc.state.user!.uid;
+  Future<void> onLeaveCommuinity(
+      {required Church commuinity, String? leavingUid}) async {
+    if (leavingUid == null) leavingUid = _authBloc.state.user!.uid;
+    // else we are using the id of the user that was passed in.
     _churchRepository.leaveCommuinity(
-        commuinity: commuinity, leavingUserId: userrId);
+        commuinity: commuinity, leavingUserId: leavingUid);
     emit(state.copyWith(isMember: false));
   }
 
@@ -417,6 +424,10 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     var x = state.banedUsers;
     x.remove(usr);
     emit(state.copyWith(banedUsers: x));
+  }
+
+  void ban({required Church cm, required String uid}) {
+    _churchRepository.banFromCommunity(community: cm, baningUserId: uid);
   }
 
   void onBoostCm({required String cmId}) {
@@ -541,6 +552,11 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       }
     }
   }
+
+  // Future<bool> checkIsBan({required String uid, required String cmId}) async {
+  //   bool isBan = await _churchRepository.isBaned(usrId: uid, cmId: cmId);
+  //   emit(state.copyWith(isBaned: isBan));
+  // }
 
   // void updateReadStatusOnKc({required String id, required bool isMentioned}) {
   //   // we need to update the read status on the mentionedCords.
