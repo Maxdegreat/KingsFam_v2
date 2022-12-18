@@ -210,12 +210,13 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                                     kingsCord: cord))
                                             .then((_) => context
                                                 .read<CommuinityBloc>()
-                                                .setMentionedToFalse(kcId: cord.id!));
+                                                .setMentionedToFalse(
+                                                    kcId: cord.id!));
 
-                                                // Future.delayed(Duration(seconds: 1)).then((value) {
-                                                //   log("setting the state");
-                                                //   setStateCallBack();
-                                                // });
+                                        // Future.delayed(Duration(seconds: 1)).then((value) {
+                                        //   log("setting the state");
+                                        //   setStateCallBack();
+                                        // });
 
                                         // del the @ notification (del the mention)
                                         String currId = context
@@ -353,21 +354,8 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                               ),
                               collapseOrExpand(
                                   context.read<CommuinityBloc>(), 'cord'),
-                              context
-                                          .read<CommuinityBloc>()
-                                          .state
-                                          .role["permissions"]
-                                          .contains("*") ||
-                                      context
-                                          .read<CommuinityBloc>()
-                                          .state
-                                          .role["permissions"]
-                                          .contains("#") ||
-                                      context
-                                          .read<CommuinityBloc>()
-                                          .state
-                                          .role["permissions"]
-                                          .contains(CmActions.makeRoom)
+                              CmPermHandler.canMakeRoom(
+                                      context.read<CommuinityBloc>())
                                   ? new_kingscord(
                                       cmBloc: context.read<CommuinityBloc>(),
                                       cm: cm,
@@ -412,13 +400,15 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                                       commuinity: cm,
                                                       kingsCord: cord))
                                               .then((_) {
-                                                context.read<CommuinityBloc>().setReadStatusFalse(kcId: cord.id!);
-                                                // Future.delayed(Duration(seconds: 1)).then((value) {
-                                                //   log("setting the state");
-                                                //   setStateCallBack();
-                                                // });
-                                              }
-                                              );
+                                            context
+                                                .read<CommuinityBloc>()
+                                                .setReadStatusFalse(
+                                                    kcId: cord.id!);
+                                            // Future.delayed(Duration(seconds: 1)).then((value) {
+                                            //   log("setting the state");
+                                            //   setStateCallBack();
+                                            // });
+                                          });
 
                                           // if (state.mentionedMap[cord.id] !=
                                           //     false) {
@@ -454,10 +444,19 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                               context: context);
                                           return null;
                                         }
-                                        _delKcDialog(
-                                            context: context,
-                                            cord: cord,
-                                            commuinity: cm);
+
+                                        if (CmPermHandler.canMakeRoom(
+                                            context.read<CommuinityBloc>()))
+                                          _delKcDialog(
+                                              context: context,
+                                              cord: cord,
+                                              commuinity: cm);
+                                        else
+                                          snackBar(
+                                              snackMessage:
+                                                  "You do not have paermissions to remove this room.",
+                                              context: context,
+                                              bgColor: Colors.red[400]);
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -727,12 +726,12 @@ SliverAppBar cmSliverAppBar({
   required String? currRole,
 }) {
   return SliverAppBar(
-    actions: [
-      Padding(
-        padding: const EdgeInsets.only(right: 8.0),
-        child: Icon(Icons.people),
-      )
-    ],
+    // actions: [
+    //   Padding(
+    //     padding: const EdgeInsets.only(right: 8.0),
+    //     child: Icon(Icons.people),
+    //   )
+    // ],
     expandedHeight: MediaQuery.of(context).size.height / 4.4,
     flexibleSpace: FlexibleSpaceBar(
       title: Text(cm.name),

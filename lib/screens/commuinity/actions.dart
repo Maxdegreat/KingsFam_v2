@@ -1,8 +1,8 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/roles/role_types.dart';
-
-
 
 // a role id is stored in the db and the role Id leads to a list of permisnsions.
 // nd let it relet this take in the role id (rid). aturn a list of permissios.
@@ -14,30 +14,58 @@ import 'package:kingsfam/roles/role_types.dart';
 // if there is no rid then just return a "0" this means basic permissions
 
 class CmActions {
-
-  static Future<Map<String, dynamic>> getRidPermissions({required String rid, required String cmId}) async{
-    DocumentSnapshot snap = await FirebaseFirestore.instance.collection(Paths.communityMembers).doc(cmId).collection(Paths.communityRoles).doc(rid).get();
+  static Future<Map<String, dynamic>> getRidPermissions(
+      {required String rid, required String cmId}) async {
+    DocumentSnapshot snap = await FirebaseFirestore.instance
+        .collection(Paths.communityMembers)
+        .doc(cmId)
+        .collection(Paths.communityRoles)
+        .doc(rid)
+        .get();
     if (snap.exists && snap.data() != null) {
       Map<String, dynamic> data = snap.data() as Map<String, dynamic>;
       return {
-        "permissions" : data["permissions"] ?? ["0"],
-        "roleName" : data["roleName"] ?? "Member"
-      } ;
+        "permissions": data["permissions"] ?? ["0"],
+        "roleName": data["roleName"] ?? "Member"
+      };
     } else {
       return {
-        "permissions" : ["0"],
-        "roleName" : "Member"
+        "permissions": ["0"],
+        "roleName": "Member"
       };
     }
+  }
 
-  } 
+  static Map<String, dynamic>? getKfRolePermissions(
+      {required String roleName}) {
+    if (roleName == 'Lead') {
+      log("returning a pre-built owner");
+      return {
+        "permissions": ["*"],
+        "roleName": roleName,
+      };
+    } else if (roleName == 'Admin') {
+      return {
+        "permissions": ["#"],
+        "roleName": roleName,
+      };
+    } else if (roleName == 'Mod') {
+      return {
+        "permissions": ["mod"],
+        "roleName": roleName,
+      };
+    } else if (roleName == "Member") {
+      return {"permissions": [], "roleName": roleName};
+    }
+  }
 
-  bool accessBeenGranted({required List<String> permissions, required String action}) {
+  bool accessBeenGranted(
+      {required List<String> permissions, required String action}) {
     return permissions.contains(action);
   }
 
   // diff roles can be assigned actions to be written to their permissions
-  // roles can also 
+  // roles can also
 
   // admin grants all the basic privalaged roles below
   static const String admin = "admin";
@@ -49,20 +77,18 @@ class CmActions {
   static const String updatePrivacy = "Update Privacy";
   static const String kickAndBan = "Kick and Ban";
 
-  // roles can also be written as 
+  // roles can also be written as
   // "roleName" ...
   // "permissions" [...]
   // this allows users to make more flexible roles for ex
   // a cord has access rules. must have permission x to join.
   // we will have to call getRidPermissions in the cm bloc. store perm in state
   // once loaded hop into cord and call accessGranted passing state perm and cord rule
-  
+
   // use case: chior and mucisians in one gc. allows seperation.
 
   // make a chior role
   // make a mucisian role
-
-  
 
   // static const communityActions = [
   //   /* 0 */ 'cm/settings/updateName',

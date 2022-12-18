@@ -19,6 +19,7 @@ import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
 import 'package:kingsfam/helpers/clipboard.dart';
+import 'package:kingsfam/helpers/cm_perm_handler.dart';
 import 'package:kingsfam/helpers/dynamic_links.dart';
 
 import 'package:kingsfam/helpers/helpers.dart';
@@ -111,6 +112,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   @override
   void initState() {
     _createNativeAd();
+    // method below this comment might be depriciated
     currRole = getAccessCmHelp(
         widget.commuinity, context.read<AuthBloc>().state.user!.uid);
     context.read<BottomnavbarCubit>().showBottomNav(true);

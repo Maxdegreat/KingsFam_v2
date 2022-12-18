@@ -11,7 +11,7 @@ notifSnackBar({
   required BuildContext context,
 }) {
   return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    backgroundColor: Color.fromARGB(255, 25, 101, 162),
+    backgroundColor: Theme.of(context).colorScheme.secondary,
     duration: Duration(seconds: 4),
           behavior: SnackBarBehavior.floating,
           margin: EdgeInsets.only(
@@ -59,7 +59,7 @@ snackBar(
               backgroundColor: bgColor,
             )
           : SnackBar(
-              content: Text(snackMessage),
+              content: Text(snackMessage, style: Theme.of(context).textTheme.bodyText1,),
               backgroundColor: bgColor,
             );
 }

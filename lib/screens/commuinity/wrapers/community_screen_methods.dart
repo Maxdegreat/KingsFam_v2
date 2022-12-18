@@ -14,11 +14,12 @@ Widget joinBtn(
         },
         child: Text(
           "Join",
-          style: TextStyle(color: Colors.green),
+          style: TextStyle(color: Color.fromARGB(255, 49, 125, 51)),
         ),
         style: ElevatedButton.styleFrom(
+            elevation: 0,
             shape: StadiumBorder(),
-            primary: Theme.of(context).colorScheme.secondary)),
+            primary: Color.fromARGB(37, 50, 235, 62))),
   );
 }
 

@@ -163,16 +163,27 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
         } else {
           log("This is a open cm. join at will");
           // get the role of the user
-          var cmUserInfo = await FirebaseFirestore.instance
+          var cmUserInfoDoc = await FirebaseFirestore.instance
               .collection(Paths.communityMembers)
               .doc(event.commuinity.id)
               .collection(Paths.members)
               .doc(uid)
               .get();
-          if (cmUserInfo.exists && cmUserInfo.data() != null) {
-            Map<String, dynamic> role = await CmActions.getRidPermissions(
-                rid: cmUserInfo["roleId"], cmId: event.commuinity.id!);
-            emit(state.copyWith(role: role));
+          if (cmUserInfoDoc.exists && cmUserInfoDoc.data() != null) {
+            String? kfRoleName = cmUserInfoDoc.data()!["kfRole"] ?? null;
+            log("past the kfRoleName ????????????????????????????????????????????????????");
+            // if user has a kfRole aka non custom do not attempt to look for rid
+            if (kfRoleName != null) {
+              Map<String, dynamic>? role =
+                  CmActions.getKfRolePermissions(roleName: kfRoleName);
+              log("we are returning a pre built role in cm bloc");
+              emit(state.copyWith(role: role ?? {"member": []}));
+            } else {
+              Map<String, dynamic> role = await CmActions.getRidPermissions(
+                  rid: cmUserInfoDoc.data()!["roleId"],
+                  cmId: event.commuinity.id!);
+              emit(state.copyWith(role: role));
+            }
           }
           // when the member is apart of the community
           emitWhenCmIsOpen(isMem, [], [], CommuintyStatus.loaded);
@@ -203,7 +214,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       // ignore: unused_local_variable
       final Userr userr = await _userrRepository.getUserrWithId(
           userrId: _authBloc.state.user!.uid);
-      
 
       // stream subscription for community cords
       _streamSubscriptionKingsCord?.cancel();
@@ -211,15 +221,20 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
           .getCommuinityCordsStream(commuinity: event.commuinity, limit: 50)
           .listen((kcords) async {
         // final allCords = await Future.wait(kcords);
-        final Map<String, List<KingsCord?>> kingsCords = 
-          await KingsCordRepository().futureWaitCord(kcords, event.commuinity.id!, _authBloc.state.user!.uid);
+        final Map<String, List<KingsCord?>> kingsCords =
+            await KingsCordRepository().futureWaitCord(
+                kcords, event.commuinity.id!, _authBloc.state.user!.uid);
 
         // The updated status in the emit is used in cm screen listener. if status is updated we setstate. thats it.
-        emit(state.copyWith(kingCords: kingsCords["kinscord"], mentionedCords: kingsCords["mentioned"], status: CommuintyStatus.updated));
-        Future.delayed(Duration(milliseconds: 50)).then((value) => emit(state.copyWith(status: CommuintyStatus.inital)));
+        emit(state.copyWith(
+            kingCords: kingsCords["kinscord"],
+            mentionedCords: kingsCords["mentioned"],
+            status: CommuintyStatus.updated));
+        Future.delayed(Duration(milliseconds: 50)).then(
+            (value) => emit(state.copyWith(status: CommuintyStatus.inital)));
         // add(CommunityLoadingEvents(cm: event.commuinity));
       });
-        add(CommunityLoadingPosts(cm: event.commuinity));
+      add(CommunityLoadingPosts(cm: event.commuinity));
     } catch (e) {
       emit(state.copyWith(
           failure: Failure(message: failed, code: e.toString())));
@@ -265,14 +280,14 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
           failure: Failure(message: "Ops something went wrong")));
     }
   }
-  
 
   // this is the loaded for the community content. _____________
-  
+
   Stream<CommuinityState> _mapCommunityLoadingPostToState(
       CommunityLoadingPosts event) async* {
     try {
-      List<Post?> posts = await _churchRepository.getCommuinityPosts(cm: event.cm);
+      List<Post?> posts =
+          await _churchRepository.getCommuinityPosts(cm: event.cm);
       emit(state.copyWith(postDisplay: posts, status: CommuintyStatus.loaded));
     } catch (e) {
       emit(state.copyWith(
@@ -500,34 +515,32 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   void updateCmId(String id, Church cm) {
     emit(state.copyWith(cmId: id));
-   add(CommunityInitalEvent(commuinity: cm));
+    add(CommunityInitalEvent(commuinity: cm));
   }
 
-    setReadStatusFalse({required String kcId}) {
+  setReadStatusFalse({required String kcId}) {
     // seting the read status false for a given kc tracked by the KCid.
     log("this is the method to the read status");
-    for(KingsCord? kc in state.kingCords) {
+    for (KingsCord? kc in state.kingCords) {
       if (kc != null && kc.id! == kcId) {
-        log("we found the kc that we want to update its state"); 
-        state.kingCords.remove(kc); 
-        state.kingCords.add(kc.copyWith(readStatus: false)); 
-        emit(state.copyWith(status: CommuintyStatus.updated));   
+        log("we found the kc that we want to update its state");
+        state.kingCords.remove(kc);
+        state.kingCords.add(kc.copyWith(readStatus: false));
+        emit(state.copyWith(status: CommuintyStatus.updated));
       }
     }
   }
 
-  setMentionedToFalse({ required String kcId}) { 
+  setMentionedToFalse({required String kcId}) {
     // also will update the read status
     for (KingsCord? kc in state.mentionedCords) {
       if (kc != null && kc.id! == kcId) {
         state.mentionedCords.remove(kc);
         state.kingCords.add(kc.copyWith(readStatus: false));
-        emit(state.copyWith(status: CommuintyStatus.updated)); 
+        emit(state.copyWith(status: CommuintyStatus.updated));
       }
     }
   }
-
-
 
   // void updateReadStatusOnKc({required String id, required bool isMentioned}) {
   //   // we need to update the read status on the mentionedCords.
@@ -546,7 +559,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   //   }
 
   //   } else {
-  //   // we need to update the read status on the Cords.  
+  //   // we need to update the read status on the Cords.
   //   for (int i = 0; i < state.kingCords.length; i ++) {
 
   //     KingsCord? kcFromState = state.kingCords[i];

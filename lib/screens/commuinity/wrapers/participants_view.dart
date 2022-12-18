@@ -7,6 +7,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/helpers/cm_perm_handler.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/models/role_modal.dart';
 import 'package:kingsfam/models/user_model.dart';
@@ -27,28 +28,31 @@ class ParticipantsViewArgs {
 class ParticipantsView extends StatefulWidget {
   final CommuinityBloc cmBloc;
   final Church cm;
-  const ParticipantsView({Key? key, required this.cmBloc, required this.cm}) : super(key: key);
+  const ParticipantsView({Key? key, required this.cmBloc, required this.cm})
+      : super(key: key);
   static const String routeName = "ParticipantsView";
   static Route route({required ParticipantsViewArgs args}) {
     return MaterialPageRoute(
-      settings: const RouteSettings(name: routeName),
-      builder: (context) {
-        return ParticipantsView(cmBloc: args.cmBloc, cm: args.cm,);
-      }
-    );
+        settings: const RouteSettings(name: routeName),
+        builder: (context) {
+          return ParticipantsView(
+            cmBloc: args.cmBloc,
+            cm: args.cm,
+          );
+        });
   }
 
   @override
   State<ParticipantsView> createState() => _ParticipantsViewState();
 }
 
-class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerProviderStateMixin {
-
-    @override
+class _ParticipantsViewState extends State<ParticipantsView>
+    with SingleTickerProviderStateMixin {
+  @override
   void initState() {
     super.initState();
     tabctrl = TabController(length: 2, vsync: this);
-    getRoles();
+    // getRoles();
     initGetUsers();
     _controller = ScrollController();
     _controller.addListener(listenToScrolling);
@@ -60,137 +64,173 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
   DocumentSnapshot? lastSeenDocSnap;
   late TabController tabctrl;
 
-  List<Role> roles = [];
+  List<Role> roles = Role.preBuiltRoles; // [];
   // _____________________________________ a
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(title: Text("Participants View")),
+        appBar: AppBar(
+            leading: IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color: Theme.of(context).iconTheme.color,
+                )),
+            title: Text(
+              "Participants View",
+              style: Theme.of(context).textTheme.bodyText1,
+            )),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-
             TabBar(
               controller: tabctrl,
               tabs: [
-                Tab(text: "Participants"),
-                Tab(text: "roles"),
+                Tab(
+                  child: Text(
+                    "Participants",
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                ),
+                Tab(
+                    child: Text(
+                  "roles",
+                  style: Theme.of(context).textTheme.caption,
+                )),
               ],
             ),
-
             Flexible(
-              child: TabBarView(controller: tabctrl, 
-                children: [
-                      // child 1 -------------------------------------------------
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // child 1 will be a row allowing you to view pending joins or baned users ---------
-                              pendingAndBandRow(),
-                               Padding(
-                                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
-                                 child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Color(hc.hexcolorCode("#141829")),
-                                    shape: StadiumBorder(),
-                                  ),
-                                  onPressed: () {
-                                  listenToScrolling();
-                                 }, child: Text("Load more")),
-                               ),
-                              Container(
-                                height: MediaQuery.of(context).size.height / 1.85,
-                                child: ListView.builder(
-                                  itemCount: users.length,
-                                  itemBuilder: (context, index) {
-                                    Userr user = users[index];
-                                        return Card(
-                                          
-                                          color: Color(hc.hexcolorCode("#141829")),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(2.0),
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                ListTile(
-                                                  leading: ProfileImage(
-                                                    pfpUrl: user.profileImageUrl,
-                                                    radius: 30,
-                                                  ),
-                                                  title: Text(user.username),
-                                                  onTap: () {
-                                                  Navigator.of(context).pushNamed(Participant_deep_view.routeName,
-                                            arguments: ParticipantDeepViewArgs(user: user, cmId: widget.cm.id!));
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                  } 
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      // child 1 --------------------------------------------------
-            
-                      // child 2 -----------------------------------------------------
+              child: TabBarView(controller: tabctrl, children: [
+                // child 1 -------------------------------------------------
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // child 1 will be a row allowing you to view pending joins or baned users ---------
+                      pendingAndBandRow(),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextButton(onPressed: () {
-                              Navigator.of(context).pushNamed(CreateRole.routeName, arguments: CreateRoleArgs(cmId: widget.cm.id!));
-                            }, child: Text("Create role")),
-                            SizedBox(height: 7),
-                            Text("roles - " + roles.length.toString()),
-                            SizedBox(height: 10,),
-                            Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 5),
-                            child: Container(
-                              height: MediaQuery.of(context).size.height / 1.8,
-                              child: ListView.builder(
-                                itemCount: roles.length,
-                                itemBuilder: (context, index) {
-                                  Role role = roles[index];
-                                      return Card(
-                                        color: Color(hc.hexcolorCode("##141829")),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(2.0),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              ListTile(
-                                                leading: Text(role.roleName),
-                                                onTap: () {
-                                                  // have a new screen that shows the role permissions
-                                                  Navigator.of(context).pushNamed(RolePermissions.routeName, arguments: RolePermissionsArgs(role: role, cmId: widget.cm.id!));
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                } 
-                              ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 8),
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Color(hc.hexcolorCode("#141829")),
+                              shape: StadiumBorder(),
                             ),
-                          ),
-                          ],
+                            onPressed: () {
+                              listenToScrolling();
+                            },
+                            child: Text("Load more")),
+                      ),
+                      Container(
+                        height: MediaQuery.of(context).size.height / 1.85,
+                        child: ListView.builder(
+                            itemCount: users.length,
+                            itemBuilder: (context, index) {
+                              Userr user = users[index];
+                              return Card(
+                                // color: Color(hc.hexcolorCode("#141829")),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      ListTile(
+                                        leading: ProfileImage(
+                                          pfpUrl: user.profileImageUrl,
+                                          radius: 30,
+                                        ),
+                                        title: Text(
+                                          user.username,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1,
+                                        ),
+                                        onTap: () {
+                                          Navigator.of(context).pushNamed(
+                                              Participant_deep_view.routeName,
+                                              arguments:
+                                                  ParticipantDeepViewArgs(
+                                                      user: user,
+                                                      cmId: widget.cm.id!));
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }),
+                      ),
+                    ],
+                  ),
+                ),
+                // child 1 --------------------------------------------------
+
+                // child 2 -----------------------------------------------------
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ElevatedButton(onPressed: () {
+
+                      //   Navigator.of(context).pushNamed(CreateRole.routeName, arguments: CreateRoleArgs(cmId: widget.cm.id!));
+                      // }, child: Text("Create role", style: Theme.of(context).textTheme.bodyText1,)),
+
+                      SizedBox(height: 7),
+                      Text("roles - " + roles.length.toString(),
+                          style: Theme.of(context).textTheme.caption),
+                      SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        child: Container(
+                          height: MediaQuery.of(context).size.height / 1.8,
+                          child: ListView.builder(
+                              itemCount: roles.length,
+                              itemBuilder: (context, index) {
+                                Role role = roles[index];
+                                return Card(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        ListTile(
+                                          leading: Text(role.roleName,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .caption),
+                                          onTap: () {
+                                            // have a new screen that shows the role permissions
+                                            Navigator.of(context).pushNamed(
+                                                RolePermissions.routeName,
+                                                arguments: RolePermissionsArgs(
+                                                    role: role,
+                                                    cmId: widget.cm.id!));
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }),
                         ),
-                      )
-                ]),
+                      ),
+                    ],
+                  ),
+                )
+              ]),
             ),
           ],
         ),
@@ -199,47 +239,44 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
   }
 
   Widget pendingAndBandRow() {
-
-     return widget.cmBloc
-                                    .state
-                                    .role["permissions"]
-                                    .contains("*") ||
-                                context
-                                    .read<CommuinityBloc>()
-                                    .state
-                                    .role["permissions"]
-                                    .contains("#")
-                            ?
-
-     Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed(ReviewPendingRequest.routeName, arguments: ReviewPendingRequestArgs(cm: widget.cm));
-            }, 
-            child: Text("View Pending Joins"),
-            style: ElevatedButton.styleFrom(
-              primary: Color(hc.hexcolorCode("#141829")),
-              shape: StadiumBorder()
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed(ShowBanedUsers.routeName, arguments: ShowBanedUsersArgs(cmId: widget.cm.id!, cmBloc: context.read<CommuinityBloc>()));
-            }, 
-            child: Text("View Baned Joins"),
-            style: ElevatedButton.styleFrom(
-              primary: Color(hc.hexcolorCode("#141829")),
-              shape: StadiumBorder()
+    return CmPermHandler.isAdmin(context.read<CommuinityBloc>())
+        ? Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(
+                        ReviewPendingRequest.routeName,
+                        arguments: ReviewPendingRequestArgs(cm: widget.cm));
+                  },
+                  child: Text(
+                    "View Pending Joins",
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  style: ElevatedButton.styleFrom(
+                      primary: Theme.of(context).colorScheme.background,
+                      shape: StadiumBorder()),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(ShowBanedUsers.routeName,
+                        arguments: ShowBanedUsersArgs(
+                            cmId: widget.cm.id!,
+                            cmBloc: context.read<CommuinityBloc>()));
+                  },
+                  child: Text("View Baned Joins",
+                      style: Theme.of(context).textTheme.bodyText1),
+                  style: ElevatedButton.styleFrom(
+                      primary: Theme.of(context).colorScheme.background,
+                      shape: StadiumBorder()),
+                )
+              ],
             ),
           )
-        ],
-      ),
-    ) : SizedBox.shrink();
+        : SizedBox.shrink();
   }
 
   initGetUsers() async {
@@ -294,8 +331,8 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
   void listenToScrolling() async {
     List<Userr> lst = await grabLimitUserrs();
 
-        users.addAll(lst);
-        setState(() {});
+    users.addAll(lst);
+    setState(() {});
     // if (_controller.position.atEdge) {
     //   if (_controller.position.pixels != 0.0 &&
     //       _controller.position.maxScrollExtent == _controller.position.pixels) {
@@ -307,23 +344,23 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
     // }
   }
 
-
-
   void getRoles() async {
-    QuerySnapshot rolesSanp = await FirebaseFirestore.instance.collection(Paths.communityMembers).doc(widget.cm.id).collection(Paths.communityRoles).limit(10).get();
+    QuerySnapshot rolesSanp = await FirebaseFirestore.instance
+        .collection(Paths.communityMembers)
+        .doc(widget.cm.id)
+        .collection(Paths.communityRoles)
+        .limit(10)
+        .get();
     // get roles fromDoc
     for (var r in rolesSanp.docs) {
       Role role = Role.fromDoc(r);
-      roles.add(role); 
+      roles.add(role);
     }
     setState(() {});
   }
 
-
-
-
   // admin options below
-  
+
   // Future<dynamic> _adminsOptions({
   //     required Userr participatant,
   //     required String role}) {
@@ -435,6 +472,5 @@ class _ParticipantsViewState extends State<ParticipantsView> with SingleTickerPr
   //     ],
   //   );
   // }
-
 
 }

@@ -38,14 +38,12 @@ class RolePermissions extends StatefulWidget {
 
 class _RolePermissionsState extends State<RolePermissions>
     with SingleTickerProviderStateMixin {
-  late TabController _tabC;
   bool isOwner = false;
   bool isLoading = false;
   
   @override
   void initState() {
     super.initState();
-    _tabC = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -57,14 +55,20 @@ class _RolePermissionsState extends State<RolePermissions>
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.role.roleName),
+          leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).iconTheme.color,
+              )),
+          title: Text(widget.role.roleName, style: Theme.of(context).textTheme.bodyText1),
           actions: [
             TextButton(onPressed: () async {
               isLoading = true;
               setState(() {});
               await FirebaseFirestore.instance.collection(Paths.communityMembers).doc(widget.cmId).collection(Paths.communityRoles).doc(widget.role.id).update(widget.role.toDoc());
               Navigator.of(context).pop();
-            }, child: Text("Save"))
+            }, child: Text("Save", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.green)))
           ],
         ),
         body: Column(
@@ -72,47 +76,34 @@ class _RolePermissionsState extends State<RolePermissions>
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            TabBar(
-              controller: _tabC,
-              tabs: [Text("Permissions"), Text("Members")],
-            ),
+           
             Flexible(
-              child: TabBarView(
-                controller: _tabC,
-                children: [
-                  // child 1 permissions
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: Container(
-                        height: MediaQuery.of(context).size.height / 1.5,
-                        width: MediaQuery.of(context).size.width,
-                        child: ListView.builder(
-                            itemCount: permissionsUi.length,
-                            itemBuilder: (context, index) {
-                              String action = permissionsUi[index];
-                              return ListTile(
-                                title: Text(action),
-                                trailing: Checkbox(
-                                  value: isOwner ? true : widget.role.permissions.contains(action),
-                                  onChanged: (bool? value) {
-                                    if (isOwner) return ;
-                                    if (widget.role.permissions.contains(action)) {
-                                      // remove the action and update value
-                                      widget.role.permissions.remove(action);
-                                    } else {
-                                      widget.role.permissions.add(action);
-                                    }
-                                    setState(() {});
-                                  },
-                                ),
-                              );
-                            })),
-                  ),
-                    
-                  // child 2 members
-                  Container(child: Text("Show members with the role"),
-                  )
-                ],
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Container(
+                    height: MediaQuery.of(context).size.height / 1.5,
+                    width: MediaQuery.of(context).size.width,
+                    child: ListView.builder(
+                        itemCount: permissionsUi.length,
+                        itemBuilder: (context, index) {
+                          String action = permissionsUi[index];
+                          return ListTile(
+                            title: Text(action),
+                            trailing: Checkbox(
+                              value: isOwner ? true : widget.role.permissions.contains(action),
+                              onChanged: (bool? value) {
+                                if (isOwner) return ;
+                                if (widget.role.permissions.contains(action)) {
+                                  // remove the action and update value
+                                  widget.role.permissions.remove(action);
+                                } else {
+                                  widget.role.permissions.add(action);
+                                }
+                                setState(() {});
+                              },
+                            ),
+                          );
+                        })),
               ),
             )
           ],
@@ -123,7 +114,7 @@ class _RolePermissionsState extends State<RolePermissions>
 
   List<String> permissionsUi = [
     // child 1
-    CmActions.makeRoom, CmActions.makeEvent, CmActions.accessToSettings,
+    CmActions.makeRoom, CmActions.accessToSettings,
     CmActions.canChangeRoles,
     CmActions.updatePrivacy, CmActions.kickAndBan,
   ];
