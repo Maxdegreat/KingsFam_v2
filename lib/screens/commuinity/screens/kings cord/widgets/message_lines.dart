@@ -339,7 +339,7 @@ class _MessageLinesState extends State<MessageLines> {
         children: [
           // _showReplyBarUi(widget.message.replyed),
           Text(widget.message.text!,
-              style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.w500, fontSize: 16.5)),
+              style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.w500, fontSize: 15)),
           _showReactionBarUi(messageReactions: widget.message.reactions)
         ],
       ),

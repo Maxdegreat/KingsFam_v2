@@ -51,7 +51,6 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
           commuinityId: event.commuinityId, lastPostId: event.lastPostId);
       }
       
-      log("The length of the post is ${posts.length}");
       if (posts.length >= 2) {
         posts.add( Post.empty.copyWith(id: posts.last!.id) );
         posts.insert( 2, Post.empty );
@@ -80,10 +79,11 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       final likedPostIds = await _postsRepository.getLikedPostIds(
           userId: _authBloc.state.user!.uid, posts: postsGot);
       _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
+
       List<Post?> posts = List<Post?>.from(state.posts)..addAll(postsGot);
 
-      posts.add(Post.empty.copyWith(id: posts.last!.id));
-      posts.insert(2, Post.empty.copyWith(id: null));
+      // posts.add(Post.empty.copyWith(id: posts.last!.id));
+      // posts.insert(2, Post.empty.copyWith(id: null));
 
       yield state.copyWith(posts: posts, status: FeedStatus.success);
     } catch (err) {
@@ -99,9 +99,9 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     try {
       final lastPostId = state.posts.isNotEmpty ? state.posts.last!.id : null;
       final posts = await _postsRepository.getUserFeed(userId: _authBloc.state.user!.uid, lastPostId: lastPostId, limit: 2);
-      posts.add(Post.empty.copyWith(id: posts.last!.id));
 
       final updatedPosts = List<Post?>.from(state.posts)..addAll(posts);
+      updatedPosts.add(Post.empty.copyWith(id: posts.last!.id));
 
       final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: posts);
       yield state.copyWith(posts: updatedPosts, status: FeedStatus.success);
@@ -123,9 +123,9 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
 
       final posts = await _postsRepository.getCommuinityFeed(
           commuinityId: event.commuinityId, lastPostId: lastPostId);
-      posts.add(Post.empty.copyWith(id: posts.last!.id));
 
       final updatedPosts = List<Post?>.from(state.posts)..addAll(posts);
+      updatedPosts.add(Post.empty.copyWith(id: posts.last!.id));
 
       final likedPostIds = await _postsRepository.getLikedPostIds(
           userId: _authBloc.state.user!.uid, posts: posts);

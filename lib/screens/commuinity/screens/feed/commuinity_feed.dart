@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -92,6 +93,7 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
     _bannerAd.load();
   }
 
+  List<int> updateAdCheck = [];
   @override
   Widget build(BuildContext context) {
     // ignore: unused_local_variable
@@ -116,6 +118,11 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
                 ? SafeArea(
                   child: PageView.builder(
                       onPageChanged: (pageNum) {
+                        
+                        // if (updateAdCheck.fin) {
+
+                        // }
+
                         if (pageNum == state.posts.length - 1) {
                           if (state.posts.length != 0) {
                             context.read<FeedBloc>()
