@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/screens/commuinity/actions.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 
@@ -40,5 +43,45 @@ class CmPermHandler {
   static bool canUpdateRole(CommuinityBloc cmBloc) {
     var p = cmBloc.state.role["permissions"];
     return p.contains("*") || p.contains("#");
+  }
+
+  // list of actions can be used to depict or calculate actions
+  static const List<String> permissionsUi = [
+    // child 1
+    CmActions.makeRoom, CmActions.accessToSettings,
+    CmActions.canChangeRoles,
+    CmActions.updatePrivacy, CmActions.kickAndBan,
+  ];
+
+  // map where roleName is key and maps to permissions.
+  static const Map<String, dynamic> roleNameToPerm = {
+    "Lead": [
+      CmActions.makeRoom,
+      CmActions.accessToSettings,
+      CmActions.canChangeRoles,
+      CmActions.updatePrivacy,
+      CmActions.kickAndBan,
+    ],
+    "Admin": [
+      CmActions.makeRoom,
+      CmActions.accessToSettings,
+      CmActions.canChangeRoles,
+      CmActions.updatePrivacy,
+      CmActions.kickAndBan,
+    ],
+    "Mod": [
+      CmActions.updatePrivacy,
+      CmActions.kickAndBan,
+    ],
+    "Member": []
+  };
+
+  static void promoteMember({required String memId, required String cmId, required String promotionRoleName}) {
+    // path to firebase
+    var fire = FirebaseFirestore.instance;
+    // update
+    fire.collection(Paths.communityMembers).doc(cmId).collection(Paths.members).doc(memId).update({"kfRole" : promotionRoleName});
+    // done
+
   }
 }

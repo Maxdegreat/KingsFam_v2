@@ -59,7 +59,9 @@ class _ParticipantsViewState extends State<ParticipantsView>
   }
 
   // my state managment hub lol ___________\|_
-  List<Userr> users = [];
+  // [ [Userr, roleName] ]
+  List<dynamic> users = [];
+
   late ScrollController _controller;
   DocumentSnapshot? lastSeenDocSnap;
   late TabController tabctrl;
@@ -132,7 +134,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
                         child: ListView.builder(
                             itemCount: users.length,
                             itemBuilder: (context, index) {
-                              Userr user = users[index];
+                              dynamic user = users[index];
                               return Card(
                                 // color: Color(hc.hexcolorCode("#141829")),
                                 child: Padding(
@@ -142,25 +144,91 @@ class _ParticipantsViewState extends State<ParticipantsView>
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      ListTile(
-                                        leading: ProfileImage(
-                                          pfpUrl: user.profileImageUrl,
-                                          radius: 30,
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: ListTile(
+                                          leading: ProfileImage(
+                                            pfpUrl: user[0].profileImageUrl,
+                                            radius: 30,
+                                          ),
+                                          title: Text(
+                                            user[0].username,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1,
+                                          ),
+                                          trailing: Text(user[1] ?? "Member", style: Theme.of(context).textTheme.caption!.copyWith(fontStyle: FontStyle.italic)),
+                                          onTap: () {
+
+
+                                              showModalBottomSheet(
+                                                context: context, 
+                                                builder: (context) {
+                                                  return Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        Padding(
+                                                          padding: const EdgeInsets.all(8.0),
+                                                          child: Align(
+                                                            alignment: Alignment.topRight,
+                                                            child: Text("Role: " + user[1], style: Theme.of(context).textTheme.caption),
+                                                          ),
+                                                        ),
+                                                        // show name,
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: user[0].id));
+                                                          },
+                                                          child: Padding(
+                                                            padding: const EdgeInsets.all(8.0),
+                                                            child: Text( "view " + user[0].username + "\'s profile", style: Theme.of(context).textTheme.caption),
+                                                          ),
+                                                        ),
+                                                        // view profile
+                                                        // promote 
+
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            if (CmPermHandler.isAdmin(widget.cmBloc)) {
+                                                              // Admins and up have the ability to update roles
+                                                              promotionOptionsBottomSheet(context, user).then((value) => Navigator.of(context).pop());
+                                                            }
+                                                          },
+                                                          child: Padding(
+                                                            padding: const EdgeInsets.all(8.0),
+                                                            child: Text("Promote", style: Theme.of(context).textTheme.caption),
+                                                          ),
+                                                        ),
+
+                                                        // kick name,
+                                                        Padding(
+                                                          padding: const EdgeInsets.all(8.0),
+                                                          child: Text("Kick ${user[0].username}", style: Theme.of(context).textTheme.caption),
+                                                        ),
+                                                        // ban name,
+                                                        Padding(
+                                                          padding: const EdgeInsets.all(8.0),
+                                                          child: Text("Ban ${user[0].username}", style: Theme.of(context).textTheme.caption ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                }
+                                              ).then((value) => setState((){})); 
+
+
+                                            // Navigator.of(context).pushNamed(
+                                            //     Participant_deep_view.routeName,
+                                            //     arguments:
+                                            //         ParticipantDeepViewArgs(
+                                            //             user: user[0],
+                                            //             cmId: widget.cm.id!));
+                                          },
                                         ),
-                                        title: Text(
-                                          user.username,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1,
-                                        ),
-                                        onTap: () {
-                                          Navigator.of(context).pushNamed(
-                                              Participant_deep_view.routeName,
-                                              arguments:
-                                                  ParticipantDeepViewArgs(
-                                                      user: user,
-                                                      cmId: widget.cm.id!));
-                                        },
                                       ),
                                     ],
                                   ),
@@ -238,6 +306,52 @@ class _ParticipantsViewState extends State<ParticipantsView>
     );
   }
 
+  Future<dynamic> promotionOptionsBottomSheet(BuildContext context, user) {
+    return showModalBottomSheet(
+                                                              context: context, 
+                                                              builder: (context) {
+                                                                return Column(
+                                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  children: [
+                                                                    Padding(
+                                                                      padding: const EdgeInsets.all(8.0),
+                                                                      child: GestureDetector(
+                                                                        onTap: () {
+                                                                          CmPermHandler.promoteMember(memId: user[0].id, cmId: widget.cm.id!, promotionRoleName: "Admin");
+                                                                          user[1] = "Admin";
+                                                                          Navigator.of(context).pop;
+                                                                        },
+                                                                        child: Text("Make Admin", style: Theme.of(context).textTheme.caption)),
+                                                                    ),
+                                                                    GestureDetector(
+                                                                      onTap: () {
+                                                                          CmPermHandler.promoteMember(memId: user[0].id, cmId: widget.cm.id!, promotionRoleName: "Mod");
+                                                                          user[1] = "Mod";
+                                                                          Navigator.of(context).pop;
+                                                                      },
+                                                                      child: Padding(
+                                                                        padding: const EdgeInsets.all(8.0),
+                                                                        child: Text("Make Mod", style: Theme.of(context).textTheme.caption),
+                                                                      ),
+                                                                    ),
+                                                                    GestureDetector(
+                                                                      onTap: () {
+                                                                          CmPermHandler.promoteMember(memId: user[0].id, cmId: widget.cm.id!, promotionRoleName: "Member");
+                                                                          user[1] = "Member";
+                                                                          Navigator.of(context).pop;
+                                                                      },
+                                                                      child: Padding(
+                                                                        padding: const EdgeInsets.all(8.0),
+                                                                        child: Text("Make Member" , style: Theme.of(context).textTheme.caption),
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                );
+                                                              }
+                                                            );
+  }
+
   Widget pendingAndBandRow() {
     return CmPermHandler.isAdmin(context.read<CommuinityBloc>())
         ? Padding(
@@ -280,7 +394,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
   }
 
   initGetUsers() async {
-    List<Userr> x = [];
+    List<dynamic> x = [];
     x = await grabLimitUserrs();
     log("the users count is: " + x.length.toString());
     for (var j in x) {
@@ -290,8 +404,8 @@ class _ParticipantsViewState extends State<ParticipantsView>
   }
 
   // grab limit ids from the cm request
-  Future<List<Userr>> grabLimitUserrs() async {
-    List<Userr> bucket = [];
+  Future<List<dynamic>> grabLimitUserrs() async {
+    List<dynamic> bucket = [];
     if (lastSeenDocSnap == null) {
       var snaps = await FirebaseFirestore.instance
           .collection(Paths.communityMembers)
@@ -300,12 +414,14 @@ class _ParticipantsViewState extends State<ParticipantsView>
           .limit(7)
           .get();
       lastSeenDocSnap = snaps.docs.last;
-      log("snaps doc len: " + snaps.docs.length.toString());
+
       for (var x in snaps.docs) {
         if (x.exists) {
           Userr u = await UserrRepository().getUserrWithId(userrId: x.id);
-          // log(u.username.toString());
-          bucket.add(u);
+          String? roleName = x.data()["kfRole"];
+          log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ROLEnAME = " +
+              roleName.toString());
+          bucket.add([u, roleName]);
         }
       }
     } else {
@@ -319,7 +435,10 @@ class _ParticipantsViewState extends State<ParticipantsView>
       for (var x in snaps.docs) {
         if (x.exists) {
           Userr u = await UserrRepository().getUserrWithId(userrId: x.id);
-          bucket.add(u);
+          String? roleName = x.data()["kfRole"];
+          log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ROLEnAME = " +
+              roleName.toString());
+          bucket.add([u, roleName]);
         }
       }
     }
@@ -329,7 +448,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
   }
 
   void listenToScrolling() async {
-    List<Userr> lst = await grabLimitUserrs();
+    List<dynamic> lst = await grabLimitUserrs();
 
     users.addAll(lst);
     setState(() {});

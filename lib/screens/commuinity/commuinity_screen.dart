@@ -48,7 +48,6 @@ import 'package:kingsfam/screens/commuinity/actions.dart';
 
 // ignore: unused_import
 import '../profile/bloc/profile_bloc.dart';
-import 'helper.dart';
 // ignore: unnecessary_import
 import 'screens/says_room/says_room.dart';
 
@@ -89,7 +88,7 @@ class CommuinityScreen extends StatefulWidget {
 class _CommuinityScreenState extends State<CommuinityScreen>
     with SingleTickerProviderStateMixin {
   late TextEditingController _txtController;
-  String? currRole;
+  
 
   late NativeAd _nativeAd;
   bool _isNativeAdLoaded = false;
@@ -112,9 +111,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   @override
   void initState() {
     _createNativeAd();
-    // method below this comment might be depriciated
-    currRole = getAccessCmHelp(
-        widget.commuinity, context.read<AuthBloc>().state.user!.uid);
+    
     context.read<BottomnavbarCubit>().showBottomNav(true);
     super.initState();
     _txtController = TextEditingController();
@@ -272,13 +269,13 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                       ?
                       // status is shielded
                       _mainScrollView(
-                          context, state, widget.commuinity, currRole, nativeAdWidget(_nativeAd, _isNativeAdLoaded, context), () {
+                          context, state, widget.commuinity, nativeAdWidget(_nativeAd, _isNativeAdLoaded, context), () {
                             if (mounted)
                               setState(() {});
                               else log("not mounted so not setting state in cmscreen mainScrollWheel");
                             })
                       : _mainScrollView(context, state, widget.commuinity,
-                          currRole, nativeAdWidget(_nativeAd, _isNativeAdLoaded, context), () {if (mounted) setState(() {}); else log("not mounted so not setting state in cmscreen mainScrollWheel");}),
+                          nativeAdWidget(_nativeAd, _isNativeAdLoaded, context), () {if (mounted) setState(() {}); else log("not mounted so not setting state in cmscreen mainScrollWheel");}),
             ));
       }),
     );

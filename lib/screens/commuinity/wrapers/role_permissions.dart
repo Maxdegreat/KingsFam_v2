@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/helpers/cm_perm_handler.dart';
 import 'package:kingsfam/models/role_modal.dart';
 import 'package:kingsfam/screens/commuinity/actions.dart';
 import 'package:provider/single_child_widget.dart';
@@ -17,7 +18,8 @@ class RolePermissionsArgs {
 class RolePermissions extends StatefulWidget {
   final Role role;
   final String cmId;
-  const RolePermissions({Key? key, required this.role, required this.cmId}) : super(key: key);
+  const RolePermissions({Key? key, required this.role, required this.cmId})
+      : super(key: key);
 
   @override
   State<RolePermissions> createState() => _RolePermissionsState();
@@ -40,7 +42,7 @@ class _RolePermissionsState extends State<RolePermissions>
     with SingleTickerProviderStateMixin {
   bool isOwner = false;
   bool isLoading = false;
-  
+
   @override
   void initState() {
     super.initState();
@@ -48,7 +50,6 @@ class _RolePermissionsState extends State<RolePermissions>
 
   @override
   Widget build(BuildContext context) {
-
     if (widget.role.permissions.contains("*")) {
       isOwner = true;
     }
@@ -61,22 +62,15 @@ class _RolePermissionsState extends State<RolePermissions>
                 Icons.arrow_back_ios,
                 color: Theme.of(context).iconTheme.color,
               )),
-          title: Text(widget.role.roleName, style: Theme.of(context).textTheme.bodyText1),
-          actions: [
-            TextButton(onPressed: () async {
-              isLoading = true;
-              setState(() {});
-              await FirebaseFirestore.instance.collection(Paths.communityMembers).doc(widget.cmId).collection(Paths.communityRoles).doc(widget.role.id).update(widget.role.toDoc());
-              Navigator.of(context).pop();
-            }, child: Text("Save", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.green)))
-          ],
+          title: Text(widget.role.roleName,
+              style: Theme.of(context).textTheme.bodyText1),
+          
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-           
             Flexible(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5),
@@ -84,15 +78,17 @@ class _RolePermissionsState extends State<RolePermissions>
                     height: MediaQuery.of(context).size.height / 1.5,
                     width: MediaQuery.of(context).size.width,
                     child: ListView.builder(
-                        itemCount: permissionsUi.length,
+                        itemCount: CmPermHandler.permissionsUi.length,
                         itemBuilder: (context, index) {
-                          String action = permissionsUi[index];
+                          String action = CmPermHandler.permissionsUi[index];
                           return ListTile(
                             title: Text(action),
                             trailing: Checkbox(
-                              value: isOwner ? true : widget.role.permissions.contains(action),
+                              value: isOwner
+                                  ? true
+                                  : CmPermHandler.roleNameToPerm[widget.role.roleName].contains(action),
                               onChanged: (bool? value) {
-                                if (isOwner) return ;
+                                if (isOwner) return;
                                 if (widget.role.permissions.contains(action)) {
                                   // remove the action and update value
                                   widget.role.permissions.remove(action);
@@ -112,12 +108,7 @@ class _RolePermissionsState extends State<RolePermissions>
     );
   }
 
-  List<String> permissionsUi = [
-    // child 1
-    CmActions.makeRoom, CmActions.accessToSettings,
-    CmActions.canChangeRoles,
-    CmActions.updatePrivacy, CmActions.kickAndBan,
-  ];
+
 
   // if wid.role contains an Id the add a check mark on it. if not then no check mark.
 
