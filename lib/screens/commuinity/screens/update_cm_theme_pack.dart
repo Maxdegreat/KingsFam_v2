@@ -1,9 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-// import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -126,8 +123,6 @@ class _UpdateCmThemePackState extends State<UpdateCmThemePack> {
               } else {
                 
               }
-
-              // await _stripePayCardWidget();
             },
             child: b ? Text(
               "BOOST ${widget.cmName.toUpperCase()}",
@@ -189,85 +184,5 @@ class _UpdateCmThemePackState extends State<UpdateCmThemePack> {
     );
   }
 
-  Future<void> _stripePayCardWidget() async {
-    try {
-      _paymentIntent = await makePaymentIntent("2", "USD");
-      if (_paymentIntent == null) {
-        log("THE INTENT IS NULL GANG GANG ... FOR YOU MY LORD.");
-      }
-      // create a payment sheet
-      // await Stripe.instance
-      //     .initPaymentSheet(
-      //         paymentSheetParameters: SetupPaymentSheetParameters(
-      //             paymentIntentClientSecret: _paymentIntent!['client_secret'],
-      //             style: ThemeMode.dark,
-      //             merchantDisplayName: 'KingsFam'))
-      //     .then((value) => displayPaymentSheet());
-    } catch (e) {
-      log(e.toString() + "update_cm_theme_pack.dart - _stripePayCardWidget");
-    }
-    // return showModalBottomSheet(
-    //   isScrollControlled: true,
-    //   context: context,
-    //   builder: (context) => Column(
-    //     mainAxisSize: MainAxisSize.min,
-    //     children: [
-    //       StripePayCardWidget(cardTitle: 'Boost ${widget.cmName}', price: '\$1.99',),
-    //     ],
-    //   )
-    // );
-  }
 
-  displayPaymentSheet() async {
-    // await Stripe.instance.presentPaymentSheet().then((value) => showDialog(
-    //     context: context,
-    //     builder: (_) => AlertDialog(
-    //           content: Column(
-    //             mainAxisSize: MainAxisSize.min,
-    //             children: [
-    //               Row(
-    //                 children: [
-    //                   Icon(
-    //                     Icons.check_circle_outline_outlined,
-    //                     color: Colors.green,
-    //                   ),
-    //                   Text("Success Payment Fam")
-    //                 ],
-    //               )
-    //             ],
-    //           ),
-    //         )));
-
-    _paymentIntent = null;
-  }
-
-  makePaymentIntent(String amount, String currency) async {
-    try {
-      Map<String, dynamic> body = {
-        'amount': getAmount(amount),
-        'currency': currency,
-        'payment_method_types[]': 'card'
-      };
-
-      var response = await http.post(
-        Uri.parse('https://api.stripe.com/v1/payment_intents'),
-        headers: {
-          'Authorization': 'Bearer $test_secret_key',
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: body,
-      );
-      print("response =============> ${response.body.toString()}");
-      return jsonDecode(response.body);
-    } catch (e) {
-      // ignore: unnecessary_statements
-      log(e.toString() + "update_cm_theme_pack.dart - makePayment");
-    }
-  }
-
-  getAmount(String amount) {
-    final calculation = (int.parse(amount)) * 100;
-    print(calculation.toString());
-    return calculation.toString();
-  }
 }

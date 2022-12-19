@@ -35,7 +35,6 @@ void main() async {
 
   EquatableConfig.stringify = kDebugMode;
   Bloc.observer = SimpleBlocObserver();
-  // await Stripe.instance.applySettings();
   await UserPreferences.init();
   runApp(MyApp());
 }

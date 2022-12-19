@@ -99,7 +99,6 @@ dependencies:
   visibility_detector: ^0.3.3
   video_editor: ^1.4.3
   helpers: ^1.1.4
-  flutter_stripe: ^5.0.0
   carousel_slider: ^4.1.1
   new_version: ^0.3.1
   simple_link_preview: ^1.0.2
