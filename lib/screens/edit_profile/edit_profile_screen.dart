@@ -119,8 +119,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: Container(
                       child: ElevatedButton(
                     onPressed: () => _pickBannerImage(context),
-                    child: Text("Edit banner image", style: Theme.of(context).textTheme.bodyText1,),
-                    style: ElevatedButton.styleFrom(shadowColor: Colors.transparent),
+                    child: Text(
+                      "Edit banner image",
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    style: ElevatedButton.styleFrom(
+                        shadowColor: Colors.transparent),
                   )),
                 ),
                 Container(
@@ -135,11 +139,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
-                      child: ElevatedButton(
-                          onPressed: () => _pickProfileImage(context),
-                          child: Text("Edit banner image", style: Theme.of(context).textTheme.bodyText1,),
-                          style: ElevatedButton.styleFrom(shadowColor: Colors.transparent),),
-                          ),
+                    child: ElevatedButton(
+                      onPressed: () => _pickProfileImage(context),
+                      child: Text(
+                        "Edit banner image",
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          shadowColor: Colors.transparent),
+                    ),
+                  ),
                 ),
                 Padding(
                     padding: const EdgeInsets.symmetric(
@@ -242,9 +251,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               height: 20,
                             ),
 
-                            Row(
+                            Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   TextButton(
                                     onLongPress: () =>
@@ -256,49 +266,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                 "Long Press For 5 Seconds To Log Out"))),
                                     child: Text(
                                       "Log Me Out",
-                                      style: Theme.of(context).textTheme.bodyText1,
+                                      style:
+                                          Theme.of(context).textTheme.bodyText1,
                                     ),
                                   ),
                                   SizedBox(
-                                    width: 15,
+                                    height: 15,
                                   ),
                                   TextButton(
-                                    onLongPress: () {
-                                      context
-                                          .read<AuthRepository>()
-                                          .deleteAccount();
-                                      // Navigator.of(context).pushNamed(routeName)
-                                      // showDialog(context: context, builder: (context) {
-                                      //   return AlertDialog(
-                                      //     title:
-                                      //         const Text('Delete Your Account'),
-                                      //     content: SingleChildScrollView(
-                                      //       child: ListBody(
-                                      //         children: const <Widget>[
-                                      //           Text(
-                                      //               'Upon deleteing your account you will remove all your information from'
-                                      //               ' our cloud. You will have to make a new account if you would like to come back to KingsFam.'),
-                                      //         ],
-                                      //       ),
-                                      //     ),
-                                      //     actions: <Widget>[
-                                      //       TextButton(
-                                      //         child: const Text('Nevermind, go back', style:TextStyle(color: Colors.white)),
-                                      //         onPressed: () {
-                                      //           Navigator.of(context).pop();
-                                      //         },
-                                      //       ),
-                                      //       TextButton(
-                                      //         child: const Text('I understand', style:TextStyle(color: Colors.red)),
-                                      //         onPressed: () {
-                                      //           snackBar(snackMessage: "hold for 5 seconds to delete your account", context: context);
-                                      //         },
-                                      //         onLongPress: () {
-                                      //
-                                      //         },
-                                      //       ),
-                                      //     ]);
-                                      // });
+                                    onLongPress: () async {
+                                      await delAcc(context)
+                                          ? context
+                                              .read<AuthRepository>()
+                                              .deleteAccount()
+                                          : snackBar(
+                                              snackMessage:
+                                                  "Your account was not deleted.",
+                                              context: context);
                                     },
                                     onPressed: () => ScaffoldMessenger.of(
                                             context)
@@ -348,6 +332,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       context.read<EditProfileCubit>().submit();
     }
   }
+}
+
+Future delAcc(BuildContext context) {
+  return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("You are about to delete your account",
+              style: Theme.of(context).textTheme.bodyText1),
+          content: Text("You can not undo this action",
+              style: Theme.of(context).textTheme.bodyText1),
+          actions: [
+            GestureDetector(
+                onTap: () => Navigator.pop(context, false),
+                child: Text("No, keep account",
+                    style: Theme.of(context).textTheme.bodyText1)),
+            SizedBox(
+              height: 10,
+            ),
+            GestureDetector(
+                onTap: () => Navigator.pop(context, true),
+                child: Text("Delete your account",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1!
+                        .copyWith(color: Colors.red[400])))
+          ],
+        );
+      });
 }
 
 class PickColorPref extends StatelessWidget {

@@ -166,7 +166,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
             add(CommunityLoadingCords(commuinity: cm));
           }
         } else {
-          log("This is a open cm. join at will");
           // get the role of the user
           var cmUserInfoDoc = await FirebaseFirestore.instance
               .collection(Paths.communityMembers)

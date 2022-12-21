@@ -10,8 +10,6 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/firebase_notifs.dart';
 import 'package:kingsfam/helpers/kingscord_path.dart';
 import 'package:kingsfam/helpers/notification_helper.dart';
-import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/screens/chat_room/chat_room.dart';
 
 //import 'package:firebase_messaging/firebase_messaging.dart';
 //import 'package:kingsfam/models/models.dart';

@@ -197,7 +197,6 @@ class _CommuinityScreenState extends State<CommuinityScreen>
       }, builder: (context, state) {
         if (context.read<CommuinityBloc>().state.cmId !=
             widget.commuinity.id!) {
-          log("cm id's are not equal so restarting...");
           context
               .read<CommuinityBloc>()
               .updateCmId(widget.commuinity.id!, widget.commuinity);

@@ -33,12 +33,15 @@ class SplashScreen extends StatelessWidget {
         } 
       },
       builder: (context, state) {
-        return Scaffold(
-            body: Container(
-          height: double.infinity,
-          width: double.infinity,
-          color: Colors.red,
-        ));
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: Scaffold(
+              body: Container(
+            height: double.infinity,
+            width: double.infinity,
+            color: Colors.red,
+          )),
+        );
       },
     );
   }
