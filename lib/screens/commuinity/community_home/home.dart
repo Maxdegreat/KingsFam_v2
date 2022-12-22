@@ -68,59 +68,61 @@ class _CommunityHomemState extends State<CommunityHome> {
         },
         builder: (context, state) {
           CommuinityBloc cmB = widget.cmB!;
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                ContainerWithURLImg(
-                    height: 210,
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  ContainerWithURLImg(
+                      height: 210,
+                      width: double.infinity,
+                      imgUrl: widget.cm.imageUrl),
+                  SizedBox(height: 10),
+                  Container(
                     width: double.infinity,
-                    imgUrl: widget.cm.imageUrl),
-                SizedBox(height: 10),
-                Container(
-                  width: double.infinity,
-                  child: Padding(
-                    padding: const EdgeInsets.all(11.0),
-                    child: Text(
-                      "Members: ${widget.cm.size}",
-                      style: Theme.of(context).textTheme.caption,
+                    child: Padding(
+                      padding: const EdgeInsets.all(11.0),
+                      child: Text(
+                        "Members: ${widget.cm.size}",
+                        style: Theme.of(context).textTheme.caption,
+                      ),
                     ),
                   ),
-                ),
-                // if ban show that user is ban
-                cmB.state.isBaned
-                    ? Text("You are banned from this community")
-                    : cmB.state.status == CommuintyStatus.armormed
-                        ? Text(
-                            "This Community is armormed, you must request join access before you can join")
-                        : joinLeaveBtn(
-                            state: state, context: context, cm: widget.cm),
-                Container(
-                  width: double.infinity,
-                  color: Theme.of(context).colorScheme.secondary,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 10),
-                        Container(
-                          width: double.infinity,
-                          child: Text(
-                            widget.cm.about,
-                            softWrap: true,
-                            style: Theme.of(context).textTheme.bodyText1,
-                          ),
-                        )
-                      ],
+                  // if ban show that user is ban
+                  cmB.state.isBaned
+                      ? Text("You are banned from this community")
+                      : cmB.state.status == CommuintyStatus.armormed
+                          ? Text(
+                              "This Community is armormed, you must request join access before you can join")
+                          : joinLeaveBtn(
+                              state: state, context: context, cm: widget.cm),
+                  Container(
+                    width: double.infinity,
+                    color: Theme.of(context).colorScheme.secondary,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 10),
+                          Container(
+                            width: double.infinity,
+                            child: Text(
+                              widget.cm.about,
+                              softWrap: true,
+                              style: Theme.of(context).textTheme.bodyText1,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },
@@ -148,57 +150,59 @@ class _CommunityHomemState extends State<CommunityHome> {
         builder: (context, state) {
           CommuinityBloc cmB = context.read<CommuinityBloc>();
 
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                ContainerWithURLImg(
-                    height: 210,
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  ContainerWithURLImg(
+                      height: 210,
+                      width: double.infinity,
+                      imgUrl: widget.cm.imageUrl),
+                  SizedBox(height: 10),
+                  Container(
                     width: double.infinity,
-                    imgUrl: widget.cm.imageUrl),
-                SizedBox(height: 10),
-                Container(
-                  width: double.infinity,
-                  child: Padding(
-                    padding: const EdgeInsets.all(11.0),
-                    child: Text(
-                      "Members: ${widget.cm.size}",
-                      style: Theme.of(context).textTheme.caption,
+                    child: Padding(
+                      padding: const EdgeInsets.all(11.0),
+                      child: Text(
+                        "Members: ${widget.cm.size}",
+                        style: Theme.of(context).textTheme.caption,
+                      ),
                     ),
                   ),
-                ),
-                cmB.state.isBaned
-                    ? showBaned()
-                    : cmB.state.status == CommuintyStatus.armormed
-                        ? showArmored(cmB: cmB, cm: widget.cm)
-                        : joinLeaveBtn(
-                            state: state, context: context, cm: widget.cm),
-                Container(
-                  width: double.infinity,
-                  color: Theme.of(context).colorScheme.secondary,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 10),
-                        Container(
-                          width: double.infinity,
-                          child: Text(
-                            widget.cm.about,
-                            softWrap: true,
-                            style: Theme.of(context).textTheme.bodyText1,
-                          ),
-                        )
-                      ],
+                  cmB.state.isBaned
+                      ? showBaned()
+                      : cmB.state.status == CommuintyStatus.armormed
+                          ? showArmored(cmB: cmB, cm: widget.cm)
+                          : joinLeaveBtn(
+                              state: state, context: context, cm: widget.cm),
+                  Container(
+                    width: double.infinity,
+                    color: Theme.of(context).colorScheme.secondary,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 10),
+                          Container(
+                            width: double.infinity,
+                            child: Text(
+                              widget.cm.about,
+                              softWrap: true,
+                              style: Theme.of(context).textTheme.bodyText1,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },
@@ -252,6 +256,8 @@ class _CommunityHomemState extends State<CommunityHome> {
             Icon(Icons.health_and_safety_outlined, size: 50),
             SizedBox(height: 7),
             ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    primary: Theme.of(context).colorScheme.secondary),
                 onPressed: () {
                   cmB.state.requestStatus == RequestStatus.pending
                       ? snackBar(

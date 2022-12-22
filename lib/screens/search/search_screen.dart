@@ -89,13 +89,13 @@ class _SearchScreenState extends State<SearchScreen> {
   bool hasSeen = false;
   @override
   Widget build(BuildContext context) {
-    if (context.read<BottomnavbarCubit>().state.selectedItem == BottomNavItem.search ) {
+    if (context.read<BottomnavbarCubit>().state.selectedItem ==
+        BottomNavItem.search) {
       if (!hasSeen) {
         initializeSeachScreen(context);
         hasSeen = true;
       }
-
-    } 
+    }
 
     return RefreshIndicator(
         onRefresh: () async {
@@ -124,24 +124,29 @@ class _SearchScreenState extends State<SearchScreen> {
                   title: Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: Container(
-                      height: 45,
+                      height: 40,
                       width: double.infinity,
                       child: TextField(
-                        textAlign: TextAlign.center,
-                        controller:  _textEditingController,
+                        cursorColor:
+                            Theme.of(context).colorScheme.inversePrimary,
+                        textAlign: TextAlign.start,
+                        controller: _textEditingController,
                         decoration: InputDecoration(
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
-                        filled: true,
-                        hintStyle: Theme.of(context).textTheme.bodyText1,
-                        hintText: "Search for the fam",
-                        fillColor: Theme.of(context).colorScheme.background,
-
-                        suffixIcon: IconButton(
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0)),
+                            filled: true,
+                            hintStyle: Theme.of(context).textTheme.caption,
+                            hintText: "Search for the fam",
+                            fillColor: Theme.of(context).colorScheme.onPrimary,
+                            suffixIcon: IconButton(
                                 onPressed: () {
                                   context.read<SearchBloc>().clearSearch();
                                   _textEditingController.clear();
                                 },
-                                icon: Icon(Icons.clear, size: 17,))),
+                                icon: Icon(
+                                  Icons.clear,
+                                  size: 17,
+                                ))),
                         textInputAction: TextInputAction.search,
                         textAlignVertical: TextAlignVertical.center,
                         onChanged: (value) {
@@ -153,11 +158,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                     ),
                   ),
-                    
-                    ),
-                
-                        
-                
+                ),
                 body: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: _builBody(state: state, context: context),
@@ -201,7 +202,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   SizedBox(height: 3.0),
                   state.churches.length > 0
                       ? Container(
-                          height: MediaQuery.of(context).size.height/3,
+                          height: MediaQuery.of(context).size.height / 3,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: state.churches.length,
@@ -210,8 +211,8 @@ class _SearchScreenState extends State<SearchScreen> {
                               return GestureDetector(
                                   onTap: () => navToChurch(
                                       context: context, commuinity: church),
-                                  child:
-                                      search_Church_container(church: church, context: context));
+                                  child: search_Church_container(
+                                      church: church, context: context));
                             },
                           ))
                       : Container(
@@ -219,7 +220,6 @@ class _SearchScreenState extends State<SearchScreen> {
                           child: Center(
                               child: Text("You Are In Every Community?!?!"))),
                   SizedBox(height: 10.0),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -239,11 +239,10 @@ class _SearchScreenState extends State<SearchScreen> {
                           ))
                     ],
                   ),
-
                   SizedBox(height: 5.0),
                   state.chruchesNotEqualLocation.length > 0
                       ? Container(
-                          height: MediaQuery.of(context).size.height/3,
+                          height: MediaQuery.of(context).size.height / 3,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: state.chruchesNotEqualLocation.length,
@@ -253,20 +252,17 @@ class _SearchScreenState extends State<SearchScreen> {
                               return GestureDetector(
                                   onTap: () => navToChurch(
                                       context: context, commuinity: church),
-                                  child:
-                                      search_Church_container(church: church, context: context));
+                                  child: search_Church_container(
+                                      church: church, context: context));
                             },
                           ))
                       : Container(
                           height: 170,
-                          child: Center(child: Text("hmm, nothing to see here"))),
-
-                  
-                  
+                          child:
+                              Center(child: Text("hmm, nothing to see here"))),
                 ],
               ),
             ),
-            
           ],
         );
 
@@ -329,8 +325,6 @@ class _SearchScreenState extends State<SearchScreen> {
         arguments: CreateNewGroupArgs(typeOf: 'Virtural Church'));
   }
 
-  
-
   Widget ProfileCard(Userr user) {
     return GestureDetector(
       onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName,
@@ -342,9 +336,12 @@ class _SearchScreenState extends State<SearchScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ProfileCardTop(pfpImgUrl: user.profileImageUrl, bimgUrl: user.bannerImageUrl),
+            ProfileCardTop(
+                pfpImgUrl: user.profileImageUrl, bimgUrl: user.bannerImageUrl),
             Text(
-              user.username.length >= 20 ? user.username.substring(0, 20) : user.username,
+              user.username.length >= 20
+                  ? user.username.substring(0, 20)
+                  : user.username,
               style: Theme.of(context).textTheme.bodyText1,
               overflow: TextOverflow.fade,
               softWrap: true,

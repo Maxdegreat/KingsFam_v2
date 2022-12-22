@@ -116,70 +116,81 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
             ),
             body: state.posts.length > 0
                 ? SafeArea(
-                  child: PageView.builder(
-                      onPageChanged: (pageNum) {
-                        
-                        // if (updateAdCheck.fin) {
+                    child: PageView.builder(
+                        onPageChanged: (pageNum) {
+                          _paginate(pageNum, state);
 
-                        // }
-
-                        if (pageNum == state.posts.length - 1) {
-                          if (state.posts.length != 0) {
-                            context.read<FeedBloc>()
-                              ..add(CommunityFeedPaginatePost(
-                                  commuinityId: widget.commuinity.id!));
-                          }
-                        }
-                      },
-                      itemCount: state.posts.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        if (state.posts[index]?.author ==
-                            Post.empty.author) {
-                          return PostSingleView(
-                            isLiked: false,
-                            post: null,
-                            adWidget: AdWidget(ad: _bannerAd),
-                            recentlyLiked: false,
-                            onLike: () {},
-                          );
-                        } else {
-                          final Post? post = state.posts[index];
-                          if (post != null) {
-                            // ignore: non_constant_identifier_names
-                            final LikedPostState =
-                                context.watch<LikedPostCubit>().state;
-                            final isLiked = LikedPostState.likedPostsIds
-                                .contains(post.id!);
-                            final recentlyLiked = LikedPostState
-                                .recentlyLikedPostIds
-                                .contains(post.id!);
-
+                          // load next ad
+                          _loadNextAd(pageNum, state);
+                          // load next vid
+                        },
+                        itemCount: state.posts.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          // if next post is empty then display an ad (empty post)
+                          // are added in bloc programatically as placeholders for ads
+                          if (state.posts[index]?.author == Post.empty.author) {
                             return PostSingleView(
-                              isLiked: isLiked,
-                              post: post,
-                              // adWidget: AdWidget(ad: _bannerAd),
-                              recentlyLiked: recentlyLiked,
-                              onLike: () {
-                                if (isLiked) {
-                                  context
-                                      .read<LikedPostCubit>()
-                                      .unLikePost(post: post);
-                                } else {
-                                  context
-                                      .read<LikedPostCubit>()
-                                      .likePost(post: post);
-                                }
-                              },
+                              isLiked: false,
+                              post: null,
+                              adWidget: AdWidget(ad: _bannerAd),
+                              recentlyLiked: false,
+                              onLike: () {},
                             );
+                          } else {
+                            final Post? post = state.posts[index];
+                            if (post != null) {
+                              // ignore: non_constant_identifier_names
+                              final LikedPostState =
+                                  context.watch<LikedPostCubit>().state;
+                              final isLiked = LikedPostState.likedPostsIds
+                                  .contains(post.id!);
+                              final recentlyLiked = LikedPostState
+                                  .recentlyLikedPostIds
+                                  .contains(post.id!);
+
+                              return PostSingleView(
+                                isLiked: isLiked,
+                                post: post,
+                                // adWidget: AdWidget(ad: _bannerAd),
+                                recentlyLiked: recentlyLiked,
+                                onLike: () {
+                                  if (isLiked) {
+                                    context
+                                        .read<LikedPostCubit>()
+                                        .unLikePost(post: post);
+                                  } else {
+                                    context
+                                        .read<LikedPostCubit>()
+                                        .likePost(post: post);
+                                  }
+                                },
+                              );
+                            }
+                            return SizedBox.shrink();
                           }
-                          return SizedBox.shrink();
-                        }
-                      }),
-                )
+                        }),
+                  )
                 : Center(
                     child: Text("Loading ..."),
                   ));
       },
     );
+  }
+
+  void _paginate(pageNum, state) {
+    if (pageNum == state.posts.length - 1) {
+      if (state.posts.length != 0) {
+        context.read<FeedBloc>()
+          ..add(CommunityFeedPaginatePost(commuinityId: widget.commuinity.id!));
+      }
+    }
+  }
+
+  void _loadNextAd(pageNum, state) {
+    if (state.posts.length > pageNum + 1 || state.posts.length == pageNum + 1) {
+      if (state.posts[pageNum + 1]!.author == Post.empty.author) {
+        _ceateBanneAd();
+      }
+    }
   }
 }

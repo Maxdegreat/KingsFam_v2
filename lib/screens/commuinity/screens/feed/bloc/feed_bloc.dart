@@ -53,7 +53,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       
       if (posts.length >= 2) {
         posts.add( Post.empty.copyWith(id: posts.last!.id) );
-        posts.insert( 2, Post.empty );
+        // posts.insert( 2, Post.empty );
       }
 
       _likedPostCubit.clearAllLikedPosts();

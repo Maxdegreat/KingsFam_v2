@@ -26,7 +26,8 @@ class ThemeInfo {
         secondary: Color.fromARGB(255, 207, 207, 207),
         primary: Colors.white,
         background: Colors.grey[900],
-        
+        onPrimary: Colors.grey[400],
+        inversePrimary: Colors.black,
         ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: Colors.white,
@@ -72,9 +73,11 @@ class ThemeInfo {
         drawerTheme: DrawerThemeData(backgroundColor: Color(hexcolor.hexcolorCode('#20263c'))),
         scaffoldBackgroundColor: Color(hexcolor.hexcolorCode('#20263d')),
         colorScheme: ColorScheme.fromSwatch().copyWith(
-brightness: Brightness.dark,
-        secondary: Color(hexcolor.hexcolorCode('282f4b')),
-        primary: Color(hexcolor.hexcolorCode("1c2841")),
+          brightness: Brightness.dark,
+          secondary: Color(hexcolor.hexcolorCode('282f4b')),
+          primary: Color(hexcolor.hexcolorCode("1c2841")),
+          inversePrimary: Colors.grey[400],
+          onPrimary: Colors.white,
         background: Color(hexcolor.hexcolorCode("#434e7d"))),
         bottomSheetTheme: BottomSheetThemeData(backgroundColor: Color(hexcolor.hexcolorCode("#141829"))),
         cardColor: Color(hexcolor.hexcolorCode('#141829')),

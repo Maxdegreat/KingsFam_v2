@@ -117,22 +117,31 @@ class _ParticipantsViewState extends State<ParticipantsView>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // child 1 will be a row allowing you to view pending joins or baned users ---------
-                      pendingAndBandRow(),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8.0, vertical: 8),
-                        child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: Color(hc.hexcolorCode("#141829")),
-                              shape: StadiumBorder(),
-                            ),
-                            onPressed: () {
-                              listenToScrolling();
-                            },
-                            child: Text("Load more")),
+                      pendingAndBandRow(widget.cmBloc),
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 8),
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary:
+                                    Theme.of(context).colorScheme.inversePrimary,
+                                shape: StadiumBorder(),
+                              ),
+                              onPressed: () {
+                                listenToScrolling();
+                              },
+                              child: Text(
+                                "Load more",
+                                style: Theme.of(context).textTheme.bodyText2,
+                              )),
+                        ),
                       ),
                       Container(
-                        height: MediaQuery.of(context).size.height / 1.85,
+                        height: CmPermHandler.canRemoveMember(
+                                cmBloc: widget.cmBloc, givenRole: null)
+                            ? MediaQuery.of(context).size.height / 1.92
+                            : MediaQuery.of(context).size.height / 1.70,
                         child: ListView.builder(
                             itemCount: users.length,
                             itemBuilder: (context, index) {
@@ -243,7 +252,11 @@ class _ParticipantsViewState extends State<ParticipantsView>
                                                                           Navigator.of(context)
                                                                               .pop());
                                                                 } else {
-                                                                  snackBar(snackMessage: "You do not have the right permissions.", context: context);
+                                                                  snackBar(
+                                                                      snackMessage:
+                                                                          "You do not have the right permissions.",
+                                                                      context:
+                                                                          context);
                                                                 }
                                                               },
                                                               child: Padding(
@@ -265,19 +278,62 @@ class _ParticipantsViewState extends State<ParticipantsView>
                                                               padding:
                                                                   const EdgeInsets
                                                                       .all(8.0),
-                                                              child: GestureDetector(
+                                                              child:
+                                                                  GestureDetector(
                                                                 onTap: () {
-                                                                  if (user[0].id == context.read<AuthBloc>().state.user!.uid) 
-                                                                    snackBar(snackMessage: "You can not remove yourself", context: context);
+                                                                  if (user[0]
+                                                                          .id ==
+                                                                      context
+                                                                          .read<
+                                                                              AuthBloc>()
+                                                                          .state
+                                                                          .user!
+                                                                          .uid)
+                                                                    snackBar(
+                                                                        snackMessage:
+                                                                            "You can not remove yourself",
+                                                                        context:
+                                                                            context);
 
-                                                                  if (CmPermHandler.canRemoveMember(givenRole:null, cmBloc: widget.cmBloc)) {
-                                                                  widget.cmBloc.onLeaveCommuinity(commuinity: widget.cm, leavingUid: user[0].id).then((value) {
-                                                                   snackBar(snackMessage: user[0].username + " has been kicked. " + user[0].username + "can join back. Use Ban if you do not want this user to join again. you can un-ban later.", context: context, bgColor: Color.fromARGB(37, 50, 235, 62)); 
-                                                                   users.remove(user);
-                                                                   Navigator.of(context).pop();
-                                                                  });
+                                                                  if (CmPermHandler.canRemoveMember(
+                                                                      givenRole:
+                                                                          null,
+                                                                      cmBloc: widget
+                                                                          .cmBloc)) {
+                                                                    widget
+                                                                        .cmBloc
+                                                                        .onLeaveCommuinity(
+                                                                            commuinity: widget
+                                                                                .cm,
+                                                                            leavingUid: user[0]
+                                                                                .id)
+                                                                        .then(
+                                                                            (value) {
+                                                                      snackBar(
+                                                                          snackMessage: user[0].username +
+                                                                              " has been kicked. " +
+                                                                              user[0]
+                                                                                  .username +
+                                                                              "can join back. Use Ban if you do not want this user to join again. you can un-ban later.",
+                                                                          context:
+                                                                              context,
+                                                                          bgColor: Color.fromARGB(
+                                                                              37,
+                                                                              50,
+                                                                              235,
+                                                                              62));
+                                                                      users.remove(
+                                                                          user);
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+                                                                    });
                                                                   } else {
-                                                                    snackBar(snackMessage: "You do not have the right permissions.", context: context);
+                                                                    snackBar(
+                                                                        snackMessage:
+                                                                            "You do not have the right permissions.",
+                                                                        context:
+                                                                            context);
                                                                   }
                                                                 },
                                                                 child: Text(
@@ -293,18 +349,57 @@ class _ParticipantsViewState extends State<ParticipantsView>
                                                               padding:
                                                                   const EdgeInsets
                                                                       .all(8.0),
-                                                              child: GestureDetector(
+                                                              child:
+                                                                  GestureDetector(
                                                                 onTap: () {
-                                                                  if (user[0].id == context.read<AuthBloc>().state.user!.uid) 
-                                                                    snackBar(snackMessage: "You can not remove yourself", context: context);
+                                                                  if (user[0]
+                                                                          .id ==
+                                                                      context
+                                                                          .read<
+                                                                              AuthBloc>()
+                                                                          .state
+                                                                          .user!
+                                                                          .uid)
+                                                                    snackBar(
+                                                                        snackMessage:
+                                                                            "You can not remove yourself",
+                                                                        context:
+                                                                            context);
 
-                                                                  if (CmPermHandler.canRemoveMember(cmBloc: widget.cmBloc, givenRole: null)) {
-                                                                    widget.cmBloc.ban(cm: widget.cm, uid: user[0].id);
-                                                                  snackBar(snackMessage: user[0].username + " has been baned. " + user[0].username + "can NOT join back. you can un-ban later.", context: context, bgColor: Color.fromARGB(37, 50, 235, 62)); 
-                                                                   users.remove(user);
-                                                                   Navigator.of(context).pop();
+                                                                  if (CmPermHandler.canRemoveMember(
+                                                                      cmBloc: widget
+                                                                          .cmBloc,
+                                                                      givenRole:
+                                                                          null)) {
+                                                                    widget.cmBloc.ban(
+                                                                        cm: widget
+                                                                            .cm,
+                                                                        uid: user[0]
+                                                                            .id);
+                                                                    snackBar(
+                                                                        snackMessage: user[0].username +
+                                                                            " has been baned. " +
+                                                                            user[0]
+                                                                                .username +
+                                                                            "can NOT join back. you can un-ban later.",
+                                                                        context:
+                                                                            context,
+                                                                        bgColor: Color.fromARGB(
+                                                                            37,
+                                                                            50,
+                                                                            235,
+                                                                            62));
+                                                                    users.remove(
+                                                                        user);
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
                                                                   } else {
-                                                                    snackBar(snackMessage: "You do not have the right permissions.", context: context);
+                                                                    snackBar(
+                                                                        snackMessage:
+                                                                            "You do not have the right permissions.",
+                                                                        context:
+                                                                            context);
                                                                   }
                                                                 },
                                                                 child: Text(
@@ -320,7 +415,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
                                                       );
                                                     })
                                                 .then(
-(value) => setState(() {}));
+                                                    (value) => setState(() {}));
 
                                             // Navigator.of(context).pushNamed(
                                             //     Participant_deep_view.routeName,
@@ -472,12 +567,12 @@ class _ParticipantsViewState extends State<ParticipantsView>
         });
   }
 
-  Widget pendingAndBandRow() {
-    return CmPermHandler.isAdmin(context.read<CommuinityBloc>())
+  Widget pendingAndBandRow(cmBloc) {
+    return CmPermHandler.canRemoveMember(cmBloc: cmBloc, givenRole: null)
         ? Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ElevatedButton(
@@ -487,11 +582,11 @@ class _ParticipantsViewState extends State<ParticipantsView>
                         arguments: ReviewPendingRequestArgs(cm: widget.cm));
                   },
                   child: Text(
-                    "View Pending Joins",
-                    style: Theme.of(context).textTheme.bodyText1,
+                    "Pending Joins",
+                    style: Theme.of(context).textTheme.bodyText2,
                   ),
                   style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).colorScheme.background,
+                      primary: Theme.of(context).colorScheme.inversePrimary,
                       shape: StadiumBorder()),
                 ),
                 ElevatedButton(
@@ -501,10 +596,10 @@ class _ParticipantsViewState extends State<ParticipantsView>
                             cmId: widget.cm.id!,
                             cmBloc: context.read<CommuinityBloc>()));
                   },
-                  child: Text("View Baned Joins",
-                      style: Theme.of(context).textTheme.bodyText1),
+                  child: Text("Baned Users",
+                      style: Theme.of(context).textTheme.bodyText2),
                   style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).colorScheme.background,
+                      primary: Theme.of(context).colorScheme.inversePrimary,
                       shape: StadiumBorder()),
                 )
               ],
@@ -514,11 +609,16 @@ class _ParticipantsViewState extends State<ParticipantsView>
   }
 
   initGetUsers() async {
+    // [user, role]
     List<dynamic> x = [];
+
     x = await grabLimitUserrs();
     log("the users count is: " + x.length.toString());
     for (var j in x) {
-      users.add(j);
+      if (j[1] == "Lead") {
+        users.insert(0, j);
+      } else 
+        users.add(j);
     }
     setState(() {});
   }
@@ -689,7 +789,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
   //           onPressed: () {
   //             if (cm.members[participatant]['role'] == Roles.Owner) {
   //               snackBar(
-  //                   snackMessage: "You can not ban the community owner",
+  //                   snackMessage: "You can not ban the ommunity owner",
   //                   context: context,
   //                   bgColor: Colors.red);
   //               return;

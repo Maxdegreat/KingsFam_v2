@@ -240,6 +240,9 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                             Icon(Icons.health_and_safety_outlined, size: 50),
                             SizedBox(height: 7),
                             ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Theme.of(context).colorScheme.primary,
+                              ),
                                 onPressed: () {
                                   state.requestStatus == RequestStatus.pending
                                       ? snackBar(
