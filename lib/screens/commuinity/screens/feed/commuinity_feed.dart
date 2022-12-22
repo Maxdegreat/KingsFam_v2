@@ -93,7 +93,7 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
     _bannerAd.load();
   }
 
-  List<int> updateAdCheck = [];
+
   @override
   Widget build(BuildContext context) {
     // ignore: unused_local_variable
@@ -128,7 +128,8 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
                         itemBuilder: (BuildContext context, int index) {
                           // if next post is empty then display an ad (empty post)
                           // are added in bloc programatically as placeholders for ads
-                          if (state.posts[index]?.author == Post.empty.author) {
+                          if (state.posts[index]!.author == Userr.empty) {
+                            log("the state.post is: " + state.posts[index].toString());
                             return PostSingleView(
                               isLiked: false,
                               post: null,
@@ -138,33 +139,11 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
                             );
                           } else {
                             final Post? post = state.posts[index];
+                        
                             if (post != null) {
-                              // ignore: non_constant_identifier_names
-                              final LikedPostState =
-                                  context.watch<LikedPostCubit>().state;
-                              final isLiked = LikedPostState.likedPostsIds
-                                  .contains(post.id!);
-                              final recentlyLiked = LikedPostState
-                                  .recentlyLikedPostIds
-                                  .contains(post.id!);
 
-                              return PostSingleView(
-                                isLiked: isLiked,
-                                post: post,
-                                // adWidget: AdWidget(ad: _bannerAd),
-                                recentlyLiked: recentlyLiked,
-                                onLike: () {
-                                  if (isLiked) {
-                                    context
-                                        .read<LikedPostCubit>()
-                                        .unLikePost(post: post);
-                                  } else {
-                                    context
-                                        .read<LikedPostCubit>()
-                                        .likePost(post: post);
-                                  }
-                                },
-                              );
+                              return state.postContainer[index]!; 
+
                             }
                             return SizedBox.shrink();
                           }
