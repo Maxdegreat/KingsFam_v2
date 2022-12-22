@@ -11,7 +11,7 @@ class AdHelper {
     if (Platform.isAndroid) {
       return prodNativeAdUnitIdAndroid;
     } else if (Platform.isIOS) {
-      return testNativeAdUnitId;
+      return prodNativeAdUnitIdIos;
     } else {
       throw new UnsupportedError("Unsupported Platform");
     }
@@ -25,7 +25,7 @@ class AdHelper {
       // ignore: dead_code
       return prodAdUnitIdA;
     } else if (Platform.isIOS) {
-      return testAdUnitId; //"ca-app-pub-3940256099942544/2934735716";
+      return prodBannerAdIos; //"ca-app-pub-3940256099942544/2934735716";
     } else {
       throw new UnsupportedError("Unsupported platform");
     }
