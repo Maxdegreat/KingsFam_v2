@@ -126,7 +126,7 @@ flutter_native_splash:
   image: assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png
 
 flutter_icons:
-  android: false
+  android: true
   ios: true
   image_path: "assets/purplebgCrown.png"
 
@@ -154,6 +154,7 @@ flutter:
     - assets/promo_assets/Perked-2.mp4
     - assets/coin/KFcoin.png
     - assets/KINGSFAM_LOGO_black_bg.png
+    - assets/mock_photos/
     # SVG's are below
     # ANIMATIONS are below
     - assets/animations/
