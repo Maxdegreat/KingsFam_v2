@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/mock_flag.dart';
 import 'package:kingsfam/cubits/cubits.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
@@ -28,7 +29,6 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
         super(FeedState.inital());
 
 
-  bool ISMOCKTESTING = false;
 
   @override
   Stream<FeedState> mapEventToState(FeedEvent event) async* {
@@ -44,13 +44,18 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     }
   }
 
-  static const int PAGIATIONLIMIT = 4;
+
+
+  static const int PAGIATIONLIMIT = 2;
+  
+
+
 
   Stream<FeedState> _mapFeedCommuinityFetchPostToState(
       FeedCommuinityFetchPosts event) async* {
     yield state.copyWith(posts: [], status: FeedStatus.loading);
     try {
-      if (!ISMOCKTESTING) {
+      if (!MockFlag.ISMOCKTESTING) {
         List<Post?> posts = [];
         List<Widget?> postContainers = [];
         if (event.passedPost != null) {
@@ -83,20 +88,20 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       CommunityFeedPaginatePost event) async* {
     yield state.copyWith(status: FeedStatus.paginating);
     
-    if (!ISMOCKTESTING) {
+    if (!MockFlag.ISMOCKTESTING) {
 
-      try {
+      try {  
       final lastPostId = state.posts.isNotEmpty ? state.posts.last!.id : null;
 
       final posts = await _postsRepository.getCommuinityFeed(commuinityId: event.commuinityId, lastPostId: lastPostId);
-
       final updatedPosts = List<Post?>.from(state.posts)..addAll(posts);
       updatedPosts.add(Post.empty.copyWith(id: posts.last!.id));
       final postContainers = _makePostContainers(updatedPosts);
+
       final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: posts);
       yield state.copyWith(posts: updatedPosts, postContainer: postContainers, status: FeedStatus.success);
       _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
-    } catch (e) {
+    } catch (e) {  
       yield state.copyWith(
           failure: Failure(
               message: "dang, max messed up you're pagination code...",
@@ -104,13 +109,14 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
           status: FeedStatus.error);
     }
 
-    } else {
+    } else {  
 
        List<Post?> posts = MockPostData.getMockPosts4;
-       posts.add(Post.empty);
+       // posts.add(Post.empty);
        var updatedPosts = List<Post?>.from(state.posts)..addAll(posts);
-        List<Widget?> postContainers = MockPostData.getMock4PostContainers();
-        yield state.copyWith(posts: updatedPosts, postContainer: postContainers, status: FeedStatus.success);
+        List<Widget?> postContainers = List<Widget?>.from(state.postContainer)..addAll( MockPostData.getMock4PostContainers());
+
+        yield state.copyWith(posts: posts, postContainer: postContainers, status: FeedStatus.success);
 
     }
   }
@@ -127,6 +133,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
         var isLiked = _likedPostCubit.state.likedPostsIds.contains(p.id);
         var recentlyLiked = _likedPostCubit.state.recentlyLikedPostIds.contains(p.id);
       container = PostSingleView(
+        key: UniqueKey(),
         isLiked: isLiked,
         post: p,
         // adWidget: AdWidget(ad: _bannerAd),

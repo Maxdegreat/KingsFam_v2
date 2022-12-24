@@ -45,6 +45,38 @@ createMediaPopUpSheet({required BuildContext context}) {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+
+        GestureDetector(
+          onTap: () async {
+            final pickedFile = await ImageHelper.pickImageFromGallery(
+                context: context,
+                cropStyle: CropStyle.rectangle,
+                title: "Croping Post");
+            if (pickedFile != null) {
+              // NavHelper().navToImageEditor(context, File(pickedFile.path));
+              // NavHelper().navToPostContent(context, pickedFile, "image");
+            }
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                height: 25,
+                width: 75,
+                child: Icon(Icons.camera_alt_outlined, color: Theme.of(context).iconTheme.color),
+                decoration: (BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(5))),
+              ),
+              Text(
+                "Share whats happening",
+                style: Theme.of(context).textTheme.bodyText1,
+              )
+            ],
+          ),
+        ),
+
         GestureDetector(
           onTap: () async {
             final pickedFile = await ImageHelper.pickImageFromGallery(
@@ -79,35 +111,35 @@ createMediaPopUpSheet({required BuildContext context}) {
         SizedBox(
           height: 20,
         ),
-        GestureDetector(
-          onTap: () async {
-            final pickedFile = await ImageHelper.pickVideoFromGallery(context);
-            if (pickedFile != null) {
+        // GestureDetector(
+        //   onTap: () async {
+        //     final pickedFile = await ImageHelper.pickVideoFromGallery(context);
+        //     if (pickedFile != null) {
              
-              // await NavHelper().navToVideoEditor(context, pickedFile) /* .then((value) => Navigator.of(context).pop())  */ ;
-              // NavHelper().navToPostContent(context, pickedFile, 'video');
-              NavHelper().navToPostContent(context, pickedFile, 'video');
-              // await Future.delayed(Duration(seconds: 1));                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-              // Navigator.of(context).pop();
-            }
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                height: 25,
-                width: 75,
-                child: Icon(Icons.video_library, color: Theme.of(context).iconTheme.color),
-                decoration: (BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(5))),
-              ),
-              Text("Upload video from gallery",
-                  style: Theme.of(context).textTheme.bodyText1)
-            ],
-          ),
-        ),
+        //       // await NavHelper().navToVideoEditor(context, pickedFile) /* .then((value) => Navigator.of(context).pop())  */ ;
+        //       // NavHelper().navToPostContent(context, pickedFile, 'video');
+        //       NavHelper().navToPostContent(context, pickedFile, 'video');
+        //       // await Future.delayed(Duration(seconds: 1));                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        //       // Navigator.of(context).pop();
+        //     }
+        //   },
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.start,
+        //     crossAxisAlignment: CrossAxisAlignment.center,
+        //     children: [
+        //       Container(
+        //         height: 25,
+        //         width: 75,
+        //         child: Icon(Icons.video_library, color: Theme.of(context).iconTheme.color),
+        //         decoration: (BoxDecoration(
+        //             color: Colors.transparent,
+        //             borderRadius: BorderRadius.circular(5))),
+        //       ),
+        //       Text("Upload video from gallery",
+        //           style: Theme.of(context).textTheme.bodyText1)
+        //     ],
+        //   ),
+        // ),
       ],
     );
   }

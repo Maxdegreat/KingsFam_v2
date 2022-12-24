@@ -282,7 +282,7 @@ class KingscordCubit extends Cubit<KingscordState> {
       thumbnailPath: (await getTemporaryDirectory()).path,
       imageFormat: ImageFormat.PNG,
       //maxHeight: 64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
-      quality: 100,
+      quality: 70,
     );
     if (thumbnail == null)
       return

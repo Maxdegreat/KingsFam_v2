@@ -6,9 +6,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
+import 'package:kingsfam/enums/bottom_nav_items.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/profile/widgets/commuinity_container.dart';
 import 'package:kingsfam/screens/profile/widgets/prayer_chunck.dart';
@@ -24,8 +26,8 @@ import 'widgets/widgets.dart';
 
 class ProfileScreenArgs {
   final String userId;
-  final VideoPlayerController? vidCtrl;
-  ProfileScreenArgs({required this.userId, this.vidCtrl});
+  final bool initScreen;
+  ProfileScreenArgs({required this.userId, required this.initScreen});
 }
 
 class ProfileScreen extends StatefulWidget {
@@ -34,8 +36,10 @@ class ProfileScreen extends StatefulWidget {
   static const String routeName = '/profileScreen';
 
   final String ownerId;
+  final bool initScreen;
   const ProfileScreen({
     required this.ownerId,
+    required this.initScreen,
   });
 
   static Route route({required ProfileScreenArgs args}) {
@@ -49,9 +53,11 @@ class ProfileScreen extends StatefulWidget {
                   userrRepository: context.read<UserrRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   postRepository: context.read<PostsRepository>(),
-                  chatRepository: context.read<ChatRepository>())
-                ..add(ProfileLoadUserr(userId: args.userId, vidCtrl: null)),
+                  chatRepository: context.read<ChatRepository>()
+                  // ..add(ProfileLoadUserr(userId: args.userId, vidCtrl: null)
+                  ),
               child: ProfileScreen(
+                initScreen: args.initScreen,
                 ownerId: args.userId,
               ),
             ));
@@ -73,22 +79,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // scrollController.addListener(listenToScrolling);
   }
 
-  // void listenToScrolling() {
-  //   //TODO you need to add this later make it a p1 requirment
-  //   if (scrollController.position.atEdge) {
-  //     if (scrollController.position.pixels != 0.0 &&
-  //         scrollController.position.maxScrollExtent ==
-  //             scrollController.position.pixels) {
-  //       // snackBar(snackMessage: "yay a snack bar", context: context);
-  //       log("This is a log");
-  //       context.read<ProfileBloc>()
-  //         ..add(ProfilePaginatePosts(
-  //             userId: widget.ownerId)); // ----------------- TODO This is why ur pag does not work properly. use a dynamic id. cant pag someone else w/ ur id
-  //       log("HEY I AM CALLING A PAGINATION MAX!!!");
-  //     }
-  //   }
-  // }
+  initializeProfileScreen(BuildContext context) {
+    if (widget.initScreen == true || hasSeen == true)
+      context.read<ProfileBloc>()
+        ..add(ProfileLoadUserr(userId: widget.ownerId, vidCtrl: null));
+  }
 
+  bool hasSeen = false;
   @override
   Widget build(BuildContext context) {
     //----------------------------------------------------------bloc consumer
@@ -104,6 +101,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
       },
       builder: (context, state) {
+        if (context.read<BottomnavbarCubit>().state.selectedItem == BottomNavItem.profile) {
+          if (!hasSeen) {
+            hasSeen = true;
+            initializeProfileScreen(context);
+          }
+        } else if (widget.ownerId != context.read<AuthBloc>().state.user!.uid && widget.initScreen) {
+          if (!hasSeen) {
+            initializeProfileScreen(context);
+            hasSeen = true;
+          }
+        }
         //----------------------------------------scaffold starts here
         return Scaffold(
 
@@ -231,7 +239,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     : state.post.length > 0
                         ? imageGrids(state: state)
                         : SliverToBoxAdapter(
-                            child: Center(child: Text("${state.userr.username} Has No Post To Display Fam", style: Theme.of(context).textTheme.caption)))
+                            child: Center(
+                                child: Text(
+                                    "${state.userr.username} Has No Post To Display Fam",
+                                    style:
+                                        Theme.of(context).textTheme.caption)))
               ],
             ));
     }

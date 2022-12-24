@@ -286,7 +286,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     child: GestureDetector(
                       onTap: () {
                         Navigator.of(context).pushNamed(ProfileScreen.routeName,
-                            arguments: ProfileScreenArgs(userId: users.id));
+                            arguments: ProfileScreenArgs(userId: users.id, initScreen: true));
                         print('ontaped');
                       },
                       child: Padding(
@@ -328,7 +328,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget ProfileCard(Userr user) {
     return GestureDetector(
       onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName,
-          arguments: ProfileScreenArgs(userId: user.id)),
+          arguments: ProfileScreenArgs(userId: user.id, initScreen: true)),
       child: Container(
         height: 110,
         width: MediaQuery.of(context).size.width * .70,

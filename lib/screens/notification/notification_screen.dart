@@ -106,7 +106,7 @@ class NotyTile extends StatelessWidget {
           arguments: CommunityHomeArgs(cm: cm, cmB: null));
     } else
       return Navigator.of(context).pushNamed(ProfileScreen.routeName,
-          arguments: ProfileScreenArgs(userId: noty.fromUser.id));
+          arguments: ProfileScreenArgs(userId: noty.fromUser.id, initScreen: true));
   }
 }
 

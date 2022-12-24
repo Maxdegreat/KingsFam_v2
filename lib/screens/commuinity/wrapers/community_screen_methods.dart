@@ -52,7 +52,7 @@ Widget contentPreview(
     child: GestureDetector(
       onTap: () => Navigator.of(context)
           .pushNamed(CommuinityFeedScreen.routeName,
-              arguments: CommuinityFeedScreenArgs(commuinity: cm, passedPost: [post]))
+              arguments: CommuinityFeedScreenArgs(commuinity: cm, passedPost: null))
           .then((_) => context.read<BottomnavbarCubit>().showBottomNav(true)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,

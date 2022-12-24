@@ -97,7 +97,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
       thumbnailPath: (await getTemporaryDirectory()).path,
       imageFormat: ImageFormat.PNG,
       //maxHeight: 64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
-      quality: 80,
+      quality: 50,
     );
     setState(() {});
   }
@@ -382,7 +382,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
         thumbnailPath: (await getTemporaryDirectory()).path,
         imageFormat: ImageFormat.PNG,
         //maxHeight: 64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
-        quality: 80,
+        quality: 50,
       );
 
       final thumbnailUrl = await StorageRepository()

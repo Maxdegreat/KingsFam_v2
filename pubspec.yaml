@@ -155,6 +155,7 @@ flutter:
     - assets/coin/KFcoin.png
     - assets/KINGSFAM_LOGO_black_bg.png
     - assets/mock_photos/
+    - assets/mock_video/
     # SVG's are below
     # ANIMATIONS are below
     - assets/animations/

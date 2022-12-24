@@ -9,11 +9,13 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/cm_privacy.dart';
+import 'package:kingsfam/config/mock_flag.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/commuinity/actions.dart';
+import 'package:kingsfam/screens/commuinity/screens/feed/mock_post_data.dart';
 
 part 'commuinity_event.dart';
 part 'commuinity_state.dart';
@@ -290,8 +292,11 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   Stream<CommuinityState> _mapCommunityLoadingPostToState(
       CommunityLoadingPosts event) async* {
     try {
-      List<Post?> posts =
-          await _churchRepository.getCommuinityPosts(cm: event.cm);
+      List<Post?> posts = [];
+      if (!MockFlag.ISMOCKTESTING) 
+        posts = await _churchRepository.getCommuinityPosts(cm: event.cm);
+      else 
+        posts = MockPostData.getMockPosts2;
       emit(state.copyWith(postDisplay: posts, status: CommuintyStatus.loaded));
     } catch (e) {
       emit(state.copyWith(

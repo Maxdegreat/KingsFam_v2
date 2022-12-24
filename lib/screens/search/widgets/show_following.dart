@@ -142,7 +142,7 @@ class _ShowFollowingListState extends State<ShowFollowingList> {
                                   onTap: () => Navigator.of(context).pushNamed(
                                       ProfileScreen.routeName,
                                       arguments:
-                                          ProfileScreenArgs(userId: user.id)),
+                                          ProfileScreenArgs(userId: user.id, initScreen: true)),
                                 ),
                                 SizedBox(height: 2),
                                 Divider(),

@@ -94,9 +94,8 @@ class TabNavigator extends StatelessWidget {
             authBloc: ctx.read<AuthBloc>(),
             postRepository: ctx.read<PostsRepository>(),
             chatRepository: ctx.read<ChatRepository>()
-          )..add(
-              ProfileLoadUserr(userId: ctx.read<AuthBloc>().state.user!.uid)),
-          child: ProfileScreen(ownerId: ctx.read<AuthBloc>().state.user!.uid,),
+          ),
+          child: ProfileScreen(ownerId: ctx.read<AuthBloc>().state.user!.uid, initScreen: true,),
         );
       default:
         return Scaffold();

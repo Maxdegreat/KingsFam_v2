@@ -217,6 +217,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
                                                                     ProfileScreen
                                                                         .routeName,
                                                                     arguments: ProfileScreenArgs(
+                                                                      initScreen: true,
                                                                         userId:
                                                                             user[0].id));
                                                               },

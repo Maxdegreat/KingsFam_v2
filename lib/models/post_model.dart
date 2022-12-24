@@ -22,6 +22,8 @@ class Post extends Equatable {
   final String? imageUrl; //img url uploaded to fb
   final String? videoUrl; // video url that will be uploaded to fb
   final String? thumbnailUrl;
+  final String? assetVideoPath;
+  final String? assetImgPath;
   final String? soundTrackUrl; //bg sounds like tik tok
   final String? caption;
   final int likes;
@@ -38,6 +40,8 @@ class Post extends Equatable {
     required this.imageUrl,
     required this.videoUrl,
     required this.thumbnailUrl,
+    this.assetVideoPath,
+    this.assetImgPath,
     required this.soundTrackUrl,
     required this.caption,
     required this.likes,
@@ -49,6 +53,10 @@ class Post extends Equatable {
   });
 
   static Post empty = Post( author: Userr.empty, quote: null, imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: '', likes: 0, date: Timestamp(0, 0), height: 10);
+  
+  static Post mockImg = Post( author: Userr.empty, quote: null, assetImgPath: 'assets/mock_photos/1.jpg', imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: '', likes: 0, date: Timestamp(0, 0), height: 10);
+
+  static Post mockVid = Post( author: Userr.empty, quote: null, assetVideoPath: 'assets/mock_video/1.mp4', imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: '', likes: 0, date: Timestamp(0, 0), height: 10);
 
   @override
   List<Object?> get props =>
@@ -63,6 +71,8 @@ class Post extends Equatable {
     String? videoUrl,
     String? thumbnailUrl,
     String? soundTrackUrl,
+    String? assetVideoPath,
+    String? assetImgPath,
     String? caption,
     int? likes,
     Timestamp? date,
@@ -79,6 +89,8 @@ class Post extends Equatable {
       videoUrl: videoUrl ?? this.videoUrl,
       soundTrackUrl: soundTrackUrl ?? this.soundTrackUrl,
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      assetImgPath: assetImgPath ?? this.assetImgPath,
+      assetVideoPath: assetVideoPath ?? this.assetVideoPath,
       caption: caption ?? this.caption,
       likes: likes ?? this.likes,
       date: date ?? this.date,

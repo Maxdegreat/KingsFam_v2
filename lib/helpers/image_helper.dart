@@ -49,7 +49,7 @@ class ImageHelper {
           lockAspectRatio: false,
         ),
         iosUiSettings: const IOSUiSettings(),
-        compressQuality: 100,
+        compressQuality: 50,
       );
 
       return cropedFile;
@@ -80,7 +80,7 @@ class ImageHelper {
           lockAspectRatio: false,
         ),
         iosUiSettings: const IOSUiSettings(),
-        compressQuality: 100,
+        compressQuality: 50,
       );
       return cropedFile;
     }

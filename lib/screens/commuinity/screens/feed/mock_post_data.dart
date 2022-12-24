@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:kingsfam/models/models.dart';
+import 'package:kingsfam/widgets/post_single_view.dart';
 
 class MockPostData {
   
@@ -16,15 +17,15 @@ class MockPostData {
   }
 
   static List<Post> getMockPosts2 = [
-    Post.empty.copyWith(author: Userr.empty.copyWith(username: "We are mockTesting")),
-    Post.empty.copyWith(author: Userr.empty.copyWith(username: "We are mockTesting")),
+    Post.empty.copyWith(assetImgPath: "assets/mock_photos/1.jpg", caption: "This is a mock test, ya dig", commuinity: Church.empty.copyWith(name: "mock name"), author: Userr.empty.copyWith(username: "We are mockTesting")),
+    Post.empty.copyWith(assetImgPath: "assets/mock_photos/1.mp4", author: Userr.empty.copyWith(username: "We are mockTesting")),
   ];
 
   static List<Post> getMockPosts4 = [
-    Post.empty.copyWith(author: Userr.empty.copyWith(username: "We are mockTesting")),
-    Post.empty.copyWith(author: Userr.empty.copyWith(username: "We are mockTesting")),
-    Post.empty.copyWith(author: Userr.empty.copyWith(username: "We are mockTesting")),
-    Post.empty.copyWith(author: Userr.empty.copyWith(username: "We are mockTesting")),
+    Post.empty.copyWith(assetImgPath: "assets/mock_photos/2.jpg", author: Userr.empty.copyWith(username: "We are mockTesting")),
+    Post.empty.copyWith(assetImgPath: "assets/mock_photos/3.jpg", author: Userr.empty.copyWith(username: "We are mockTesting")),
+    Post.empty.copyWith(assetImgPath: "assets/mock_photos/4.jpg", author: Userr.empty.copyWith(username: "We are mockTesting")),
+    Post.empty.copyWith(assetImgPath: "assets/mock_photos/7.jpg", author: Userr.empty.copyWith(username: "We are mockTesting")),
   ];
 
   
@@ -34,8 +35,8 @@ class MockPostData {
 List<Widget> _generateFiles2() {
 
   List<String> paths = [];
-  String path1 = 'assets/mock_photos/1.jpg';
-  String path2 = 'assets/mock_photos/2.jpg';
+  String path1 = 'assets/mock_photos/2.jpg';
+  String path2 = 'assets/mock_video/1.mp4';
   // String path3 = 'assets/mock_photos/3.jpg';
   // String path4 = 'assets/mock_photos/4.jpg';
   // String path5 = 'assets/mock_photos/5.jpg';
@@ -66,8 +67,9 @@ List<Widget> _generateFiles4() {
 
   List<String> paths = [];
  
-  String path1 = 'assets/mock_photos/1.jpg';
-  String path2 = 'assets/mock_photos/2.jpg';
+  String path1 = 'assets/mock_photos/4.jpg';
+  String path2 = 'assets/mock_video/1.mp4';
+  // String path2 = 'assets/mock_photos/2.jpg';
   String path3 = 'assets/mock_photos/3.jpg';
   String path4 = 'assets/mock_photos/4.jpg';
   String path5 = 'assets/mock_photos/5.jpg';
@@ -96,11 +98,25 @@ List<Widget> _generateFiles4() {
   // ------------- helpers --------------------------------
 
   Widget _createMockPostView(String path) {
-    return Container(
-      width: double.infinity,
-      height: 100,
-      decoration: BoxDecoration(
-        image: DecorationImage(image: AssetImage(path))
-      ),
-    );
+
+    bool isVid = false;
+    List<String> splitWord = path.split(".");
+    if (splitWord.contains("mp4")) 
+      isVid = true;
+    
+    if (isVid) {
+      log("path is " + path);
+      return PostSingleView(
+        post: Post.mockVid.copyWith(assetVideoPath: path, author: Userr.empty.copyWith(username: "MockUserr",), caption: "This is a mock caption", commuinity: Church.empty.copyWith(name: "Mock Cm")), 
+        isLiked: true, 
+        onLike: () {},
+      );
+    } else {
+      return PostSingleView(
+        post: Post.mockImg.copyWith(assetImgPath: path, author: Userr.empty.copyWith(username: "MockUserr",), caption: "This is a mock caption", commuinity: Church.empty.copyWith(name: "Mock Cm")), 
+        isLiked: true, 
+        onLike: () {},
+      );
+    }
+
   }

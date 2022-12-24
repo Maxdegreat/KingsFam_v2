@@ -126,8 +126,7 @@ class MyApp extends StatelessWidget {
                 postRepository: context.read<PostsRepository>(),
                 likedPostCubit: context.read<LikedPostCubit>(),
                 churchRepository: context.read<ChurchRepository>())
-              ..add(ProfileLoadUserr(
-                  userId: context.read<AuthBloc>().state.user!.uid)),
+              
           ),
         ],
         child: MaterialApp(

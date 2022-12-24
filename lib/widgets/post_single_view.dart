@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/mock_flag.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
@@ -34,6 +35,7 @@ class PostSingleView extends StatefulWidget {
   final AdWidget? adWidget;
 
   PostSingleView({
+    Key? key,
     this.adWidget,
     this.tabCtrl,
     this.scrollController,
@@ -41,7 +43,7 @@ class PostSingleView extends StatefulWidget {
     required this.post,
     required this.isLiked,
     required this.onLike,
-  });
+  }) : super(key: key);
 
   @override
   _PostSingleViewState createState() => _PostSingleViewState();
@@ -66,7 +68,10 @@ class _PostSingleViewState extends State<PostSingleView> {
   @override
   void initState() {
     if (widget.post != null && widget.post!.videoUrl != null) {
-      vidCtrl = VideoPlayerController.network(widget.post!.videoUrl!);
+      if (!MockFlag.ISMOCKTESTING)
+        vidCtrl = VideoPlayerController.network(widget.post!.videoUrl!);
+      else
+        vidCtrl = VideoPlayerController.network('https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'); //asset(widget.post!.assetVideoPath!);
       vidCtrl.pause();
     }
     updateVisibility();
@@ -108,7 +113,10 @@ class _PostSingleViewState extends State<PostSingleView> {
           setState(() => _visible = false);
         else if (_wasEverVisible && !_visible) setState(() => _visible = true);
       },
-      onDoubleTap: widget.onLike,
+      onDoubleTap: (() {
+        widget.onLike;
+        setState(() {});
+      }),
       child: Container(
         height: MediaQuery.of(context).size.height,
         width: double.infinity,
@@ -232,43 +240,52 @@ class _PostSingleViewState extends State<PostSingleView> {
   Widget interactions() {
     return widget.post == null
         ? SizedBox.shrink()
-        : Stack(children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  child: widget.isLiked
-                      ? Icon(Icons.keyboard_double_arrow_up_sharp,
-                          size: 35, color: Colors.amber)
-                      : Icon(
-                          Icons.keyboard_arrow_up_outlined,
-                          size: 30,
-                        ),
+        : 
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      child: widget.isLiked
+                          ? Icon(Icons.keyboard_double_arrow_up_sharp,
+                              size: 40, color: Colors.amber)
+                          : Icon(
+                              Icons.keyboard_arrow_up_outlined,
+                              color: Colors.white,
+                              size: 30,
+                            ),
+                    ),
+              
+                    SizedBox(height: 8),
+              
+                    Container(
+                      //margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: .5),
+                      decoration: BoxDecoration(),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                            "${widget.recentlyLiked ? widget.post!.likes + 1 : widget.post!.likes}"),
+                      ),
+                    ),
+              
+                    SizedBox(height: 8),
+              
+                    Container(
+                      child: IconButton(
+                          onPressed: () => Navigator.of(context).pushNamed(
+                              CommentScreen.routeName,
+                              arguments: CommentScreenArgs(post: widget.post!)),
+                          icon: Icon(Icons.message, color: Colors.white)),
+                    ),
+                  ],
                 ),
-                Container(
-                  //margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: .5),
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(7)),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                    child: Text(
-                        "${widget.recentlyLiked ? widget.post!.likes + 1 : widget.post!.likes}"),
-                  ),
-                ),
-                Container(
-                  child: IconButton(
-                      // onPressed: () => commentSheet(post: widget.post),
-                      onPressed: () => Navigator.of(context).pushNamed(
-                          CommentScreen.routeName,
-                          arguments: CommentScreenArgs(post: widget.post!)),
-                      icon: Icon(Icons.message, color: Colors.white)),
-                ),
-              ],
-            )
-          ]);
+              ),
+            );
   }
 
   Widget userPicAndName({required String name, required String imgurl}) {
@@ -297,7 +314,8 @@ class _PostSingleViewState extends State<PostSingleView> {
                       onTap: () => Navigator.of(context).pushNamed(
                           ProfileScreen.routeName,
                           arguments: ProfileScreenArgs(
-                              userId: widget.post!.author.id, vidCtrl: vidCtrl)),
+                              initScreen: true,
+                              userId: !MockFlag.ISMOCKTESTING ?  widget.post!.author.id : "mock", )),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -381,7 +399,7 @@ class _PostSingleViewState extends State<PostSingleView> {
   }
 
   Widget contentContainer({required Post? post, required Size size}) {
-    if (post != null && post.imageUrl != null) {
+    if (post != null && (post.imageUrl != null || post.assetImgPath != null)) {
       return GestureDetector(
         onTap: () {
           if (_visible)
@@ -397,11 +415,22 @@ class _PostSingleViewState extends State<PostSingleView> {
           constraints: BoxConstraints(minHeight: size.height / 1.7),
           child: Stack(
             children: [
-              Container(
+              post.imageUrl != null 
+              ? Container(
                 decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: CachedNetworkImageProvider(post.imageUrl!),
-                        fit: BoxFit.fitWidth)),
+                  image: DecorationImage(
+                    image: CachedNetworkImageProvider(post.imageUrl!),
+                    fit: BoxFit.cover,
+                  ),
+                )
+              )
+              : Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(post.assetImgPath!),
+                    fit: BoxFit.cover
+                  ),
+                )
               ),
             ],
           ),
@@ -425,7 +454,7 @@ class _PostSingleViewState extends State<PostSingleView> {
             tabCtrl: widget.tabCtrl,
             post: widget.post!,
             userr: widget.post!.author,
-            videoUrl: widget.post!.videoUrl!,
+            videoUrl: widget.post!.videoUrl != null ? widget.post!.videoUrl! : widget.post!.assetVideoPath!,
             playVidNow: true,
             controller: vidCtrl,
           ),
@@ -442,7 +471,7 @@ class _PostSingleViewState extends State<PostSingleView> {
     required String? caption,
     required String author,
   }) {
-    if (caption == null) return _captionTextBox("", author, 35);
+    if (caption == null) return _captionTextBox("", author, 27);
     double captionContainerSize = 35;
     if (caption.length > 40) captionContainerSize = 70;
     return _captionTextBox(caption, author, captionContainerSize);
@@ -451,31 +480,47 @@ class _PostSingleViewState extends State<PostSingleView> {
   _captionTextBox(String caption, String author, double size) {
     double width = MediaQuery.of(context).size.width;
     return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.black12,
-                Colors.black38,
-              ]
-            )
+      
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          interactions(),
+          SizedBox(height: 10),
+          captionContainer(size, caption)
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // interactions(),
-            widget.post != null
-                ? viewCommuinity(
-                    commuinity: widget.post!.commuinity,
-                    isImage: widget.post!.imageUrl != null
-                  )
-                : SizedBox.shrink(),
-            Container(
+    );
+  }
+
+  Container captionContainer(double size, String caption) {
+    return Container(
+            decoration: BoxDecoration(
+      gradient: LinearGradient(
+            end: Alignment.bottomCenter,
+            begin: Alignment.topCenter,
+            colors: [
+              Colors.black45,
+              Colors.black38,
+              Colors.black12,
+            ]
+          )
+    ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                widget.post != null
+              ? viewCommuinity(
+                  commuinity: widget.post!.commuinity,
+                  isImage: widget.post!.imageUrl != null
+                )
+              : SizedBox.shrink(),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
               height: size + 25,
               width: double.infinity,
               child: Text(
@@ -483,10 +528,10 @@ class _PostSingleViewState extends State<PostSingleView> {
                 style: Theme.of(context).textTheme.caption!.copyWith(color: Colors.white),
               )
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+              ],
+            ),
+          );
   }
 
   // Future<List<int>> getImageData(Image i, double h, double w) async {

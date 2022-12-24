@@ -149,7 +149,7 @@ class _PostSingleViewState extends State<PostSingleViewPfp> {
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 7),
       child: GestureDetector(
         onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName,
-            arguments: ProfileScreenArgs(userId: widget.post.author.id, vidCtrl: vidCtrl)),
+            arguments: ProfileScreenArgs(userId: widget.post.author.id, initScreen: true)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
