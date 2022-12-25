@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:kingsfam/camera/bloc/camera_screen.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/events/create_event.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
@@ -205,6 +206,9 @@ class CustomRoute {
         return CommunityHome.route(
           args: settings.arguments as CommunityHomeArgs
         );
+
+    case CameraScreen.routeName:
+      return CameraScreen.route();
 
       default:
         return _errorRoute();

@@ -5,8 +5,11 @@ import 'dart:io';
 class AdHelper {
   static String get nativeAdUnitId {
     String testNativeAdUnitId = "ca-app-pub-3940256099942544/2247696110";
-    String prodNativeAdUnitIdAndroid = testNativeAdUnitId; // "ca-app-pub-5583578072631354/4772946038";
+    String prodNativeAdUnitIdAndroid =
+        testNativeAdUnitId; // "ca-app-pub-5583578072631354/4772946038";
     String prodNativeAdUnitIdIos = "ca-app-pub-5583578072631354/8261954275";
+
+    return testNativeAdUnitId;
 
     if (Platform.isAndroid) {
       return prodNativeAdUnitIdAndroid;
@@ -19,8 +22,12 @@ class AdHelper {
 
   static String get bannerAdUnitId {
     String testAdUnitId = "ca-app-pub-3940256099942544/6300978111";
-    String prodAdUnitIdA =  testAdUnitId; //"ca-app-pub-5583578072631354/4427022170";
+    String prodAdUnitIdA =
+        testAdUnitId; //"ca-app-pub-5583578072631354/4427022170";
     String prodBannerAdIos = "ca-app-pub-5583578072631354/9875177985";
+
+    return testAdUnitId;
+
     if (Platform.isAndroid) {
       // ignore: dead_code
       return prodAdUnitIdA;

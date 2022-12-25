@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kingsfam/camera/bloc/camera_screen.dart';
 import 'package:kingsfam/helpers/navigator_helper.dart';
 import 'package:kingsfam/helpers/vid_helper.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
@@ -48,14 +49,15 @@ createMediaPopUpSheet({required BuildContext context}) {
 
         GestureDetector(
           onTap: () async {
-            final pickedFile = await ImageHelper.pickImageFromGallery(
-                context: context,
-                cropStyle: CropStyle.rectangle,
-                title: "Croping Post");
-            if (pickedFile != null) {
-              // NavHelper().navToImageEditor(context, File(pickedFile.path));
-              // NavHelper().navToPostContent(context, pickedFile, "image");
-            }
+            Navigator.of(context).pushNamed(CameraScreen.routeName);
+            // final pickedFile = await ImageHelper.pickImageFromGallery(
+            //     context: context,
+            //     cropStyle: CropStyle.rectangle,
+            //     title: "Croping Post");
+            // if (pickedFile != null) {
+            //   // NavHelper().navToImageEditor(context, File(pickedFile.path));
+            //   // NavHelper().navToPostContent(context, pickedFile, "image");
+            // }
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
