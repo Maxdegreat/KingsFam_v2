@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:kingsfam/config/mock_flag.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/models/models.dart';
@@ -97,14 +98,14 @@ class ChurchRepository extends BaseChurchRepository {
   Stream<List<Future<Church?>>> getCmsStream({required String currId}) {
     // this was members { "currId":userRef } or top level was a list
     // .where('members.$currId.userReference', isEqualTo: userRef)
-
+    int limit = MockFlag.ISMOCKTESTING ? 1 : 20;
     log("we are now in the getCmsStream");
     List<Future<Church?>> bucket = [];
     return FirebaseFirestore.instance
         .collection(Paths.users)
         .doc(currId)
         .collection(Paths.church)
-        .limit(20)
+        .limit(1) // passed as 1
         .snapshots()
         .map((snap) {
       for (var j in snap.docs) {

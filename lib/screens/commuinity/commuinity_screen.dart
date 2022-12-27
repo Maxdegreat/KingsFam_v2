@@ -7,6 +7,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +15,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/camera/bloc/camera_screen.dart';
 import 'package:kingsfam/config/cm_type.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/paths.dart';

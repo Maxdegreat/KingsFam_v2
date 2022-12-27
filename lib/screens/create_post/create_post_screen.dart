@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -49,7 +50,11 @@ createMediaPopUpSheet({required BuildContext context}) {
 
         GestureDetector(
           onTap: () async {
-            Navigator.of(context).pushNamed(CameraScreen.routeName);
+
+            List<CameraDescription> _cameras = <CameraDescription>[];
+            _cameras = await availableCameras();
+            Navigator.of(context).pushNamed(CameraScreen.routeName, arguments: CameraScreenArgs(cameras: _cameras));
+
             // final pickedFile = await ImageHelper.pickImageFromGallery(
             //     context: context,
             //     cropStyle: CropStyle.rectangle,
@@ -58,6 +63,8 @@ createMediaPopUpSheet({required BuildContext context}) {
             //   // NavHelper().navToImageEditor(context, File(pickedFile.path));
             //   // NavHelper().navToPostContent(context, pickedFile, "image");
             // }
+
+
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -69,7 +76,8 @@ createMediaPopUpSheet({required BuildContext context}) {
                 child: Icon(Icons.camera_alt_outlined, color: Theme.of(context).iconTheme.color),
                 decoration: (BoxDecoration(
                     color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(5))),
+                    borderRadius: BorderRadius.circular(5))
+                  ),
               ),
               Text(
                 "Share whats happening",
@@ -78,6 +86,8 @@ createMediaPopUpSheet({required BuildContext context}) {
             ],
           ),
         ),
+
+        SizedBox(height: 20),
 
         GestureDetector(
           onTap: () async {

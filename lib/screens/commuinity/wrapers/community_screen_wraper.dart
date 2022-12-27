@@ -72,8 +72,12 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                               style: ElevatedButton.styleFrom(
                                   primary:
                                       Theme.of(context).colorScheme.secondary),
-                              onPressed: () =>
-                                  createMediaPopUpSheet(context: context),
+                              onPressed: () async {
+                                  List<CameraDescription> _cameras = <CameraDescription>[];
+                                  _cameras = await availableCameras();
+                                  Navigator.of(context).pushNamed(CameraScreen.routeName, arguments: CameraScreenArgs(cameras: _cameras));
+                                  // createMediaPopUpSheet(context: context),
+                              },
                               child: Icon(
                                 Icons.add,
                                 color: Theme.of(context).iconTheme.color,
@@ -575,6 +579,7 @@ SliverAppBar cmSliverAppBar({
     //     child: Icon(Icons.people),
     //   )
     // ],
+    backgroundColor: Colors.transparent,
     expandedHeight: MediaQuery.of(context).size.height / 4.4,
     flexibleSpace: FlexibleSpaceBar(
       title: Text(cm.name),

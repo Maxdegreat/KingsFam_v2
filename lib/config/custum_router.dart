@@ -208,7 +208,9 @@ class CustomRoute {
         );
 
     case CameraScreen.routeName:
-      return CameraScreen.route();
+      return CameraScreen.route(
+        args: settings.arguments as CameraScreenArgs
+      );
 
       default:
         return _errorRoute();
