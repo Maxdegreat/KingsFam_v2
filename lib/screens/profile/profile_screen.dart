@@ -1,21 +1,33 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
+import 'package:kingsfam/enums/bottom_nav_items.dart';
 import 'package:kingsfam/models/models.dart';
+import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/profile/widgets/commuinity_container.dart';
+import 'package:kingsfam/screens/profile/widgets/prayer_chunck.dart';
 import 'package:kingsfam/screens/screens.dart';
+import 'package:kingsfam/widgets/prayer/prayer_snipit.dart';
 import 'package:kingsfam/widgets/widgets.dart';
+import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
+import '../../helpers/navigator_helper.dart';
+import '../../widgets/videos/asset_video.dart';
 import 'widgets/widgets.dart';
 
 class ProfileScreenArgs {
   final String userId;
-  ProfileScreenArgs({required this.userId});
+  final bool initScreen;
+  ProfileScreenArgs({required this.userId, required this.initScreen});
 }
 
 class ProfileScreen extends StatefulWidget {
@@ -23,9 +35,11 @@ class ProfileScreen extends StatefulWidget {
 
   static const String routeName = '/profileScreen';
 
-   final String? ownerId;
+  final String ownerId;
+  final bool initScreen;
   const ProfileScreen({
     required this.ownerId,
+    required this.initScreen,
   });
 
   static Route route({required ProfileScreenArgs args}) {
@@ -33,50 +47,45 @@ class ProfileScreen extends StatefulWidget {
         settings: const RouteSettings(name: routeName),
         builder: (context) => BlocProvider<ProfileBloc>(
               create: (_) => ProfileBloc(
+                  prayerRepo: context.read<PrayerRepo>(),
                   churchRepository: context.read<ChurchRepository>(),
                   likedPostCubit: context.read<LikedPostCubit>(),
                   userrRepository: context.read<UserrRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   postRepository: context.read<PostsRepository>(),
-                  chatRepository: context.read<ChatRepository>())
-                ..add(ProfileLoadUserr(userId: args.userId)),
-              child: ProfileScreen(ownerId: args.userId,),
+                  chatRepository: context.read<ChatRepository>()
+                  // ..add(ProfileLoadUserr(userId: args.userId, vidCtrl: null)
+                  ),
+              child: ProfileScreen(
+                initScreen: args.initScreen,
+                ownerId: args.userId,
+              ),
             ));
   }
-
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen>  {
+class _ProfileScreenState extends State<ProfileScreen> {
   // controllers
 
   ScrollController scrollController = ScrollController();
-
+  // late VideoPlayerController _perkedVideoPlayerController;
   @override
   void initState() {
     super.initState();
-    scrollController.addListener(listenToScrolling);
+
+    // scrollController.addListener(listenToScrolling);
   }
 
-  @override
-  void dispose() {
-    scrollController.dispose();
-    super.dispose();
+  initializeProfileScreen(BuildContext context) {
+    if (widget.initScreen == true || hasSeen == true)
+      context.read<ProfileBloc>()
+        ..add(ProfileLoadUserr(userId: widget.ownerId, vidCtrl: null));
   }
 
-  void listenToScrolling() {
-    //TODO you need to add this later make it a p1 requirment
-     if (scrollController.position.atEdge) {
-       if (scrollController.position.pixels != 0.0 && scrollController.position.maxScrollExtent == scrollController.position.pixels) {
-        //  const snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
-        //  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-         context.read<ProfileBloc>()..add(ProfilePaginatePosts(userId: context.read<AuthBloc>().state.user!.uid));
-       }
-     }
-  }
-
+  bool hasSeen = false;
   @override
   Widget build(BuildContext context) {
     //----------------------------------------------------------bloc consumer
@@ -92,9 +101,20 @@ class _ProfileScreenState extends State<ProfileScreen>  {
         }
       },
       builder: (context, state) {
+        if (context.read<BottomnavbarCubit>().state.selectedItem == BottomNavItem.profile) {
+          if (!hasSeen) {
+            hasSeen = true;
+            initializeProfileScreen(context);
+          }
+        } else if (widget.ownerId != context.read<AuthBloc>().state.user!.uid && widget.initScreen) {
+          if (!hasSeen) {
+            initializeProfileScreen(context);
+            hasSeen = true;
+          }
+        }
         //----------------------------------------scaffold starts here
         return Scaffold(
-          
+
             //---------------------------------------------------body path
             body: _bodyBabbyyyy(state));
       },
@@ -103,85 +123,129 @@ class _ProfileScreenState extends State<ProfileScreen>  {
 
   //---------------------------------------------------------body widget extracted
   Widget _bodyBabbyyyy(ProfileState state) {
-    var postImgVidSize = MediaQuery.of(context).size.height / 5;
     switch (state.status) {
       case ProfileStatus.initial:
-        return CircularProgressIndicator(color: Colors.red[400]);
+        return Center(child: CircularProgressIndicator(color: Colors.red[400]));
       default:
         return RefreshIndicator(
-          onRefresh: () async => context.read<ProfileBloc>().add(ProfileLoadUserr(userId: state.userr.id)),
-          child: CustomScrollView(
-             controller: scrollController ,
-            slivers: [
-              SliverAppBar(
-                floating: true,
-                pinned: true,
-                title: Text(state.userr.username),
+            // ---------------- LOOK HERE NEEDS SOME INTERNAL WORK TODO
+            onRefresh: () async => context
+                .read<ProfileBloc>()
+                .add(ProfileLoadUserr(userId: state.userr.id)),
+            child: CustomScrollView(
+              controller: scrollController,
+              slivers: [
+                SliverAppBar(
+                  floating: true,
+                  pinned: true,
+                  title: Text(
+                    state.userr.username,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
                   actions: [
-                    if (state.isCurrentUserr)
-                      IconButton(
-                        icon: Icon(Icons.settings),
-                        //onLongPress: () async => context.read<AuthBloc>().add(AuthLogoutRequested()),
-                        onPressed: () => Navigator.of(context).pushNamed(EditProfileScreen.routeName, arguments: EditProfileScreenArgs(context: context))
-                        ),
+                    // if (state.isCurrentUserr)
+                    //    GestureDetector(
+                    // onTap: () => NavHelper().navToSnackBar(context, state.userr.id),
+                    // child: VisibilityDetector(
+                    //   key: ObjectKey(_perkedVideoPlayerController),
+                    //   onVisibilityChanged: (vis) {
+                    //     vis.visibleFraction > 0
+                    //         ? _perkedVideoPlayerController.play()
+                    //         : _perkedVideoPlayerController.pause();
+                    //   },
+                    //   child: Container(
+                    //       child: AssetVideoPlayer(
+                    //     controller: _perkedVideoPlayerController,
+                    //   )),
+                    // )),
                   ],
-                 // expandedHeight: 200,
-              ), 
-
-              SliverToBoxAdapter(
-                child: 
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                          Stack(
-                            children: [
-                              Container(
-                                height: MediaQuery.of(context).size.height / 5,
-                                width: double.infinity,
-                              ),
-                              BannerImage(
-                                isOpasaty: false,
-                                bannerImageUrl: state.userr.bannerImageUrl,
-                                passedColor: hexcolor.hexcolorCode(state.userr.colorPref),
-                              ),
-                              Positioned(
-                                top: 50,
-                                left: 20,
-                                child: ProfileImage(
-                                  radius: 45,
-                                  pfpUrl: state.userr.profileImageUrl,
-                                ),
-                              ),
-                              Positioned(
-                                top: 105, right: state.isCurrentUserr ? 40 : 10,
-                                child: ProfileButton(isCurrentUserr: state.isCurrentUserr, isFollowing: state.isFollowing, colorPref: state.userr.colorPref, profileOwnersId: widget.ownerId),
-                              )
-                            ],
-                            clipBehavior: Clip.none,
-                          ),
-
-                       Padding(
-                         padding: const EdgeInsets.symmetric(vertical: 10),
-                         child: BigBoyBio(username: state.userr.username, bio: state.userr.bio),
-                       ),
-              
-                       ProfileStats( username: state.userr.username, posts: state.post.length, followers: state.userr.followers, following: state.userr.following, profileBloc: context.read<ProfileBloc>()),
-
-
-                      // add a linked list of commuinitys that I am in ... lol im done with this alredy but linked list dont make me laugh
-                      CommuinityContainer( cms: state.cms, ownerId: widget.ownerId!),
-                  ]
+                  // expandedHeight: 200,
                 ),
-              ),
-                state.post.length > 0 ? imageGrids(state: state) : SliverToBoxAdapter(child: CenterdText(text: "${state.userr.username} Has No Post To Display Fam"),)
+                SliverToBoxAdapter(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          children: [
+                            Container(
+                              height: MediaQuery.of(context).size.height / 5,
+                              width: double.infinity,
+                            ),
+                            BannerImage(
+                              isOpasaty: false,
+                              bannerImageUrl: state.userr.bannerImageUrl,
+                              passedColor:
+                                  hexcolor.hexcolorCode(state.userr.colorPref),
+                            ),
+                            Positioned(
+                              top: 50,
+                              left: 20,
+                              child: ProfileImage(
+                                radius: 45,
+                                pfpUrl: state.userr.profileImageUrl,
+                              ),
+                            ),
+                            Positioned(
+                              top: 105,
+                              right: state.isCurrentUserr ? 0 : 10,
+                              child: ProfileButton(
+                                isCurrentUserr: state.isCurrentUserr,
+                                isFollowing: state.isFollowing,
+                                colorPref: state.userr.colorPref,
+                                profileOwnersId: widget.ownerId,
+                              ),
+                            )
+                          ],
+                          clipBehavior: Clip.none,
+                        ),
 
-            ],
-          )
-            
-          
-          
-        );
+                        Padding(
+                          padding: state.userr.bio.isNotEmpty
+                              ? EdgeInsets.symmetric(vertical: 10)
+                              : EdgeInsets.symmetric(vertical: 0),
+                          child: BigBoyBio(
+                              username: state.userr.username,
+                              bio: state.userr.bio),
+                        ),
+
+                        ProfileStats(
+                            username: state.userr.username,
+                            posts: state.post.length,
+                            followers: state.userr.followers,
+                            following: state.userr.following,
+                            profileBloc: context.read<ProfileBloc>(),
+                            ctxFromPf: context),
+
+                        // add a linked list of commuinitys that I am in ... lol im done with this alredy but linked list dont make me laugh
+                        CommuinityContainer(
+                            cms: state.cms, ownerId: widget.ownerId),
+                        GestureDetector(
+                            onTap: () => state.prayer != null
+                                ? PrayerChunk(
+                                    context, state.prayer!, state.userr)
+                                : null,
+                            child: prayerSnipit(
+                                state.prayer,
+                                hexcolor.hexcolorCode(state.userr.colorPref),
+                                context)),
+                      ]),
+                ),
+                state.loadingPost
+                    ? SliverToBoxAdapter(
+                        child: LinearProgressIndicator(
+                        color: Colors.blue,
+                      ))
+                    : state.post.length > 0
+                        ? imageGrids(state: state)
+                        : SliverToBoxAdapter(
+                            child: Center(
+                                child: Text(
+                                    "${state.userr.username} Has No Post To Display Fam",
+                                    style:
+                                        Theme.of(context).textTheme.caption)))
+              ],
+            ));
     }
   }
 
@@ -189,50 +253,94 @@ class _ProfileScreenState extends State<ProfileScreen>  {
   // eternal life. Amen.
 
   imageGrids({required ProfileState state}) => SliverToBoxAdapter(
-    child: GridView.builder(
-             
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0,
-                mainAxisExtent: 320.0,
+          child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4.0, top: 5),
+              child: Text(
+                state.userr.username + " Post's",
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1!
+                    .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
               ),
-              primary: false,
-              shrinkWrap: true,
-              itemCount: state.post.length,
-              itemBuilder: (BuildContext context, int index) {
-                Post? post = state.post[index];
-                return Column(
-                  children: [
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).pushNamed(ProfilePostView.routeName, arguments: ProfilePostViewArgs(posts: state.post, startIndex: index)),
-                      //Navigator.of(context).pushNamed(FeedNewScreen.routeName, arguments: FeedNewScreenArgs(startIndex: index, posts: state.post)),
-                      child: Container(
-                      height: 240, width: 300, 
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        image: post!.imageUrl != null ? 
-                          DecorationImage(image: CachedNetworkImageProvider(post.imageUrl!), fit: BoxFit.cover) :
-                          DecorationImage(image: CachedNetworkImageProvider(post.thumbnailUrl!), fit: BoxFit.cover),
-                        borderRadius: BorderRadius.circular(18)
-                      ),
-                  ),
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        commuinity_pf_img(post.author.profileImageUrl, 35, 35),
-                        SizedBox(width: 5),
-                        Flexible(child: Text(post.author.username, style: Theme.of(context).textTheme.bodyText1, overflow: TextOverflow.fade,))
-                      ],
-                    )
-                  ],
-                );
-              },
-  
             ),
-  );
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushNamed(ProfilePostView.routeName,
+                      arguments: ProfilePostViewArgs(
+                          startIndex: 0,
+                          posts: state.post,
+                          currUsrId: context.read<AuthBloc>().state.user!.uid));
+                },
+                child: Text(
+                  "View all Posts",
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1!
+                      .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
+                ),
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height / 3,
+              width: double.infinity,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: state.post.length,
+                itemBuilder: (context, index) {
+                  Post? post = state.post[index];
+                  if (post != null)
+                    return displayPfpPost(post, index, state.post);
+                  return SizedBox.shrink();
+                },
+              ),
+            )
+          ],
+        ),
+      ));
+
+  Widget displayPfpPost(Post post, int index, List<Post?> lst) {
+    String displayImg = (post.imageUrl ?? post.thumbnailUrl)!;
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pushNamed(ProfilePostView.routeName,
+          arguments: ProfilePostViewArgs(
+              startIndex: index,
+              posts: lst,
+              currUsrId: context.read<AuthBloc>().state.user!.uid)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          height: MediaQuery.of(context).size.height / 5,
+          width: MediaQuery.of(context).size.width * .70,
+          child: Container(
+              height: MediaQuery.of(context).size.height / 5,
+              width: MediaQuery.of(context).size.width * .70,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: CachedNetworkImageProvider(displayImg),
+                    fit: BoxFit.cover),
+              )),
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    Theme.of(context).colorScheme.secondary,
+                    Theme.of(context).colorScheme.primary,
+                  ]),
+              border: Border.all(color: Colors.amber, width: 1),
+              borderRadius: BorderRadius.circular(2.0)),
+        ),
+      ),
+    );
+  }
 }
-
-

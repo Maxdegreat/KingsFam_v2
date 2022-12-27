@@ -15,8 +15,6 @@ abstract class BaseAuthRepository {
     required String email,
     required String password,
   });
-  //login with google
-  Future<auth.User?> signInWithGoogle();
   //simple function that calls the log out function
   Future<void> logout();
 }

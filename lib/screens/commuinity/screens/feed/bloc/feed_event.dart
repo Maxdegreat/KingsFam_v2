@@ -11,8 +11,15 @@ class FeedFetchPosts extends FeedEvent {}
 
 class FeedCommuinityFetchPosts extends FeedEvent {
   final String commuinityId;
-  FeedCommuinityFetchPosts({required this.commuinityId});
+  final String? lastPostId;
+  final List<Post>? passedPost;
+  FeedCommuinityFetchPosts(
+      {required this.commuinityId, required this.lastPostId, required this.passedPost});
 }
 
-class FeedPaginatePosts extends FeedEvent{}
+class CommunityFeedPaginatePost extends FeedEvent {
+  final String commuinityId;
+  CommunityFeedPaginatePost({required this.commuinityId});
+}
 
+class FeedPaginatePosts extends FeedEvent {}

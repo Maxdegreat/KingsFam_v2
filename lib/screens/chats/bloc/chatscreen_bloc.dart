@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 import 'dart:async';
 import 'dart:developer';
 
@@ -23,7 +25,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
   StreamSubscription<List<Future<Chat?>>>? _chatsStreamSubscription;
   StreamSubscription<List<Future<Church?>>>? _churchStreamSubscription;
-
+  // StreamSubscription<List<Church?>>? _churchStreamSubscription; // a stream form shared preerences
 
   ChatscreenBloc({
     required ChatRepository chatRepository,
@@ -52,10 +54,11 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
     ChatscreenEvent event,
   ) async* {
     if (event is LoadChats) {
-      yield* _mapLoadChatsToState(event);
-    }
-    else if (event is LoadCms) {
+      //yield* _mapLoadChatsToState(event);
+    } else if (event is LoadCms) {
       yield* _mapLoadCmsToState();
+    } else if (event is ChatScreenUpdateSelectedCm) {
+      yield* _updateSelectedItem(event);
     }
   }
 
@@ -64,56 +67,103 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
       // geting the currUserr for later use
-      final Userr currUserr = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
-      final Map<String, bool> mentionedMap = {};
-      final List<Church> allChs = [];
+      final Userr currUserr = await _userrRepository.getUserrWithId(
+          userrId: _authBloc.state.user!.uid);
+      // ignore: unused_local_variable
+      List<Church> chsToJoin = [];
+
+      bool isInCm = await _churchRepository.isInCm(
+          _authBloc.state.user!.uid, _authBloc.state.user!.uid);
+
+      if (!isInCm) {
+        chsToJoin = await _churchRepository.grabChurchs(limit: 15);
+        emit(state.copyWith(chsToJoin: chsToJoin, chs: []));
+      }
+
       _churchStreamSubscription?.cancel();
       _churchStreamSubscription = _churchRepository
-          .getCmsStream(currId: _authBloc.state.user!.uid)
+          .getCmsStream(currId: currUserr.id)
           .listen((churchs) async {
-        final allChs = await Future.wait(churchs);
-        for (var ch in churchs) {
-          var church = await ch;
-          // if(church != null)
-          //   allChs.add(church);
-          var hasSnap = await FirebaseFirestore.instance.collection(Paths.mention).doc(_authBloc.state.user!.uid).collection(church!.id!).limit(1).get();
-          var snaps = hasSnap.docs;
-          if (snaps.length > 0)
-            mentionedMap[church.id!] = true;
-          else 
-            mentionedMap[church.id!] = false;
-        }
-        emit(state.copyWith(chs: allChs));
-        emit(state.copyWith(mentionedMap: mentionedMap));
+        // var allChs = await Future.wait(churchs);
+        log("updatesssssssssssssssssssssssssssssssssssss");
+        Map<String, dynamic> chsAndMentionedMap = await
+            _churchRepository.FutureChurchsAndMentioned(
+                c: churchs, uid: _authBloc.state.user!.uid);
+
+        log("obtained chs is " + chsAndMentionedMap["c"].length.toString());
+        emit(state.copyWith(selectedCh: chsAndMentionedMap["c"].first));
+        emit(state.copyWith(chs: chsAndMentionedMap["c"]));
+        emit(state.copyWith(mentionedMap: chsAndMentionedMap["m"]));
       });
       yield state.copyWith(status: ChatStatus.sccuess, currUserr: currUserr);
-    } catch (e) {}
+    } catch (e) {
+      log("!!!!!!!!!!!!!!!!ERROR: " + e.toString());
+      yield state.copyWith(
+          status: ChatStatus.error,
+          failure: Failure(
+              message:
+                  "mmm, there was an error when loading your community's"));
+    }
+  }
+
+  Stream<ChatscreenState> _updateSelectedItem(
+      ChatScreenUpdateSelectedCm event) async* {
+    try {
+      // yield state.copyWith(selectedCh: event.cm);
+      emit(state.copyWith(selectedCh: event.cm));
+    } catch (e) {
+      log("Failure in chatScreenBloc when attempting to update selected cm. error log is e: ${e.toString()}");
+    }
+  }
+
+  void leftCm({required String id}) {
+    log("in left cm");
+    var lst = state.chs;
+    for (var c in lst!) {
+      if (c!.id == id) {
+        lst.remove(c);
+        emit(state.copyWith(chs: lst));
+      }
+    }
   }
 
   // This is the maping of chats to state, (this is currently not being used, rather a streamblder in UI is
   // this needs to be addressed)
 
-    //jesus
-  Stream<ChatscreenState> _mapLoadChatsToState(event) async* {
-    try {
-      state.copyWith(status: ChatStatus.loading);
-
-      _chatsStreamSubscription?.cancel();
-
-      _chatsStreamSubscription = _chatRepository
-          .getUserChats(userId: _authBloc.state.user!.uid)
-          .listen((chat) async {
-        final allChats = await Future.wait(chat);
-        log("SOMETHING CLEARRRRRRRRRRRRRRRRRRRRRRR");
-        log("the len of all chats: ${allChats.length}");
-        emit(state.copyWith(chat: allChats));
-      });
-      add(LoadCms());
-      // state.copyWith(status: ChatStatus.sccuess);
-    } catch (e) {
-      state.copyWith(
-          failure: Failure(
-              message: 'error loading your chats, check ur connection fam'));
-    }
-  }
+  //jesus
+  // Stream<ChatscreenState> _mapLoadChatsToState(event) async* {
+  //   try {
+  //     bool unreadChats = false;
+  //     Set<String> seen = {};
+  //     var currId = _authBloc.state.user!.uid;
+  //     List<Chat> allChats = [];
+  //     state.copyWith(status: ChatStatus.loading);
+  //     _chatsStreamSubscription?.cancel();
+  //     _chatsStreamSubscription = _chatRepository
+  //         .getUserChats(userId: _authBloc.state.user!.uid)
+  //         .listen((chat) async {
+  //           for (var c in chat) {
+  //             Chat? ch = await c;
+  //             if (ch != null) {
+  //               if (ch.readStatus.containsKey(currId)) {
+  //                 if (ch.readStatus[currId] == false) {
+  //                   unreadChats = true;
+  //                 }
+  //               }
+  //               if (!seen.contains(ch.id)) {
+  //                 allChats.add(ch);
+  //                 seen.add(ch.id!);
+  //               }
+  //             }
+  //           }
+  //         emit(state.copyWith(chat: allChats, unreadChats: unreadChats));
+  //     });
+  //     add(LoadCms());
+  //     // state.copyWith(status: ChatStatus.sccuess);
+  //   } catch (e) {
+  //     state.copyWith(
+  //         failure: Failure(
+  //             message: 'error loading your chats, check ur connection fam'));
+  //   }
+  // }
 }

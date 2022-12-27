@@ -167,7 +167,6 @@ class _AddUsersState extends State<AddUsers> {
                                         itemCount: state.users.length,
                                         itemBuilder:
                                             (BuildContext context, int index) {
-                                          log("The len of users is ${state.users.length}");
                                           Userr user = state.users[index];
                                           return Padding(
                                             padding: EdgeInsets.symmetric(
@@ -216,12 +215,7 @@ class _AddUsersState extends State<AddUsers> {
                                   onPressed: () {
                                     switch (widget.typeOf) {
                                       case 'Virtural Church':
-                                        Navigator.of(context).pushNamed(
-                                            BuildChurch.routeName,
-                                            arguments: BuildChurchArgs(
-                                                selectedMembers: state
-                                                    .selectedUsers
-                                                    .toList()));
+                                        Navigator.of(context).pushNamed(BuildChurch.routeName);
 
                                         break;
                                       case typeOf.inviteTheFam:

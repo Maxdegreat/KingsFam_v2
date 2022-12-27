@@ -1,10 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:kingsfam/config/constants.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 import 'package:kingsfam/widgets/widgets.dart';
+
+import '../../commuinity/community_home/home.dart';
 
 // a list view of commuinitys that i am a part of yeahhhh
 
@@ -40,7 +43,7 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          FancyListTile(username: commuinity1!.name, imageUrl: commuinity1.imageUrl, onTap: null, isBtn: false, BR: 12, height: 12 , width: 12),
+          FancyListTile(username: commuinity1!.name, imageUrl: commuinity1.imageUrl, onTap: null, isBtn: false, BR: 12, height: 12 , width: 12, context: context,),
         ],
       );
   
@@ -48,9 +51,9 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(padding: const EdgeInsets.only(bottom: 10),
-          child: FancyListTile(username: commuinity1.name, imageUrl: commuinity1.imageUrl, onTap: null, isBtn: false, BR: 12, height: 12 , width: 12),),
-          greaterThan2 ? FancyListTile(username: commuinity2!.name, imageUrl: commuinity2.imageUrl, onTap: null, isBtn: false, BR: 12, height: 12 , width: 12) : SizedBox.shrink() ,
+          Padding(padding: const EdgeInsets.only(bottom: 5),
+          child: FancyListTile(context: context, username: commuinity1.name, imageUrl: commuinity1.imageUrl, onTap: null, isBtn: false, BR: 12, height: 12 , width: 12),),
+          greaterThan2 ? FancyListTile(context: context, username: commuinity2!.name, imageUrl: commuinity2.imageUrl, onTap: null, isBtn: false, BR: 12, height: 12 , width: 12) : SizedBox.shrink() ,
         ],
       );
 
@@ -59,49 +62,56 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
 
   return Padding(
     padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0,),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            TextButton(onPressed:()  {
-              // show an alert dialog that list all commuinitys
-              showModalBottomSheet(context: context, builder: (context) {
+    child: GestureDetector(
+      onTap: () => showModalBottomSheet(
+        context: context, builder: (context) {
+
                 final _churchRepo = context.read<ChurchRepository>();
                 
-                return FutureBuilder(
-                  future: _churchRepo.getCommuinitysUserIn(userrId: ownerId , limit: 7),
-                  builder: (BuildContext context, AsyncSnapshot<List<Church>> snapshot) {
-                    if (snapshot.hasData && snapshot.data != null) {
-                      return ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        Church ch = snapshot.data![index];
-                        return GestureDetector(
-                          onTap: () => Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: ch)),
-                          child: ListTile(
-                            leading: ProfileImage(pfpUrl: ch.imageUrl, radius: 25,),
-                            title: Text(ch.name),
-                          ),
-                        );
-                      },
-                    );
-                    } else return SizedBox.shrink();
-                  },
+                return Container(
+                  height: 200,
+                  child: FutureBuilder(
+                    future: _churchRepo.getCommuinitysUserIn(userrId: ownerId , limit: 7),
+                    builder: (BuildContext context, AsyncSnapshot<List<Church>> snapshot) {
+                      if (snapshot.hasData && snapshot.data != null) {
+                        return ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          Church ch = snapshot.data![index];
+                          return GestureDetector(
+                            onTap: () => Navigator.of(context).pushNamed(CommunityHome.routeName, arguments: CommunityHomeArgs(cm: ch, cmB: null)),
+                            child: ListTile(
+                              leading: ProfileImage(pfpUrl: ch.imageUrl, radius: 25,),
+                              title: Text(ch.name),
+                            ),
+                          );
+                        },
+                      );
+                      } else return SizedBox.shrink();
+                    },
+                  ),
                 );
-              });
-
-
-            }, style: TextButton.styleFrom(primary: Colors.white), child: Text("See More", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),),),
-            SizedBox(width: 10),
-            Text(" Commuintys",  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),)
+              }),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal:10 , vertical: 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text("See More", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),),
+                SizedBox(width: 10),
+                Text(" communites",  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),)
+              ],
+            ), 
+            SizedBox(height: 5,),
+            Container(
+              child: !moreBtn ? Container() : greaterThan2 ? twoCommuinitys : oneCommuinitys,
+            ),
           ],
         ),
-        Container(
-          child: !moreBtn ? Container() : greaterThan2 ? twoCommuinitys : oneCommuinitys,
-        ),
-      ],
+      ),
     ),
   );
 }

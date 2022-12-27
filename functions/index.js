@@ -1,3 +1,5 @@
+// i always forget the command. this is how you deploy functions in firebase: firebase deploy --only functions
+// or $ firebase deploy --only functions:func1,functions:func2
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const { user } = require("firebase-functions/v1/auth");
@@ -165,6 +167,7 @@ exports.onFollowUserr = functions.firestore.document("/followers/{userrId}/userF
       const snap = snapshot.data(); // can access any val of snap as i would any js obj
       const mentionedId = context.params.mentionedId;
       const communityId = context.params.churchId;
+      const kingsCordId = context.params.kingsCordId;
       
       // make the FCM
       const message = {
@@ -174,15 +177,16 @@ exports.onFollowUserr = functions.firestore.document("/followers/{userrId}/userF
             'body': snap.messageBody,
           },
           'data': {
+            'kcId': kingsCordId,
             'type': String(snap.type),
-            'id': String(snap.type_id),
-            'tag': String(snap.type_tag),
-            'cordName': String(snap.type_cordName),
-            'recentSender': String(snap.type_recentSender),
-            'recentMessage': String(snap.type_recentMessage),
-            'members': String(snap.type_members),
-            'communityName': String(snap.communityName),
-            'communityId': String(communityId)
+            'cmId': communityId,
+            //'tag': String(snap.type_tag),
+            //'cordName': String(snap.type_cordName),
+            //'recentSender': String(snap.type_recentSender),
+            //'recentMessage': String(snap.type_recentMessage),
+            //'members': String(snap.type_members),
+            //'communityName': String(snap.communityName),
+            //'communityId': String(communityId)
           }
 
       };
@@ -200,6 +204,7 @@ exports.onFollowUserr = functions.firestore.document("/followers/{userrId}/userF
       const snap = snapshot.data(); // can access any val of snap as i would any js obj
       const mentionedId = context.params.mentionedId;
       const communityId = context.params.churchId;
+      const kingsCordId = context.params.kingsCordId;
       
       // make the FCM
       const message = {
@@ -209,15 +214,16 @@ exports.onFollowUserr = functions.firestore.document("/followers/{userrId}/userF
             'body': snap.messageBody,
           },
           'data': {
+            'kcId': kingsCordId,
             'type': String(snap.type),
-            'id': String(snap.type_id),
-            'tag': String(snap.type_tag),
-            'cordName': String(snap.type_cordName),
-            'recentSender': String(snap.type_recentSender),
-            'recentMessage': String(snap.type_recentMessage),
-            'members': String(snap.type_members),
-            'communityName': String(snap.communityName),
-            'communityId': String(communityId)
+            'cmId': communityId,
+            //'tag': String(snap.type_tag),
+            //'cordName': String(snap.type_cordName),
+            //'recentSender': String(snap.type_recentSender),
+            //'recentMessage': String(snap.type_recentMessage),
+            //'members': String(snap.type_members),
+            //'communityName': String(snap.communityName),
+            //'communityId': String(communityId)
           }
 
       };
@@ -258,7 +264,10 @@ exports.addChatMessage = functions.firestore
           readStatus[userId] = false;
         }
       }
-
+// open msg and store val.
+// sends msg checks if val stored.
+// if val stored write read = 1
+// if val not exist write read = 0
            // for (let userId in readStatus) {
       //   if (readStatus.hasOwnProperty(userId) && userId !== senderId) 
       //   {
@@ -288,7 +297,11 @@ exports.addChatMessage = functions.firestore
            notification: {
              title: chatData['chatName'],
              body: body,
-           },
+           }, 
+           'data': {
+            'chatId': chatId,
+            'type': "directMsg_type",
+          }
        };
 
 
@@ -349,11 +362,70 @@ exports.onKingsCordMessageSent = functions.firestore
       'recentMsgTime' : kcMsgData.date
     });
     kcRef.update({
-      'recentSender' : [senderId, kcMsgData.senderUsername ],
+      // 'recentSender' : [senderId, kcMsgData.senderUsername ],
       'recentTimestamp' : kcMsgData.date,
-      'recentMessage' : recentMessage,
+      // 'recentMessage' : recentMessage,
     })
   })
+
+  exports.onUpdateChat = functions.firestore
+  .document("chats/{chatId}").onUpdate((change, context) => {
+    var chatDoc = context.params.chatId;
+    var msgCollection = admin.firestore().collection('chats').doc(chatDoc).collection('messages').orderBy('date').limit(500);
+    const updatedChat = change.after.data();
+    const previousChat = change.before.data();
+    functions.logger.log("The val of uppdatedChat: ", updatedChat);
+    functions.logger.log("The val of memRefs: ", updatedChat.memRefs);
+    functions.logger.log("The len of memRefs == ", updatedChat.memRefs.length)
+    if (updatedChat.memRefs.length === 0) {
+      admin.firestore().collection('chats').doc(chatDoc).delete();
+      functions.logger.log("memRefs is empty should now del the chat", admin.firestore().collection('chats').doc(chatDoc));
+     return new Promise( (resolve, reject) => {
+        deleteQueryBatch(admin.firestore(), msgCollection, resolve).catch(reject);
+      })
+    } 
+    functions.logger.log("nothing to del here")
+    //else if (updatedChat.memRefs !== previousChat.memRefs){
+    //  for ()
+    //}
+
+  })
+
+
+
+
+
+
+
+
+
+
+
+
+  // _________________________________________HELPERS__________________________________________
+  async function deleteQueryBatch(db, query, resolve) {
+    const snapshot = await query.get();
+  
+    const batchSize = snapshot.size;
+    if (batchSize === 0) {
+      // When there are no documents left, we are done
+      resolve();
+      return;
+    }
+  
+    // Delete documents in a batch
+    const batch = db.batch();
+    snapshot.docs.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+    await batch.commit();
+  
+    // Recurse on the next process tick, to avoid
+    // exploding the stack.
+    process.nextTick(() => {
+      deleteQueryBatch(db, query, resolve);
+    });
+  }
 
 // exports.onUpdatePost = functions.firestore
 //   .document('/posts/{postId}')

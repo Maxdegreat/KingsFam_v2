@@ -15,10 +15,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.2+19
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.17.5 <3.0.0"
 
 dependency_overrides:
   firebase_messaging_platform_interface: 3.1.6
@@ -42,6 +42,8 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   
+  date_time_picker: ^2.1.0
+  
   enum_to_string: ^2.0.1
 
   flutter_bloc: ^7.1.0
@@ -49,11 +51,15 @@ dependencies:
 
   cloud_firestore: ^2.3.0
   firebase_auth: ^2.0.0
+  
   google_sign_in: ^5.0.5
+  sign_in_with_apple: ^3.0.0
+  crypto: ^3.0.1
+  
   firebase_core: ^1.3.0
   firebase_messaging: ^10.0.3
-  firebase_storage: ^9.0.0
-  
+  firebase_storage: ^10.3.7 #firebase_storage: ^9.0.0
+
   provider: ^5.0.0
   uuid: ^3.0.4
   path_provider: ^2.0.2
@@ -62,31 +68,45 @@ dependencies:
   cached_network_image: ^3.0.0
   
   # file_picker: ^4.1.4
+  # image_editor_plus: ^0.1.5 this thing litterly causes my app to crash
   image_cropper: ^1.4.1
   video_player:
 
   shared_preferences: ^2.0.6
 
-  font_awesome_flutter: ^9.1.0
+  font_awesome_flutter: ^10.1.0
   flare_flutter: ^3.0.2
   rive: ^0.7.22
   
   timeago: ^3.1.0
   intl: ^0.17.0
 
-  agora_rtc_engine: ^5.3.0
-
-  permission_handler: 
+  permission_handler: ^10.0.0 
   
-  camera: #0.8.1+2
+  # ---------------------------------------------- camera: #0.8.1+2
   scrollable_positioned_list: ^0.2.3
   video_thumbnail: ^0.5.0
-
-  google_mobile_ads: ^0.13.0
+  google_mobile_ads: ^0.13.0 #^2.0.1 pod update Google-Mobile-Ads-SDK
   url_launcher: ^6.0.8
+  flutter_svg: ^1.1.2
 
   rename:
   get: ^4.6.1
+  google_fonts: ^3.0.1
+  
+  streaming_shared_preferences: ^2.0.0
+  json_annotation: ^4.6.0
+  visibility_detector: ^0.3.3
+  video_editor: ^1.4.3
+  helpers: ^1.1.4
+  carousel_slider: ^4.1.1
+  new_version: ^0.3.1
+  simple_link_preview: ^1.0.2
+  iconsax: ^0.0.8
+  flutter_local_notifications: ^12.0.4
+  firebase_dynamic_links: ^5.0.0
+  camera: ^0.10.1
+  
   
   
 
@@ -104,12 +124,12 @@ dev_dependencies:
 # flutter clean && flutter pub get && flutter pub run flutter_native_splash:create
 flutter_native_splash: 
   color: "#050505"
-  image: assets/icons/Logo_files/PNG/KingsFam-2.png
+  image: assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png
 
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/icons/Logo_files/PNG/KingsFam-2.png"
+  image_path: "assets/purplebgCrown.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -130,6 +150,16 @@ flutter:
     - assets/icons/search_icon.riv
     - assets/icons/add_icon.riv
     - assets/icons/Logo_files/PNG/KingsFam-2.png
+    - assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png
+    - assets/promo_banners/boosted_480_200_px/
+    - assets/promo_assets/Perked-2.mp4
+    - assets/coin/KFcoin.png
+    - assets/KINGSFAM_LOGO_black_bg.png
+    - assets/mock_photos/
+    - assets/mock_video/
+    # SVG's are below
+    # ANIMATIONS are below
+    - assets/animations/
 
     
   #   - images/a_dot_burr.jpeg

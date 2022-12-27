@@ -1,10 +1,13 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/screens/chat_room/chat_room.dart';
 import 'package:kingsfam/screens/edit_profile/edit_profile_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
+
+import '../../search/search_screen.dart';
 
 class ProfileButton extends StatelessWidget {
   final bool isCurrentUserr;
@@ -21,12 +24,14 @@ class ProfileButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle style = TextStyle(
-        color: Colors.white, fontSize: 13, fontWeight: FontWeight.w400);
-    final TextStyle styleFalse = TextStyle(
-        color: Colors.black, fontSize: 15, fontWeight: FontWeight.w400);
+    final TextStyle style = TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w400);
+    final TextStyle styleFalse = TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w400);
+    
     return isCurrentUserr
-        ? editPf(style, context)
+        ? Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: editPf(style, context),
+        )
         : Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             //mainAxisSize: MainAxisSize.min,
@@ -40,20 +45,20 @@ class ProfileButton extends StatelessWidget {
                             .read<ProfileBloc>()
                             .add(ProfileUnfollowUserr())
                         : context.read<ProfileBloc>().add(ProfileFollowUserr());
-                  }),
+                  }, colorpref: colorPref,),
               SizedBox(width: 7.0),
-              _btnRow(
-                label: 'Message',
-                style: style,
-                onP: () async {
-                  if (profileOwnersId != null) {
-                    context
-                        .read<ProfileBloc>()
-                        .add(ProfileDm(profileOwnersId: profileOwnersId!, ctx: context));
-                  }
-                },
-                icon_: null,
-              ),
+              // _btnRow(
+              //   label: 'Message',
+              //   style: style,
+              //   onP: () async {
+              //     if (profileOwnersId != null) {
+              //       context
+              //           .read<ProfileBloc>()
+              //           .add(ProfileDm(profileOwnersId: profileOwnersId!, ctx: context));
+              //     }
+              //   },
+              //   icon_: null, colorpref: colorPref,
+              // ),
             ],
           );
   }
@@ -63,24 +68,14 @@ class ProfileButton extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width / 3,
       child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: StadiumBorder(),
+          primary: Theme.of(context).colorScheme.secondary
+        ),
         onPressed: () => Navigator.of(context).pushNamed(
             EditProfileScreen.routeName,
             arguments: EditProfileScreenArgs(context: context)),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Edit Profile', style: style),
-            SizedBox(width: 5),
-            Icon(
-              Icons.settings,
-              size: 15,
-            )
-          ],
-        ),
-        style: ElevatedButton.styleFrom(
-            elevation: 3.5,
-            shadowColor: Colors.white,
-            primary: Colors.red[600]),
+        child: Text("Edit", style: Theme.of(context).textTheme.caption,),
       ),
     );
   }
@@ -91,12 +86,14 @@ class _btnRow extends StatelessWidget {
   final TextStyle style;
   final VoidCallback onP;
   final Icon? icon_;
+  final String colorpref;
   const _btnRow({
     Key? key,
     required this.label,
     required this.style,
     required this.onP,
     this.icon_,
+    required this.colorpref,
   }) : super(key: key);
 
   @override
@@ -115,8 +112,8 @@ class _btnRow extends StatelessWidget {
         ),
         style: ElevatedButton.styleFrom(
             elevation: 3.5,
-            shadowColor: Colors.white,
-            primary: Colors.red[600]),
+            shadowColor: Color.fromARGB(255, 36, 39, 90),
+            primary: Color(hexcolor.hexcolorCode(colorpref))),
       ),
     );
   }

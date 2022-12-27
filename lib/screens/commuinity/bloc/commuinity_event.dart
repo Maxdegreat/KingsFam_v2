@@ -4,39 +4,53 @@ abstract class CommuinityEvent extends Equatable {
   const CommuinityEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
-class CommuinityLoadCommuinity extends CommuinityEvent {
+class CommunityInitalEvent extends CommuinityEvent {
   final Church commuinity;
-  CommuinityLoadCommuinity({required this.commuinity});
+  CommunityInitalEvent({required this.commuinity});
   @override
 
-  List<Object> get props => [commuinity];
+  List<Object?> get props => [commuinity];
 }
 
-class ComuinityLoadingCords extends CommuinityEvent {
-  final List<KingsCord?> cords;
+class CommunityLoadingPosts extends CommuinityEvent {
+  final Church cm;
+  const CommunityLoadingPosts({required this.cm});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [cm];
+}
+
+class CommunityLoadingEvents extends CommuinityEvent {
+  final Church cm;
+  const CommunityLoadingEvents({required this.cm});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [cm];
+}
+
+class CommunityLoadingCords extends CommuinityEvent {
   final Church commuinity;
 
-  ComuinityLoadingCords({required this.cords, required this.commuinity});
+  CommunityLoadingCords({required this.commuinity});
+
   @override
-  List<Object> get props => [cords]; 
+  List<Object> get props => [commuinity]; 
 }
 
 class CommuinityLoadedEvent extends CommuinityEvent {
   final List<KingsCord?> kcs;
-  final List<CallModel> calls;
   final List<Post?> posts;
   final Church commuinity;
   CommuinityLoadedEvent({
     required this.kcs,
-    required this.calls,
     required this.posts,
     required this.commuinity
   });
   @override
-  List<Object> get props => [kcs, calls, posts, commuinity];
+  List<Object> get props => [kcs, posts, commuinity];
 }
 
 

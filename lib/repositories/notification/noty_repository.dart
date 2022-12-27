@@ -8,16 +8,14 @@ class NotificationRepository extends BaseNotificationRepository {
 
 
   @override
-  Stream<List<Future<NotificationKF?>>> getUserNotifications({required String userId}) {
+  Stream<List<NotificationKF?>> getUserNotifications({required String userId}) {
     return FirebaseFirestore.instance
         .collection(Paths.noty)
         .doc(userId)
         .collection(Paths.notifications)
         .orderBy('date', descending: true)
-        .limit(50)
+        .limit(10)
         .snapshots()
         .map((snap) => snap.docs.map((doc) => NotificationKF.fromDoc(doc)).toList());
   }
-
-
 }

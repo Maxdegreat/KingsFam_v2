@@ -1,18 +1,29 @@
 part of 'commuinity_bloc.dart';
-enum CommuintyStatus {inital, loading, loaded, error}
+
+// if not a member then the cm will show armormed or shielded.
+// this is because we want to show only a limited amount of info to 
+// certian users based on the cm settings
+enum CommuintyStatus { inital, loading, loaded, error, armormed, shielded, updated}
+enum RequestStatus { none, pending, }
 
 class CommuinityState extends Equatable {
-  final bool isMember;
+  final bool? isMember;
   final bool collapseCordColumn;
   final bool collapseVvrColumn;
   final List<Post?> postDisplay;
+  final List<Event?> events;
   final List<KingsCord?> kingCords;
-  final Map<String, List<String>> permissions;
-  final List<CallModel> calls;
   final CommuintyStatus status;
   final Failure failure;
-  final Map<String, bool> mentionedMap;
+  final List<KingsCord?> mentionedCords;
   final Userr currUserr;
+  final String themePack;
+  final int boosted;
+  final bool isBaned;
+  final List<Userr> banedUsers;
+  final RequestStatus requestStatus;
+  final Map<String, dynamic> role;
+  final String cmId;
 
   const CommuinityState({
     required this.isMember,
@@ -20,90 +31,102 @@ class CommuinityState extends Equatable {
     required this.collapseVvrColumn,
     required this.postDisplay,
     required this.kingCords,
-    required this.calls,
     required this.status,
     required this.failure,
-    required this.permissions,
-    required this.mentionedMap,
+    required this.events,
+    required this.mentionedCords,
     required this.currUserr,
-});
-  
+    required this.themePack,
+    required this.boosted,
+    required this.isBaned,
+    required this.banedUsers,
+    required this.requestStatus,
+    required this.role,
+    required this.cmId,
+  });
+
   @override
-  List<Object> get props => [currUserr, mentionedMap, collapseCordColumn, collapseVvrColumn, permissions, calls, kingCords, postDisplay, isMember, status, failure];
-  
+  List<Object?> get props => [
+        currUserr,
+        mentionedCords,
+        collapseCordColumn,
+        collapseVvrColumn,
+        events,
+        kingCords,
+        postDisplay,
+        isMember,
+        status,
+        failure,
+        themePack,
+        boosted,
+        isBaned,
+        banedUsers,
+        requestStatus,
+        role,
+        cmId,
+      ];
+
   factory CommuinityState.inital() {
-    return CommuinityState(currUserr: Userr.empty, mentionedMap: {}, collapseCordColumn: false, collapseVvrColumn: false, permissions: {}, isMember: false, postDisplay: [], kingCords: [], calls: [], status: CommuintyStatus.inital, failure: Failure());
+    return CommuinityState(
+      role: {
+        "roleName" : "Member", // default can be string Member or null
+        "permissions" : ["0"] // string 0 means basic role
+      },
+        currUserr: Userr.empty,
+        mentionedCords: [],
+        collapseCordColumn: false,
+        collapseVvrColumn: false,
+        events: [],
+        isMember: null,
+        postDisplay: [],
+        kingCords: [],
+        status: CommuintyStatus.inital,
+        failure: Failure(),
+        themePack: 'none',
+        boosted: 0,
+        isBaned: false,
+        banedUsers: [],
+        cmId: "",
+        requestStatus: RequestStatus.none,
+    );
   }
   CommuinityState copyWith({
+    Map<String, dynamic>? role,
     bool? isMember,
     List<Post?>? postDisplay,
     List<KingsCord?>? kingCords,
-    List<CallModel>? calls,
     CommuintyStatus? status,
     Failure? failure,
-    Map<String, bool>? mentionedMap,
-    Map<String, List<String>>? permissions,
-    bool? collapseCordColumn,  
-    bool? collapseVvrColumn  ,
+    List<KingsCord?>? mentionedCords,
+    List<Event?>? events,
+    bool? collapseCordColumn,
+    bool? collapseVvrColumn,
     Userr? currUserr,
+    String? themePack,
+    int? boosted,
+    bool? isBaned,
+    List<Userr>? banedUsers,
+    RequestStatus? requestStatus,
+    String? cmId,
   }) {
     return CommuinityState(
-      permissions: permissions ?? this.permissions,
-      isMember: isMember ?? this.isMember,
-      postDisplay: postDisplay ?? this.postDisplay,
-      kingCords: kingCords ?? this.kingCords,
-      calls: calls ?? this.calls, 
-      failure: failure ?? this.failure, 
-      status: status ?? this.status,
-      mentionedMap: mentionedMap ?? this.mentionedMap, 
-      collapseCordColumn: collapseCordColumn ?? this.collapseCordColumn,
-      collapseVvrColumn: collapseVvrColumn ?? this.collapseVvrColumn,
-      currUserr: currUserr ?? this.currUserr,
+      role: role ?? this.role,
+        events: events ?? this.events,
+        isMember: isMember ?? this.isMember,
+        postDisplay: postDisplay ?? this.postDisplay,
+        kingCords: kingCords ?? this.kingCords,
+        failure: failure ?? this.failure,
+        status: status ?? this.status,
+        mentionedCords: mentionedCords ?? this.mentionedCords,
+        collapseCordColumn: collapseCordColumn ?? this.collapseCordColumn,
+        collapseVvrColumn: collapseVvrColumn ?? this.collapseVvrColumn,
+        currUserr: currUserr ?? this.currUserr,
+        themePack: themePack ?? this.themePack,
+        boosted: boosted ?? this.boosted,
+        isBaned: isBaned ?? this.isBaned,
+        banedUsers: banedUsers ?? this.banedUsers,
+        requestStatus: requestStatus ?? this.requestStatus,
+        cmId: cmId ?? this.cmId,
     );
   }
 }
-
-// class CommuinityInitial extends CommuinityState {
-//   CommuinityInitial();
-// }
-
-// class CommuinityLoading extends CommuinityState {
-//   CommuinityLoading();
-// }
-
-// class CommuinityLoaded extends CommuinityState {
-//   final bool isMember;
-//   final List<Post?> postDisplay;
-//   final List<KingsCord?> kingCords;
-//   final List<CallModel> calls;
-//   CommuinityLoaded({
-//     required this.isMember,
-//     required this.calls, 
-//     required this.kingCords, 
-//     required this.postDisplay,
-//   });
-//   @override
-//   List<Object> get props => [calls, kingCords, postDisplay, isMember];
-// }
-
-// class CommuinityError extends CommuinityState {
-//   final Failure failure;
-//   CommuinityError({required this.failure});
-//   @override
-//   List<Object> get props => [failure ];
-// }
-
-// class CommuinityJoinLeaveState extends CommuinityState {
-//   final bool isMember;
-//   final List<Post?> postDisplay;
-//   final List<KingsCord?> kingCords;
-//   final List<CallModel> calls;
-//   CommuinityJoinLeaveState({
-//     required this.isMember,
-//     required this.calls, 
-//     required this.kingCords, 
-//     required this.postDisplay,
-//   });
-//   @override
-//   List<Object> get props => [calls, kingCords, postDisplay, isMember];
-// }

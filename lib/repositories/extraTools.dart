@@ -5,7 +5,11 @@ import 'package:intl/intl.dart';
 class AdvancedQuerry {
   //method 1
   //advanced search pram
-  List<String> advancedSearch({required String query}) {
+  List<String> advancedSearch({required String? query}) {
+
+    if (query == null) 
+      return [];
+
     String temp = "";
     List<String> bucket = [];
 

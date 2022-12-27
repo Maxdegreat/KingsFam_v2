@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "kingsfam-9b1f8"
-  }
+    "kingsFam_from_ios": "kingsfam-9b1f8"
+  },
+  "targets": {},
+  "etags": {}
 }

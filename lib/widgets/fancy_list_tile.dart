@@ -1,5 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:kingsfam/extensions/hexcolor.dart';
+import 'package:kingsfam/widgets/widgets.dart';
+
+import '../models/post_model.dart';
 
 class FancyListTile extends StatelessWidget {
   final String username;
@@ -12,6 +16,8 @@ class FancyListTile extends StatelessWidget {
   final double width;
   final bool? isMentioned;
   final String? location;
+  final Post? post;
+  final BuildContext context;
   const FancyListTile(
       {Key? key,
       required this.username,
@@ -22,54 +28,121 @@ class FancyListTile extends StatelessWidget {
       required this.BR,
       required this.height,
       required this.width,
-      this.location, 
+      required this.context,
+      this.location,
       this.isMentioned,
-      })
+      this.post})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    HexColor hc = HexColor();
+    return Column(
+      children: [
+        child1(context, hc),
+        SizedBox(
+          height: 5,
+        ),
+        child2(context),
+      ],
+    );
+  }
+
+  Container child1(BuildContext context, HexColor hc) {
+    
     return Container(
-      
-      height: MediaQuery.of(context).size.height / height,
-      width: double.infinity,
-      child: Row(
-        //mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          leadingImageWidget(
-            url: imageUrl,
-            BR: BR,
-            height: height,
-            width: width,
-          ), //leading is taking the same value that was passed into thh fancy
-          SizedBox(
-            width: 35.0,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        
+        height: MediaQuery.of(context).size.height / height,
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            //mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text('$username.',
-                  overflow: TextOverflow.fade,
-                  style: newNotification == null  || newNotification == false ? TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.white) :  TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.amber[200])),
-              location != null || location == "" ? Text('$location.', overflow: TextOverflow.fade,
-                  style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w600, color: Colors.grey[700])) : Text('Remote.', overflow: TextOverflow.fade,
-                  style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w600, color: Colors.grey[700])),
+              leadingImageWidget(
+                url: imageUrl,
+                BR: BR,
+                height: height,
+                width: width,
+              ), //leading is taking the same value that was passed into thh fancy
+              SizedBox(
+                width: 15,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('$username.',
+                      overflow: TextOverflow.fade,
+                      style: newNotification == null || newNotification == false
+                          ? Theme.of(context).textTheme.bodyText1
+                          : Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.amber)),
+                  SizedBox(height: 3),
+                  location != null || location == ""
+                      ? Text('$location.',
+                          overflow: TextOverflow.fade,
+                          style: Theme.of(context).textTheme.caption)
+                      : Text('Remote.',
+                          overflow: TextOverflow.fade,
+                          style: Theme.of(context).textTheme.caption),
+                ],
+              ),
+              SizedBox(width: width - (width * .10)),
+              isBtn
+                  ? Icon(Icons.check_circle)
+                  : isMentioned != null && isMentioned == true
+                      ? Icon(
+                          Icons.alternate_email_outlined,
+                          color: Colors.amber,
+                        )
+                      : SizedBox.shrink()
             ],
           ),
-          SizedBox(width: width - (width*.10)),
-          isBtn ? Icon(Icons.check_circle) : isMentioned!=null&&isMentioned==true? Icon(Icons.alternate_email_outlined, color: Colors.amber,) : SizedBox.shrink()
+        ),
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomLeft,
+              end: Alignment.topCenter,
+              colors: [
+                Theme.of(context).colorScheme.secondary,
+                Theme.of(context).colorScheme.primary
+              ]),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+                color: isMentioned == null || isMentioned == false
+                    ? Colors.transparent//blue[900]!
+                    : Colors.amber)));
+  }
 
-        ],
-      ),
-      decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.only( topLeft: Radius.circular(BR), bottomLeft: Radius.circular(BR)),
-        border: Border.all(color: isMentioned== null || isMentioned==false? Colors.transparent:Colors.amber)
-          
-          )
-          
-      
-    );
+  Widget child2(BuildContext context) {
+    if (post != null) {
+      TextStyle s = TextStyle(color: Colors.grey, fontStyle: FontStyle.italic);
+      String imgUrlPost =
+          post!.imageUrl != null ? post!.imageUrl! : post!.thumbnailUrl!;
+      String caption = post!.caption != null
+          ? post!.caption!.length > 18
+              ? post!.caption!.substring(0, 18) + "..."
+              : post!.caption!
+          : "";
+      return Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(width: 35),
+            ProfileImage(radius: 20, pfpUrl: imgUrlPost),
+            SizedBox(width: 15),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [Text(post!.author.username, style: s,), Text(caption, style: s,)],
+            )
+          ],
+        ),
+      );
+    }
+    return SizedBox.shrink();
   }
 }
 
@@ -88,12 +161,13 @@ class leadingImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    HexColor hc = HexColor();
     return Container(
         height: MediaQuery.of(context).size.height / height,
         width: MediaQuery.of(context).size.width / 5,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(BR),
-            color: Colors.black,
+            color: Color(hc.hexcolorCode('#20263c')),
             image: url.isNotEmpty
                 ? DecorationImage(
                     fit: BoxFit.cover, image: CachedNetworkImageProvider(url))

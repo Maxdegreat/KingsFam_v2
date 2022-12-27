@@ -9,12 +9,14 @@ abstract class ProfileEvent extends Equatable {
 
 class ProfileLoadUserr extends ProfileEvent {
   final String userId;
+  final VideoPlayerController? vidCtrl;
   ProfileLoadUserr({
     required this.userId,
+    this.vidCtrl,
   });
 
   @override
-  List<Object?> get props => [userId];
+  List<Object?> get props => [userId, vidCtrl];
 }
 
 class ProfilePaginatePosts extends ProfileEvent {
@@ -32,6 +34,14 @@ class ProfileUpdatePost extends ProfileEvent {
 
   @override
   List<Object?> get props => [post];
+}
+
+class ProfileListenForNewPost extends ProfileEvent {
+  final String userId;
+  ProfileListenForNewPost({required this.userId});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [userId];
 }
 
 class ProfileLikePost extends ProfileEvent{
@@ -56,14 +66,21 @@ class ProfileDm extends ProfileEvent {
 
 class ProfileLoadFollowersUsers extends ProfileEvent {
   final String? lastStringId;
-  ProfileLoadFollowersUsers({required this.lastStringId}) ;
+  final String? id; // id of person whos followers are being loaded
+  ProfileLoadFollowersUsers({required this.lastStringId, required this.id}) ;
   @override
-  List<Object?> get props => [lastStringId];
+  List<Object?> get props => [lastStringId, id];
 }
 
 class ProfileLoadFollowingUsers extends ProfileEvent {
     final String? lastStringId;
-  ProfileLoadFollowingUsers({required this.lastStringId}) ;
+    final String? id; // id of person whos followers are being loaded
+  ProfileLoadFollowingUsers({required this.lastStringId, required this.id}) ;
   @override
-  List<Object?> get props => [lastStringId];
+  List<Object?> get props => [lastStringId, id];
+}
+
+class ProfileUpdateUserr extends ProfileEvent {
+  final String usrId;
+  ProfileUpdateUserr({required this.usrId});
 }

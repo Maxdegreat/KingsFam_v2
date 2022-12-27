@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
@@ -43,7 +44,7 @@ class EditProfileCubit extends Cubit<EditProfileState> {
   }
 
   void usernameChanged(String username) {
-    emit(state.copyWith(username: username, status: EditProfileStatus.initial));
+    emit(state.copyWith(username: username.toLowerCase(), status: EditProfileStatus.initial));
   }
 
   void locationChanged(String location) {
@@ -90,7 +91,7 @@ class EditProfileCubit extends Cubit<EditProfileState> {
       print("The user color preff is ${userr.colorPref}");
 
       final updatedUserr = userr.copyWith(
-          username: state.username,
+          username: state.username.toLowerCase(),
           usernameSearchCase: usernameSearchCase ,
           bio: state.bio,
           profileImageUrl: profileImageUrl,
@@ -107,6 +108,7 @@ class EditProfileCubit extends Cubit<EditProfileState> {
           status: EditProfileStatus.error,
           failure:
               Failure(message: 'mmm, there\'s an error updating ur profile')));
+              log(e.toString() + " from edit profile cubit");
     }
   }
 }

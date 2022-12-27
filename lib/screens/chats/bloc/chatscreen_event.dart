@@ -20,10 +20,13 @@ class LoadChats extends ChatscreenEvent {
   });
 }
 
-class LoadCms extends ChatscreenEvent {
-}
+class LoadCms extends ChatscreenEvent {}
 
 class ChatScreenFetchPosts extends ChatscreenEvent {}
 
+class ChatScreenUpdateSelectedCm extends ChatscreenEvent {
+  final Church cm;
+  ChatScreenUpdateSelectedCm({required this.cm});
+}
 
-class ChatScreenPaginatePosts extends ChatscreenEvent{}
+class ChatScreenPaginatePosts extends ChatscreenEvent {}

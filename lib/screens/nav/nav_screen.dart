@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/nav/widgets/widgets.dart';
+import 'package:rive/rive.dart';
 
 class NavScreen extends StatelessWidget {
   static const String routeName = '/nav';
@@ -10,10 +12,7 @@ class NavScreen extends StatelessWidget {
     return PageRouteBuilder(
         settings: const RouteSettings(name: routeName),
         transitionDuration: const Duration(seconds: 0),
-        pageBuilder: (_, __, ___) => BlocProvider<BottomnavbarCubit>(
-              create: (_) => BottomnavbarCubit(),
-              child: NavScreen(),
-            )); //buildcontext, animaitons ;
+        pageBuilder: (_, __, ___) => NavScreen()); //buildcontext, animaitons ;
   }
 
   //navigator keys to maintain current satate across pages
@@ -21,15 +20,17 @@ class NavScreen extends StatelessWidget {
   final Map<BottomNavItem, GlobalKey<NavigatorState>> navigatorKeys = {
     BottomNavItem.chats: GlobalKey<NavigatorState>(),
     BottomNavItem.search: GlobalKey<NavigatorState>(),
+    BottomNavItem.add: GlobalKey<NavigatorState>(),
     BottomNavItem.notifications: GlobalKey<NavigatorState>(),
     BottomNavItem.profile: GlobalKey<NavigatorState>(),
   };
 
-  final Map<BottomNavItem, IconData> items = const {
-    BottomNavItem.chats: Icons.home,
-    BottomNavItem.search: Icons.search,
-    BottomNavItem.notifications: Icons.favorite_border,
-    BottomNavItem.profile: Icons.account_circle
+  final Map<BottomNavItem, Widget> items = const {
+    BottomNavItem.chats: Icon(Icons.home, size: 20,),
+    BottomNavItem.search: Icon(Icons.search, size: 20),
+    BottomNavItem.add: Icon(Iconsax.add_square4, size: 20),
+    BottomNavItem.notifications: Icon(Icons.favorite_border, size: 20),
+    BottomNavItem.profile: Icon(Icons.account_circle, size: 20)
   };
 
   @override
@@ -48,14 +49,16 @@ class NavScreen extends StatelessWidget {
                   .values
                   .toList(),
             ),
-            bottomNavigationBar: BottomNavBar(
+            bottomNavigationBar: context.read<BottomnavbarCubit>().state.showBottomNav ? BottomNavBar(
+              
               onTap: (index) {
                 final selectedItem = BottomNavItem.values[index];
                 _selectBottomNavItem(context, selectedItem, selectedItem == state.selectedItem);
+                //context.read<BottomnavbarCubit>().showBottomNav(true);
               },
               items: items,
               selectedItem: state.selectedItem,
-            ),
+            ) : SizedBox.shrink(),
           );
         },
       ),

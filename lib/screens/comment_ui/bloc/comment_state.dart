@@ -1,36 +1,57 @@
 part of 'comment_bloc.dart';
-enum CommentStatus {inital, loading, success, paginating, error}
 
-abstract class CommentState extends Equatable {
-  const CommentState();
-}
+enum CommentStatus { inital, loading, success, paginating, error }
 
-class CommentInital extends CommentState {
-  const CommentInital();
-  @override
-  List<Object?> get props => [];
-}
-
-class CommentLoading extends CommentState {
-  const CommentLoading();
-
-  @override
-  List<Object?> get props => [];
-  
-}
-
-class CommentLoaded extends CommentState {
-  final Post? post;
-  final List<Comment?> comments;
-  const CommentLoaded({required this.post, required this.comments});
-  @override
-  List<Object?> get props => [post, comments];
-}
-
-class CommentError extends CommentState {
+class CommentState extends Equatable {
+  final CommentStatus status;
   final Failure failure;
-  const CommentError({required this.failure});
+  final bool isReplys;
+  final Map<String, List<Comment?>> replys; // top comment id, reply comments
+  final List<Comment?> comments;
+  final Post post;
+
+  CommentState(
+      {required this.status,
+      required this.failure,
+      required this.isReplys,
+      required this.replys,
+      required this.comments,
+      required this.post});
 
   @override
-  List<Object?> get props => [failure];
+  // TODO: implement props
+  List<Object?> get props => [
+        status,
+        failure,
+        isReplys,
+        replys,
+        comments,
+        post,
+
+      ];
+
+  factory CommentState.inital() => CommentState(
+      status: CommentStatus.inital,
+      failure: Failure(),
+      isReplys: false,
+      replys: {},
+      comments: [],
+      post: Post.empty);
+
+  CommentState CopyWith({
+    CommentStatus? status,
+    Failure? failure,
+    bool? isReplys,
+    Map<String, List<Comment?>>? replys,
+    List<Comment?>? comments,
+    Post? post,
+  }) {
+    return CommentState(
+        status: status ?? this.status,
+        failure: failure ?? this.failure,
+        isReplys: isReplys ?? this.isReplys,
+        replys: replys ?? this.replys,
+        comments: comments ?? this.comments,
+        post: post ?? this.post);
+  }
 }

@@ -72,11 +72,11 @@ class UserrRepository extends BaseUserrRepository {
   }
 
   @override
-  void followerUserr({required String userrId, required String followersId}) {
+  void followerUserr({required Userr userr, required String followersId}) {
 
     _firebaseFirestore
         .collection(Paths.following)
-        .doc(userrId)
+        .doc(userr.id)
         .collection(Paths.userrFollowing)
         .doc(followersId)
         .set({});
@@ -86,15 +86,15 @@ class UserrRepository extends BaseUserrRepository {
         .collection(Paths.followers)
         .doc(followersId)
         .collection(Paths.userFollowers)
-        .doc(userrId)
+        .doc(userr.id)
         .set({});
 
     //handel notifications for a new follower
     final NotificationKF noty = NotificationKF(
-      notificationType:  Notification_type.new_follower,
-      fromUser: Userr.empty.copyWith(id: userrId),
-      fromCommuinity: null,
-      fromDirectMessage: null,
+      msg: userr.username + " started following you",
+      fromUser: Userr.empty.copyWith(id: userr.id, username: userr.username, profileImageUrl: userr.profileImageUrl ),
+      fromCm: null,
+      fromDm: null,
       date:Timestamp.now(),
     );
 
@@ -172,7 +172,7 @@ class UserrRepository extends BaseUserrRepository {
     Future<List<Userr>> followingList({required String currUserId, required String? lastStringId}) async {
       List<Userr> bucket = [];
       if (lastStringId == null) {
-        final userSnap = await _firebaseFirestore.collection(Paths.following).doc(currUserId).collection(Paths.userrFollowing).limit(15).get();
+        final userSnap = await _firebaseFirestore.collection(Paths.following).doc(currUserId).collection(Paths.userrFollowing).limit(10).get();
         for (var v in  userSnap.docs) {
          if (v.exists) {
            Userr user = await getUserrWithId(userrId: v.id);
@@ -181,7 +181,7 @@ class UserrRepository extends BaseUserrRepository {
         }
       } else {
         var startAfterUserDoc = await _firebaseFirestore.collection(Paths.users).doc(lastStringId).get();
-        final userSnap = await _firebaseFirestore.collection(Paths.following).doc(currUserId).collection(Paths.userrFollowing).startAfterDocument(startAfterUserDoc).limit(15).get();
+        final userSnap = await _firebaseFirestore.collection(Paths.following).doc(currUserId).collection(Paths.userrFollowing).startAfterDocument(startAfterUserDoc).limit(10).get();
         for (var v in  userSnap.docs) {
          if (v.exists) {
            Userr user = await getUserrWithId(userrId: v.id);
@@ -217,18 +217,7 @@ class UserrRepository extends BaseUserrRepository {
   
   @override
   Future<void> snedFriendRequest({required String senderId, required String currUserId}) async {
-    // final senderUser = await UserrRepository().getUserrWithId(userrId: senderId);
-    // final noty = Notification(
-    //     fromUser: senderUser,
-    //     type: Notification_type.friend_request,
-    //     date: DateTime.now());
-    // FirebaseFirestore.instance
-    //     .collection(Paths.notifications)
-    //     .doc(currUserId)
-    //     .collection(Paths.userNotifications)
-    //     .add(noty.toDoc());
-    // //write into friend collection : friend -> reciever.id -> friends -> sender.id
-    // //if the sender is in the recievers collection they are not friends however if both have each other added then they are friends!
+
   }
 
   Future<bool> updateUserInField(String userId, Map<String, dynamic> fieldMap) async {

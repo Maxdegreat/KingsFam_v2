@@ -8,6 +8,7 @@ import 'package:kingsfam/config/custum_router.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 
 import 'package:kingsfam/enums/bottom_nav_items.dart';
+import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/notification/bloc/noty_bloc.dart';
@@ -62,13 +63,16 @@ class TabNavigator extends StatelessWidget {
               likedPostCubit: ctx.read<LikedPostCubit>(),
               authBloc: ctx.read<AuthBloc>(),
               chatRepository: ctx.read<ChatRepository>())
-            ..add(LoadChats(chatId: ctx.read<AuthBloc>().state.user!.uid)),
+            ..add(LoadCms() /*LoadChats(chatId: ctx.read<AuthBloc>().state.user!.uid)*/ ),
           child: ChatsScreen(),
         );
 
       // removed the chain operator that ads the init user
       case BottomNavItem.search:
         return SearchScreen();
+
+      case BottomNavItem.add:
+        return CreateComuinity();
         
 
       case BottomNavItem.notifications:
@@ -83,15 +87,15 @@ class TabNavigator extends StatelessWidget {
       case BottomNavItem.profile:
         return BlocProvider<ProfileBloc>(
           create: (_) => ProfileBloc(
+            prayerRepo: ctx.read<PrayerRepo>(),
             churchRepository: ctx.read<ChurchRepository>(),
             likedPostCubit: ctx.read<LikedPostCubit>(),
             userrRepository: ctx.read<UserrRepository>(),
             authBloc: ctx.read<AuthBloc>(),
             postRepository: ctx.read<PostsRepository>(),
             chatRepository: ctx.read<ChatRepository>()
-          )..add(
-              ProfileLoadUserr(userId: ctx.read<AuthBloc>().state.user!.uid)),
-          child: ProfileScreen(ownerId: ctx.read<AuthBloc>().state.user!.uid,),
+          ),
+          child: ProfileScreen(ownerId: ctx.read<AuthBloc>().state.user!.uid, initScreen: true,),
         );
       default:
         return Scaffold();

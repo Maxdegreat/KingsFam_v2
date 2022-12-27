@@ -1,11 +1,20 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:kingsfam/camera/bloc/camera_screen.dart';
+import 'package:kingsfam/screens/commuinity/community_home/home.dart';
+import 'package:kingsfam/screens/commuinity/screens/events/create_event.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
-import 'package:kingsfam/screens/commuinity/screens/stories/storys.dart';
+import 'package:kingsfam/screens/commuinity/screens/says_room/says_view.dart';
+import 'package:kingsfam/screens/commuinity/screens/says_room/screens/create_says.dart';
+import 'package:kingsfam/screens/commuinity/wrapers/create_new_role.dart';
+import 'package:kingsfam/screens/commuinity/wrapers/role_permissions.dart';
+
 import 'package:kingsfam/screens/screens.dart';
+import 'package:kingsfam/screens/search/more_cm_screen.dart';
+import 'package:kingsfam/screens/search/widgets/show_following.dart';
 
 class CustomRoute {
   static Route onGenerateRoute(RouteSettings settings) {
@@ -14,12 +23,11 @@ class CustomRoute {
       case '/':
         return MaterialPageRoute(
           settings: const RouteSettings(name: '/'),
-          builder: (_) =>  Scaffold(),
+          builder: (_) => Scaffold(),
         );
 
       case SplashScreen.routeName:
         return SplashScreen.route();
-        
 
       case LoginScreen.routeName:
         return LoginScreen.route();
@@ -44,16 +52,19 @@ class CustomRoute {
       case '/':
         return MaterialPageRoute(
           settings: const RouteSettings(name: '/'),
-          builder: (_) =>  Scaffold(body: Container(height: double.infinity, width: double.infinity, color:  Colors.purple,),),
+          builder: (_) => Scaffold(
+            body: Container(
+              height: double.infinity,
+              width: double.infinity,
+              color: Colors.purple,
+            ),
+          ),
         );
 
       case EditProfileScreen.routeName:
         return EditProfileScreen.route(
           args: settings.arguments as EditProfileScreenArgs,
         );
-
-      case CreatePostScreen.routeName:
-        return CreatePostScreen.route();
 
       case ProfileScreen.routeName:
         return ProfileScreen.route(
@@ -85,7 +96,7 @@ class CustomRoute {
             args: settings.arguments as ChatRoomSettingsArgs);
 
       case BuildChurch.routeName:
-        return BuildChurch.route(settings.arguments as BuildChurchArgs);
+        return BuildChurch.route();
 
       case CreateComuinity.routeName:
         return CreateComuinity.route();
@@ -93,33 +104,22 @@ class CustomRoute {
       case KingsCordScreen.routeName:
         return KingsCordScreen.route(settings.arguments as KingsCordArgs);
 
-      case SoundsScreen.routeName:
-        return SoundsScreen.route(args: settings.arguments as SoundsArgs);
-
-      case StorysCommuinityScreen.routeName:
-        return StorysCommuinityScreen.route(
-            args: settings.arguments as StoryCommuinityArgs);
-
       case CommuinityFeedScreen.routeName:
-        return CommuinityFeedScreen.route(args: settings.arguments as CommuinityFeedScreenArgs);
+        return CommuinityFeedScreen.route(
+            args: settings.arguments as CommuinityFeedScreenArgs);
 
-      case CallsHome.routeName:
-        return CallsHome.route(args: settings.arguments as CallsHomeArgs);
+      // case CommuinityScreen.routeName:
+      //   return CommuinityScreen.route(
+      //       args: settings.arguments as CommuinityScreenArgs);
 
-      case BuildCallScreen.routeName:
-        return BuildCallScreen.route(
-            args: settings.arguments as BuildCallScreenArgs);
-
-      case CommuinityScreen.routeName:
-        return CommuinityScreen.route(
-            args: settings.arguments as CommuinityScreenArgs);
-      
       case FeedNewScreen.routeName:
-        return FeedNewScreen.route(args: settings.arguments as FeedNewScreenArgs);
+        return FeedNewScreen.route(
+            args: settings.arguments as FeedNewScreenArgs);
 
       case CommentScreen.routeName:
-        return CommentScreen.route(args: settings.arguments as CommentScreenArgs);
-      
+        return CommentScreen.route(
+            args: settings.arguments as CommentScreenArgs);
+
       case UrlViewScreen.routeName:
         return UrlViewScreen.route(args: settings.arguments as UrlViewArgs);
 
@@ -127,14 +127,95 @@ class CustomRoute {
         return RolesScreen.route(args: settings.arguments as RoleScreenArgs);
 
       case CommunityUpdateRoleScreen.routeName:
-        return CommunityUpdateRoleScreen.route(args: settings.arguments as CommunityUpdateRoleArgsScreen);
+        return CommunityUpdateRoleScreen.route(
+            args: settings.arguments as CommunityUpdateRoleArgsScreen);
+
+      case SnackTimeShopScreen.routeName:
+        return SnackTimeShopScreen.route(settings.arguments as SnackTimeArgs);
+
+      case BuyPerkScreen.routeName:
+        return BuyPerkScreen.route(settings.arguments as BuyPerkArgs);
+
+      case UpdateCmThemePack.routeName:
+        return UpdateCmThemePack.route(
+            settings.arguments as UpdateCmThemePackArgs);
+
+      case MoreCm.routeName:
+        return MoreCm.route(settings.arguments as MoreCmArgs);
+
+      case ShowFollowingList.routeName:
+        return ShowFollowingList.route(
+            settings.arguments as ShowFollowingListArgs);
+
+      case PostContentScreen.routeName:
+        return PostContentScreen.route(
+            args: settings.arguments as PostContentArgs);
+
+      case CreateRoom.routeName:
+        return CreateRoom.route(args: settings.arguments as CreateRoomArgs);
+
+      case CreateEvent.routeName:
+        return CreateEvent.route(args: settings.arguments as CreateEventArgs);
+
+      case SaysRoom.routeName:
+        return SaysRoom.route(args: settings.arguments as SaysRoomArgs);
+
+      case SaysView.routeName:
+        return SaysView.route(args: settings.arguments as SaysViewArgs);
+
+      // case VideoEditor.routeName:
+      //   return VideoEditor.route(settings.arguments as VideoEditorArgs);
+
+      case ShowBanedUsers.routeName:
+        return ShowBanedUsers.route(settings.arguments as ShowBanedUsersArgs);
+
+      case CreateSays.routeName:
+        return CreateSays.route(args: settings.arguments as CreateSaysArgs);
+
+      case EventView.routeName:
+        return EventView.route(args: settings.arguments as EventViewArgs);
+
+      case UpdatePrivacyCm.routeName:
+        return UpdatePrivacyCm.route(
+            args: settings.arguments as UpdatePrivacyCmArgs);
+
+      case ReviewPendingRequest.routeName:
+        return ReviewPendingRequest.route(
+            args: settings.arguments as ReviewPendingRequestArgs);
+
+      case ParticipantsView.routeName:
+        return ParticipantsView.route(
+            args: settings.arguments as ParticipantsViewArgs);
+
+      case RolePermissions.routeName:
+        return RolePermissions.route(
+            args: settings.arguments as RolePermissionsArgs);
+
+      case CreateRole.routeName:
+        return CreateRole.route(args: settings.arguments as CreateRoleArgs);
+
+      case KingsCordSettings.routeName:
+        return KingsCordSettings.route(
+            args: settings.arguments as KingsCordSettingsArgs);
+
+      case Participant_deep_view.routeName:
+        return Participant_deep_view.route(
+            args: settings.arguments as ParticipantDeepViewArgs);
+
+      case CommunityHome.routeName:
+        return CommunityHome.route(
+          args: settings.arguments as CommunityHomeArgs
+        );
+
+    case CameraScreen.routeName:
+      return CameraScreen.route(
+        args: settings.arguments as CameraScreenArgs
+      );
 
       default:
         return _errorRoute();
     }
   }
-
-  
 
   static Route _errorRoute() {
     return MaterialPageRoute(

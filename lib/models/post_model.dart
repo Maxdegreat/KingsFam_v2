@@ -11,58 +11,8 @@ import 'package:kingsfam/models/user_model.dart';
 
 import 'church_model.dart';
 
-// BELOW PREPOST IS A POST CLASS THE PRE POST IS USED IN CREATING A POST (THE CREATE_POST SCREEN TO BE EXACT WHEN PREVIEWING)
 
-class PrePost extends Equatable {
-  final Userr author;
-  final Church? commuinity;
-  final String? quote;
-  final File? imageFile;
-  final File? videoFile;
-  final File?  thumbnailFile;
-  final File? soundTrack;
-  final String? caption;
-  final int? height;
-  PrePost({
-    required this.author,
-    required this.commuinity,
-    this.quote,
-    this.imageFile,
-    this.videoFile,
-    this.thumbnailFile,
-    this.soundTrack,
-    this.caption,
-    this.height,
-  });
-
-  @override
-  List<Object?> get props => [height, author, commuinity, quote, imageFile, videoFile, thumbnailFile, soundTrack, caption];
-
-  PrePost copyWith({
-    Userr? author,
-    int? height,
-    Church? commuinity,
-    String? quote,
-    File? imageFile,
-    File? videoFile,
-    File? thumbnailFile,
-    File? soundTrack,
-    String? caption,
-  }) {
-    return PrePost(
-      author: author ?? this.author,
-      commuinity: commuinity ?? null,
-      quote: quote ?? this.quote,
-      imageFile: imageFile ?? this.imageFile,
-      videoFile: videoFile ?? this.videoFile,
-      thumbnailFile: thumbnailFile ?? this.thumbnailFile,
-      soundTrack: soundTrack ?? this.soundTrack,
-      caption: caption ?? this.caption,
-      height: height ?? this.height,
-    );
-  }
-}
-
+// stings for promoted: promotedL1
 
 class Post extends Equatable {
   final String? id; //1 make the model
@@ -72,13 +22,16 @@ class Post extends Equatable {
   final String? imageUrl; //img url uploaded to fb
   final String? videoUrl; // video url that will be uploaded to fb
   final String? thumbnailUrl;
+  final String? assetVideoPath;
+  final String? assetImgPath;
   final String? soundTrackUrl; //bg sounds like tik tok
   final String? caption;
   final int likes;
   final Timestamp date;
   final int? height;
   final Widget? nativeAd;
-  final BannerAd? bannerAd;
+  final String? promoted;
+  final String? webPageUrl; 
   Post({
     this.id,
     required this.author, //2 make the constructor
@@ -87,20 +40,27 @@ class Post extends Equatable {
     required this.imageUrl,
     required this.videoUrl,
     required this.thumbnailUrl,
+    this.assetVideoPath,
+    this.assetImgPath,
     required this.soundTrackUrl,
     required this.caption,
     required this.likes,
     required this.date,
     required this.height,
     this.nativeAd,
-    this.bannerAd,
+    this.promoted,
+    this.webPageUrl,
   });
 
   static Post empty = Post( author: Userr.empty, quote: null, imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: '', likes: 0, date: Timestamp(0, 0), height: 10);
+  
+  static Post mockImg = Post( author: Userr.empty, quote: null, assetImgPath: 'assets/mock_photos/1.jpg', imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: '', likes: 0, date: Timestamp(0, 0), height: 10);
+
+  static Post mockVid = Post( author: Userr.empty, quote: null, assetVideoPath: 'assets/mock_video/1.mp4', imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: '', likes: 0, date: Timestamp(0, 0), height: 10);
 
   @override
   List<Object?> get props =>
-      [id, height, author, commuinity,  quote, imageUrl, videoUrl, thumbnailUrl, soundTrackUrl, caption, likes, date, nativeAd, bannerAd]; //3 do props
+      [id, height, author, commuinity,  quote, imageUrl, videoUrl, thumbnailUrl, soundTrackUrl, caption, likes, date, nativeAd, promoted, webPageUrl]; //3 do props
 
   Post copyWith({
     String? id, //4 do the copy with
@@ -111,10 +71,14 @@ class Post extends Equatable {
     String? videoUrl,
     String? thumbnailUrl,
     String? soundTrackUrl,
+    String? assetVideoPath,
+    String? assetImgPath,
     String? caption,
     int? likes,
     Timestamp? date,
     int? height,
+    String? promoted,
+    String? webPageUrl,
   }) {
     return Post(
       id: id ?? this.id,
@@ -125,10 +89,14 @@ class Post extends Equatable {
       videoUrl: videoUrl ?? this.videoUrl,
       soundTrackUrl: soundTrackUrl ?? this.soundTrackUrl,
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      assetImgPath: assetImgPath ?? this.assetImgPath,
+      assetVideoPath: assetVideoPath ?? this.assetVideoPath,
       caption: caption ?? this.caption,
       likes: likes ?? this.likes,
       date: date ?? this.date,
       height: height ?? this.height,
+      promoted: promoted ?? this.promoted,
+      webPageUrl: webPageUrl ?? this.webPageUrl
     );
   }
 
@@ -164,8 +132,10 @@ class Post extends Equatable {
       'height': height,
   };
 
+  
+
   static Future<Post?> fromDoc(DocumentSnapshot doc) async {
-    log ("function: fromDoc ~ file: post_model.dart");
+
     //6 from doc
     final data = doc.data() as Map<String, dynamic>;
     final authorRef = data['author'] as DocumentReference?;

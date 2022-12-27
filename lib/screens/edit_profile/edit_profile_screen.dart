@@ -21,7 +21,7 @@ class EditProfileScreenArgs {
   });
 }
 
-// global args type beat. once we have our passed args we will update this args to be equal 
+// global args type beat. once we have our passed args we will update this args to be equal
 // this will allow us to use the global args below for our  colorPref picker!
 BuildContext? pb;
 
@@ -36,15 +36,14 @@ class EditProfileScreen extends StatefulWidget {
                   storageRepository: context.read<StorageRepository>(),
                   userrRepository: context.read<UserrRepository>()),
               child: EditProfileScreen(
-                userr: args.context.read<ProfileBloc>().state.userr, 
+                userr: args.context.read<ProfileBloc>().state.userr,
               ),
             ));
   }
 
   EditProfileScreen({required this.userr});
-  
-  final Userr userr;
 
+  final Userr userr;
 
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
@@ -59,7 +58,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Map<int, String> hexcolormapInt = HexColor().hexcolorCounter;
   Map<String, String> hexToColor = HexColor().hexToColor;
 
-
   // used to gobally update the users color preff
   String? userColorPref;
 
@@ -72,7 +70,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Edit Profile Fam'),
+          leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).iconTheme.color,
+              )),
+          title: Text(
+            'Edit Profile',
+            style: Theme.of(context).textTheme.bodyText1,
+          ),
         ),
         body: BlocConsumer<EditProfileCubit, EditProfileState>(
             listener: (context, state) {
@@ -89,7 +96,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           // this will help the user know what they are changing in realtime and prevent them from muptile updates via writes
           if (state.colorPref == '') {
             log(widget.userr.colorPref);
-            context.read<EditProfileCubit>().updateColorPreff(widget.userr.colorPref);
+            context
+                .read<EditProfileCubit>()
+                .updateColorPreff(widget.userr.colorPref);
           }
 
           return SingleChildScrollView(
@@ -97,29 +106,49 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               children: [
                 if (state.status == EditProfileStatus.submitting)
                   const LinearProgressIndicator(),
-                Stack(
-                  children: [
-                    GestureDetector(
-                      onTap: () => _pickBannerImage(context),
-                      child: BannerImage(
-                        isOpasaty: false,
-                        bannerImageUrl: widget.userr.bannerImageUrl,
-                        bannerImage: state.bannerImage,
-                      ),
+                GestureDetector(
+                  onTap: () => _pickBannerImage(context),
+                  child: BannerImage(
+                    isOpasaty: false,
+                    bannerImageUrl: widget.userr.bannerImageUrl,
+                    bannerImage: state.bannerImage,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                      child: ElevatedButton(
+                    onPressed: () => _pickBannerImage(context),
+                    child: Text(
+                      "Edit banner image",
+                      style: Theme.of(context).textTheme.bodyText1,
                     ),
-                    Positioned(
-                        top: 30,
-                        left: 10,
-                        child: GestureDetector(
-                          onTap: () => _pickProfileImage(context),
-                          child: ProfileImage(
-                            radius: 40.0,
-                            pfpUrl: widget.userr.profileImageUrl,
-                            pfpImage: state.profileImage,
-                          ),
-                        ))
-                  ],
-                  clipBehavior: Clip.none,
+                    style: ElevatedButton.styleFrom(
+                        shadowColor: Colors.transparent),
+                  )),
+                ),
+                Container(
+                    child: GestureDetector(
+                  onTap: () => _pickProfileImage(context),
+                  child: ProfileImage(
+                    radius: 40.0,
+                    pfpUrl: widget.userr.profileImageUrl,
+                    pfpImage: state.profileImage,
+                  ),
+                )),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    child: ElevatedButton(
+                      onPressed: () => _pickProfileImage(context),
+                      child: Text(
+                        "Edit banner image",
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          shadowColor: Colors.transparent),
+                    ),
+                  ),
                 ),
                 Padding(
                     padding: const EdgeInsets.symmetric(
@@ -156,13 +185,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               child: Padding(
                                 padding: const EdgeInsets.only(bottom: 5),
                                 child: Text(
-                                  'My Color Pref is... ${hexToColor[state.colorPref]}',
-                                  style: TextStyle( fontWeight: FontWeight.bold, fontSize: 17, color: Color(hexcolor.hexcolorCode(state.colorPref)),
-                                )),
+                                    'My Color Pref is... ${hexToColor[state.colorPref]}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+                                      color: Color(hexcolor
+                                          .hexcolorCode(state.colorPref)),
+                                    )),
                               ),
                             ),
 
-                            PickColorPref(hexcolormapStr: hexcolormapStr, hexcolormapInt: hexcolormapInt, hexcolor: hexcolor),
+                            PickColorPref(
+                                hexcolormapStr: hexcolormapStr,
+                                hexcolormapInt: hexcolormapInt,
+                                hexcolor: hexcolor),
 
                             Divider(
                               color: Colors.grey,
@@ -180,15 +216,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 style: const TextStyle(color: Colors.white),
                                 underline: Container(
                                   height: 2,
-                                  color: Color(hexcolor.hexcolorCode(state.colorPref)),
+                                  color: Color(
+                                      hexcolor.hexcolorCode(state.colorPref)),
                                 ),
                                 onChanged: (String? newValue) {
-
-
-                                  setState(() => Location.dropdownValue = newValue!);
-                                  context.read<EditProfileCubit>().locationChanged(newValue!);
+                                  setState(
+                                      () => Location.dropdownValue = newValue!);
+                                  context
+                                      .read<EditProfileCubit>()
+                                      .locationChanged(newValue!);
                                 },
-                                items: locations().map<DropdownMenuItem<String>>((String value) {
+                                items: locations()
+                                    .map<DropdownMenuItem<String>>(
+                                        (String value) {
                                   return DropdownMenuItem<String>(
                                     value: value,
                                     child: Text(value),
@@ -197,29 +237,64 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                             ),
 
-                            //  TextFormField(
-                            //    initialValue: userr.location,
-                            //    decoration: InputDecoration(hintText: 'add name of state to find commuinitys around'),
-                            //    validator: (value) => value!.trim().isEmpty ? "Location Can Not be empty" : null,
-                            //    onChanged: (value) => context
-                            //        .read<EditProfileCubit>()
-                            //        .locationChanged(value),
-                            //  ),
                             SizedBox(height: 15.0),
                             ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                              primary: Colors.red[400]),
-                              onPressed: () => _submitForm(context, state.status == EditProfileStatus.submitting),
-                              child: Text('Done!?')
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.green[400]),
+                                onPressed: () => _submitForm(
+                                    context,
+                                    state.status ==
+                                        EditProfileStatus.submitting),
+                                child: Text('Done!?')),
+
+                            SizedBox(
+                              height: 20,
                             ),
 
-
-                            ElevatedButton(
-                              onLongPress: () => context.read<AuthRepository>().logout(),
-                              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Long Press For 5 Seconds To Log Out"))),
-                              child: Text("Log Me Out :(", style: TextStyle(color: Colors.black),),
-                              style: ElevatedButton.styleFrom(primary: Colors.grey[400]),
-                            )
+                            Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  TextButton(
+                                    onLongPress: () =>
+                                        context.read<AuthRepository>().logout(),
+                                    onPressed: () => ScaffoldMessenger.of(
+                                            context)
+                                        .showSnackBar(SnackBar(
+                                            content: Text(
+                                                "Long Press For 5 Seconds To Log Out"))),
+                                    child: Text(
+                                      "Log Me Out",
+                                      style:
+                                          Theme.of(context).textTheme.bodyText1,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 15,
+                                  ),
+                                  TextButton(
+                                    onLongPress: () async {
+                                      await delAcc(context)
+                                          ? context
+                                              .read<AuthRepository>()
+                                              .deleteAccount()
+                                          : snackBar(
+                                              snackMessage:
+                                                  "Your account was not deleted.",
+                                              context: context);
+                                    },
+                                    onPressed: () => ScaffoldMessenger.of(
+                                            context)
+                                        .showSnackBar(SnackBar(
+                                            content: Text(
+                                                "Long Press For 5 Seconds To to delete your account. Note your account will be forever deleted"))),
+                                    child: Text(
+                                      "Delete my account",
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  )
+                                ])
                           ],
                         )))
               ],
@@ -257,8 +332,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       context.read<EditProfileCubit>().submit();
     }
   }
+}
 
-
+Future delAcc(BuildContext context) {
+  return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("You are about to delete your account",
+              style: Theme.of(context).textTheme.bodyText1),
+          content: Text("You can not undo this action",
+              style: Theme.of(context).textTheme.bodyText1),
+          actions: [
+            GestureDetector(
+                onTap: () => Navigator.pop(context, false),
+                child: Text("No, keep account",
+                    style: Theme.of(context).textTheme.bodyText1)),
+            SizedBox(
+              height: 10,
+            ),
+            GestureDetector(
+                onTap: () => Navigator.pop(context, true),
+                child: Text("Delete your account",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1!
+                        .copyWith(color: Colors.red[400])))
+          ],
+        );
+      });
 }
 
 class PickColorPref extends StatelessWidget {
@@ -279,43 +381,42 @@ class PickColorPref extends StatelessWidget {
       height: 127,
       width: double.infinity,
       child: ListView.builder(
-        
-        scrollDirection: Axis.horizontal,
-        itemCount: hexcolormapStr.length,
-        itemBuilder: (context, idx) {
-        
-        Size size = MediaQuery.of(context).size;
-        final currColor = hexcolormapStr[hexcolormapInt[idx]];
-        
-        return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () {
-                if (currColor != null) {
-                  context.read<EditProfileCubit>().updateColorPreff(currColor);
-                }
-              },
-      child: Container(
-        height: size.height / 17,
-        width: size.width / 8,
-        decoration: BoxDecoration(
-          color: Color(hexcolor.hexcolorCode(currColor!)),
-          borderRadius: BorderRadius.circular(15),
-        ),
-      ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(hexcolormapInt[idx]!,
-        style: TextStyle(
-          color: Color(hexcolor.hexcolorCode(currColor)),
-        ))
-                        ],
+          scrollDirection: Axis.horizontal,
+          itemCount: hexcolormapStr.length,
+          itemBuilder: (context, idx) {
+            Size size = MediaQuery.of(context).size;
+            final currColor = hexcolormapStr[hexcolormapInt[idx]];
+
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (currColor != null) {
+                        context
+                            .read<EditProfileCubit>()
+                            .updateColorPreff(currColor);
+                      }
+                    },
+                    child: Container(
+                      height: size.height / 17,
+                      width: size.width / 8,
+                      decoration: BoxDecoration(
+                        color: Color(hexcolor.hexcolorCode(currColor!)),
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                    );
-                  }),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(hexcolormapInt[idx]!,
+                      style: TextStyle(
+                        color: Color(hexcolor.hexcolorCode(currColor)),
+                      ))
+                ],
+              ),
+            );
+          }),
     );
   }
 }
-//128 by 128

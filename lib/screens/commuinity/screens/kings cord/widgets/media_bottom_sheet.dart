@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -8,6 +6,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/helpers/helpers.dart';
 
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
+import 'package:kingsfam/widgets/widgets.dart';
 
 mediaBottomSheet(
     {required KingscordCubit kingscordCubit,
@@ -16,11 +15,9 @@ mediaBottomSheet(
     required String kcId,
     required String seenderUsername}) {
   return showModalBottomSheet(
-    isScrollControlled: true,
-    
+      isScrollControlled: true,
       context: context,
       builder: (_) {
-        
         return BlocProvider.value(
           value: BlocProvider.of<KingscordCubit>(context),
           child: Column(
@@ -30,12 +27,16 @@ mediaBottomSheet(
                   width: double.infinity * .75,
                   child: ElevatedButton(
                     onPressed: () async {
-                      final pickedFile = await ImageHelper.pickVideoFromGallery();
-                      if (pickedFile != null)
-                        kingscordCubit.onUploadVideo(videoFile: pickedFile, cmId: cmId, kcId: kcId);
-                    }, style: ElevatedButton.styleFrom(
-                      primary: Colors.amber
-                    ),
+                      final pickedFile =
+                          await ImageHelper.pickVideoFromGallery(context);
+                      if (pickedFile != null) {
+                        kingscordCubit.onUploadVideo(
+                            videoFile: pickedFile, cmId: cmId, kcId: kcId, senderUsername: seenderUsername);
+                      } else {
+                        
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(primary: Colors.amber),
                     child: FaIcon(FontAwesomeIcons.film),
                   )),
               Container(
@@ -49,7 +50,9 @@ mediaBottomSheet(
                       if (pickedFile != null) {
                         kingscordCubit.onUploadImage(pickedFile);
                         kingscordCubit.onSendTxtImg(
-                            churchId: cmId, kingsCordId: kcId, senderUsername: seenderUsername);
+                            churchId: cmId,
+                            kingsCordId: kcId,
+                            senderUsername: seenderUsername);
                       }
                     },
                     style: ElevatedButton.styleFrom(primary: Colors.red[800]),
@@ -58,5 +61,6 @@ mediaBottomSheet(
             ],
           ),
         );
-      });
+      }
+    );
 }
