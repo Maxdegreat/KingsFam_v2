@@ -8,7 +8,28 @@ const { user } = require("firebase-functions/v1/auth");
 admin.initializeApp();
 
 
+  exports.onEditProfile = functions.firestore.document("/users/{userId}")
+    .onUpdate((change, context) => {
+      if (change.after.data().username === change.before.data().username)
+        return;
+      const userId = context.params.userId;
 
+      var cmIds = [];
+
+      // check if path to cms exist
+      var cmRef = admin.firestore.collection("users").doc(userId).collection("church").get().then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+          // doc is a DocumentSnapshot
+          cmIds.push(doc.id)
+        });
+      });
+      // if so nav to .each cms member paths and update the usernames
+      cmIds.forEach(function (cmId) {
+        var docRef = admin.firestore().collection("communityMembers").doc(cmId).collection("members").doc(userId);
+        docRef.update({ userNameCaseList: change.after.data().usernameSearchCase});
+      })
+
+    }),
 
 //WORKING PROD FUNCTIONS
 exports.onFollowUserr = functions.firestore.document("/followers/{userrId}/userFollowers/{followerId}")

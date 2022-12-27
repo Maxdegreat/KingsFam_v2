@@ -671,7 +671,6 @@ class _CameraScreenState extends State<CameraScreen>
                 color: Colors.white,
               ),
               onPressed: () {
-                snackBar(snackMessage: "fliped", context: context);
                 int cD = currentCam += 1;
                 if (cD > widget.cameras.length) {
                   cD = 0;
@@ -682,7 +681,6 @@ class _CameraScreenState extends State<CameraScreen>
           SizedBox(width: 10),
           IconButton(
               onPressed: () {
-                snackBar(snackMessage: "showing gal", context: context);
                 _showGall = !_showGall;
                 setState(() {});
               },
