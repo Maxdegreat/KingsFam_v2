@@ -10,6 +10,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/helpers/image_helper.dart';
 import 'package:kingsfam/paint/hollow_circle.dart';
 import 'package:kingsfam/screens/create_post/post_content_screen.dart';
+import 'package:kingsfam/widgets/snackbar.dart';
 import 'package:video_player/video_player.dart';
 
 class CameraScreenArgs {
@@ -197,7 +198,7 @@ class _CameraScreenState extends State<CameraScreen>
                     _cameraPreviewWidget(),
                     Positioned(
                       top: 50,
-                      right: 20,
+                      right: 15,
                       child: _camOptions(),
                     ),
                   ],
@@ -337,35 +338,35 @@ class _CameraScreenState extends State<CameraScreen>
           onPressed: controller != null ? onFlashModeButtonPressed : null,
         ),
         // The exposure and focus mode are currently not supported on the web.
-        ...!kIsWeb
-            ? <Widget>[
-                IconButton(
-                  icon: const Icon(Icons.exposure),
-                  color: Colors.blue,
-                  onPressed:
-                      controller != null ? onExposureModeButtonPressed : null,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.filter_center_focus),
-                  color: Colors.blue,
-                  onPressed:
-                      controller != null ? onFocusModeButtonPressed : null,
-                )
-              ]
-            : <Widget>[],
+        // ...!kIsWeb
+        //     ? <Widget>[
+        //         IconButton(
+        //           icon: const Icon(Icons.exposure),
+        //           color: Colors.blue,
+        //           onPressed:
+        //               controller != null ? onExposureModeButtonPressed : null,
+        //         ),
+        //         IconButton(
+        //           icon: const Icon(Icons.filter_center_focus),
+        //           color: Colors.blue,
+        //           onPressed:
+        //               controller != null ? onFocusModeButtonPressed : null,
+        //         )
+        //       ]
+        //     : <Widget>[],
         IconButton(
           icon: Icon(enableAudio ? Icons.volume_up : Icons.volume_mute),
           color: Colors.blue,
           onPressed: controller != null ? onAudioModeButtonPressed : null,
         ),
-        IconButton(
-          icon: Icon(controller?.value.isCaptureOrientationLocked ?? false
-              ? Icons.screen_lock_rotation
-              : Icons.screen_rotation),
-          color: Colors.blue,
-          onPressed:
-              controller != null ? onCaptureOrientationLockButtonPressed : null,
-        ),
+        // IconButton(
+        //   icon: Icon(controller?.value.isCaptureOrientationLocked ?? false
+        //       ? Icons.screen_lock_rotation
+        //       : Icons.screen_rotation),
+        //   color: Colors.blue,
+        //   onPressed:
+        //       controller != null ? onCaptureOrientationLockButtonPressed : null,
+        // ),
         _flashModeControlRowWidget(),
         _exposureModeControlRowWidget(),
         _focusModeControlRowWidget(),
@@ -377,7 +378,7 @@ class _CameraScreenState extends State<CameraScreen>
     return SizeTransition(
       sizeFactor: _flashModeControlRowAnimation,
       child: ClipRect(
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             IconButton(
@@ -643,8 +644,7 @@ class _CameraScreenState extends State<CameraScreen>
 
   /// Display a row of toggle to select the camera (or a message if no camera is available).
   Widget _cameraTogglesRowWidget() {
-    final List<Widget> toggles = <Widget>[];
-
+   
     void onChanged(CameraDescription? description) {
       if (description == null) {
         return;
@@ -663,13 +663,15 @@ class _CameraScreenState extends State<CameraScreen>
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          if (videoController == null && imageFile == null)
+          if (videoController == null && imageFile == null) ... [
+
             IconButton(
               icon: Icon(
                 Icons.flip_camera_android,
                 color: Colors.white,
               ),
               onPressed: () {
+                snackBar(snackMessage: "fliped", context: context);
                 int cD = currentCam += 1;
                 if (cD > widget.cameras.length) {
                   cD = 0;
@@ -680,14 +682,17 @@ class _CameraScreenState extends State<CameraScreen>
           SizedBox(width: 10),
           IconButton(
               onPressed: () {
+                snackBar(snackMessage: "showing gal", context: context);
                 _showGall = !_showGall;
                 setState(() {});
               },
               icon: Icon(Iconsax.gallery, color: Colors.white)),
+          ],
           SizedBox(width: 10),
           if (videoController != null || imageFile != null) ...[
             IconButton(
               onPressed: () {
+                log("clearing the files and vid controller");
                 videoController?.dispose();
                 videoController = null;
                 imageFile = null;
@@ -965,7 +970,7 @@ class _CameraScreenState extends State<CameraScreen>
       if (mounted) {
         setState(() {});
       }
-      showInSnackBar('Flash mode set to ${mode.toString().split('.').last}');
+      snackBar(context: context, snackMessage: 'Flash mode set to ${mode.toString().split('.').last}');
     });
   }
 
