@@ -5,9 +5,9 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:kingsfam/helpers/image_helper.dart';
 import 'package:kingsfam/paint/hollow_circle.dart';
 import 'package:kingsfam/screens/create_post/post_content_screen.dart';
 import 'package:video_player/video_player.dart';
@@ -18,10 +18,8 @@ class CameraScreenArgs {
 }
 
 class CameraScreen extends StatefulWidget {
-
   final List<CameraDescription> cameras;
   static const String routeName = "/camera_screen";
-  
 
   const CameraScreen({Key? key, required this.cameras}) : super(key: key);
 
@@ -59,8 +57,8 @@ void _logError(String code, String? message) {
 class _CameraScreenState extends State<CameraScreen>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   CameraController? controller;
-  XFile? imageFile;
-  XFile? videoFile;
+  File? imageFile;
+  File? videoFile;
   VideoPlayerController? videoController;
   VoidCallback? videoPlayerListener;
   bool enableAudio = true;
@@ -77,7 +75,7 @@ class _CameraScreenState extends State<CameraScreen>
   double _maxAvailableZoom = 1.0;
   double _currentScale = 1.0;
   double _baseScale = 1.0;
-   AnimationController? _timercontroller;
+  AnimationController? _timercontroller;
   int timer = 0; // duration a vid can last. max is 15 seconds.
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
@@ -85,17 +83,17 @@ class _CameraScreenState extends State<CameraScreen>
   // this is the current camera in the list of camera Discriptions
   int currentCam = 0;
 
-
+  bool _showGall = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-     _timercontroller = AnimationController(
+    _timercontroller = AnimationController(
       vsync: this,
       duration: Duration(seconds: 15),
     );
-    
+
     onNewCameraSelected(widget.cameras.first);
 
     _flashModeControlRowAnimationController = AnimationController(
@@ -138,7 +136,6 @@ class _CameraScreenState extends State<CameraScreen>
     super.dispose();
   }
 
-
   // #docregion AppLifecycle
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -159,18 +156,21 @@ class _CameraScreenState extends State<CameraScreen>
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         leading: IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: Icon(
-                Icons.arrow_back_ios,
-                color: Theme.of(context).iconTheme.color,
-              )),
+            onPressed: () => Navigator.of(context).pop(),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Theme.of(context).iconTheme.color,
+            )),
         backgroundColor: Colors.black,
-        title: Text('Share Something', style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.white)),
+        title: Text('Share Something',
+            style: Theme.of(context)
+                .textTheme
+                .bodyText1!
+                .copyWith(color: Colors.white)),
       ),
       body: Column(
         children: <Widget>[
@@ -190,53 +190,40 @@ class _CameraScreenState extends State<CameraScreen>
               ),
               child: Padding(
                 padding: const EdgeInsets.all(0.0),
-                child: Stack(
-                  children: [
-                    
-                    if (videoController != null || imageFile != null) 
-                      _showOutput(),
-
-                    if (videoController == null && imageFile == null) ... [
-                      _cameraPreviewWidget(), 
-                      Positioned(
-                        top: 50,
-                        right: 20,
-                        child: _camOptions(),
-                      ),
-                    ],
-
+                child: Stack(children: [
+                  if (videoController != null || imageFile != null)
+                    _showOutput(),
+                  if (videoController == null && imageFile == null) ...[
+                    _cameraPreviewWidget(),
                     Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _captureControlRowWidget(),
-                          Align(
-                            alignment: Alignment.bottomLeft,
-                            child: _cameraTogglesRowWidget(),
-                          )
-                        ],
-                      ),
+                      top: 50,
+                      right: 20,
+                      child: _camOptions(),
                     ),
-                  ]
-                ),
+                  ],
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _captureControlRowWidget(),
+                        Align(
+                          alignment: Alignment.bottomLeft,
+                          child: _cameraTogglesRowWidget(),
+                        ),
+                        if (_showGall && videoController == null && imageFile == null) 
+                          _showImageGal(),
+                      ],
+                    ),
+                  ),
+                ]),
               ),
             ),
           ),
-          // _modeControlRowWidget(),
-          // Padding(
-          //   padding: const EdgeInsets.all(5.0),
-          //   child: Row(
-          //     children: <Widget>[
-                 
-          //        _thumbnailWidget(),
-          //     ],
-          //   ),
-          // ),
         ],
       ),
     );
@@ -244,50 +231,45 @@ class _CameraScreenState extends State<CameraScreen>
 
   Widget _showOutput() {
     final VideoPlayerController? localVideoController = videoController;
-    return localVideoController != null || imageFile != null ? 
-      localVideoController == null ?
-        Container(
-          height: MediaQuery.of(context).size.height / 1.3,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: FileImage(File(imageFile!.path))
-            )
-          ),
-        ) :
-       Container(
-           height: MediaQuery.of(context).size.height / 1.3,
-          width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.pink)),
-                        child: Center(
-                          child: AspectRatio(
-                              aspectRatio:
-                                  localVideoController.value.size != null
-                                      ? localVideoController.value.aspectRatio
-                                      : 1.0,
-                              child: VideoPlayer(localVideoController)),
-                        ),
-                      ) : SizedBox.shrink();
+    return localVideoController != null || imageFile != null
+        ? localVideoController == null
+            ? Container(
+                height: MediaQuery.of(context).size.height / 1.3,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                    image: DecorationImage(image: FileImage(imageFile!))),
+              )
+            : Container(
+                height: MediaQuery.of(context).size.height / 1.3,
+                width: MediaQuery.of(context).size.width,
+                decoration:
+                    BoxDecoration(border: Border.all(color: Colors.pink)),
+                child: Center(
+                  child: AspectRatio(
+                      aspectRatio: localVideoController.value.size != null
+                          ? localVideoController.value.aspectRatio
+                          : 1.0,
+                      child: VideoPlayer(localVideoController)),
+                ),
+              )
+        : SizedBox.shrink();
   }
 
   _camOptions() {
     return Container(
-      // height: 100,
-      width: 50,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.black45,
-      ),
-      child: _modeControlRowWidget()
-    );
+        // height: 100,
+        width: 50,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.black45,
+        ),
+        child: _modeControlRowWidget());
   }
-  
 
   /// Display the preview from the camera (or a message if the preview is not available).
   Widget _cameraPreviewWidget() {
     final VideoPlayerController? localVideoController = videoController;
-    
+
     final CameraController? cameraController = controller;
 
     if (cameraController == null || !cameraController.value.isInitialized) {
@@ -305,11 +287,10 @@ class _CameraScreenState extends State<CameraScreen>
           ),
         ),
       );
-    }  else {
+    } else {
       return Listener(
         onPointerDown: (_) => _pointers++,
         onPointerUp: (_) => _pointers--,
-
         child: CameraPreview(
           controller!,
           child: LayoutBuilder(
@@ -323,7 +304,6 @@ class _CameraScreenState extends State<CameraScreen>
             );
           }),
         ),
-
       );
     }
   }
@@ -344,14 +324,12 @@ class _CameraScreenState extends State<CameraScreen>
     await controller!.setZoomLevel(_currentScale);
   }
 
-  
-
   /// Display a bar with buttons to change the flash and exposure modes
   Widget _modeControlRowWidget() {
     return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         IconButton(
           icon: const Icon(Icons.flash_on),
@@ -364,9 +342,8 @@ class _CameraScreenState extends State<CameraScreen>
                 IconButton(
                   icon: const Icon(Icons.exposure),
                   color: Colors.blue,
-                  onPressed: controller != null
-                      ? onExposureModeButtonPressed
-                      : null,
+                  onPressed:
+                      controller != null ? onExposureModeButtonPressed : null,
                 ),
                 IconButton(
                   icon: const Icon(Icons.filter_center_focus),
@@ -386,9 +363,8 @@ class _CameraScreenState extends State<CameraScreen>
               ? Icons.screen_lock_rotation
               : Icons.screen_rotation),
           color: Colors.blue,
-          onPressed: controller != null
-              ? onCaptureOrientationLockButtonPressed
-              : null,
+          onPressed:
+              controller != null ? onCaptureOrientationLockButtonPressed : null,
         ),
         _flashModeControlRowWidget(),
         _exposureModeControlRowWidget(),
@@ -535,22 +511,18 @@ class _CameraScreenState extends State<CameraScreen>
 
   Widget _focusModeControlRowWidget() {
     final ButtonStyle styleAuto = TextButton.styleFrom(
-
       // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
       // ignore: deprecated_member_use
       primary: controller?.value.focusMode == FocusMode.auto
           ? Colors.orange
           : Colors.blue,
-
     );
     final ButtonStyle styleLocked = TextButton.styleFrom(
-
       // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
       // ignore: deprecated_member_use
       primary: controller?.value.focusMode == FocusMode.locked
           ? Colors.orange
           : Colors.blue,
-          
     );
 
     return SizeTransition(
@@ -600,41 +572,47 @@ class _CameraScreenState extends State<CameraScreen>
     final CameraController? cameraController = controller;
     Color c;
     if (cameraController != null)
-      c = cameraController.value.isRecordingVideo ? Colors.redAccent : Colors.white;
+      c = cameraController.value.isRecordingVideo
+          ? Colors.redAccent
+          : Colors.white;
     else
       c = Colors.white;
-    return  Column(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         if (videoFile == null && imageFile == null)
-        GestureDetector(
-          child: CustomPaint(
-            painter: HollowCirclePainter(c: c),
-            child: CircleAvatar(
-              radius: 30,
-              backgroundColor: Colors.transparent,
-
+          GestureDetector(
+            child: CustomPaint(
+              painter: HollowCirclePainter(c: c),
+              child: CircleAvatar(
+                radius: 30,
+                backgroundColor: Colors.transparent,
+              ),
             ),
+            onTap: cameraController != null &&
+                    cameraController.value.isInitialized &&
+                    !cameraController.value.isRecordingVideo
+                ? onTakePictureButtonPressed
+                : onStopButtonPressed,
+            onLongPress: cameraController != null &&
+                    cameraController.value.isInitialized &&
+                    !cameraController.value.isRecordingVideo
+                ? onVideoRecordButtonPressed
+                : null,
           ),
-          onTap:  cameraController != null &&
-                  cameraController.value.isInitialized &&
-                  !cameraController.value.isRecordingVideo
-              ? onTakePictureButtonPressed
-              : onStopButtonPressed,
-          onLongPress: cameraController != null &&
-                  cameraController.value.isInitialized &&
-                  !cameraController.value.isRecordingVideo
-              ? onVideoRecordButtonPressed
-              : null,
-        ),
 
-        if (controller!= null && (controller!.value.isRecordingVideo || videoFile != null)) ... [
+        if (controller != null &&
+            (controller!.value.isRecordingVideo || videoFile != null)) ...[
           SizedBox(height: 10),
-          Text("00:$timer / 00:15", style: Theme.of(context).textTheme.caption!.copyWith(color: Colors.white))
+          Text("00:$timer / 00:15",
+              style: Theme.of(context)
+                  .textTheme
+                  .caption!
+                  .copyWith(color: Colors.white))
         ]
-        
+
         // IconButton(
         //   icon: cameraController != null &&
         //           cameraController.value.isRecordingPaused
@@ -649,7 +627,7 @@ class _CameraScreenState extends State<CameraScreen>
         //           : onPauseButtonPressed
         //       : null,
         // ),
-        
+
         // IconButton(
         //   icon: const Icon(Icons.pause_presentation),
         //   color:
@@ -659,8 +637,8 @@ class _CameraScreenState extends State<CameraScreen>
         //   onPressed:
         //       cameraController == null ? null : onPausePreviewButtonPressed,
         // ),
-      ],);
-    
+      ],
+    );
   }
 
   /// Display a row of toggle to select the camera (or a message if no camera is available).
@@ -681,27 +659,33 @@ class _CameraScreenState extends State<CameraScreen>
       });
       return const Text('None');
     } else {
-
       return Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-
           if (videoController == null && imageFile == null)
             IconButton(
-              icon: Icon(Icons.flip_camera_android, color: Colors.white,),
+              icon: Icon(
+                Icons.flip_camera_android,
+                color: Colors.white,
+              ),
               onPressed: () {
                 int cD = currentCam += 1;
                 if (cD > widget.cameras.length) {
                   cD = 0;
                 }
                 onNewCameraSelected(widget.cameras[cD]);
-              }, 
+              },
             ),
-
           SizedBox(width: 10),
-
-          if (videoController != null || imageFile != null) ... [
+          IconButton(
+              onPressed: () {
+                _showGall = !_showGall;
+                setState(() {});
+              },
+              icon: Icon(Iconsax.gallery, color: Colors.white)),
+          SizedBox(width: 10),
+          if (videoController != null || imageFile != null) ...[
             IconButton(
               onPressed: () {
                 videoController?.dispose();
@@ -711,36 +695,87 @@ class _CameraScreenState extends State<CameraScreen>
                 timer = 0;
                 _timercontroller!.clearListeners();
                 setState(() {});
-              }, 
+              },
               icon: Icon(Icons.cancel_outlined, color: Colors.white),
             ),
-
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(primary: Colors.white, shape: StadiumBorder()),
-                onPressed: () {
-                  log("Button taped");
-                  if (imageFile != null ) {
-                    log("pushing image file. file is " + imageFile!.path.toString());
-                    Navigator.of(context).pushNamed(PostContentScreen.routeName, arguments: PostContentArgs(content: File(imageFile!.path), type: "image" ));
-                  } 
-                  else if (videoFile != null) {
-                    log("pushing video file. file is " + videoFile!.path);
-                    Navigator.of(context).pushNamed(PostContentScreen.routeName, arguments: PostContentArgs(content: File(videoFile!.path), type: "video" ));
-
-                  }
-                }, 
-                child: Text("Share", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.black),)
-              ),
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.white, shape: StadiumBorder()),
+                  onPressed: () {
+                    log("Button taped");
+                    if (imageFile != null) {
+                      log("pushing image file. file is " +
+                          imageFile!.path.toString());
+                      Navigator.of(context).pushNamed(
+                          PostContentScreen.routeName,
+                          arguments: PostContentArgs(
+                              content: File(imageFile!.path), type: "image"));
+                    } else if (videoFile != null) {
+                      log("pushing video file. file is " + videoFile!.path);
+                      Navigator.of(context).pushNamed(
+                          PostContentScreen.routeName,
+                          arguments: PostContentArgs(
+                              content: File(videoFile!.path), type: "video"));
+                    }
+                  },
+                  child: Text(
+                    "Share",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1!
+                        .copyWith(color: Colors.black),
+                  )),
             )
-          ],  
-
+          ],
         ],
       );
-
-
     }
+  }
+
+  _showImageGal() {
+    return Container(
+      width: double.infinity,
+      height: 55,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+              onPressed: () async {
+                _showGall = !_showGall;
+                final pickedFile = await ImageHelper.pickImageFromGallery(
+                    context: context,
+                    cropStyle: CropStyle.rectangle,
+                    title: 'send');
+                if (pickedFile != null) {
+                  imageFile = pickedFile;
+                }
+                setState(() {});
+              },
+              icon: Icon(Icons.image),
+            ),
+            IconButton(
+                onPressed: () async {
+                  _showGall = !_showGall;
+                  final pickedFile =
+                      await ImageHelper.pickVideoFromGallery(context);
+                  if (pickedFile != null) {
+                    // showInSnackBar('Video recorded to ${file.path}');
+                    // controller != null ? controller!.dispose() : null;
+                    videoFile = File(pickedFile.path);
+                    _startVideoPlayer();
+                  }
+                  setState(() {});
+                },
+                icon: Icon(Icons.video_collection_rounded))
+          ],
+        ),
+      ),
+    );
   }
 
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
@@ -856,8 +891,8 @@ class _CameraScreenState extends State<CameraScreen>
     takePicture().then((XFile? file) {
       if (mounted) {
         setState(() {
-          imageFile = file;
-          
+          if (file != null) imageFile = File(file.path);
+
           // controller != null ? controller!.dispose() : null;
 
           videoController?.dispose();
@@ -970,7 +1005,7 @@ class _CameraScreenState extends State<CameraScreen>
       if (file != null) {
         // showInSnackBar('Video recorded to ${file.path}');
         // controller != null ? controller!.dispose() : null;
-        videoFile = file;
+        videoFile = File(file.path);
         _startVideoPlayer();
       }
     });
@@ -981,15 +1016,15 @@ class _CameraScreenState extends State<CameraScreen>
     if (c != null && c.value.isRecordingVideo) {
       _timercontroller!.forward();
       _timercontroller!.addListener(() {
-      setState(() {
-        timer = (_timercontroller!.value * 15).round();
-        if (timer == 15) {
-          onStopButtonPressed();
-          timer = timer > 15 ? 15 : timer;
-          _timercontroller!.clearListeners();
-        }
+        setState(() {
+          timer = (_timercontroller!.value * 15).round();
+          if (timer == 15) {
+            onStopButtonPressed();
+            timer = timer > 15 ? 15 : timer;
+            _timercontroller!.clearListeners();
+          }
+        });
       });
-    });
     }
   }
 
@@ -1157,7 +1192,7 @@ class _CameraScreenState extends State<CameraScreen>
     }
 
     if (_timercontroller != null && _timercontroller!.isAnimating) {
-       timer = timer > 15 ? 15 : timer;
+      timer = timer > 15 ? 15 : timer;
       _timercontroller!.clearListeners();
     }
 
