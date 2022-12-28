@@ -529,6 +529,9 @@ Future<dynamic> _updateTheAbout(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: TextField(
                     decoration: InputDecoration(
+                                        fillColor: Theme.of(context).colorScheme.secondary,
+                  filled: true,
+                  focusColor: Theme.of(context).colorScheme.secondary,
                         hintText: "Tell ${commuinity.name}'s story "),
                     onChanged: (value) => _txtController.text = value),
               ),
@@ -611,7 +614,11 @@ Future<dynamic> _updateCommuinityName({
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: TextField(
-                      decoration: InputDecoration(hintText: "Enter a name"),
+                      decoration: InputDecoration(
+                                          fillColor: Theme.of(context).colorScheme.secondary,
+                  filled: true,
+                  focusColor: Theme.of(context).colorScheme.secondary,
+                        hintText: "Enter a name"),
                       onChanged: (value) => _txtController.text = value),
                 ),
                 SizedBox(height: 8.0),

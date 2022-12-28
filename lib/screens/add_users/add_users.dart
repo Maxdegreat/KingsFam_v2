@@ -86,9 +86,10 @@ class _AddUsersState extends State<AddUsers> {
                     TextField(
                       controller: _textEditingController,
                       decoration: InputDecoration(
-                          fillColor: Colors.grey[600],
-                          border: OutlineInputBorder(),
+                          fillColor: Theme.of(context).colorScheme.secondary,
                           filled: true,
+                          focusColor: Theme.of(context).colorScheme.secondary,
+                          border: OutlineInputBorder(),
                           hintText: 'search for the fam that ur following',
                           suffixIcon: IconButton(
                               onPressed: () {
@@ -215,7 +216,8 @@ class _AddUsersState extends State<AddUsers> {
                                   onPressed: () {
                                     switch (widget.typeOf) {
                                       case 'Virtural Church':
-                                        Navigator.of(context).pushNamed(BuildChurch.routeName);
+                                        Navigator.of(context)
+                                            .pushNamed(BuildChurch.routeName);
 
                                         break;
                                       case typeOf.inviteTheFam:

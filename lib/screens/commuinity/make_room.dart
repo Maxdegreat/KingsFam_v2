@@ -17,7 +17,11 @@ makeRoomPopUp({required BuildContext context}) {
           children: [
             // child 1 will be the title as a textField
             TextField(
-              decoration: InputDecoration(label: Text("Room name")),
+              decoration: InputDecoration(
+                                  fillColor: Theme.of(context).colorScheme.secondary,
+                  filled: true,
+                  focusColor: Theme.of(context).colorScheme.secondary,
+                label: Text("Room name")),
               controller: _txtCtrl,
               minLines: 1,
             ),

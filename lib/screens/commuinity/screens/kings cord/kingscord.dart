@@ -1,19 +1,15 @@
-// TODO LET A USER KNOW THAT THEY ARE BEING MENTIONED
+
 
 
 import 'dart:developer';
 
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_cropper/image_cropper.dart';
 
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/config/constants.dart';
-import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/helpers/helpers.dart';
 import 'package:kingsfam/helpers/kingscord_path.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
@@ -21,10 +17,8 @@ import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
-import 'package:kingsfam/screens/commuinity/screens/kings%20cord/widgets/media_bottom_sheet.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
-import 'package:kingsfam/widgets/snackbar.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import 'widgets/message_lines.dart';

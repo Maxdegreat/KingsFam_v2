@@ -105,6 +105,7 @@ class _ChatRoomState extends State<ChatRoom> {
                   child: Align(
                     alignment: Alignment.center,
                     child: TextField(
+                      
                       controller: _messageController,
                       textAlignVertical: TextAlignVertical.center,
                       style: TextStyle(fontSize: 18),
@@ -124,7 +125,13 @@ class _ChatRoomState extends State<ChatRoom> {
                       },
                       //setState(() => _isComposingMessage = messageText.isNotEmpty
                       decoration:
-                          InputDecoration.collapsed(hintText: 'Provbers 16:23'),
+                      
+                          InputDecoration.collapsed(
+                                              fillColor: Theme.of(context).colorScheme.secondary,
+                  filled: true,
+                  focusColor: Theme.of(context).colorScheme.secondary,
+                  hintStyle: Theme.of(context).textTheme.caption,
+                            hintText: 'message',),
                     ),
                   ),
                 ),

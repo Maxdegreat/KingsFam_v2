@@ -79,35 +79,38 @@ class _CreateRoomState extends State<CreateRoom> {
             style: Theme.of(context).textTheme.bodyText1,
           ),
           actions: [
-             TextButton(
-                    style:
-                        ElevatedButton.styleFrom(primary: Colors.greenAccent),
-                    onPressed: () async {
-                      if (_txtController.value.text.length == 0) {
-                        snackBar(
-                            snackMessage:
-                                "be sure you add a name for the room you are making",
-                            context: context,
-                            bgColor: Colors.red[400]);
-                      } else if (_txtController.value.text.length > 17) {
-                        snackBar(
-                            snackMessage:
-                                "Less than or equal to 17 chars please and thanks",
-                            context: context,
-                            bgColor: Colors.red[400]);
-                      } else {
-                        await ChurchRepository().newKingsCord2(
-                            ch: widget.cm,
-                            cordName: _txtController.value.text,
-                            mode: selectedMode,
-                            rolesAllowed: null);
-                        Navigator.of(context).pop();
-                      }
-                    },
-                    child: Text(
-                      "Create",
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ))
+             Padding(
+               padding: const EdgeInsets.all(8.0),
+               child: TextButton(
+                      style:
+                          ElevatedButton.styleFrom(primary: Colors.greenAccent),
+                      onPressed: () async {
+                        if (_txtController.value.text.length == 0) {
+                          snackBar(
+                              snackMessage:
+                                  "be sure you add a name for the room you are making",
+                              context: context,
+                              bgColor: Colors.red[400]);
+                        } else if (_txtController.value.text.length > 17) {
+                          snackBar(
+                              snackMessage:
+                                  "Less than or equal to 17 chars please and thanks",
+                              context: context,
+                              bgColor: Colors.red[400]);
+                        } else {
+                          await ChurchRepository().newKingsCord2(
+                              ch: widget.cm,
+                              cordName: _txtController.value.text,
+                              mode: selectedMode,
+                              rolesAllowed: null);
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      child: Text(
+                        "Create",
+                        style: Theme.of(context).textTheme.bodyText1,
+                      )),
+             )
           ],
         ),
         body: BlocProvider.value(
@@ -119,22 +122,25 @@ class _CreateRoomState extends State<CreateRoom> {
             builder: (context, state) {
               return GestureDetector(
                   onTap: () => FocusScope.of(context).unfocus(),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // child 1 will be the title as a textField
-                      _textField(context),
-                      // child 2 will be the chat room type
-                      _createRoomContainerDisplay(context, "chat", "Chat room",
-                          "A chat room allows for communication via text messages. You can share GIF's, images, videos, text, and react to messages"),
-                      // child 3 will be the says room type
-                      _createRoomContainerDisplay(context, "says", "Says room",
-                          "A says room allows for users to share announcements or just say what is on their minds")
-                      // child 4 will be the documents room type
-                      //TODO
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // child 1 will be the title as a textField
+                        _textField(context),
+                        // child 2 will be the chat room type
+                        _createRoomContainerDisplay(context, "chat", "Chat room",
+                            "A chat room allows for communication via text messages. You can share GIF's, images, videos, text, and react to messages"),
+                        // child 3 will be the says room type
+                        _createRoomContainerDisplay(context, "says", "Says room",
+                            "A says room allows for users to share announcements or just say what is on their minds")
+                        // child 4 will be the documents room type
+                        //TODO
+                      ],
+                    ),
                   ));
             },
           ),
@@ -195,17 +201,14 @@ class _CreateRoomState extends State<CreateRoom> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(height: 8.0),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: TextField(
-                decoration: InputDecoration(
-                    hintText: "Enter a room name",
-                    fillColor: Theme.of(context).colorScheme.secondary,
-                    filled: true,
-                    focusColor: Theme.of(context).colorScheme.secondary,
-                    focusedBorder: UnderlineInputBorder()),
-                onChanged: (value) => _txtController.text = value),
-          ),
+          TextField(
+              decoration: InputDecoration(
+                  hintText: "Enter a room name",
+                  fillColor: Theme.of(context).colorScheme.secondary,
+                  filled: true,
+                  focusColor: Theme.of(context).colorScheme.secondary,
+                  focusedBorder: UnderlineInputBorder()),
+              onChanged: (value) => _txtController.text = value),
         ],
       ),
     );

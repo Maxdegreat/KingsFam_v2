@@ -706,7 +706,7 @@ class _CameraScreenState extends State<CameraScreen>
               child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       primary: Colors.white, shape: StadiumBorder()),
-                  onPressed: () {
+                  onPressed: () async {
                     log("Button taped");
                     if (imageFile != null) {
                       log("pushing image file. file is " +
@@ -716,6 +716,7 @@ class _CameraScreenState extends State<CameraScreen>
                           arguments: PostContentArgs(
                               content: File(imageFile!.path), type: "image"));
                     } else if (videoFile != null) {
+                      await _pauseVideoPlayer();
                       log("pushing video file. file is " + videoFile!.path);
                       Navigator.of(context).pushNamed(
                           PostContentScreen.routeName,
@@ -1186,6 +1187,12 @@ class _CameraScreenState extends State<CameraScreen>
     } on CameraException catch (e) {
       _showCameraException(e);
       rethrow;
+    }
+  }
+
+  Future<void> _pauseVideoPlayer() async {
+    if (videoController != null && videoController!.value.isPlaying) {
+      await videoController!.pause();
     }
   }
 

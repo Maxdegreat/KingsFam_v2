@@ -71,6 +71,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
   bool submitting = false;
   bool success = false;
   String? thumbnailPath;
+  bool canSubmit = false;
 
   @override
   void initState() {
@@ -130,14 +131,14 @@ class _PostContentScreenState extends State<PostContentScreen> {
   Widget submitButton() {
     return TextButton(
       onPressed: () {
-        if (submitting != true) submit();
+        if (submitting != true && canSubmit) submit();
       },
       child: Row(
         children: [
           Text("POST", style: TextStyle(color: Colors.green)),
           Icon(
             Icons.arrow_forward,
-            color: Colors.green,
+            color: canSubmit ? Colors.green : Colors.grey,
           )
         ],
       ),
@@ -172,19 +173,24 @@ class _PostContentScreenState extends State<PostContentScreen> {
                       )
                     : SizedBox.shrink(),
                 Align(
-                  alignment: Alignment.centerLeft,
+                    alignment: Alignment.centerLeft,
                     child: imgF != null
                         ? displayImageWid(imgF!)
                         : vidF != null
-                            ? displayVidThumbnail()
+                            ? thumbnailPath != null
+                                ? displayVidThumbnail()
+                                : _placeHolder()
                             : SizedBox.shrink()),
                 txtBox("c"),
                 Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text("Add Your Post To A Community",textAlign: TextAlign.left,),
-                  )),
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        "Add Your Post To A Community",
+                        textAlign: TextAlign.left,
+                      ),
+                    )),
                 cmLisView(),
                 SizedBox(
                   height: 10,
@@ -200,6 +206,9 @@ class _PostContentScreenState extends State<PostContentScreen> {
       padding: const EdgeInsets.all(8.0),
       child: TextField(
         decoration: InputDecoration(
+                            fillColor: Theme.of(context).colorScheme.secondary,
+                  filled: true,
+                  focusColor: Theme.of(context).colorScheme.secondary,
           border: OutlineInputBorder(),
           labelText: s == "c" ? 'Caption???' : "ex: #meme #sermon #God",
         ),
@@ -213,6 +222,17 @@ class _PostContentScreenState extends State<PostContentScreen> {
           }
         },
       ),
+    );
+  }
+
+  Widget _placeHolder() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+          height: 250,
+          width: 250,
+          child: Center(child: CircularProgressIndicator()),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0))),
     );
   }
 
@@ -236,7 +256,8 @@ class _PostContentScreenState extends State<PostContentScreen> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5.0),
                   image: DecorationImage(
-                      image: FileImage(File(thumbnailPath!)), fit: BoxFit.cover)),
+                      image: FileImage(File(thumbnailPath!)),
+                      fit: BoxFit.cover)),
             ),
             Positioned.fill(
                 child: Container(
@@ -288,27 +309,35 @@ class _PostContentScreenState extends State<PostContentScreen> {
   }
 
   Widget chBox(Church ch) {
+    
     return Padding(
       padding: EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 0),
       child: Column(
         children: [
           GestureDetector(
             onTap: () {
+              if (cmIdPostingTo != null) 
+                canSubmit = true;
+              else 
+                canSubmit = false;
+
               if (!submitting) {
                 if (ch.id == cmIdPostingTo) {
                   cmIdPostingTo = null;
-                  setState(() {});
                 } else {
                   cmIdPostingTo = ch.id;
-                  setState(() {});
                 }
               }
+              setState(() {});
             },
             child: Container(
               height: 115,
               width: 130,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(7.0),
+                  border: (cmIdPostingTo != null && ch.id == cmIdPostingTo)
+                    ? Border.all(color: Colors.green, width: 3)
+                    : null,
                   image: DecorationImage(
                       image: CachedNetworkImageProvider(ch.imageUrl),
                       fit: BoxFit.cover)),

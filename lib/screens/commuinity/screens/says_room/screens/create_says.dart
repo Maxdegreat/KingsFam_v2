@@ -19,10 +19,7 @@ class CreateSaysArgs {
 
 class CreateSays extends StatefulWidget {
   const CreateSays(
-      {Key? key,
-      required this.cm,
-      required this.kcId,
-      required this.currUsr})
+      {Key? key, required this.cm, required this.kcId, required this.currUsr})
       : super(key: key);
   final String kcId;
   final Church cm;
@@ -70,32 +67,34 @@ class _CreateSaysState extends State<CreateSays> {
         child: Scaffold(
       appBar: AppBar(
         leading: IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: Icon(
-                Icons.arrow_back_ios,
-                color: Theme.of(context).iconTheme.color,
-              )),
+            onPressed: () => Navigator.of(context).pop(),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Theme.of(context).iconTheme.color,
+            )),
         title: Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Container(
-                      height: 30,
-                      width: double.infinity,
-                      child: TextField(
-                        cursorColor: Theme.of(context).cursorColor,
-                        controller:  _controllerT,
-                        decoration: InputDecoration(
-                        border: OutlineInputBorder( borderRadius: BorderRadius.circular(10.0)),
-                        filled: true,
-                        hintStyle: Theme.of(context).textTheme.bodyText1,
-                        hintText: "Add a title",
-                        fillColor: Theme.of(context).colorScheme.secondary,
-                        contentPadding: EdgeInsets.all(10.0),
-                        ),
-                        textInputAction: TextInputAction.search,
-                        textAlignVertical: TextAlignVertical.center,
-                      ),
-                    ),
-                  ),
+          padding: const EdgeInsets.only(top: 10),
+          child: Container(
+            height: 30,
+            width: double.infinity,
+            child: TextField(
+              cursorColor: Theme.of(context).cursorColor,
+              controller: _controllerT,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                fillColor: Theme.of(context).colorScheme.secondary,
+                filled: true,
+                focusColor: Theme.of(context).colorScheme.secondary,
+                hintStyle: Theme.of(context).textTheme.bodyText1,
+                hintText: "Add a title",
+                contentPadding: EdgeInsets.all(10.0),
+              ),
+              textInputAction: TextInputAction.search,
+              textAlignVertical: TextAlignVertical.center,
+            ),
+          ),
+        ),
         actions: [_sendSays()],
       ),
       body: GestureDetector(
@@ -110,7 +109,6 @@ class _CreateSaysState extends State<CreateSays> {
             children: [
               KingsCordUserDisplay(),
               SizedBox(height: 5),
-              
               Container(
                 height: MediaQuery.of(context).size.height / 2.8,
                 child: TextField(
@@ -121,6 +119,9 @@ class _CreateSaysState extends State<CreateSays> {
                   maxLines: null,
                   textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
+                                      fillColor: Theme.of(context).colorScheme.secondary,
+                  filled: true,
+                  focusColor: Theme.of(context).colorScheme.secondary,
                       border: InputBorder.none,
                       hintText: "Share Your Thoughts"),
                   controller: _controller,
@@ -165,32 +166,38 @@ class _CreateSaysState extends State<CreateSays> {
           onPressed: () {
             try {
               // ignore: unnecessary_null_comparison
-              String? title = _controllerT.value.text.isEmpty ||  _controllerT.value.text.isEmpty == null 
-                ? null
-                : _controllerT.value.text;
+              String? title = _controllerT.value.text.isEmpty ||
+                      _controllerT.value.text.isEmpty == null
+                  ? null
+                  : _controllerT.value.text;
 
-                if (title != null) {
-                  if (_controllerT.value.text.length > 15) {
-                    snackBar(snackMessage: "Make sure your title is 15 or less chars", context: context, bgColor: Colors.red[400]);
-                    return;
-                  }
+              if (title != null) {
+                if (_controllerT.value.text.length > 15) {
+                  snackBar(
+                      snackMessage: "Make sure your title is 15 or less chars",
+                      context: context,
+                      bgColor: Colors.red[400]);
+                  return;
                 }
+              }
               // make the says
-            Says says = Says(
-                author: widget.currUsr,
-                contentTxt: _controller.value.text,
-                likes: 0,
-                commentsCount: 0,
-                date: Timestamp.now(),
-                kcId: widget.kcId,
-                title: title
-            );
-            // send the Says using repo
-            SaysRepository()
-              .createSays(cmId: widget.cm.id!, kcId: widget.kcId, says: says);
-            SnackBar(content: Text("Nice! Working On Your Says"), backgroundColor: Colors.green,);
-            // nav . pop()
-            Navigator.of(context).pop();
+              Says says = Says(
+                  author: widget.currUsr,
+                  contentTxt: _controller.value.text,
+                  likes: 0,
+                  commentsCount: 0,
+                  date: Timestamp.now(),
+                  kcId: widget.kcId,
+                  title: title);
+              // send the Says using repo
+              SaysRepository().createSays(
+                  cmId: widget.cm.id!, kcId: widget.kcId, says: says);
+              SnackBar(
+                content: Text("Nice! Working On Your Says"),
+                backgroundColor: Colors.green,
+              );
+              // nav . pop()
+              Navigator.of(context).pop();
             } catch (e) {
               log("There was an error in createSays: " + e.toString());
             }

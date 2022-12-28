@@ -25,11 +25,12 @@ class LinkPreviewContainerState extends State<LinkPreviewContainer> {
     super.initState();
   }
 
-  _getPreview() async {
+  _getPreview() {
     // await Future.delayed(Duration(seconds: 1));
-    _preview = await SimpleLinkPreview.getPreview(widget.link);
-
-    String _url = _preview!.url;
+    SimpleLinkPreview.getPreview(widget.link).then((link) {
+      _preview = link;
+      setState(() {});
+    });
   }
 
   @override
@@ -40,7 +41,6 @@ class LinkPreviewContainerState extends State<LinkPreviewContainer> {
     if (_preview != null) {
       _title = _preview!.title != null ? _preview!.title : "";
       _imageUrl = _preview!.image != null ? _preview!.image : null;
-      log("The imageUrl is: " + _imageUrl.toString());
     }
     return _preview != null
         ? Container(

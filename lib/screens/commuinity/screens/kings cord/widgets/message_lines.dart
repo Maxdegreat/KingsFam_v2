@@ -4,8 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
@@ -16,7 +14,6 @@ import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/link_preview_container.dart';
 import 'package:kingsfam/widgets/widgets.dart';
-import 'package:bloc/bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MessageLines extends StatefulWidget {
@@ -331,6 +328,7 @@ class _MessageLinesState extends State<MessageLines> {
           ));
     }
     // the return of the text when there is no links involved
+    RegExp regExp = RegExp(r'^@.+');
     return GestureDetector(
       onLongPress: () => _showReactionsBar(
           widget.message.id!, widget.message.reactions, context),
@@ -338,11 +336,15 @@ class _MessageLinesState extends State<MessageLines> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // _showReplyBarUi(widget.message.replyed),
-          Text(widget.message.text!,
-              style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.w500, fontSize: 15)),
+          Container(
+            decoration: regExp.hasMatch(widget.message.text!) ? BoxDecoration(
+              borderRadius: BorderRadius.circular(7),
+              color:  Color.fromARGB(110, 255, 193, 7)) : null,
+            child: Text(widget.message.text!,style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.w500, fontSize: 15))),
           _showReactionBarUi(messageReactions: widget.message.reactions)
         ],
       ),
+      
     );
   }
 

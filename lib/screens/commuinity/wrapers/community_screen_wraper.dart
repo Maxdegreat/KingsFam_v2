@@ -28,13 +28,13 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
           height: MediaQuery.of(context).size.height,
           width: double.infinity,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.bottomRight,
-                end: Alignment.centerLeft,
-                colors: [
-                  Theme.of(context).colorScheme.secondary,
-                  Theme.of(context).colorScheme.primary
-                ]),
+                            gradient:  LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.centerLeft,
+              colors: [
+                Theme.of(context).colorScheme.background,
+                Theme.of(context).colorScheme.secondary, 
+              ]),
           ),
         )),
         CustomScrollView(slivers: <Widget>[

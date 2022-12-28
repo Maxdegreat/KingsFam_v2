@@ -132,12 +132,13 @@ class _SearchScreenState extends State<SearchScreen> {
                         textAlign: TextAlign.start,
                         controller: _textEditingController,
                         decoration: InputDecoration(
+                            fillColor: Theme.of(context).colorScheme.secondary,
+                            filled: true,
+                            focusColor: Theme.of(context).colorScheme.secondary,
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10.0)),
-                            filled: true,
                             hintStyle: Theme.of(context).textTheme.caption,
                             hintText: "Search for the fam",
-                            fillColor: Theme.of(context).colorScheme.onPrimary,
                             suffixIcon: IconButton(
                                 onPressed: () {
                                   context.read<SearchBloc>().clearSearch();
@@ -286,7 +287,8 @@ class _SearchScreenState extends State<SearchScreen> {
                     child: GestureDetector(
                       onTap: () {
                         Navigator.of(context).pushNamed(ProfileScreen.routeName,
-                            arguments: ProfileScreenArgs(userId: users.id, initScreen: true));
+                            arguments: ProfileScreenArgs(
+                                userId: users.id, initScreen: true));
                         print('ontaped');
                       },
                       child: Padding(

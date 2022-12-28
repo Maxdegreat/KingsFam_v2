@@ -78,6 +78,9 @@ class _CreateEventState extends State<CreateEvent> {
                       child: TextField(
                         controller: _eTitle,
                         decoration: InputDecoration(
+                                            fillColor: Theme.of(context).colorScheme.secondary,
+                  filled: true,
+                  focusColor: Theme.of(context).colorScheme.secondary,
                           labelText: "Event Title",
                           border: OutlineInputBorder(),
                         ),
