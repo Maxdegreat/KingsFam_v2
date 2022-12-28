@@ -106,6 +106,7 @@ dependencies:
   flutter_local_notifications: ^12.0.4
   firebase_dynamic_links: ^5.0.0
   camera: ^0.10.1
+  flutter_native_splash: ^2.2.9
   
   
   
@@ -116,15 +117,20 @@ dev_dependencies:
     sdk: flutter
   flutter_launcher_icons: "^0.9.2"
 
-  flutter_native_splash:
 # commands to run in terminal to gen spalsh screen
 # flutter clean
 # flutter pub get
 # flutter pub run flutter_native_splash:create
 # flutter clean && flutter pub get && flutter pub run flutter_native_splash:create
 flutter_native_splash: 
-  color: "#050505"
+  color: "#2C2385"
   image: assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png
+
+  android_12:
+    image: assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png
+    color: "#2C2385"
+    icon_background_color: "#2C2385"
+
 
 flutter_icons:
   android: true

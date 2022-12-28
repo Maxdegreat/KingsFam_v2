@@ -458,6 +458,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     required BuildContext ctx,
     required String mode,
     String? rolesAllowed,
+    required BuildContext context,
   }) async {
     Userr currUser = await _userrRepository.getUserrWithId(
         userrId: _authBloc.state.user!.uid);
@@ -465,7 +466,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     await _churchRepository.newKingsCord2(
       ch: commuinity,
       cordName: formatCordName(cordName),
-      currUser: currUser,
+      currUserId: currUser.id,
       mode: mode,
       rolesAllowed: rolesAllowed,
     );

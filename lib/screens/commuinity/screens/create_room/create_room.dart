@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
@@ -99,6 +100,7 @@ class _CreateRoomState extends State<CreateRoom> {
                               bgColor: Colors.red[400]);
                         } else {
                           await ChurchRepository().newKingsCord2(
+                              currUserId: context.read<AuthBloc>().state.user!.uid,
                               ch: widget.cm,
                               cordName: _txtController.value.text,
                               mode: selectedMode,

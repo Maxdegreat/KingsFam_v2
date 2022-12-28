@@ -57,6 +57,7 @@ class _MessageLinesState extends State<MessageLines> {
   }
 
   Container reactionContainer({required String reaction, required int num}) {
+ 
     return Container(
       height: MediaQuery.of(context).size.height / 20,
       width: MediaQuery.of(context).size.width / 8,
@@ -468,7 +469,7 @@ class _MessageLinesState extends State<MessageLines> {
           onDragEnd: (DragDownDetails) {},
           feedback: messageLineChild(),
           childWhenDragging: Text(
-              "Replying to " + widget.message.senderUsername!,
+              "Replying to " + widget.message.sender!.username,
               style:
                   TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
           child: messageLineChild()),
@@ -490,10 +491,7 @@ class _MessageLinesState extends State<MessageLines> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //FancyListTile(username: '${kingsCordMemInfo.memberInfo[message.senderId]['username']}', imageUrl: '${kingsCordMemInfo.memberInfo[message.senderId]['profileImageUrl']}', onTap: null, isBtn: false, BR: 18, height: 18, width: 18),
-                // widget.previousSenderAsUid == widget.message.sender!.id
-                //     ? SizedBox.shrink()
-                //     :
+
                 kingsCordAvtar(context),
                 SizedBox(
                   width: 5.0,

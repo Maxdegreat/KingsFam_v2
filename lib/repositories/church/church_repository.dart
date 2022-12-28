@@ -2,6 +2,9 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/mock_flag.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/enums/enums.dart';
@@ -394,7 +397,7 @@ class ChurchRepository extends BaseChurchRepository {
   Future<KingsCord?> newKingsCord2({
     required Church ch,
     required String cordName,
-    Userr? currUser,
+    required String currUserId,
     required String mode,
     required String? rolesAllowed,
   }) async {
@@ -418,7 +421,7 @@ class ChurchRepository extends BaseChurchRepository {
           // a welcome message in the chat room.
           pathToKc.doc(doc.id).collection(Paths.messages).add(Message.empty()
               .copyWith(text: firstMsgEncoded)
-              .ToDoc(senderId: "senderId"));
+              .ToDoc(senderId: currUserId));
         }
       });
     } catch (e) {

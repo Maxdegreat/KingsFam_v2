@@ -62,7 +62,7 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
       CommuinityBloc? cmBloc}) async {
   
       Userr currUser = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
-      KingsCord? kc = await _churchRepository.newKingsCord2(ch: commuinity, cordName: cordName, currUser: currUser, mode: "chat", rolesAllowed: Roles.Member);
+      KingsCord? kc = await _churchRepository.newKingsCord2(ch: commuinity, cordName: cordName, currUserId: currUser.id, mode: "chat", rolesAllowed: Roles.Member);
       var lst = state.kingsCords;
       lst.add(kc);
       emit(state.copyWith(kingsCords: lst));

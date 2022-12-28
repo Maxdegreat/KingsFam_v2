@@ -14,9 +14,11 @@ class FirebaseDynamicLinkService {
 
     final dynamicLinkParams = DynamicLinkParameters(
       socialMetaTagParameters: SocialMetaTagParameters(),
-      navigationInfoParameters: NavigationInfoParameters(forcedRedirectEnabled: false),
+      navigationInfoParameters:
+          NavigationInfoParameters(forcedRedirectEnabled: false),
       link: Uri.parse("https://www.kingsfam.com/cmData?id=${cmData.id}"),
       uriPrefix: "https://kingsfam.page.link",
+      
       androidParameters: const AndroidParameters(
         packageName: "com.kingbiz.kingsfam",
         minimumVersion: 0,
@@ -24,7 +26,7 @@ class FirebaseDynamicLinkService {
       iosParameters: IOSParameters(
         bundleId: "com.kingbiz.kingsfam",
         // fallbackUrl: Uri.parse("https://testflight.apple.com/join/oPDxmw2T"),
-        appStoreId: "123456789",
+        appStoreId: "1645167504",
         minimumVersion: "1.0.1",
       ),
     );
@@ -60,12 +62,41 @@ class FirebaseDynamicLinkService {
           Church? cm = await Church.fromDoc(snap);
           Navigator.of(context).pushNamed(CommunityHome.routeName,
               arguments: CommunityHomeArgs(cm: cm, cmB: null));
-          // context.read<BottomnavbarCubit>().updateSelectedItem(BottomNavItem.chats);
-          // context.read<ChatscreenBloc>().add(ChatScreenUpdateSelectedCm(cm: cm));
+
         }
       }
     }).onError((error) {
       log("!!!!! error occurred DynamicLinkService: " + error.message);
     });
+
+    final PendingDynamicLinkData? data = await FirebaseDynamicLinks.instance.getInitialLink();
+    if (data != null) {
+      final Uri? deepLink = data.link;
+
+
+      if (deepLink != null) {
+        bool isCm = deepLink.pathSegments.contains("cmData");
+
+
+        if (isCm) {
+          log("is cmId");
+          String? cmId = deepLink.queryParameters['id'];
+
+          if (cmId != null) {
+            log("naving to cm");
+            DocumentSnapshot snap = await FirebaseFirestore.instance
+                .collection(Paths.church)
+                .doc(cmId)
+                .get();
+            Church? cm = await Church.fromDoc(snap);
+            Navigator.of(context).pushNamed(CommunityHome.routeName,
+                arguments: CommunityHomeArgs(cm: cm, cmB: null));
+            
+          }
+        }
+
+
+      }
+    }
   }
 }
