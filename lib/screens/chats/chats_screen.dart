@@ -1,12 +1,12 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/helpers/dynamic_links.dart';
 import 'package:kingsfam/helpers/firebase_notifs.dart';
 import 'package:kingsfam/helpers/kingscord_path.dart';
 import 'package:kingsfam/helpers/notification_helper.dart';
@@ -15,7 +15,6 @@ import 'package:kingsfam/helpers/notification_helper.dart';
 //import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
-import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 
 import 'package:kingsfam/widgets/widgets.dart';
 import '../../widgets/chats_view_widgets/getting_started.dart';
@@ -88,6 +87,7 @@ class _ChatsScreenState extends State<ChatsScreen>
   void initState() {
     super.initState();
     setupInteractedMessage();
+    FirebaseDynamicLinkService.initDynamicLink(context);
     CurrentKingsCordRoomId();
     NotificationHelper.initalize(flutterLocalNotificationsPlugin);
     //super.build(context);

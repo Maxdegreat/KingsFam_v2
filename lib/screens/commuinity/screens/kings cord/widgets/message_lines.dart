@@ -20,15 +20,15 @@ class MessageLines extends StatefulWidget {
   //class data
   final String? previousSenderAsUid;
   final Message message;
-  final String kcId;
-  final String cmId;
+  final KingsCord kc;
+  final Church cm;
   final BuildContext inhearatedCtx;
   final KingscordCubit kcubit;
 
   MessageLines(
       {required this.message,
-      required this.cmId,
-      required this.kcId,
+      required this.cm,
+      required this.kc,
       this.previousSenderAsUid,
       required this.inhearatedCtx,
       required this.kcubit});
@@ -48,9 +48,9 @@ class _MessageLinesState extends State<MessageLines> {
     reactions[reaction] = incrementedReaction;
     FirebaseFirestore.instance
         .collection(Paths.church)
-        .doc(widget.cmId)
+        .doc(widget.cm.id!)
         .collection(Paths.kingsCord)
-        .doc(widget.kcId)
+        .doc(widget.kc.id!)
         .collection(Paths.messages)
         .doc(msgId)
         .update({'reactions': reactions});
@@ -199,9 +199,9 @@ class _MessageLinesState extends State<MessageLines> {
                             );
                             FirebaseFirestore.instance
                                 .collection(Paths.church)
-                                .doc(this.widget.cmId)
+                                .doc(this.widget.cm.id!)
                                 .collection(Paths.kingsCord)
-                                .doc(this.widget.kcId)
+                                .doc(this.widget.kc.id!)
                                 .collection(Paths.messages)
                                 .doc(this.widget.message.id)
                                 .update(messageForDel.ToDoc(
@@ -253,9 +253,16 @@ class _MessageLinesState extends State<MessageLines> {
 
   // if i send the message.
   _buildText(BuildContext context) {
+
+
     if (widget.message.reactions == {}) {
       widget.message.reactions![''] = 0;
     }
+
+    if (widget.message.text == firstMsgEncoded) {
+      return _messageWelcomeWidget();
+    }
+
     List<String> links = [];
     List<Widget> textWithLinksForColumn = [];
     String tempString = "";
@@ -597,4 +604,27 @@ class _MessageLinesState extends State<MessageLines> {
 
   Widget? kingsCordProfileIcon() =>
       Container(child: Icon(Icons.account_circle));
+
+  Widget _messageWelcomeWidget() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CircleAvatar(
+          backgroundImage: CachedNetworkImageProvider(widget.cm.imageUrl),
+          radius: 75,
+        ),
+
+        SizedBox(height: 10),
+
+        Text(widget.cm.name, style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 30, fontWeight: FontWeight.bold)),
+
+        SizedBox(height: 7),
+
+        Text("Welcome to " + widget.kc.cordName, style: Theme.of(context).textTheme.caption!.copyWith(fontSize: 20, fontWeight: FontWeight.w500))
+      ],
+    );
+  }
+
 }

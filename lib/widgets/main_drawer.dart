@@ -41,8 +41,6 @@ class _MainDrawerState extends State<MainDrawer> {
                     .bodyText1!
                     .copyWith(fontSize: 24, fontStyle: FontStyle.italic)),
             onTap: () {
-              log("attempting to move to the next cm");
-              log(context.read<ChatscreenBloc>().state.selectedCh.toString());
               if (c != context.read<ChatscreenBloc>().state.selectedCh) {
                 context.read<ChatscreenBloc>()
                   ..add(ChatScreenUpdateSelectedCm(cm: c));
@@ -55,7 +53,6 @@ class _MainDrawerState extends State<MainDrawer> {
     drawerLst.insert(0, start);
 
     for (var c in context.read<ChatscreenBloc>().state.chs!) {
-      log("in the barage idk");
       if (!context.read<ChatscreenBloc>().state.chs!.contains(c)) {
         if (c != start) {
           drawerLst.remove(c);

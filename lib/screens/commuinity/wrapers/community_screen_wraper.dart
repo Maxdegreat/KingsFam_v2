@@ -7,7 +7,7 @@ Set<dynamic> cmPrivacySet = {
 };
 
 Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
-     Widget? _ad, VoidCallback setStateCallBack) {
+     Widget? _ad, VoidCallback setStateCallBack, ScrollController scrollController) {
   // create list for mentioned rooms and reg rooms
 
   // load an ad for the cm content
@@ -29,7 +29,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
           width: double.infinity,
           decoration: BoxDecoration(
                             gradient:  LinearGradient(
-              begin: Alignment.topRight,
+              begin: Alignment.bottomRight,
               end: Alignment.centerLeft,
               colors: [
                 Theme.of(context).colorScheme.background,
@@ -37,7 +37,9 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
               ]),
           ),
         )),
-        CustomScrollView(slivers: <Widget>[
+        CustomScrollView(
+          // controller: 
+          slivers: <Widget>[
           cmSliverAppBar(
               cm: cm,
               context: context,
@@ -205,6 +207,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                             .pushNamed(
                                                 KingsCordScreen.routeName,
                                                 arguments: KingsCordArgs(
+                                                    role: context.read<CommuinityBloc>().state.role,
                                                     usr: state.currUserr,
                                                     userInfo: {
                                                       "isMember": isMember,
@@ -355,8 +358,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                 ),
                                 overflow: TextOverflow.fade,
                               ),
-                              collapseOrExpand(
-                                  context.read<CommuinityBloc>(), 'cord'),
+                              collapseOrExpand(context.read<CommuinityBloc>(), 'cord'),
                               CmPermHandler.canMakeRoom(
                                       context.read<CommuinityBloc>())
                                   ? new_kingscord(
@@ -401,6 +403,7 @@ Padding _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                                         "isMember": isMember,
                                                       },
                                                       commuinity: cm,
+                                                      role: context.read<CommuinityBloc>().state.role,
                                                       kingsCord: cord))
                                               .then((_) {
                                             context
@@ -573,6 +576,7 @@ SliverAppBar cmSliverAppBar({
   required Church cm,
 }) {
   return SliverAppBar(
+    
     // actions: [
     //   Padding(
     //     padding: const EdgeInsets.only(right: 8.0),
@@ -582,37 +586,50 @@ SliverAppBar cmSliverAppBar({
     backgroundColor: Colors.transparent,
     expandedHeight: MediaQuery.of(context).size.height / 4.4,
     flexibleSpace: FlexibleSpaceBar(
-      title: Text(cm.name),
-      background: Padding(
-        padding: const EdgeInsets.only(top: 5, bottom: 5, left: 5, right: 5),
-        child: Center(
-          child: Stack(
-            children: [
-              Container(
-                  height: MediaQuery.of(context).size.height / 4.4,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(7),
-                    image: DecorationImage(
-                        image: CachedNetworkImageProvider(cm.imageUrl),
-                        fit: BoxFit.cover),
-                  )),
-              Container(
-                  decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(7),
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: <Color>[
-                    Colors.black87,
-                    Colors.black26,
-                    Colors.transparent,
-                  ], // Gradient from https://learnui.design/tools/gradient-generator.html
-                  tileMode: TileMode.mirror,
-                ),
-              ))
-            ],
+      centerTitle: true,
+      
+      title: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
+              image: DecorationImage(image: CachedNetworkImageProvider(cm.imageUrl)),
+              borderRadius: BorderRadius.circular(7)
+            )
           ),
+          SizedBox(height: 7),
+          Text(cm.name)
+        ],
+      ),
+      background: Center(
+        child: Stack(
+          children: [
+            Container(
+                height: MediaQuery.of(context).size.height / 4.4,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: CachedNetworkImageProvider(cm.imageUrl),
+                      fit: BoxFit.cover),
+                )),
+            Container(
+                decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[
+                 Color.fromARGB(82, 93, 125, 172),
+                 Color.fromARGB(83, 13, 72, 161),
+                  Theme.of(context).colorScheme.secondary,
+                ],
+                tileMode: TileMode.mirror,
+              ),
+            ))
+          ],
         ),
       ),
     ),

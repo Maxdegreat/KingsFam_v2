@@ -154,7 +154,6 @@ Widget new_kingscord(
       cmBloc.state.role["permissions"].contains(CmActions.makeRoom)) {
     return GestureDetector(
         onTap: () {
-          log("taped...");
           Navigator.of(context).pushNamed(CreateRoom.routeName,
               arguments: CreateRoomArgs(cmBloc: cmBloc, cm: cm));
         },

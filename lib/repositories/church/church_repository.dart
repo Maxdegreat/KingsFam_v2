@@ -16,30 +16,31 @@ class ChurchRepository extends BaseChurchRepository {
   final fire = FirebaseFirestore.instance;
 
   Stream<List<Future<Message?>>> getMsgStream(
-      {required String cmId, required String kcId, required int limit, required DocumentSnapshot? lastPostDoc}) {
-    
-        if (lastPostDoc == null) {
-          return fb
-        .doc(cmId)
-        .collection(Paths.kingsCord)
-        .doc(kcId)
-        .collection(Paths.messages)
-        .limit(limit)
-        .orderBy('date', descending: true)
-        .snapshots()
-        .map((snap) {
-      List<Future<Message?>> bucket = [];
-      snap.docs.forEach((doc) {
-        Future<Message?> msg = Message.fromDoc(doc);
-        bucket.add(msg);
+      {required String cmId,
+      required String kcId,
+      required int limit,
+      required DocumentSnapshot? lastPostDoc}) {
+    if (lastPostDoc == null) {
+      return fb
+          .doc(cmId)
+          .collection(Paths.kingsCord)
+          .doc(kcId)
+          .collection(Paths.messages)
+          .limit(limit)
+          .orderBy('date', descending: true)
+          .snapshots()
+          .map((snap) {
+        List<Future<Message?>> bucket = [];
+        snap.docs.forEach((doc) {
+          Future<Message?> msg = Message.fromDoc(doc);
+          bucket.add(msg);
+        });
+        return bucket;
       });
-      return bucket;
-    });
-        } else {
-          log("returning an empty stream");
-          return Stream.empty();
-        }
-
+    } else {
+      log("returning an empty stream");
+      return Stream.empty();
+    }
   }
 
   Future<List<Message?>> paginateMsg(
@@ -47,41 +48,38 @@ class ChurchRepository extends BaseChurchRepository {
       required String kcId,
       required String? lastDocId,
       required int limit}) async {
-        
     final List<Message?> bucket = [];
     QuerySnapshot snaps;
     if (lastDocId == null) {
       snaps = await fb
-        .doc(cmId)
-        .collection(Paths.kingsCord)
-        .doc(kcId)
-        .collection(Paths.messages)
-        .orderBy('date', descending: true)
-        .limit(limit)
-        .get();
+          .doc(cmId)
+          .collection(Paths.kingsCord)
+          .doc(kcId)
+          .collection(Paths.messages)
+          .orderBy('date', descending: true)
+          .limit(limit)
+          .get();
     } else {
-    DocumentSnapshot docSnap = await fb
-        .doc(cmId)
-        .collection(Paths.kingsCord)
-        .doc(kcId)
-        .collection(Paths.messages)
-        .doc(lastDocId)
-        .get();
+      DocumentSnapshot docSnap = await fb
+          .doc(cmId)
+          .collection(Paths.kingsCord)
+          .doc(kcId)
+          .collection(Paths.messages)
+          .doc(lastDocId)
+          .get();
 
-    if (!docSnap.exists) return [];
+      if (!docSnap.exists) return [];
 
       snaps = await fb
-        .doc(cmId)
-        .collection(Paths.kingsCord)
-        .doc(kcId)
-        .collection(Paths.messages)
-        .orderBy('date', descending: true)
-        .startAfterDocument(docSnap)
-        .limit(limit)
-        .get();
-
+          .doc(cmId)
+          .collection(Paths.kingsCord)
+          .doc(kcId)
+          .collection(Paths.messages)
+          .orderBy('date', descending: true)
+          .startAfterDocument(docSnap)
+          .limit(limit)
+          .get();
     }
-
 
     if (snaps.docs.length > 0) {
       for (var s in snaps.docs) {
@@ -280,17 +278,16 @@ class ChurchRepository extends BaseChurchRepository {
     }).then((role) async {
       if (isNewCm != null && isNewCm) {
         // we only need the rid aka roleId
-        await addCommunityMember(userId: userId, cmId: cmId, roleName: roleName);
+        await addCommunityMember(
+            userId: userId, cmId: cmId, roleName: roleName);
       }
     });
   }
 
   Future<void> addCommunityMember(
-      {
-        required String userId,
-        required String cmId,
-        required String roleName
-      }) async {
+      {required String userId,
+      required String cmId,
+      required String roleName}) async {
     DocumentSnapshot userSnap =
         await fire.collection(Paths.users).doc(userId).get();
     Userr user = Userr.fromDoc(userSnap);
@@ -303,7 +300,7 @@ class ChurchRepository extends BaseChurchRepository {
         .collection(Paths.members)
         .doc(userId)
         .set({"kfRole": roleName, "userNameCaseList": user.usernameSearchCase});
-        // .set({"roleId": roleId, "userNameCaseList": user.usernameSearchCase});
+    // .set({"roleId": roleId, "userNameCaseList": user.usernameSearchCase});
 
     // I also need to add the cmId somewhere so that I can find all cm's the user is a part of
     FirebaseFirestore.instance
@@ -317,7 +314,8 @@ class ChurchRepository extends BaseChurchRepository {
   Future<void> newChurch(
       {required Church church,
       required Userr recentSender,
-      required String userId, String mode = "chat"}) async {
+      required String userId,
+      String mode = "chat"}) async {
     try {
       fb.add(church.toDoc()).then((value) async {
         final doc = await value.get();
@@ -401,7 +399,11 @@ class ChurchRepository extends BaseChurchRepository {
     required String? rolesAllowed,
   }) async {
     try {
-      log("making kc");
+      CollectionReference pathToKc = FirebaseFirestore.instance
+          .collection(Paths.church)
+          .doc(ch.id)
+          .collection(Paths.kingsCord);
+
       KingsCord kc = KingsCord(
         tag: ch.id!,
         cordName: cordName,
@@ -409,13 +411,16 @@ class ChurchRepository extends BaseChurchRepository {
         rolesAllowed: rolesAllowed,
         subscribedIds: [],
       );
-      log("sending to db");
-      await FirebaseFirestore.instance
-          .collection(Paths.church)
-          .doc(ch.id)
-          .collection(Paths.kingsCord)
-          .add(kc.toDoc());
-      log("done");
+
+      await pathToKc.add(kc.toDoc()).then((doc) {
+        if (mode == "chat") {
+          // send a encoded msg to decode later that will show
+          // a welcome message in the chat room.
+          pathToKc.doc(doc.id).collection(Paths.messages).add(Message.empty()
+              .copyWith(text: firstMsgEncoded)
+              .ToDoc(senderId: "senderId"));
+        }
+      });
     } catch (e) {
       log("error: " + e.toString());
     }
@@ -730,7 +735,8 @@ class ChurchRepository extends BaseChurchRepository {
             "User is found in the CmMembers path. so how can they try joining? In Church repo onJoinCommunity");
       }
 
-      addCommunityMember(cmId: commuinity.id!, userId: user.id, roleName: "Member");
+      addCommunityMember(
+          cmId: commuinity.id!, userId: user.id, roleName: "Member");
 
       final docRef = fb.doc(commuinity.id);
       if (commuinity.size == null)

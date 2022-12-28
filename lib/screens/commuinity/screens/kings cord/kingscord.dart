@@ -36,12 +36,14 @@ class KingsCordArgs {
   final KingsCord kingsCord;
   final Userr usr;
   final Map<String, dynamic> userInfo;
+  final Map<String, dynamic> role;
   // class constructor
   KingsCordArgs(
       {required this.commuinity,
       required this.kingsCord,
       required this.userInfo,
-      required this.usr});
+      required this.usr,
+      required this.role});
 }
 
 class KingsCordScreen extends StatefulWidget {
@@ -50,12 +52,14 @@ class KingsCordScreen extends StatefulWidget {
   final KingsCord kingsCord;
   final Map<String, dynamic> userInfo;
   final Userr usr;
+  final Map<String, dynamic> role;
   const KingsCordScreen(
       {Key? key,
       required this.commuinity,
       required this.kingsCord,
       required this.userInfo,
-      required this.usr})
+      required this.usr,
+      required this.role,})
       : super(key: key);
 
   // will need a static const string route name
@@ -76,6 +80,7 @@ class KingsCordScreen extends StatefulWidget {
                   ),
               child: KingsCordScreen(
                 usr: args.usr,
+                role: args.role,
                 userInfo: args.userInfo,
                 commuinity: args.commuinity,
                 kingsCord: args.kingsCord,
@@ -144,16 +149,16 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           messageLine = MessageLines(
             previousSenderAsUid:
                 message != null ? message.last!.sender!.id : null,
-            cmId: widget.commuinity.id!,
-            kcId: widget.kingsCord.id!,
+            cm: widget.commuinity,
+            kc: widget.kingsCord,
             message: sms,
             inhearatedCtx: context,
             kcubit: context.read<KingscordCubit>(),
           );
         } else {
           messageLine = MessageLines(
-              cmId: widget.commuinity.id!,
-              kcId: widget.kingsCord.id!,
+              cm: widget.commuinity,
+              kc: widget.kingsCord,
               message: sms,
               inhearatedCtx: context,
               kcubit: context.read<KingscordCubit>());
@@ -476,6 +481,20 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           style: Theme.of(context).textTheme.bodyText1,
         ),
         actions: [
+          // if (widget.role["permissions"].contains("*") || widget.role["permissions"].contains("#"))
+          // IconButton(
+          //   onPressed: () {
+          //     // Nav to a settings room that will
+          //     // 1) allow only certian roles to enter the room. only an owner / admin can do this
+          //     // 2) allow someone to subscribe to get notifications
+          //     Navigator.of(context).pushNamed(KingsCordSettings.routeName,
+          //         arguments: KingsCordSettingsArgs(
+          //             cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!, ));
+          //   },
+          //   icon: Icon(Icons.notifications_on_outlined),
+          //   iconSize: 15,
+          //   color: Theme.of(context).iconTheme.color,
+          // ),
           IconButton(
             onPressed: () {
               // Nav to a settings room that will
@@ -486,6 +505,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                       cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!));
             },
             icon: Icon(Icons.notifications_on_outlined),
+            iconSize: 15,
             color: Theme.of(context).iconTheme.color,
           )
         ],

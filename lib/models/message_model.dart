@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/user_model.dart';
 
+const firstMsgEncoded = "ThisIsAFirstMessageAndItIsEncodedJesusIsKing&&&KingsFamIlyForHisGloryYaDiggg";
+
 class Message {
   //1 class data
   final String? id;

@@ -177,12 +177,10 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
               .get();
           if (cmUserInfoDoc.exists && cmUserInfoDoc.data() != null) {
             String? kfRoleName = cmUserInfoDoc.data()!["kfRole"] ?? null;
-            log("past the kfRoleName ????????????????????????????????????????????????????");
             // if user has a kfRole aka non custom do not attempt to look for rid
             if (kfRoleName != null) {
               Map<String, dynamic>? role =
                   CmActions.getKfRolePermissions(roleName: kfRoleName);
-              log("we are returning a pre built role in cm bloc");
               emit(state.copyWith(role: role ?? {"member": []}));
             } else {
               Map<String, dynamic> role = await CmActions.getRidPermissions(

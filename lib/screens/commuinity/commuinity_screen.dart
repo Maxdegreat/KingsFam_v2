@@ -90,7 +90,7 @@ class CommuinityScreen extends StatefulWidget {
 class _CommuinityScreenState extends State<CommuinityScreen>
     with SingleTickerProviderStateMixin {
   late TextEditingController _txtController;
-  
+  late ScrollController _scrollController;
 
   late NativeAd _nativeAd;
   bool _isNativeAdLoaded = false;
@@ -113,26 +113,26 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   @override
   void initState() {
     _createNativeAd();
-    
+
     context.read<BottomnavbarCubit>().showBottomNav(true);
     super.initState();
     _txtController = TextEditingController();
+    _scrollController = ScrollController();
   }
 
   @override
   void dispose() {
     _nativeAd.dispose();
     _txtController.dispose();
+    _scrollController.dispose();
     // context.read<CommuinityBloc>().close();
     // context.read<CommuinityBloc>().dispose();
     super.dispose();
   }
   //String _currentCmId = widget.commuinity.id!;
 
-
   @override
   Widget build(BuildContext context) {
-
     // ignore: unused_local_variable
     final userId = context.read<AuthBloc>().state.user!.uid;
     return BlocProvider<CommuinityBloc>(
@@ -148,12 +148,10 @@ class _CommuinityScreenState extends State<CommuinityScreen>
       },
       child: BlocConsumer<CommuinityBloc, CommuinityState>(
           listener: (context, state) {
-          if (state.status == CommuintyStatus.updated) {
-            log("we are updating the state of the cm ya dig");
-            setState(() {
-              
-            });
-          }
+        if (state.status == CommuintyStatus.updated) {
+          log("we are updating the state of the cm ya dig");
+          setState(() {});
+        }
         if (state.status == CommuintyStatus.error) {
           ErrorDialog(
             content:
@@ -211,16 +209,16 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                     onPressed: () => Navigator.of(context).pop(),
                     icon: Icon(Icons.arrow_back_ios)),
             endDrawer: MainDrawerEnd(
-                memberBtn(
-                    cmBloc: context.read<CommuinityBloc>(),
-                    cm: widget.commuinity,
-                    context: context),
-                settingsBtn(
-                    cmBloc: context.read<CommuinityBloc>(),
-                    cm: widget.commuinity,
-                    context: context),
-                    context,
-                ),
+              memberBtn(
+                  cmBloc: context.read<CommuinityBloc>(),
+                  cm: widget.commuinity,
+                  context: context),
+              settingsBtn(
+                  cmBloc: context.read<CommuinityBloc>(),
+                  cm: widget.commuinity,
+                  context: context),
+              context,
+            ),
             body: SafeArea(
               child: state.status == CommuintyStatus.armormed
                   ?
@@ -242,9 +240,10 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                             Icon(Icons.health_and_safety_outlined, size: 50),
                             SizedBox(height: 7),
                             ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                primary: Theme.of(context).colorScheme.primary,
-                              ),
+                                style: ElevatedButton.styleFrom(
+                                  primary:
+                                      Theme.of(context).colorScheme.primary,
+                                ),
                                 onPressed: () {
                                   state.requestStatus == RequestStatus.pending
                                       ? snackBar(
@@ -263,8 +262,18 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                                 },
                                 child:
                                     state.requestStatus == RequestStatus.pending
-                                        ? Text("Pending ...", style: Theme.of(context).textTheme.bodyText1,)
-                                        : Text("Request To Join", style: Theme.of(context).textTheme.bodyText1,)),
+                                        ? Text(
+                                            "Pending ...",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1,
+                                          )
+                                        : Text(
+                                            "Request To Join",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1,
+                                          )),
                           ],
                         ),
                       ),
@@ -272,14 +281,23 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                   : state.status == CommuintyStatus.shielded
                       ?
                       // status is shielded
-                      _mainScrollView(
-                          context, state, widget.commuinity, nativeAdWidget(_nativeAd, _isNativeAdLoaded, context), () {
-                            if (mounted)
-                              setState(() {});
-                              else log("not mounted so not setting state in cmscreen mainScrollWheel");
-                            })
+                      _mainScrollView(context, state, widget.commuinity,
+                          nativeAdWidget(_nativeAd, _isNativeAdLoaded, context),
+                          () {
+                          if (mounted)
+                            setState(() {});
+                          else
+                            log("not mounted so not setting state in cmscreen mainScrollWheel");
+                        },
+                        _scrollController)
                       : _mainScrollView(context, state, widget.commuinity,
-                          nativeAdWidget(_nativeAd, _isNativeAdLoaded, context), () {if (mounted) setState(() {}); else log("not mounted so not setting state in cmscreen mainScrollWheel");}),
+                          nativeAdWidget(_nativeAd, _isNativeAdLoaded, context),
+                          () {
+                          if (mounted)
+                            setState(() {});
+                          else
+                            log("not mounted so not setting state in cmscreen mainScrollWheel");
+                        }, _scrollController),
             ));
       }),
     );

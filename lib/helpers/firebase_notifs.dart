@@ -44,6 +44,7 @@ Future<void> handleMessage(RemoteMessage message, BuildContext context) async {
         if (kc != null)
           Navigator.of(context).pushNamed(KingsCordScreen.routeName,
               arguments: KingsCordArgs(
+                  role: {},
                   commuinity: cm.copyWith(),
                   kingsCord: kc,
                   userInfo: {
