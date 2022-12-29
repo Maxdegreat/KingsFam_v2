@@ -88,15 +88,12 @@ class _FileViewScreenState extends State<UrlViewScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
-        leading: SizedBox.shrink(),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.cancel_outlined),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          )
-        ],
+        leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).iconTheme.color,
+              )),
       ),
       body: Hero(tag: widget.heroTag!, child: _viewPort()),
     );

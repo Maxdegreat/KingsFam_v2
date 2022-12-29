@@ -9,6 +9,7 @@ import 'package:equatable/equatable.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
+import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 
@@ -66,6 +67,14 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
+
+      String? lastVisitedCmId = await UserPreferences.getLastVisitedCm();
+      if (lastVisitedCmId != null) {
+        log("maping c to state.c");
+        Church c = await Church.fromId(lastVisitedCmId);
+        yield state.copyWith(selectedCh: c);
+      }
+
       // geting the currUserr for later use
       final Userr currUserr = await _userrRepository.getUserrWithId(
           userrId: _authBloc.state.user!.uid);
@@ -85,16 +94,18 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
           .getCmsStream(currId: currUserr.id)
           .listen((churchs) async {
         // var allChs = await Future.wait(churchs);
-        log("updatesssssssssssssssssssssssssssssssssssss");
+        
         Map<String, dynamic> chsAndMentionedMap = await
             _churchRepository.FutureChurchsAndMentioned(
                 c: churchs, uid: _authBloc.state.user!.uid);
 
-        log("obtained chs is " + chsAndMentionedMap["c"].length.toString());
-        emit(state.copyWith(selectedCh: chsAndMentionedMap["c"].first));
+        // emit(state.copyWith(selectedCh: chsAndMentionedMap["c"].first));
         emit(state.copyWith(chs: chsAndMentionedMap["c"]));
         emit(state.copyWith(mentionedMap: chsAndMentionedMap["m"]));
       });
+
+
+
       yield state.copyWith(status: ChatStatus.sccuess, currUserr: currUserr);
     } catch (e) {
       log("!!!!!!!!!!!!!!!!ERROR: " + e.toString());

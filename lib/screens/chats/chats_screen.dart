@@ -112,15 +112,14 @@ class _ChatsScreenState extends State<ChatsScreen>
             ErrorDialog( content: 'chat_screen e-code: ${state.failure.message}');
           }
         }, builder: (context, state) {
-         var currentScreen ; 
-          if (state.pSelectedCh != state.selectedCh) {
-            currentScreen = null;//Container(child: Center(child: Text("KingsFam")),);
-            currentScreen =  CommuinityScreen(commuinity: state.selectedCh, showDrawer: true);
-          }
+          var currentScreen ;
+          if (state.selectedCh != null) {
+            currentScreen =  CommuinityScreen(commuinity: state.selectedCh!, showDrawer: true);
+          } 
 
           return state.chs == null
               ? Center(child: Text("KingsFam"))
-              : state.chs!.length == 0 || state.chs!.isEmpty
+              : (state.chs!.length == 0 || state.chs!.isEmpty) && state.selectedCh != null
                   ? GettingStarted(
                       bloc: context.read<ChatscreenBloc>(),
                       state: state,

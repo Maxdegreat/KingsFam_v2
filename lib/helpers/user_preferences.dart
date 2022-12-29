@@ -41,4 +41,13 @@ class UserPreferences {
       // lets get back where starting substring is equal to info.
       return _preferences!.getStringList(_kcTimeStamp + cmId) ?? null;
     }
+
+    static updateLastVisitedCm({required String cmId}) {
+      _preferences!.setString("lastVisitedCm", cmId);
+    }
+
+    static getLastVisitedCm() async {
+      return await _preferences!.getString("lastVisitedCm");
+    }
+
 }

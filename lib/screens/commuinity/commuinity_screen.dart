@@ -26,6 +26,7 @@ import 'package:kingsfam/helpers/dynamic_links.dart';
 
 import 'package:kingsfam/helpers/helpers.dart';
 import 'package:kingsfam/helpers/kingscord_path.dart';
+import 'package:kingsfam/helpers/user_preferences.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
@@ -113,7 +114,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   @override
   void initState() {
     _createNativeAd();
-
+    UserPreferences.updateLastVisitedCm(cmId: widget.commuinity.id!);
     context.read<BottomnavbarCubit>().showBottomNav(true);
     super.initState();
     _txtController = TextEditingController();

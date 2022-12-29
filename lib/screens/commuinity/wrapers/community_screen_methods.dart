@@ -32,10 +32,10 @@ Widget nativeAdWidget(NativeAd ad, bool hasAdLoaded, BuildContext context) {
   return hasAdLoaded
       ? Container(
           height: 50,
-          width: MediaQuery.of(context).size.width / 2.3,
+          width: MediaQuery.of(context).size.width / 2.2,
           child: AdWidget(ad: ad),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary,
+            color: Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.circular(10),
           ),
         )
@@ -59,9 +59,9 @@ Widget contentPreview(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: MediaQuery.of(context).size.width / 2.3,
+            width: MediaQuery.of(context).size.width / 2.2,
             decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
+                color: Theme.of(context).colorScheme.primary,
                 borderRadius: BorderRadius.circular(10)),
             child: Padding(
               padding: const EdgeInsets.all(5.0),

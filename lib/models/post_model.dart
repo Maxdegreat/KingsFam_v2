@@ -56,7 +56,7 @@ class Post extends Equatable {
   
   static Post mockImg = Post(id: "mockID77", author: Userr.mock, quote: null, imageUrl: "https://github.com/amagalla1394/odin-recipe-git-test/blob/main/recipes/images/Steamed_Pork_Buns.jpg?raw=true", videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: 'This is a mock caption', commuinity: Church.mock, likes: 0, date: Timestamp(0, 0), height: 10);
 
-  static Post mockVid = Post(id: "mockID77", author: Userr.mock, quote: null, imageUrl: null, videoUrl: "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4", thumbnailUrl: "https://github.com/amagalla1394/odin-recipe-git-test/blob/main/recipes/images/Steamed_Pork_Buns.jpg?raw=true", soundTrackUrl: null, caption: 'This is a mock caption', commuinity: Church.mock, likes: 0, date: Timestamp(0, 0), height: 10);
+  static Post mockVid = Post(id: "mockID77", author: Userr.mock, quote: null, imageUrl: null, videoUrl: "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4", thumbnailUrl: "https://github.com/amagalla1394/odin-recipe-git-test/blob/main/recipes/images/Steamed_Pork_Buns.jpg?raw=true", soundTrackUrl: null, caption: 'This is a mock caption. I am making this caption long so that I can see how kingsfam post looks with a long cpation. really i do not care how this caption looks. anyways Thsi is just for mocking pleae remember this and it should not make any sence. letys see how fast I can type.', commuinity: Church.mock, likes: 0, date: Timestamp(0, 0), height: 10);
 
   @override
   List<Object?> get props =>

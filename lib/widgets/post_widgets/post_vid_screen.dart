@@ -2,8 +2,12 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kingsfam/cubits/cubits.dart';
 import 'package:kingsfam/models/post_model.dart';
+import 'package:kingsfam/screens/comment_ui/comment_screen.dart';
+import 'package:kingsfam/screens/commuinity/community_home/home.dart';
+import 'package:kingsfam/screens/profile/profile_screen.dart';
 import 'package:kingsfam/widgets/videos/video_player.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -24,7 +28,6 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
 
   @override
   void initState() {
-    log("post vid url: " + widget.post.videoUrl.toString());
     videoPlayerController = new VideoPlayerController.network(widget.post.videoUrl!);
 
     videoPlayerController!
@@ -43,6 +46,8 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
     videoPlayerController!.dispose();
     super.dispose();
   }
+
+  bool showCaptionFull = false;
 
   @override
   Widget build(BuildContext context) {
@@ -66,39 +71,50 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
     
     
           child: GestureDetector(
-            onDoubleTap: () {},
+            onDoubleTap: () {
+              context.read<LikedPostCubit>().likePost(post: widget.post);
+              // context.read<LikedPostCubit>().likePost(post: widget.post);
+            },
             child: VideoPlayerWidget(controller: videoPlayerController!),
           ), 
         ),
       ),
+      if (!showCaptionFull) ... [
 
        _engagmentColumn(),
         
-         Positioned(
-           bottom: 10,
-           left: 10,
-           child: Column(
-             mainAxisAlignment: MainAxisAlignment.end,
-             crossAxisAlignment: CrossAxisAlignment.start,
-             mainAxisSize: MainAxisSize.min,
-             children: [
-               _cmInfo(),
+          Positioned(
+            bottom: 10,
+            left: 10,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _cmInfo(),
 
-               _userInfo(),
-        
-               _captionSection(),
-             ],
-           ),
-         )
-      ]
+                _userInfo(),
+
+                _captionSection(),
+              ],
+            ),
+          )
+      ] 
+    ],
     );
   }
 
   Widget _engagmentColumn() {
     TextStyle captionS = Theme.of(context).textTheme.caption!.copyWith(color: Colors.white);
+    bool isLikedPost = context.read<LikedPostCubit>().state.likedPostsIds.contains(widget.post.id);
+    bool recentlyLiked = context.read<LikedPostCubit>().state.recentlyLikedPostIds.contains(widget.post.id);
+    String likeCount = recentlyLiked
+      ? (widget.post.likes + 1).toString() 
+      : widget.post.likes.toString();
     return Positioned(
       right: 0,
-      bottom: 50,
+      top: 0,
+      bottom: 70,
       child: SizedBox(
         height: 45,
         child: Align(
@@ -106,22 +122,30 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
+            mainAxisSize: MainAxisSize.min,
             children: [
               
                 IconButton(
-                  onPressed: () {}, 
-                  icon: Icon(Icons.favorite, size: 20, color: Colors.white,)
+                  onPressed: () {
+                    if (isLikedPost || recentlyLiked) {
+                      context.read<LikedPostCubit>().unLikePost(post: widget.post);
+                    } else {
+                      context.read<LikedPostCubit>().likePost(post: widget.post);
+                    }
+                  }, 
+                  icon: Icon(Icons.favorite_outline_rounded, color: recentlyLiked ? Colors.amber : Colors.white,)
                 ),
               
                 SizedBox(height: 10),
               
-                Text(widget.post.likes.toString(), style: captionS,),
+                Text(likeCount, style: captionS,),
               
                 SizedBox(height: 15),
                 
                 IconButton(
-                  onPressed: ()  {}, 
+                  onPressed: ()  {
+                    Navigator.of(context).pushNamed(CommentScreen.routeName,arguments: CommentScreenArgs(post: widget.post));
+                  }, 
                   icon: Icon(Icons.messenger_outline_outlined, color: Colors.white)
                 ),
               
@@ -141,7 +165,7 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
 
 
   Widget _captionSection() {
-    TextStyle captionS = Theme.of(context).textTheme.caption!.copyWith(color: Colors.white);
+    TextStyle captionS = Theme.of(context).textTheme.caption!.copyWith(color: Colors.white, fontStyle: FontStyle.italic);
     String? displayCaption = widget.post.caption != null
       ? widget.post.caption
       : null;
@@ -151,9 +175,16 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
         width: MediaQuery.of(context).size.width / 1.5,
         child: displayCaption != null 
         ? GestureDetector(
-          onTap: () {},
+          onTap: () {
+            showCaptionFull = true;
+            setState(() {});
+            _showCaptionFullBottomSheet().then((value) {
+              showCaptionFull = false;
+              setState(() {});
+            });
+          }, 
           child: Text(
-            "This is a dummy caption for testing purposes, and this a longer caption for more testing reasons. you best bet im stretching this.", // widget.post.caption ?? "",
+            widget.post.caption ?? "",
             style: captionS,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
@@ -171,20 +202,25 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
     return
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundColor: Colors.grey,
-              backgroundImage: CachedNetworkImageProvider(imageUrl),
-            ),
-
-            SizedBox(width: 8),
-            
-            Text(widget.post.author.username, style: captionS,),
-          ],
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: widget.post.author.id, initScreen: true));
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: Colors.grey,
+                backgroundImage: CachedNetworkImageProvider(imageUrl),
+              ),
+        
+              SizedBox(width: 8),
+              
+              Text(widget.post.author.username, style: captionS,),
+            ],
+          ),
         ),
       );
   }
@@ -196,22 +232,65 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
     return
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundColor: Colors.grey,
-              backgroundImage: CachedNetworkImageProvider(imageUrl),
-            ),
-
-            SizedBox(width: 8),
-            
-            Text(widget.post.commuinity!.name, style: captionS,),
-          ],
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed(CommunityHome.routeName, arguments: CommunityHomeArgs(cm: widget.post.commuinity!, cmB: null));
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+        
+              Container(
+                height: 35,
+                width: 35,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(7),
+                  border: Border.all(width: 2, color: Colors.white),
+                  image: DecorationImage(
+                    image: CachedNetworkImageProvider(imageUrl), 
+                    fit: BoxFit.cover,
+                  )
+                )
+              ),
+        
+              SizedBox(width: 8),
+              
+              Text(widget.post.commuinity!.name, style: captionS,),
+            ],
+          ),
         ),
       );
   }
 
+  Future<dynamic> _showCaptionFullBottomSheet() {
+    return showModalBottomSheet(
+      backgroundColor: Colors.black26,
+      isDismissible: true,
+
+      context: context, 
+      builder: (context) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Center(
+              child: Icon(Icons.drag_handle_outlined, color: Colors.white38,),
+            ),
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  widget.post.caption ?? "",
+                  style: Theme.of(context).textTheme.caption!.copyWith(color: Colors.white),
+                  softWrap: true,
+                ),
+              ),
+            ),
+          ],
+        );
+      }
+    );
+  }
 }

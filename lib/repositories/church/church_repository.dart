@@ -106,7 +106,7 @@ class ChurchRepository extends BaseChurchRepository {
         .collection(Paths.users)
         .doc(currId)
         .collection(Paths.church)
-        .limit(1) // passed as 1
+        .limit(limit) // passed as 1
         .snapshots()
         .map((snap) {
       for (var j in snap.docs) {

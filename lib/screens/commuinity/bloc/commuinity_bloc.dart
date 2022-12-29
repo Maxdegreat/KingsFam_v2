@@ -224,7 +224,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       _streamSubscriptionKingsCord = _churchRepository
           .getCommuinityCordsStream(commuinity: event.commuinity, limit: MockFlag.ISMOCKTESTING ? 1 : 50)
           .listen((kcords) async {
-            if (MockFlag.ISMOCKTESTING) return;
+            // if (MockFlag.ISMOCKTESTING) return;
         // final allCords = await Future.wait(kcords);
         final Map<String, List<KingsCord?>> kingsCords =
             await KingsCordRepository().futureWaitCord(

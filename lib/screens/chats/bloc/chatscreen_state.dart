@@ -9,7 +9,7 @@ class ChatscreenState extends Equatable {
   final List<Chat?> chat;
   final Userr currUserr;
   final List<Church?>? chs;
-  final Church selectedCh;
+  final Church? selectedCh;
   final Church pSelectedCh;
   final List<Church> chsToJoin;
   final Map<String, dynamic> mentionedMap;
@@ -54,7 +54,7 @@ class ChatscreenState extends Equatable {
       inAChat: false,
       isToggle: true,
       mentionedMap: {},
-      selectedCh: Church.empty,
+      selectedCh: null,
       pSelectedCh: Church.empty,
       currUserr: Userr.empty,
       status: ChatStatus.initial,

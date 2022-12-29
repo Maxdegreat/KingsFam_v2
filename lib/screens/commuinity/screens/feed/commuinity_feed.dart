@@ -107,6 +107,12 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
         return Scaffold(
             backgroundColor: Colors.black,
             appBar: AppBar(
+              leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
+              )),
               backgroundColor: Colors.black,
               title: Text(
                 "${widget.commuinity.name}\'s Content",
