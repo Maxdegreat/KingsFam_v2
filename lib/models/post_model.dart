@@ -54,9 +54,9 @@ class Post extends Equatable {
 
   static Post empty = Post( author: Userr.empty, quote: null, imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: '', likes: 0, date: Timestamp(0, 0), height: 10);
   
-  static Post mockImg = Post( author: Userr.empty, quote: null, assetImgPath: 'assets/mock_photos/1.jpg', imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: '', likes: 0, date: Timestamp(0, 0), height: 10);
+  static Post mockImg = Post(id: "mockID77", author: Userr.mock, quote: null, imageUrl: "https://github.com/amagalla1394/odin-recipe-git-test/blob/main/recipes/images/Steamed_Pork_Buns.jpg?raw=true", videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: 'This is a mock caption', commuinity: Church.mock, likes: 0, date: Timestamp(0, 0), height: 10);
 
-  static Post mockVid = Post( author: Userr.empty, quote: null, assetVideoPath: 'assets/mock_video/1.mp4', imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: '', likes: 0, date: Timestamp(0, 0), height: 10);
+  static Post mockVid = Post(id: "mockID77", author: Userr.mock, quote: null, imageUrl: null, videoUrl: "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4", thumbnailUrl: "https://github.com/amagalla1394/odin-recipe-git-test/blob/main/recipes/images/Steamed_Pork_Buns.jpg?raw=true", soundTrackUrl: null, caption: 'This is a mock caption', commuinity: Church.mock, likes: 0, date: Timestamp(0, 0), height: 10);
 
   @override
   List<Object?> get props =>

@@ -17,22 +17,21 @@ class Userr extends Equatable {
   final String colorPref;
   final int? turbo;
 
-  Userr({
-    required this.id,
-    required this.username,
-    required this.usernameSearchCase,
-    required this.email,
-    required this.token,
-    required this.bio,
-    required this.location,
-    required this.profileImageUrl,
-    required this.bannerImageUrl,
-    required this.following,
-    required this.followers,
-    required this.friends,
-    required this.colorPref,
-    this.turbo
-  });
+  Userr(
+      {required this.id,
+      required this.username,
+      required this.usernameSearchCase,
+      required this.email,
+      required this.token,
+      required this.bio,
+      required this.location,
+      required this.profileImageUrl,
+      required this.bannerImageUrl,
+      required this.following,
+      required this.followers,
+      required this.friends,
+      required this.colorPref,
+      this.turbo});
 
   static Userr empty = Userr(
       id: 'del_not_found0987654321',
@@ -47,9 +46,25 @@ class Userr extends Equatable {
       bannerImageUrl: '',
       bio: '',
       friends: [],
-      colorPref: '#9814F4'  // set the default to 'real purple'
-    );
-      
+      colorPref: '#9814F4' // set the default to 'real purple'
+      );
+
+  static Userr mock = Userr(
+    email: '',
+    location: '',
+    token: [],
+    following: 0,
+    followers: 0,
+    usernameSearchCase: [],
+    bio: '',
+    friends: [],
+    colorPref: '#9814F4',
+    id: "777MockId21",
+    profileImageUrl:
+        "https://github.com/amagalla1394/odin-recipe-git-test/blob/main/recipes/images/Steamed_Pork_Buns.jpg?raw=true",
+    bannerImageUrl: "",
+    username: "WalkByFaith27",
+  );
 
   @override
   List<Object?> get props => [
@@ -115,33 +130,46 @@ class Userr extends Equatable {
       'followers': followers,
       'following': following,
       'friends': friends,
-      'colorPref' : colorPref,
-      'turbo' : turbo
+      'colorPref': colorPref,
+      'turbo': turbo
     };
   }
 
   factory Userr.getId(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    return Userr(id: doc.id, username: '', usernameSearchCase: [], email: '', token: [], bio: 'bio', location: '', profileImageUrl: '', bannerImageUrl: '', following: 0, followers: 0, friends: [], colorPref: '');
+    return Userr(
+        id: doc.id,
+        username: '',
+        usernameSearchCase: [],
+        email: '',
+        token: [],
+        bio: 'bio',
+        location: '',
+        profileImageUrl: '',
+        bannerImageUrl: '',
+        following: 0,
+        followers: 0,
+        friends: [],
+        colorPref: '');
   }
 
   factory Userr.fromDoc(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return Userr(
-        id: doc.id,
-        username: data['username'] ?? '',
-        usernameSearchCase: List<String>.from(data['usernameSearchCase'] ?? []),
-        email: data['email'] ?? '',
-        location: data['location'] ?? '',
-        profileImageUrl: data['profileImageUrl'] ?? '',
-        bannerImageUrl: data['bannerImageUrl'] ?? '',
-        bio: data['bio'] ?? '',
-        following: (data['following'] ?? 0).toInt(),
-        followers: (data['followers'] ?? 0).toInt(),
-        token: List<String>.from(data['token']),
-        friends: List<String>.from(data['friends'] ?? []),
-        colorPref: data['colorPref'] ?? '#9814F4',
-        turbo: data['turbo'] ?? null,
+      id: doc.id,
+      username: data['username'] ?? '',
+      usernameSearchCase: List<String>.from(data['usernameSearchCase'] ?? []),
+      email: data['email'] ?? '',
+      location: data['location'] ?? '',
+      profileImageUrl: data['profileImageUrl'] ?? '',
+      bannerImageUrl: data['bannerImageUrl'] ?? '',
+      bio: data['bio'] ?? '',
+      following: (data['following'] ?? 0).toInt(),
+      followers: (data['followers'] ?? 0).toInt(),
+      token: List<String>.from(data['token']),
+      friends: List<String>.from(data['friends'] ?? []),
+      colorPref: data['colorPref'] ?? '#9814F4',
+      turbo: data['turbo'] ?? null,
     );
   }
 }

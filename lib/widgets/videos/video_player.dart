@@ -3,15 +3,12 @@
 //     this is where the constrained box for the widget exist.
 //else we show a circular progress indicatior
 import 'package:flutter/material.dart';
-import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
   final VideoPlayerController controller;
-  final Post post;
-  final Userr user;
-  const VideoPlayerWidget({Key? key, required this.controller, required this.post, required this.user}): super(key: key);
+  const VideoPlayerWidget({Key? key, required this.controller}): super(key: key);
 
   @override
   State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
@@ -38,7 +35,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         constraints: BoxConstraints(
           maxWidth: double.infinity,
           minHeight: 900), //size of video player in app
-        child: BuildVideo(controller: this.widget.controller, post: widget.post, user: widget.user,)
+        child: BuildVideo(controller: this.widget.controller,)
         )
       //Container(height: 250, child: BuildVideo(controller: controller))
       : Container(

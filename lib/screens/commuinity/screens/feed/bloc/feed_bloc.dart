@@ -11,6 +11,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/mock_post_data.dart';
 import 'package:kingsfam/widgets/post_single_view.dart';
+import 'package:kingsfam/widgets/post_widgets/post_vid_screen.dart';
 
 part 'feed_event.dart';
 part 'feed_state.dart';
@@ -76,8 +77,8 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
         yield state.copyWith(posts: posts, postContainer: postContainers, status: FeedStatus.success, likedPostIds: likedPostIds);
       } else {
         List<Post?> posts = MockPostData.getMockPosts2;
-        posts.add(Post.empty);
-        List<Widget?> postContainers = MockPostData.getMock2PostContainers();
+        // posts.add(Post.empty);
+        List<Widget?> postContainers = _makePostContainers(posts);
         yield state.copyWith(posts: posts, postContainer: postContainers, status: FeedStatus.success);
       }
     } catch (e) {}
@@ -113,8 +114,8 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
 
        List<Post?> posts = MockPostData.getMockPosts4;
        // posts.add(Post.empty);
-       var updatedPosts = List<Post?>.from(state.posts)..addAll(posts);
-        List<Widget?> postContainers = List<Widget?>.from(state.postContainer)..addAll( MockPostData.getMock4PostContainers());
+
+        List<Widget?> postContainers = _makePostContainers(posts);
 
         yield state.copyWith(posts: posts, postContainer: postContainers, status: FeedStatus.success);
 
@@ -130,22 +131,9 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       var container = null;
   
       if (p!.author != Userr.empty) {
-        var isLiked = _likedPostCubit.state.likedPostsIds.contains(p.id);
-        var recentlyLiked = _likedPostCubit.state.recentlyLikedPostIds.contains(p.id);
-      container = PostSingleView(
-        key: UniqueKey(),
-        isLiked: isLiked,
-        post: p,
-        // adWidget: AdWidget(ad: _bannerAd),
-        recentlyLiked: recentlyLiked,
-        onLike: () {
-          if (isLiked) {
-            _likedPostCubit.unLikePost(post: p);
-          } else {
-            _likedPostCubit.likePost(post: p);
-          }
-        },
-      );
+        // var isLiked = MockFlag.ISMOCKTESTING ? false : _likedPostCubit.state.likedPostsIds.contains(p.id);
+        // var recentlyLiked = MockFlag.ISMOCKTESTING ? false : _likedPostCubit.state.recentlyLikedPostIds.contains(p.id);
+      container = PostFullVideoView16_9(post: p);
       } else {
         container = SizedBox.shrink();
       }
@@ -154,9 +142,6 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
 
       lst.add(container);
     }
-    log(state.posts.length.toString());
-    log(")))))))))");
-    log(lst.length.toString());
     return lst;
   }
 }

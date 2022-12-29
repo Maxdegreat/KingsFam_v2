@@ -231,4 +231,22 @@ class Church extends Equatable {
     size: 0,
     themePack: 'none',
   );
+
+    static Church mock = Church(
+      id: "mockId",
+      permissions: {},
+    cmPrivacy: CmPrivacy.open,
+    searchPram: [],
+    name: "MockCm",
+    location: "Local",
+    imageUrl: "https://github.com/amagalla1394/odin-recipe-git-test/blob/main/recipes/images/Steamed_Pork_Buns.jpg?raw=true",
+    members: {},
+    events: [],
+    about: 'A little about this cm is that this is a mock cm, did you know that??? or could you not tell',
+    recentMsgTime: Timestamp(0, 0),
+    boosted: 0,
+    hashTags: [],
+    size: 0,
+    themePack: 'none',
+  );
 }

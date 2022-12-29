@@ -5,8 +5,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/widgets/post_single_view.dart';
 
 class MockPostData {
-  
-  
+
 
   static List<Widget> getMock2PostContainers() {
     return _generateFiles2();
@@ -17,15 +16,18 @@ class MockPostData {
   }
 
   static List<Post> getMockPosts2 = [
-    Post.empty.copyWith(assetImgPath: "assets/mock_photos/1.jpg", caption: "This is a mock test, ya dig", commuinity: Church.empty.copyWith(name: "mock name"), author: Userr.empty.copyWith(username: "We are mockTesting")),
-    Post.empty.copyWith(assetImgPath: "assets/mock_photos/1.mp4", author: Userr.empty.copyWith(username: "We are mockTesting")),
+    Post.mockVid,
+    Post.mockVid,
   ];
 
   static List<Post> getMockPosts4 = [
-    Post.empty.copyWith(assetImgPath: "assets/mock_photos/2.jpg", author: Userr.empty.copyWith(username: "We are mockTesting")),
-    Post.empty.copyWith(assetImgPath: "assets/mock_photos/3.jpg", author: Userr.empty.copyWith(username: "We are mockTesting")),
-    Post.empty.copyWith(assetImgPath: "assets/mock_photos/4.jpg", author: Userr.empty.copyWith(username: "We are mockTesting")),
-    Post.empty.copyWith(assetImgPath: "assets/mock_photos/7.jpg", author: Userr.empty.copyWith(username: "We are mockTesting")),
+        Post.mockVid,
+        Post.mockVid,
+        Post.mockVid,
+        Post.mockVid,
+        Post.mockVid,
+        Post.mockVid,    
+        Post.mockVid,
   ];
 
   

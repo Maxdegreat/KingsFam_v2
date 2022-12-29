@@ -1,4 +1,4 @@
 
 class MockFlag {
-  static const bool ISMOCKTESTING = false;
+  static const bool ISMOCKTESTING = true;
 }
