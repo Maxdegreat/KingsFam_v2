@@ -234,7 +234,14 @@ Widget memberBtn(
               Navigator.of(context).pushNamed(ParticipantsView.routeName,
                   arguments: ParticipantsViewArgs(cmBloc: cmBloc, cm: cm));
             },
-            icon: Icon(Icons.people_alt_sharp),
+            icon: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Icon(Icons.people_alt_sharp),
+                SizedBox(width: 10),
+                Text("Members", style: Theme.of(context).textTheme.caption),
+              ],
+            ),
           ),
         ),
       ));
@@ -318,7 +325,13 @@ Widget settingsBtn(
                     context: context);
               }
             },
-            icon: Icon(Icons.settings)),
+            icon: Row(
+              children: [
+                Icon(Icons.settings),
+                SizedBox(width: 10),
+                Text("Settings", style: Theme.of(context).textTheme.caption),
+              ],
+            )),
       ),
     ),
   );

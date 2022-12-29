@@ -16,13 +16,13 @@ class MockPostData {
   }
 
   static List<Post> getMockPosts2 = [
-    Post.mockVid,
+    Post.mockImg,
     Post.mockVid,
   ];
 
   static List<Post> getMockPosts4 = [
         Post.mockVid,
-        Post.mockVid,
+        Post.mockImg,
         Post.mockVid,
         Post.mockVid,
         Post.mockVid,

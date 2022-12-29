@@ -11,6 +11,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/mock_post_data.dart';
 import 'package:kingsfam/widgets/post_single_view.dart';
+import 'package:kingsfam/widgets/post_widgets/post_img_screen.dart';
 import 'package:kingsfam/widgets/post_widgets/post_vid_screen.dart';
 
 part 'feed_event.dart';
@@ -131,9 +132,10 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       var container = null;
   
       if (p!.author != Userr.empty) {
-        // var isLiked = MockFlag.ISMOCKTESTING ? false : _likedPostCubit.state.likedPostsIds.contains(p.id);
-        // var recentlyLiked = MockFlag.ISMOCKTESTING ? false : _likedPostCubit.state.recentlyLikedPostIds.contains(p.id);
-      container = PostFullVideoView16_9(post: p);
+        if (p.imageUrl != null)
+          container = ImgPost1_1(post: p);
+        else if (p.videoUrl != null)
+          container = PostFullVideoView16_9(post: p);
       } else {
         container = SizedBox.shrink();
       }
