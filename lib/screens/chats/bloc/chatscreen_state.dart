@@ -1,6 +1,6 @@
 part of 'chatscreen_bloc.dart';
 
-enum ChatStatus { initial, loading, sccuess, error }
+enum ChatStatus { initial, loading, sccuess, error, setState }
 
 enum FeedStatus_chats { inital, loading, success, paginating, error }
 

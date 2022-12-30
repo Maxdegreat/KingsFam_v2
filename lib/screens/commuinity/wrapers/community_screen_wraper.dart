@@ -288,8 +288,8 @@ Widget _mainScrollView(BuildContext context, CommuinityState state, Church cm,
                                                                 .textTheme
                                                                 .bodyText1,
                                                       ),
-                                                      cord.readStatus !=
-                                                                  null &&
+                                                      cord.readStatus ==
+                                                                  null ||
                                                               cord.readStatus!
                                                           ? CircleAvatar(
                                                               backgroundColor:

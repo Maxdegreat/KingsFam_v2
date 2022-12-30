@@ -8,6 +8,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/mock_flag.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/enums/enums.dart';
+import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/base_church_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
@@ -110,8 +111,10 @@ class ChurchRepository extends BaseChurchRepository {
         .snapshots()
         .map((snap) {
       for (var j in snap.docs) {
-        Future<Church> ch = Church.fromId(j.id);
-        bucket.add(ch);
+        if (j.exists) {
+          Future<Church> ch = Church.fromId(j.id);
+          bucket.add(ch);
+        }
       }
 
       return bucket;
@@ -441,6 +444,11 @@ class ChurchRepository extends BaseChurchRepository {
         .add(kingsCord.toDoc());
   }
 
+  Future<bool> isInCmById({required String cmId, required String userId}) async {
+    DocumentSnapshot snap = await fire.collection(Paths.users).doc(userId).collection(Paths.church).doc(cmId).get();
+    return snap.exists;
+  }
+
   Future<bool> isInCm(String currId, String userId) async {
     // .where('members.$currId.userReference', isEqualTo: userRef)
 
@@ -655,8 +663,14 @@ class ChurchRepository extends BaseChurchRepository {
     log("baned the user");
   }
 
-  Future<void> leaveCommuinity(
-      {required Church commuinity, required String leavingUserId}) async {
+  Future<void> leaveCommuinity({required Church commuinity, required String leavingUserId}) async {
+
+    UserPreferences.getLastVisitedCm().then((lastVisitedCm) {
+      if (lastVisitedCm != null && lastVisitedCm == commuinity.id) {
+        UserPreferences.clearLastVisitedCm();
+      }
+    });
+
     // to leave we must remove from the users church path
 
     // we must also remove from cmMembers path. thats it
@@ -817,11 +831,17 @@ class ChurchRepository extends BaseChurchRepository {
   Future<Map<String, dynamic>> FutureChurchsAndMentioned(
       {required List<Future<Church?>> c, required String uid}) async {
     final Map<String, bool> mentionedMap = {};
-    List<Church?> chsJoined = [];
+    Set<Church?> chsJoined = {};
+    Set<String> chIdSeen = {};
     for (var ch in c) {
+      
       Church? church = await ch;
-      if (church != null) {
+      if (church != null && !chIdSeen.contains(church.id)) {
+        bool isInCm = await isInCmById(cmId: church.id!, userId: uid) ;
+        if ( !isInCm ) continue;
+
         chsJoined.add(church);
+        chIdSeen.add(church.id!);
         var hasSnap = await FirebaseFirestore.instance
             .collection(Paths.mention)
             .doc(uid)
@@ -837,7 +857,7 @@ class ChurchRepository extends BaseChurchRepository {
     }
 
     Map<String, dynamic> rMap = {};
-    rMap["c"] = chsJoined;
+    rMap["c"] = chsJoined.toList();
     rMap["m"] = mentionedMap;
     return rMap;
   }

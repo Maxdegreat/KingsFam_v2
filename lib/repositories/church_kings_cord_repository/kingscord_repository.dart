@@ -98,7 +98,8 @@ class KingsCordRepository extends BaseKingsCordRepository {
                 }
               }
             } else {
-              // when sender is equal to current users doc ref
+              // has not been seen bf so pass null... i think.
+              // also null will show the kc as not read via the cm wraper
               readStatus = false;
             }
           }

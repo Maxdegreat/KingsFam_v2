@@ -68,12 +68,14 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
-
       String? lastVisitedCmId = await UserPreferences.getLastVisitedCm();
       if (lastVisitedCmId != null) {
-        log("maping c to state.c");
-        Church c = await Church.fromId(lastVisitedCmId);
-        yield state.copyWith(selectedCh: c);
+        bool isInCm_ = await _churchRepository.isInCmById(
+            cmId: lastVisitedCmId, userId: _authBloc.state.user!.uid);
+        if (isInCm_) {
+          Church c = await Church.fromId(lastVisitedCmId);
+          yield state.copyWith(selectedCh: c);
+        }
       }
 
       // geting the currUserr for later use
@@ -96,17 +98,21 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
           .getCmsStream(currId: currUserr.id)
           .listen((churchs) async {
         // var allChs = await Future.wait(churchs);
-        
-        Map<String, dynamic> chsAndMentionedMap = await
-            _churchRepository.FutureChurchsAndMentioned(
+        emit ( state.copyWith(chs: null, status: ChatStatus.loading ) );
+
+        Map<String, dynamic> chsAndMentionedMap =
+            await _churchRepository.FutureChurchsAndMentioned(
                 c: churchs, uid: _authBloc.state.user!.uid);
-
-        // emit(state.copyWith(selectedCh: chsAndMentionedMap["c"].first));
-        emit(state.copyWith(chs: chsAndMentionedMap["c"]));
-        emit(state.copyWith(mentionedMap: chsAndMentionedMap["m"]));
+        for (var i in chsAndMentionedMap["c"]) {
+          log(i.id! + "len of joinedCms: " + churchs.length.toString() + "\n" + " ----------------------------------------------"  );
+        }
+        if (chsAndMentionedMap["c"].isEmpty) 
+          emit(state.copyWith(selectedCh: null));
+         else if (state.selectedCh == null)
+          emit( state.copyWith(selectedCh: chsAndMentionedMap["c"].first) );
+        emit( state.copyWith(chs: chsAndMentionedMap["c"], mentionedMap: chsAndMentionedMap["m"], status: ChatStatus.setState));
+        emit(state.copyWith(status: ChatStatus.sccuess));
       });
-
-
 
       yield state.copyWith(status: ChatStatus.sccuess, currUserr: currUserr);
     } catch (e) {
@@ -116,6 +122,28 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
           failure: Failure(
               message:
                   "mmm, there was an error when loading your community's"));
+    }
+  }
+
+  Future<void> removeCmFromJoinedCms({required String leftCmId}) async {
+    
+    if (state.chs != null) {
+      
+      for (var i in state.chs!) {
+        if (i!.id == leftCmId) {
+          state.chs!.remove(i);
+          emit(state.copyWith(chs: state.chs));
+          break;
+        } 
+      } 
+
+    }
+
+    if (state.selectedCh == null || state.selectedCh == leftCmId) {
+      
+      if (state.chs!.length > 0)
+        emit(state.copyWith(selectedCh: state.chs!.first));
+        emit(state.copyWith(chs: state.chs));
     }
   }
 

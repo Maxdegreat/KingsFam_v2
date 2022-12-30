@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/profile/widgets/prayer_chunck.dart';
 import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
@@ -201,7 +202,7 @@ class _CommunityHomemState extends State<CommunityHome> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        height: size.height / 4,
+       // height: size.height / 4,
         // width: size.width / 1.2,
         child: Column(
           children: [
@@ -359,7 +360,7 @@ class _CommunityHomemState extends State<CommunityHome> {
       children: [
         state.isMember == null
             ? SizedBox.shrink()
-            : state.isMember != false
+            : state.isMember!=null && state.isMember!
                 ? Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5.0),
                     child: Container(
@@ -374,14 +375,16 @@ class _CommunityHomemState extends State<CommunityHome> {
                                 .contains("*")) {
                               context
                                   .read<CommuinityBloc>()
-                                  .onLeaveCommuinity(commuinity: cm);
+                                  .onLeaveCommuinity(commuinity: cm).then((value) {
+                                    context.read<ChatscreenBloc>().removeCmFromJoinedCms(leftCmId: cm.id!);
+                                  });
                               cm.members.remove(context
                                   .read<CommuinityBloc>()
                                   .state
                                   .currUserr);
 
-                              context.read<CommuinityBloc>()
-                                ..add(CommunityInitalEvent(commuinity: cm));
+                              cmB..add(CommunityInitalEvent(commuinity: cm));
+                              setState(() {});
                               Navigator.of(context).pop();
                             } else {
                               snackBar(
@@ -403,10 +406,11 @@ class _CommunityHomemState extends State<CommunityHome> {
                 : Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: joinBtn(
-                        b: context.read<CommuinityBloc>(),
+                        b: cmB,
                         cm: cm,
                         context: context),
                   ),
+            
         SizedBox(width: 10),
         Text("${cm.size} members")
       ],

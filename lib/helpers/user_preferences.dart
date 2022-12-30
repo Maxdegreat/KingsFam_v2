@@ -47,8 +47,12 @@ class UserPreferences {
       _preferences!.setString("lastVisitedCm", cmId);
     }
 
-    static getLastVisitedCm() async {
+    static Future<String?> getLastVisitedCm() async {
       return await _preferences!.getString("lastVisitedCm");
+    }
+
+    static clearLastVisitedCm() async {
+      _preferences!.remove("lastVisitedCm");
     }
 
 }

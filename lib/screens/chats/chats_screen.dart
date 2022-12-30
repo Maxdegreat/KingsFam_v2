@@ -108,24 +108,31 @@ class _ChatsScreenState extends State<ChatsScreen>
         appBar: null,
         body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
             listener: (context, state) {
+
+          if (state.status == ChatStatus.setState) {
+            log("we are updating the state of the chats screen ya dig");
+            setState(() {});
+        }
+
           if (state.status == ChatStatus.error) {
             ErrorDialog( content: 'chat_screen e-code: ${state.failure.message}');
           }
         }, builder: (context, state) {
           var currentScreen ;
           if (state.selectedCh != null) {
-            log("selectedCh: " + state.selectedCh.toString());
+            //log("selectedCh: " + state.selectedCh.toString());
             currentScreen =  CommuinityScreen(commuinity: state.selectedCh!, showDrawer: true);
           } 
 
-          return state.chs == null
-              ? Center(child: Text("KingsFam"))
-              : (state.chs!.length == 0 || state.chs!.isEmpty) && state.selectedCh != null
-                  ? GettingStarted(
-                      bloc: context.read<ChatscreenBloc>(),
-                      state: state,
-                    )
-                  : currentScreen;
+          if (state.chs == null)
+            return Center(child: Text("KingsFam"));
+          else if (state.chs!.isEmpty)
+            return GettingStarted(
+                bloc: context.read<ChatscreenBloc>(),
+                state: state,
+            );
+            else 
+              return currentScreen;
         }));
   }
 }

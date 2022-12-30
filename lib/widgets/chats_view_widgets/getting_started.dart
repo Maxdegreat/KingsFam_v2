@@ -36,11 +36,11 @@ class _GettingStartedState extends State<GettingStarted> {
             child: Align(
                 alignment: Alignment.center,
                 child: Text(
-                  "Find A Community To Join",
+                  "Find A Christian Community",
                   style: Theme.of(context)
                       .textTheme
                       .bodyText1!
-                      .copyWith(fontSize: 40),
+                      .copyWith(fontSize: 30),
                   textAlign: TextAlign.center,
                 )),
           ),
@@ -103,7 +103,8 @@ class gettingStartedBtn extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).colorScheme.secondary),
+                  shape: StadiumBorder(),
+                    primary: Colors.amber),
                 onPressed: () async {
                   final Church cm = await Church.fromId("ElApEUDmzedbQboXN6ZG");
                   Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: cm, showDrawer: false));
@@ -111,7 +112,7 @@ class gettingStartedBtn extends StatelessWidget {
                 },
                 child: Text("Getting Started",
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyText1))),
+                    style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).colorScheme.secondary, fontSize: 20)))),
       ),
     );
   }

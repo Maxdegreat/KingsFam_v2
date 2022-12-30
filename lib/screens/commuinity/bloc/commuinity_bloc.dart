@@ -75,7 +75,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     emit(state.copyWith( status: CommuintyStatus.loading, kingCords: [], mentionedCords: []));
     try {
 
-      UserPreferences.updateLastVisitedCm(cmId: event.commuinity.id!);
+      
 
       String uid = _authBloc.state.user!.uid;
       Userr currUserr = await _userrRepository.getUserrWithId(userrId: uid);
@@ -103,20 +103,19 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       _streamSubscriptionIsMember = ism.listen((isMemStream) async {
         isMem = isMemStream; // I took off an await incase mem is now broken
         if (!isMem) {
-          log("not a member");
+
           // read privacy to see if cm is private or not
           DocumentSnapshot privacySnap = await FirebaseFirestore.instance
               .collection(Paths.cmPrivacy)
               .doc(event.commuinity.id)
               .get();
           if (privacySnap.exists) {
-            log("The Privacy snap exist");
+
             Map<String, dynamic> data =
                 privacySnap.data() as Map<String, dynamic>;
-            log("about to do the from data[] thing");
+            
             String? cmPrivacy = data['privacy'] ?? null;
-            log("The cmPrivacy is: ");
-            log(" $cmPrivacy");
+            
 
             // check to see if there is any pending request to join
             DocumentSnapshot requestSnap = await FirebaseFirestore.instance
@@ -152,12 +151,12 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
               } else if (cmPrivacy == CmPrivacy.shielded) {
                 // show cm HIDE ALL DO NOT ALLOW TO OPEN CORDS
                 // has to request access to join
-                log("make a request to this shielded cm");
+                
                 emitWhenCmIsShielded(isMem, [], [], CommuintyStatus.shielded,
                     RequestStatus.none);
-                add(CommunityLoadingPosts(cm: event.commuinity));
+                // add(CommunityLoadingPosts(cm: event.commuinity));
               } else {
-                log("no request needed to join this cm");
+                
                 // allow to join and read cords. all is chill
                 emitWhenCmIsOpen(isMem, [], [], CommuintyStatus.loaded);
                 add(CommunityLoadingCords(commuinity: event.commuinity));
@@ -170,6 +169,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
             add(CommunityLoadingCords(commuinity: cm));
           }
         } else {
+          UserPreferences.updateLastVisitedCm(cmId: event.commuinity.id!);
           // get the role of the user
           var cmUserInfoDoc = await FirebaseFirestore.instance
               .collection(Paths.communityMembers)
