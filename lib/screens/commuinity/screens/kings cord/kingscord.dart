@@ -505,7 +505,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                       cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!));
             },
             icon: Icon(Icons.notifications_on_outlined),
-            iconSize: 15,
             color: Theme.of(context).iconTheme.color,
           )
         ],

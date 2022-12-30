@@ -8,7 +8,7 @@ Container ContainerWithURLImg({required String imgUrl, required double height, r
             height: height,
             width: width,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
+              // borderRadius: BorderRadius.circular(10),
                image: DecorationImage(
                     image: CachedNetworkImageProvider(imgUrl),
                     fit: BoxFit.cover))

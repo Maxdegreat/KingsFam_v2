@@ -189,58 +189,76 @@ class KingscordCubit extends Cubit<KingscordState> {
     // This should tell the cloud that the mentioned id was mentioned through the cloud
     // I have added the function to send a noti to the users phone. the update for this to happen is in the
     // functions index.js file
+
+    Set mentionedIds = new Set();
+
     for (var id in mentionedInfo.keys) {
       if (txtMsgBodyWithSymbolsForParcing.length > 1 &&
           txtMsgBodyWithSymbolsForParcing.length < 450) {
-        FirebaseFirestore.instance
+        var path = FirebaseFirestore.instance
             .collection(Paths.mention)
             .doc(id)
             .collection(churchId)
-            .doc(kingsCordId)
-            .set({
+            .doc(kingsCordId);
+
+            path.set({
               'communityName': mentionedInfo[id]['communityName'],
               'username': mentionedInfo[id]['username'],
               'token': mentionedInfo[id]['token'],
               'messageBody': txtMsgWithOutSymbolesForParcing,
               'type': 'kc_type',
+            }).then((_) {
+              Future.delayed(Duration(seconds: 2)).then((value) => path.delete());
             });
+            mentionedIds.add(id);
       }
     }
 
-    if (reply != null) {
+    if (reply != null && !mentionedIds.contains(reply.substring(163, 183))) {
       if (reply.isNotEmpty) {
-        FirebaseFirestore.instance.collection(Paths.mention).doc(reply.substring(163, 183))
-        .collection(churchId).doc(kingsCordId).set({
+
+        var path = FirebaseFirestore.instance.collection(Paths.mention).doc(reply.substring(163, 183))
+        .collection(churchId).doc(kingsCordId);
+
+        path.set({
           'communityName': cmTitle,
           'username': currUserName,
           'token': reply.substring(0, 163),
           'messageBody': txtMsgWithOutSymbolesForParcing,
           'type': 'kc_type',
+        }).then((_) async {
+          Future.delayed(Duration(seconds: 2)).then((value) {
+            path.delete();
+          });
         });
       }
     }
 
     List<String> toSendNotifications = state.allNotifLst;
-    List<dynamic> toSendNotificationsT =
-        state.recentMsgIdToTokenMap.values.toList();
+    List<dynamic> toSendNotificationsT =  state.recentMsgIdToTokenMap.values.toList();
+
+    
     for (var i in toSendNotifications) {
       if (state.recentMsgIdToTokenMap.containsKey(i))
         continue;
       else {
-        Userr userr = await UserrRepository().getUserrWithId(userrId: i);
-        // currently tokens are updated so each NEW user should only havb a  single token
-        toSendNotificationsT.add(userr.token[0]);
+        if (!mentionedIds.contains(i)) {
+          Userr userr = await UserrRepository().getUserrWithId(userrId: i);
+          // currently tokens are updated so each NEW user should only havb a  single token
+          toSendNotificationsT.add(userr.token[0]);
+        }
       }
     }
 
     // log("the tokens in sendToDevicies: " + toSendNotificationsT.toString());
 
-    FirebaseFirestore.instance
+    var path = FirebaseFirestore.instance
         .collection(Paths.kcMsgNotif)
         .doc(churchId)
         .collection(Paths.kingsCord)
-        .doc(kingsCordId)
-        .set({
+        .doc(kingsCordId);
+
+        path.set({
           'communityName': cmTitle,
           'username': currUserName,
           'token': toSendNotificationsT.toList(),
@@ -248,7 +266,7 @@ class KingscordCubit extends Cubit<KingscordState> {
           'type': 'kc_type',
           'kcId': kingsCordId,
         })
-        .then((value) => log("kcMsgNotif added"))
+        .then((value) => path.delete())
         .catchError((error) => log("Failed to add user: $error"));
 
     // the creation of the message

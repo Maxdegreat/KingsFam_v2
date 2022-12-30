@@ -6,16 +6,12 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/cm_perm_handler.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/models/role_modal.dart';
-import 'package:kingsfam/models/user_model.dart';
 import 'package:kingsfam/repositories/userr/userr_repository.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
-import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
-import 'package:kingsfam/screens/commuinity/wrapers/create_new_role.dart';
 import 'package:kingsfam/screens/commuinity/wrapers/role_permissions.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
@@ -125,7 +121,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
                           child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 primary:
-                                    Theme.of(context).colorScheme.inversePrimary,
+                                    Theme.of(context).colorScheme.secondary,
                                 shape: StadiumBorder(),
                               ),
                               onPressed: () {

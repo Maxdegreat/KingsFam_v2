@@ -42,7 +42,8 @@ class UserPreferences {
       return _preferences!.getStringList(_kcTimeStamp + cmId) ?? null;
     }
 
-    static updateLastVisitedCm({required String cmId}) {
+    static Future<void> updateLastVisitedCm({required String cmId}) async {
+      await _preferences!.remove("lastVisitedCm");
       _preferences!.setString("lastVisitedCm", cmId);
     }
 

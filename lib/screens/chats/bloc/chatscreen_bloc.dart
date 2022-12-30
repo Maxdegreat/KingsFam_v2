@@ -7,6 +7,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/mock_flag.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
@@ -85,7 +86,8 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
           _authBloc.state.user!.uid, _authBloc.state.user!.uid);
 
       if (!isInCm) {
-        chsToJoin = await _churchRepository.grabChurchs(limit: 15);
+        int limit = MockFlag.ISMOCKTESTING ? 1 : 15;
+        chsToJoin = await _churchRepository.grabChurchs(limit: limit);
         emit(state.copyWith(chsToJoin: chsToJoin, chs: []));
       }
 

@@ -28,25 +28,18 @@ class _ImgPost1_1State extends State<ImgPost1_1> {
       height: size.height,
       width: size.width,
       child: Column(
-  //mainAxisAlignment: MainAxisAlignment.start,
+  mainAxisAlignment: MainAxisAlignment.end,
   crossAxisAlignment: CrossAxisAlignment.start,
   mainAxisSize: MainAxisSize.max,
   children: [
+    _engagmentColumn(),
+    SizedBox(height: 10),
     Align(
       alignment: FractionalOffset(0.5, 0.5),
-      child: Container(
-        height: size.height / 2.2,
-        width: size.width,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: CachedNetworkImageProvider(widget.post.imageUrl!),
-            fit: BoxFit.cover,
-          )
-        ),
-      ),
+      child: _imgContainer(size),
     ),
     SizedBox(
-      height: size.height / 3,
+      height: size.height / 4,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,60 +57,77 @@ class _ImgPost1_1State extends State<ImgPost1_1> {
     );
   }
 
+  Widget _imgContainer(Size size) {
+    return GestureDetector(
+      onDoubleTap: () {
+        bool isLiked = context.read<LikedPostCubit>().state.recentlyLikedPostIds.contains(widget.post.id!);
+        bool isRecetlyLiked = context.read<LikedPostCubit>().state.likedPostsIds.contains(widget.post.id!);
+        if (!isLiked && !isRecetlyLiked) {
+          context.read<LikedPostCubit>().likePost(post: widget.post);
+        }
+      },
+      child: Container(
+        height: size.height / 2.2,
+        width: size.width,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: CachedNetworkImageProvider(widget.post.imageUrl!),
+            fit: BoxFit.cover,
+          )
+        ),
+      ),
+    );
+  }
+
   Widget _engagmentColumn() {
     TextStyle captionS = Theme.of(context).textTheme.caption!.copyWith(color: Colors.white);
     bool isLikedPost = context.read<LikedPostCubit>().state.likedPostsIds.contains(widget.post.id);
-    bool recentlyLiked = context.read<LikedPostCubit>().state.recentlyLikedPostIds.contains(widget.post.id);
+    bool recentlyLiked = context.watch<LikedPostCubit>().state.recentlyLikedPostIds.contains(widget.post.id);
     String likeCount = recentlyLiked
       ? (widget.post.likes + 1).toString() 
       : widget.post.likes.toString();
-    return Positioned(
-      right: 0,
-      top: 0,
-      bottom: 70,
-      child: SizedBox(
-        height: 45,
-        child: Align(
-          alignment: Alignment.bottomRight,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
+    return SizedBox(
+      height: 45,
+      child: Align(
+        alignment: Alignment.bottomLeft,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            
+              IconButton(
+                onPressed: () {
+                  if (isLikedPost || recentlyLiked) {
+                    context.read<LikedPostCubit>().unLikePost(post: widget.post);
+                  } else {
+                    context.read<LikedPostCubit>().likePost(post: widget.post);
+                  }
+                }, 
+                icon: Icon(Icons.favorite_outline_rounded, color: recentlyLiked ? Colors.amber : Colors.white,)
+              ),
+            
+              SizedBox(height: 10),
+            
+              Text(likeCount, style: captionS,),
+            
+              SizedBox(height: 15),
               
-                IconButton(
-                  onPressed: () {
-                    if (isLikedPost || recentlyLiked) {
-                      context.read<LikedPostCubit>().unLikePost(post: widget.post);
-                    } else {
-                      context.read<LikedPostCubit>().likePost(post: widget.post);
-                    }
-                  }, 
-                  icon: Icon(Icons.favorite_outline_rounded, color: recentlyLiked ? Colors.amber : Colors.white,)
-                ),
-              
-                SizedBox(height: 10),
-              
-                Text(likeCount, style: captionS,),
-              
-                SizedBox(height: 15),
-                
-                IconButton(
-                  onPressed: ()  {
-                    Navigator.of(context).pushNamed(CommentScreen.routeName,arguments: CommentScreenArgs(post: widget.post));
-                  }, 
-                  icon: Icon(Icons.messenger_outline_outlined, color: Colors.white)
-                ),
-              
-                SizedBox(height: 15),
-              
-                IconButton(
-                  onPressed: () {}, 
-                  icon: Icon(Icons.more_vert, color: Colors.white,) 
-                ),
-              
-            ],
-          ),
+              IconButton(
+                onPressed: ()  {
+                  Navigator.of(context).pushNamed(CommentScreen.routeName,arguments: CommentScreenArgs(post: widget.post));
+                }, 
+                icon: Icon(Icons.messenger_outline_outlined, color: Colors.white)
+              ),
+            
+              SizedBox(height: 15),
+            
+              IconButton(
+                onPressed: () {}, 
+                icon: Icon(Icons.more_vert, color: Colors.white,) 
+              ),
+            
+          ],
         ),
       ),
     );

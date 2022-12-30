@@ -74,16 +74,16 @@ class CommuinityScreen extends StatefulWidget {
       required this.showDrawer,
       this.chatScreenBloc})
       : super(key: key);
-  // static const String routeName = '/CommuinityScreen';
-  // static Route route({required CommuinityScreenArgs args}) {
-  //   log("do we reach the bloc stuff???");
-  //   return MaterialPageRoute(
-  //       settings: const RouteSettings(name: routeName),
-  //       builder: (context) => CommuinityScreen(
-  //             commuinity: Church.empty,
-  //             showDrawer: args.showDrawer,
-  //           ));
-  // }
+  static const String routeName = '/CommuinityScreen';
+  static Route route({required CommuinityScreenArgs args}) {
+    // log("do we reach the bloc stuff???"); done later down in file
+    return MaterialPageRoute(
+        settings: const RouteSettings(name: routeName),
+        builder: (context) => CommuinityScreen(
+              commuinity: args.commuinity,
+              showDrawer: args.showDrawer,
+            ));
+  }
   @override
   _CommuinityScreenState createState() => _CommuinityScreenState();
 }
@@ -206,9 +206,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
             drawerEdgeDragWidth: MediaQuery.of(context).size.width / 1.7,
             drawer: widget.showDrawer
                 ? MainDrawer()
-                : IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: Icon(Icons.arrow_back_ios)),
+                : null,
             endDrawer: MainDrawerEnd(
               memberBtn(
                   cmBloc: context.read<CommuinityBloc>(),

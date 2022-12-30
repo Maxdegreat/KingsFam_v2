@@ -260,9 +260,7 @@ class _MessageLinesState extends State<MessageLines> {
       widget.message.reactions![''] = 0;
     }
 
-    if (widget.message.text == firstMsgEncoded) {
-      return _messageWelcomeWidget();
-    }
+
 
     List<String> links = [];
     List<Widget> textWithLinksForColumn = [];
@@ -482,7 +480,9 @@ class _MessageLinesState extends State<MessageLines> {
           const EdgeInsets.only(top: 2.5, bottom: 2.5, left: 8.0, right: 8.0),
       child: Container(
         // color: Colors.white24,
-        child: Column(
+        child: (widget.message.text == firstMsgEncoded) 
+        ? _messageWelcomeWidget()
+        : Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -611,16 +611,24 @@ class _MessageLinesState extends State<MessageLines> {
       children: [
         CircleAvatar(
           backgroundImage: CachedNetworkImageProvider(widget.cm.imageUrl),
-          radius: 75,
+          radius: 57,
         ),
 
         SizedBox(height: 10),
 
-        Text(widget.cm.name, style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 30, fontWeight: FontWeight.bold)),
+        Text(widget.cm.name, style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 20, fontWeight: FontWeight.w500)),
 
         SizedBox(height: 7),
 
-        Text("Welcome to " + widget.kc.cordName, style: Theme.of(context).textTheme.caption!.copyWith(fontSize: 20, fontWeight: FontWeight.w500))
+        Text("Welcome to " + widget.kc.cordName, style: Theme.of(context).textTheme.caption!.copyWith(fontSize: 15, fontWeight: FontWeight.w300)),
+
+        SizedBox(height: 7),
+
+        Text(widget.message.sender!.username + " created this room", style: Theme.of(context).textTheme.caption!.copyWith(fontStyle: FontStyle.italic)),
+        
+        SizedBox(height: 7),
+
+        Text("${widget.message.date.timeAgo()}", style: Theme.of(context).textTheme.caption!.copyWith(fontStyle: FontStyle.italic)),
       ],
     );
   }

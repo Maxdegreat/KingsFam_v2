@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
@@ -34,10 +35,14 @@ class _GettingStartedState extends State<GettingStarted> {
           Center(
             child: Align(
                 alignment: Alignment.center,
-                child: Text("Find A Community To Join",
-                style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 40)
-,                    textAlign: TextAlign.center,
-                    )),
+                child: Text(
+                  "Find A Community To Join",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1!
+                      .copyWith(fontSize: 40),
+                  textAlign: TextAlign.center,
+                )),
           ),
           SizedBox(height: 10),
           Container(height: 400, child: carousel()),
@@ -47,6 +52,7 @@ class _GettingStartedState extends State<GettingStarted> {
       ),
     );
   }
+
 
   Widget carousel() {
     return CarouselSlider(
@@ -96,17 +102,16 @@ class gettingStartedBtn extends StatelessWidget {
         child: Container(
             width: double.infinity,
             child: ElevatedButton(
-                style: ElevatedButton.styleFrom(primary: Theme.of(context).colorScheme.secondary),
+                style: ElevatedButton.styleFrom(
+                    primary: Theme.of(context).colorScheme.secondary),
                 onPressed: () async {
-                  helpDialog(context);
+                  final Church cm = await Church.fromId("ElApEUDmzedbQboXN6ZG");
+                  Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: cm, showDrawer: false));
+                  // helpDialog(context);
                 },
-                child: Text(
-                  "Getting Started",
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText1
-                ))),
+                child: Text("Getting Started",
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyText1))),
       ),
     );
   }

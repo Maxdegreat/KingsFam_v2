@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kingsfam/config/constants.dart';
@@ -109,8 +110,11 @@ class _ReviewPendingRequestState extends State<ReviewPendingRequest> {
         // green check
         IconButton(
             onPressed: () {
+              // todo send a push noti to the users phone
               ChurchRepository().onJoinCommuinity(commuinity: widget.cm, user: user);
-              // send a push noti to the users phone
+               // remove from state
+              users.remove(user);
+              setState(() {});
               snackBar(snackMessage: "green chgeck", context: context);
             },
             icon: Icon(Icons.check_sharp, color: Colors.green)),
@@ -120,6 +124,12 @@ class _ReviewPendingRequestState extends State<ReviewPendingRequest> {
         // red x
         IconButton(
           onPressed: () {
+            FirebaseFirestore.instance.collection(Paths.requestToJoinCm).doc(widget.cm.id!).collection(Paths.request).doc(user.id).delete();
+
+            // remove from state
+            users.remove(user);
+            setState(() {});
+
 
             snackBar(snackMessage: "red x", context: context);
           },

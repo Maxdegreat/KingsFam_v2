@@ -40,174 +40,250 @@ class CommunityHome extends StatefulWidget {
 }
 
 class _CommunityHomemState extends State<CommunityHome> {
+  late CommuinityBloc cmB;
+  bool _initalized = false;
+  bool _showFullAbout = false;
+
+
   @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-            appBar: AppBar(
-              leading: IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: Icon(
-                    Icons.arrow_back_ios,
-                    color: Theme.of(context).iconTheme.color,
-                  )),
-              title: Text(widget.cm.name,
-                  style: Theme.of(context).textTheme.bodyText1),
-            ),
-            body: widget.cmB == null ? cmBNotNull() : cmBNull()));
+  void initState() {
+    initCmB();
+    super.initState();
   }
 
-  BlocProvider<CommuinityBloc> cmBNull() {
-    return BlocProvider.value(
-      value: widget.cmB!,
-      child: BlocConsumer<CommuinityBloc, CommuinityState>(
-        listener: (context, state) {
-          if (state.status == CommuintyStatus.error) {
-            log("!!!!!!! error in commuinityBloc. found from home page");
-          }
+  Future<void> initCmB() async {
+    cmB = await _getCmB();
+    _initalized = true;
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
+    return !_initalized
+        ? Center(child: CircularProgressIndicator())
+        : SafeArea(
+            child: Scaffold(
+                appBar: AppBar(
+                  leading: IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: Icon(
+                        Icons.arrow_back_ios,
+                        color: Theme.of(context).iconTheme.color,
+                      )),
+                  title: Text(widget.cm.name,
+                      style: Theme.of(context).textTheme.bodyText1),
+                ),
+                body: BlocProvider.value(
+                    value: cmB,
+                    child: BlocConsumer<CommuinityBloc, CommuinityState>(
+                      listener: (context, state) {
+                        if (state.status == CommuintyStatus.error) {
+                          log("!!!!!!! error in commuinityBloc. found from home page");
+                        }
+                      },
+                      builder: ((context, state) {
+                        return SingleChildScrollView(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              ContainerWithURLImg(
+                                  height: size.height / 3,
+                                  width: size.width,
+                                  imgUrl: widget.cm.imageUrl),
+                              SizedBox(height: 10),
+                              _info(state),
+                            ],
+                          ),
+                        );
+                      }),
+                    ))));
+
+
+
+  }
+
+                    
+  // BlocProvider<CommuinityBloc> view() {
+  //   return BlocProvider.value(
+  //     value: cmB,
+  //     child: BlocConsumer<CommuinityBloc, CommuinityState>(
+  //       listener: (context, state) {
+  //         if (state.status == CommuintyStatus.error) {
+  //           log("!!!!!!! error in commuinityBloc. found from home page");
+  //         }
+  //       },
+  //       builder: (context, state) {
+  // Size size = MediaQuery.of(context).size;
+  //         CommuinityBloc cmB = widget.cmB!;
+  //         return SingleChildScrollView(
+  //           child: Stack(
+  //             children: [
+  // ContainerWithURLImg(
+  //     height: size.height / 3,
+  //     width: size.width / 1.8,
+  //     imgUrl: widget.cm.imageUrl),
+  //               SizedBox(height: 10),
+  //               Container(
+  //                 width: double.infinity,
+  //                 child: Padding(
+  //                   padding: const EdgeInsets.all(11.0),
+  //                   child: Text(
+  //                     "Members: ${widget.cm.size}",
+  //                     style: Theme.of(context).textTheme.caption,
+  //                   ),
+  //                 ),
+  //               ),
+  //               // if ban show that user is ban
+  //               cmB.state.isBaned
+  //                   ? Text("You are banned from this community")
+  //                   : cmB.state.status == CommuintyStatus.armormed
+  //                       ? Text(
+  //                           "This Community is armormed, you must request join access before you can join")
+  //                       : joinLeaveBtn(
+  //                           state: state, context: context, cm: widget.cm),
+  //               Container(
+  //                 width: double.infinity,
+  //                 color: Theme.of(context).colorScheme.secondary,
+  //                 child: Padding(
+  //                   padding: const EdgeInsets.all(8.0),
+  //                   child: Column(
+  //                     mainAxisAlignment: MainAxisAlignment.start,
+  //                     crossAxisAlignment: CrossAxisAlignment.start,
+  //                     children: [
+  //                       SizedBox(height: 10),
+  //                       Container(
+  //                         width: double.infinity,
+  //                         child: Text(
+  //                           widget.cm.about,
+  //                           softWrap: true,
+  //                           style: Theme.of(context).textTheme.bodyText1,
+  //                         ),
+  //                       )
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
+
+  Future<dynamic> _showFullAboutSheet() {
+    return showModalBottomSheet(
+      backgroundColor: Colors.black45,
+      context: (context) , builder: (context) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Center(child: Icon(Icons.drag_handle_outlined, color: Colors.white24)),
+            SizedBox(height: 10),
+            _aboutInfo(null),
+          ]
+        ),
+      );
+    });
+  }
+
+  Widget _info(CommuinityState state) {
+    Size size = MediaQuery.of(context).size;
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        height: size.height / 4,
+        // width: size.width / 1.2,
+        child: Column(
+          children: [
+            _joinLeaveBtn(state), // joinLeaveBtn(state: state, context: context, cm: widget.cm),
+            SizedBox(height: 7),
+            if (!_showFullAbout) ... [
+            _memberInfo(),
+            SizedBox(height: 7),
+            _aboutInfo(4),
+            ]
+          ],
+        )
+      ),
+    );
+  }
+  
+  _memberInfo() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(Icons.people_alt_sharp, color: Theme.of(context).iconTheme.color,),
+        SizedBox(width: 5),
+        Text(widget.cm.size.toString(), style: Theme.of(context).textTheme.caption ),
+        SizedBox(width: 5),
+        Text("Members", style: Theme.of(context).textTheme.caption),        
+      ]
+    );
+  }
+
+    _aboutInfo(int? maxLines) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: GestureDetector(
+        onTap: () {
+          _showFullAbout = true;
+          setState(() {});
+          _showFullAboutSheet().then((value) => {
+           _showFullAbout = false,
+          setState(() {})
+          });
         },
-        builder: (context, state) {
-          CommuinityBloc cmB = widget.cmB!;
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  ContainerWithURLImg(
-                      height: 210,
-                      width: double.infinity,
-                      imgUrl: widget.cm.imageUrl),
-                  SizedBox(height: 10),
-                  Container(
-                    width: double.infinity,
-                    child: Padding(
-                      padding: const EdgeInsets.all(11.0),
-                      child: Text(
-                        "Members: ${widget.cm.size}",
-                        style: Theme.of(context).textTheme.caption,
-                      ),
-                    ),
-                  ),
-                  // if ban show that user is ban
-                  cmB.state.isBaned
-                      ? Text("You are banned from this community")
-                      : cmB.state.status == CommuintyStatus.armormed
-                          ? Text(
-                              "This Community is armormed, you must request join access before you can join")
-                          : joinLeaveBtn(
-                              state: state, context: context, cm: widget.cm),
-                  Container(
-                    width: double.infinity,
-                    color: Theme.of(context).colorScheme.secondary,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 10),
-                          Container(
-                            width: double.infinity,
-                            child: Text(
-                              widget.cm.about,
-                              softWrap: true,
-                              style: Theme.of(context).textTheme.bodyText1,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+        child: Padding(
+          padding: const EdgeInsets.only(right:8.0),
+          child: Text(
+            "About: " + widget.cm.about,
+            style: maxLines != null ?Theme.of(context).textTheme.caption : Theme.of(context).textTheme.caption!.copyWith(color: Colors.white),
+            softWrap: true,
+            overflow: TextOverflow.ellipsis,
+            maxLines: maxLines != null ? maxLines : 100,
+          ),
+        ),
       ),
     );
   }
 
-  BlocProvider<CommuinityBloc> cmBNotNull() {
-    return BlocProvider<CommuinityBloc>(
-      create: (context) => CommuinityBloc(
+
+  Future<CommuinityBloc> _getCmB() async {
+    if (widget.cmB == null) {
+      return await CommuinityBloc(
         authBloc: context.read<AuthBloc>(),
         callRepository: context.read<CallRepository>(),
         churchRepository: context.read<ChurchRepository>(),
         storageRepository: context.read<StorageRepository>(),
         userrRepository: context.read<UserrRepository>(),
-      )..add(CommunityInitalEvent(
+      )
+        ..add(CommunityInitalEvent(
           commuinity: widget.cm,
-        )),
-      child: BlocConsumer<CommuinityBloc, CommuinityState>(
-        listener: (context, state) {
-          if (state.status == CommuintyStatus.error) {
-            log("!!!!!!! error in commuinityBloc. found from home page");
-          }
-        },
-        builder: (context, state) {
-          CommuinityBloc cmB = context.read<CommuinityBloc>();
+        ));
+    } else {
+      return await widget.cmB!;
+    }
+  }
 
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  ContainerWithURLImg(
-                      height: 210,
-                      width: double.infinity,
-                      imgUrl: widget.cm.imageUrl),
-                  SizedBox(height: 10),
-                  Container(
-                    width: double.infinity,
-                    child: Padding(
-                      padding: const EdgeInsets.all(11.0),
-                      child: Text(
-                        "Members: ${widget.cm.size}",
-                        style: Theme.of(context).textTheme.caption,
-                      ),
-                    ),
-                  ),
-                  cmB.state.isBaned
-                      ? showBaned()
-                      : cmB.state.status == CommuintyStatus.armormed
-                          ? showArmored(cmB: cmB, cm: widget.cm)
-                          : joinLeaveBtn(
-                              state: state, context: context, cm: widget.cm),
-                  Container(
-                    width: double.infinity,
-                    color: Theme.of(context).colorScheme.secondary,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 10),
-                          Container(
-                            width: double.infinity,
-                            child: Text(
-                              widget.cm.about,
-                              softWrap: true,
-                              style: Theme.of(context).textTheme.bodyText1,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
+  _joinLeaveBtn(CommuinityState state) {
+    return              
+     cmB.state.isBaned
+      ? showBaned()
+      : cmB.state.status == CommuintyStatus.armormed
+      ? showArmored(cmB: cmB, cm: widget.cm)
+       : joinLeaveBtn(
+        state: state, context: context, cm: widget.cm);
   }
 
   Widget showBaned() {
