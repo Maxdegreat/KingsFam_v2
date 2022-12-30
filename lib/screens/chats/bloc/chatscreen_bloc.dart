@@ -87,11 +87,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
       bool isInCm = await _churchRepository.isInCm(
           _authBloc.state.user!.uid, _authBloc.state.user!.uid);
 
-      if (!isInCm) {
-        int limit = MockFlag.ISMOCKTESTING ? 1 : 15;
-        chsToJoin = await _churchRepository.grabChurchs(limit: limit);
-        emit(state.copyWith(chsToJoin: chsToJoin, chs: []));
-      }
+      await getChsToJoinIfNeeded(isInCm, chsToJoin);
 
       _churchStreamSubscription?.cancel();
       _churchStreamSubscription = _churchRepository
@@ -106,8 +102,10 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
         for (var i in chsAndMentionedMap["c"]) {
           log(i.id! + "len of joinedCms: " + churchs.length.toString() + "\n" + " ----------------------------------------------"  );
         }
-        if (chsAndMentionedMap["c"].isEmpty) 
+        if (chsAndMentionedMap["c"].isEmpty) {
           emit(state.copyWith(selectedCh: null));
+          await getChsToJoinIfNeeded(false, chsToJoin);
+        }
          else if (state.selectedCh == null)
           emit( state.copyWith(selectedCh: chsAndMentionedMap["c"].first) );
         emit( state.copyWith(chs: chsAndMentionedMap["c"], mentionedMap: chsAndMentionedMap["m"], status: ChatStatus.setState));
@@ -122,6 +120,15 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
           failure: Failure(
               message:
                   "mmm, there was an error when loading your community's"));
+    }
+  }
+
+  Future<void> getChsToJoinIfNeeded(bool isInCm, List<Church> chsToJoin) async {
+    log(state.chsToJoin.length.toString() + " chs to join len" );
+    if (!isInCm && state.chsToJoin.isEmpty) {
+      int limit = MockFlag.ISMOCKTESTING ? 1 : 15;
+      chsToJoin = await _churchRepository.grabChurchs(limit: limit);
+      emit(state.copyWith(chsToJoin: chsToJoin, chs: []));
     }
   }
 
