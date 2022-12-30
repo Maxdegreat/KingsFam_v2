@@ -114,7 +114,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
   @override
   void initState() {
     _createNativeAd();
-    UserPreferences.updateLastVisitedCm(cmId: widget.commuinity.id!);
+    
     context.read<BottomnavbarCubit>().showBottomNav(true);
     super.initState();
     _txtController = TextEditingController();
@@ -302,15 +302,5 @@ class _CommuinityScreenState extends State<CommuinityScreen>
     );
   }
 
-  // Padding contentContaner(BuildContext context) {
-  //   return Padding(
-  //     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-  //     child: GestureDetector(
-  //         onTap: () => Navigator.of(context).pushNamed(
-  //             CommuinityFeedScreen.routeName,
-  //             arguments:
-  //                 CommuinityFeedScreenArgs(commuinity: widget.commuinity)),
-  //         child: Text("Content")),
-  //   );
-  // }
+ 
 }

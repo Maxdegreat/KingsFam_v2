@@ -72,9 +72,11 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   Stream<CommuinityState> _mapCommunityInitalEventToState(
       CommunityInitalEvent event) async* {
-    emit(state.copyWith(
-        status: CommuintyStatus.loading, kingCords: [], mentionedCords: []));
+    emit(state.copyWith( status: CommuintyStatus.loading, kingCords: [], mentionedCords: []));
     try {
+
+      UserPreferences.updateLastVisitedCm(cmId: event.commuinity.id!);
+
       String uid = _authBloc.state.user!.uid;
       Userr currUserr = await _userrRepository.getUserrWithId(userrId: uid);
       emit(state.copyWith(currUserr: currUserr));

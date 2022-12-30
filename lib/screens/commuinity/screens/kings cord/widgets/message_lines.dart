@@ -346,7 +346,10 @@ class _MessageLinesState extends State<MessageLines> {
             decoration: regExp.hasMatch(widget.message.text!) ? BoxDecoration(
               borderRadius: BorderRadius.circular(7),
               color:  Color.fromARGB(110, 255, 193, 7)) : null,
-            child: Text(widget.message.text!,style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.w500, fontSize: 15))),
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Text(widget.message.text!,style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.w500, fontSize: 15)),
+            )),
           _showReactionBarUi(messageReactions: widget.message.reactions)
         ],
       ),
@@ -445,7 +448,6 @@ class _MessageLinesState extends State<MessageLines> {
         ? widget.message.text!
         : " Shared something";
 
-    HexColor hexcolor = HexColor();
     return BlocProvider.value(
       value: widget.kcubit,
       child: Draggable<Widget>(
@@ -527,19 +529,23 @@ class _MessageLinesState extends State<MessageLines> {
                               decoration: BoxDecoration(
                                   color: Colors.white24,
                                   borderRadius: BorderRadius.circular(10)),
-                              height: 20,
+                              
                               child: Padding(
                                 padding: const EdgeInsets.all(2.0),
-                                child: Text(
-                                  "reply to " +
-                                      widget.message.reply!
-                                          .split(": ")
-                                          .first
-                                          .substring(183),
-                                  style: TextStyle(
-                                      fontStyle: FontStyle.italic,
-                                      color: Colors.grey,
-                                      fontSize: 15),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: Text(
+                                    "reply to " +
+                                        widget.message.reply!
+                                            .split(": ")
+                                            .first
+                                             .substring(188),
+                                          
+                                    style: TextStyle(
+                                        fontStyle: FontStyle.italic,
+                                        color: Colors.amber,
+                                        fontSize: 15),
+                                  ),
                                 ),
                               ),
                             ),

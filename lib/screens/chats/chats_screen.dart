@@ -114,6 +114,7 @@ class _ChatsScreenState extends State<ChatsScreen>
         }, builder: (context, state) {
           var currentScreen ;
           if (state.selectedCh != null) {
+            log("selectedCh: " + state.selectedCh.toString());
             currentScreen =  CommuinityScreen(commuinity: state.selectedCh!, showDrawer: true);
           } 
 
