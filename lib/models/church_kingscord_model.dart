@@ -13,6 +13,7 @@ class KingsCord extends Equatable {
   final String? rolesAllowed;
   final List<String>? subscribedIds;
   final bool? readStatus;
+  final Map<String, dynamic>? recentActivity;
   // final Map<String, dynamic> memberInfo;
 
   //make a constructor for fields
@@ -26,11 +27,22 @@ class KingsCord extends Equatable {
     required this.mode,
     this.rolesAllowed,
     this.readStatus,
+    this.recentActivity,
   });
-  
+
   //gen the props
   @override
-  List<Object?> get props => [id, tag, cordName, members, mode, rolesAllowed, subscribedIds, readStatus];
+  List<Object?> get props => [
+        id,
+        tag,
+        cordName,
+        members,
+        mode,
+        rolesAllowed,
+        subscribedIds,
+        readStatus,
+        recentActivity
+      ];
 
   //gen the copy with
   KingsCord copyWith({
@@ -44,6 +56,7 @@ class KingsCord extends Equatable {
     String? mode,
     String? rolesAllowed,
     bool? readStatus,
+    Map<String, dynamic>? recentActivity,
     // Map<String, dynamic>? memberInfo
   }) {
     return KingsCord(
@@ -56,6 +69,7 @@ class KingsCord extends Equatable {
       mode: mode ?? this.mode,
       rolesAllowed: rolesAllowed ?? Roles.Member,
       readStatus: readStatus ?? this.readStatus,
+      recentActivity: recentActivity ?? this.recentActivity
       // memberInfo: memberInfo ?? this.memberInfo,
     );
   }
@@ -66,12 +80,9 @@ class KingsCord extends Equatable {
       'tag': tag,
       'cordName': cordName,
       // 'recentSender': recentSender,
-      'subscribedIds' : subscribedIds ?? [],
+      'subscribedIds': subscribedIds ?? [],
       'mode': mode,
       'rolesAllowed': rolesAllowed ?? Roles.Member,
-      // members, get members from parent commuinity, this is if a user sends msg store only then that way
-      // on leave it does not cause a null err on their msg
-      // 'members': so null for now, I will add a func to do this.
     };
   }
 
@@ -79,13 +90,13 @@ class KingsCord extends Equatable {
   static KingsCord? fromDoc(DocumentSnapshot doc) {
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return KingsCord(
-        id: doc.id,
-        tag: data['tag'],
-        cordName: data['cordName'] ?? 'MainRoom',
-        subscribedIds: List<String>.from(data['subscribedIds']) ?? [],
-        mode: data['mode'],
-        rolesAllowed: data['rolesAllowed'] ?? Roles.Member,
-        );
+      id: doc.id,
+      tag: data['tag'],
+      cordName: data['cordName'] ?? 'MainRoom',
+      subscribedIds: List<String>.from(data['subscribedIds']) ?? [],
+      mode: data['mode'],
+      rolesAllowed: data['rolesAllowed'] ?? Roles.Member,
+    );
   }
 
   static Future<KingsCord?> fromDocAsync(DocumentSnapshot doc) async {

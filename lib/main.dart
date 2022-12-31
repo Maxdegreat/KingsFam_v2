@@ -20,6 +20,7 @@ import 'package:kingsfam/repositories/says/says_repository.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
+import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/theme_club_house/theme_info.dart';
@@ -66,6 +67,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MultiBlocProvider(
         providers: [
+          
           BlocProvider<AuthBloc>(
             create: (context) =>
                 AuthBloc(authRepository: context.read<AuthRepository>()),
@@ -88,6 +90,14 @@ class MyApp extends StatelessWidget {
             create: (context) => LikedPostCubit(
                 postsRepository: context.read<PostsRepository>(),
                 authBloc: context.read<AuthBloc>()),
+          ),
+          BlocProvider<KingscordCubit>(
+            create: (context) => KingscordCubit(
+                storageRepository: context.read<StorageRepository>(),
+                authBloc: context.read<AuthBloc>(),
+                kingsCordRepository: context.read<KingsCordRepository>(),
+                churchRepository: context.read<ChurchRepository>() // may need to report
+                ),
           ),
           BlocProvider<LikedSaysCubit>(
               create: (context) => LikedSaysCubit(
@@ -118,16 +128,14 @@ class MyApp extends StatelessWidget {
                   authBloc: context.read<AuthBloc>(),
                   userrRepository: context.read<UserrRepository>())),
           BlocProvider<ProfileBloc>(
-            create: (context) => ProfileBloc(
-                prayerRepo: context.read<PrayerRepo>(),
-                chatRepository: context.read<ChatRepository>(),
-                userrRepository: context.read<UserrRepository>(),
-                authBloc: context.read<AuthBloc>(),
-                postRepository: context.read<PostsRepository>(),
-                likedPostCubit: context.read<LikedPostCubit>(),
-                churchRepository: context.read<ChurchRepository>())
-              
-          ),
+              create: (context) => ProfileBloc(
+                  prayerRepo: context.read<PrayerRepo>(),
+                  chatRepository: context.read<ChatRepository>(),
+                  userrRepository: context.read<UserrRepository>(),
+                  authBloc: context.read<AuthBloc>(),
+                  postRepository: context.read<PostsRepository>(),
+                  likedPostCubit: context.read<LikedPostCubit>(),
+                  churchRepository: context.read<ChurchRepository>())),
         ],
         child: MaterialApp(
           //THEME DATA

@@ -117,7 +117,7 @@ class _CreateComuinityState extends State<CreateComuinity> {
                 width: double.infinity,
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(primary: Colors.red[400]),
-                    child: Text('Create A Commuinity 👑'),
+                    child: Text('Create A Community 👑'),
                     onPressed: () =>
                         Navigator.of(context).pushNamed(BuildChurch.routeName)),
               ),

@@ -23,7 +23,7 @@ class MessageLines extends StatefulWidget {
   final KingsCord kc;
   final Church cm;
   final BuildContext inhearatedCtx;
-  final KingscordCubit kcubit;
+  final KingscordCubit? kcubit;
 
   MessageLines(
       {required this.message,
@@ -57,7 +57,6 @@ class _MessageLinesState extends State<MessageLines> {
   }
 
   Container reactionContainer({required String reaction, required int num}) {
- 
     return Container(
       height: MediaQuery.of(context).size.height / 20,
       width: MediaQuery.of(context).size.width / 8,
@@ -231,7 +230,8 @@ class _MessageLinesState extends State<MessageLines> {
                                 snackMessage: "can not copy", context: context);
                           }
                         },
-                        child: Text("Copy", style: Theme.of(context).textTheme.bodyText1))
+                        child: Text("Copy",
+                            style: Theme.of(context).textTheme.bodyText1))
                   ],
                 ),
               ],
@@ -254,13 +254,9 @@ class _MessageLinesState extends State<MessageLines> {
 
   // if i send the message.
   _buildText(BuildContext context) {
-
-
     if (widget.message.reactions == {}) {
       widget.message.reactions![''] = 0;
     }
-
-
 
     List<String> links = [];
     List<Widget> textWithLinksForColumn = [];
@@ -274,10 +270,11 @@ class _MessageLinesState extends State<MessageLines> {
           tempString += " $element ";
         }
       } else if (element.startsWith('https://')) {
-        textWithLinksForColumn.add(Text(
-          tempString,
-          style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.w300)
-        ));
+        textWithLinksForColumn.add(Text(tempString,
+            style: Theme.of(context)
+                .textTheme
+                .bodyText1!
+                .copyWith(fontWeight: FontWeight.w300)));
         tempString = "";
         // add the element to the links so that the code knows visually there is a link in a show link preview
         links.add(element);
@@ -305,7 +302,10 @@ class _MessageLinesState extends State<MessageLines> {
     // The return of the build text when there is an unsent message
     if (widget.message.text == "(code:unsent 10987345)") {
       return Text("deleted",
-          style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.w300));
+          style: Theme.of(context)
+              .textTheme
+              .bodyText1!
+              .copyWith(fontWeight: FontWeight.w300));
     }
 
     if (links.isNotEmpty) {
@@ -343,17 +343,22 @@ class _MessageLinesState extends State<MessageLines> {
         children: [
           // _showReplyBarUi(widget.message.replyed),
           Container(
-            decoration: regExp.hasMatch(widget.message.text!) ? BoxDecoration(
-              borderRadius: BorderRadius.circular(7),
-              color:  Color.fromARGB(110, 255, 193, 7)) : null,
-            child: Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Text(widget.message.text!,style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.w500, fontSize: 15)),
-            )),
+              decoration: regExp.hasMatch(widget.message.text!)
+                  ? BoxDecoration(
+                      borderRadius: BorderRadius.circular(7),
+                      color: Color.fromARGB(110, 255, 193, 7))
+                  : null,
+              child: Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Text(widget.message.text!,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1!
+                        .copyWith(fontWeight: FontWeight.w500, fontSize: 15)),
+              )),
           _showReactionBarUi(messageReactions: widget.message.reactions)
         ],
       ),
-      
     );
   }
 
@@ -442,19 +447,29 @@ class _MessageLinesState extends State<MessageLines> {
     );
   }
 
+  bool isInit = false;
+  KingscordCubit? kcubit;
   @override
   Widget build(BuildContext context) {
+    if (!isInit) {
+      if (widget.kcubit == null) {
+        kcubit = context.read<KingscordCubit>();
+      } else {
+        kcubit = widget.kcubit;
+      }
+    }
+
     String msgBodyForReply = widget.message.text != null
         ? widget.message.text!
         : " Shared something";
 
     return BlocProvider.value(
-      value: widget.kcubit,
+      value: kcubit!,
       child: Draggable<Widget>(
           onDraggableCanceled: ((velocity, offset) {
             if (offset.dx >= 100) {
               if (widget.message.sender!.token.isNotEmpty)
-                widget.kcubit.addReply(
+                kcubit!.addReply(
                     widget.message.sender!.token[0] +
                         widget.message.id! +
                         "[#-=]" +
@@ -482,91 +497,94 @@ class _MessageLinesState extends State<MessageLines> {
           const EdgeInsets.only(top: 2.5, bottom: 2.5, left: 8.0, right: 8.0),
       child: Container(
         // color: Colors.white24,
-        child: (widget.message.text == firstMsgEncoded) 
-        ? _messageWelcomeWidget()
-        : Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // a row displaying imageurl of member and name
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-
-                kingsCordAvtar(context),
-                SizedBox(
-                  width: 5.0,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          widget.message.sender!.username,
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w900,
-                              color: widget.message.sender!.colorPref == ""
-                                  ? Colors.red
-                                  : Color(hexcolor.hexcolorCode(
-                                      widget.message.sender!.colorPref))),
-                        ),
-                        SizedBox(width: 2),
-                        Text(
-                          '${widget.message.date.timeAgo()}',
-                          style: Theme.of(context).textTheme.caption!.copyWith(fontStyle: FontStyle.italic)
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 2),
-                    widget.message.reply != null &&
-                            widget.message.reply!.isNotEmpty
-                        ? Padding(
-                            padding: const EdgeInsets.only(top: 4.0, bottom: 5),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.white24,
-                                  borderRadius: BorderRadius.circular(10)),
-                              
-                              child: Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(2.0),
-                                  child: Text(
-                                    "reply to " +
-                                        widget.message.reply!
-                                            .split(": ")
-                                            .first
-                                             .substring(188),
-                                          
-                                    style: TextStyle(
-                                        fontStyle: FontStyle.italic,
-                                        color: Colors.amber,
-                                        fontSize: 15),
-                                  ),
-                                ),
+        child: (widget.message.text == firstMsgEncoded ||
+                widget.message.text == welcomeMsgEncoded)
+            ? _messageWelcomeWidget()
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // a row displaying imageurl of member and name
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      kingsCordAvtar(context),
+                      SizedBox(
+                        width: 5.0,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                widget.message.sender!.username,
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w900,
+                                    color: widget.message.sender!.colorPref ==
+                                            ""
+                                        ? Colors.red
+                                        : Color(hexcolor.hexcolorCode(
+                                            widget.message.sender!.colorPref))),
                               ),
-                            ),
-                          )
-                        : SizedBox.shrink(),
-                    Container(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width / 1.4,
-                        ),
-                        child: widget.message.text != null
-                            ? _buildText(context)
-                            : widget.message.videoUrl != null &&
-                                    widget.message.thumbnailUrl != null
-                                ? _buildVideo(context)
-                                : _buildImage(context)),
-                  ],
-                )
-              ],
-            ),
-          ],
-        ),
+                              SizedBox(width: 2),
+                              Text('${widget.message.date.timeAgo()}',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .caption!
+                                      .copyWith(fontStyle: FontStyle.italic)),
+                            ],
+                          ),
+                          SizedBox(height: 2),
+                          widget.message.reply != null &&
+                                  widget.message.reply!.isNotEmpty
+                              ? Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 4.0, bottom: 5),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.white24,
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(2.0),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(2.0),
+                                        child: Text(
+                                          "reply to " +
+                                              widget.message.reply!
+                                                  .split(": ")
+                                                  .first
+                                                  .substring(188),
+                                          style: TextStyle(
+                                              fontStyle: FontStyle.italic,
+                                              color: Colors.amber,
+                                              fontSize: 15),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : SizedBox.shrink(),
+                          Container(
+                              constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width / 1.4,
+                              ),
+                              child: widget.message.text != null
+                                  ? _buildText(context)
+                                  : widget.message.videoUrl != null &&
+                                          widget.message.thumbnailUrl != null
+                                      ? _buildVideo(context)
+                                      : _buildImage(context)),
+                        ],
+                      )
+                    ],
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -577,7 +595,9 @@ class _MessageLinesState extends State<MessageLines> {
     HexColor hexcolor = HexColor();
     Size size = MediaQuery.of(context).size;
     return GestureDetector(
-      onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(initScreen: true, userId: widget.message.sender!.id)),
+      onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName,
+          arguments: ProfileScreenArgs(
+              initScreen: true, userId: widget.message.sender!.id)),
       child: Container(
         height: size.height / 18.5,
         width: size.width / 8,
@@ -589,11 +609,12 @@ class _MessageLinesState extends State<MessageLines> {
                 width: 2,
                 color: widget.message.sender!.colorPref == ""
                     ? Colors.red
-                    : Color(
-                        hexcolor.hexcolorCode(widget.message.sender!.colorPref))),
+                    : Color(hexcolor
+                        .hexcolorCode(widget.message.sender!.colorPref))),
             color: widget.message.sender!.colorPref == ""
                 ? Colors.red
-                : Color(hexcolor.hexcolorCode(widget.message.sender!.colorPref)),
+                : Color(
+                    hexcolor.hexcolorCode(widget.message.sender!.colorPref)),
             shape: BoxShape.circle),
       ),
     );
@@ -610,33 +631,96 @@ class _MessageLinesState extends State<MessageLines> {
       Container(child: Icon(Icons.account_circle));
 
   Widget _messageWelcomeWidget() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CircleAvatar(
-          backgroundImage: CachedNetworkImageProvider(widget.cm.imageUrl),
-          radius: 57,
+    if (widget.message.text == firstMsgEncoded) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircleAvatar(
+            backgroundImage: CachedNetworkImageProvider(widget.cm.imageUrl),
+            radius: 57,
+          ),
+          SizedBox(height: 10),
+          Text(widget.cm.name,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText1!
+                  .copyWith(fontSize: 20, fontWeight: FontWeight.w500)),
+          SizedBox(height: 7),
+          Text("Welcome to " + widget.kc.cordName,
+              style: Theme.of(context)
+                  .textTheme
+                  .caption!
+                  .copyWith(fontSize: 15, fontWeight: FontWeight.w300)),
+          SizedBox(height: 7),
+          Text(widget.message.sender!.username + " created this room",
+              style: Theme.of(context)
+                  .textTheme
+                  .caption!
+                  .copyWith(fontStyle: FontStyle.italic)),
+          SizedBox(height: 7),
+          Text("${widget.message.date.timeAgo()}",
+              style: Theme.of(context)
+                  .textTheme
+                  .caption!
+                  .copyWith(fontStyle: FontStyle.italic)),
+        ],
+      );
+    } else if (widget.message.text == welcomeMsgEncoded) {
+      return Container(
+        decoration: BoxDecoration(
+            color: Color.fromARGB(46, 255, 193, 7),
+            borderRadius: BorderRadius.circular(7)),
+        child: Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    backgroundImage:
+                        CachedNetworkImageProvider(widget.cm.imageUrl),
+                    radius: 25,
+                  ),
+                  SizedBox(width: 7),
+                  Text(widget.message.sender!.username,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1!
+                          .copyWith(fontSize: 20, fontWeight: FontWeight.w500)),
+                ],
+              ),
+
+              SizedBox(height: 7),
+
+              Text("Welcome to " + widget.kc.cordName,
+                  style: Theme.of(context)
+                      .textTheme
+                      .caption!
+                      .copyWith(fontSize: 15, fontWeight: FontWeight.w300)),
+
+              SizedBox(height: 7),
+
+              // Text(widget.message.sender!.username + " created this room", style: Theme.of(context).textTheme.caption!.copyWith(fontStyle: FontStyle.italic)),
+
+              // SizedBox(height: 7),
+
+              Text("${widget.message.date.timeAgo()}",
+                  style: Theme.of(context)
+                      .textTheme
+                      .caption!
+                      .copyWith(fontStyle: FontStyle.italic)),
+            ],
+          ),
         ),
-
-        SizedBox(height: 10),
-
-        Text(widget.cm.name, style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 20, fontWeight: FontWeight.w500)),
-
-        SizedBox(height: 7),
-
-        Text("Welcome to " + widget.kc.cordName, style: Theme.of(context).textTheme.caption!.copyWith(fontSize: 15, fontWeight: FontWeight.w300)),
-
-        SizedBox(height: 7),
-
-        Text(widget.message.sender!.username + " created this room", style: Theme.of(context).textTheme.caption!.copyWith(fontStyle: FontStyle.italic)),
-        
-        SizedBox(height: 7),
-
-        Text("${widget.message.date.timeAgo()}", style: Theme.of(context).textTheme.caption!.copyWith(fontStyle: FontStyle.italic)),
-      ],
-    );
+      );
+    } else
+      return SizedBox.shrink();
   }
-
 }

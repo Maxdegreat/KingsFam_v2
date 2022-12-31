@@ -108,9 +108,12 @@ class _CreateRoomState extends State<CreateRoom> {
                           Navigator.of(context).pop();
                         }
                       },
-                      child: Text(
-                        "Create",
-                        style: Theme.of(context).textTheme.bodyText1,
+                      child: Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: Text(
+                          "Create",
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
                       )),
              )
           ],

@@ -65,6 +65,8 @@ class KingsCordRepository extends BaseKingsCordRepository {
       DateTime? tFromMsg;
       DateTime? localT;
       bool? readStatus;
+      Message? recentM;
+      Says? recentS;
 
       KingsCord? kc = await future;
       if (kc != null) {
@@ -82,6 +84,7 @@ class KingsCordRepository extends BaseKingsCordRepository {
               .get();
           if (qs.docs.isNotEmpty) {
             Message m = await Message.fromDoc(qs.docs[0]);
+            recentM = m;
             DocumentReference userRef =
                 FirebaseFirestore.instance.collection(Paths.users).doc(uid);
             // sender is a docRef on the cloud
@@ -102,6 +105,22 @@ class KingsCordRepository extends BaseKingsCordRepository {
               // also null will show the kc as not read via the cm wraper
               readStatus = false;
             }
+          } else {
+            // if empty it could be a says
+            QuerySnapshot qs = await FirebaseFirestore.instance
+                .collection(Paths.church)
+                .doc(cmId)
+                .collection(Paths.kingsCord)
+                .doc(kc.id!)
+                .collection(Paths.messages)
+                .orderBy('date', descending: true)
+                .limit(1)
+                .get();
+            if (qs.docs.isNotEmpty) {
+              Says s = await Says.fromDoc(qs.docs.first);
+              recentS = s;
+              // we do not currently save kc time stamps
+            }
           }
         }
         // kingsCordL.add(kc);
@@ -114,9 +133,11 @@ class KingsCordRepository extends BaseKingsCordRepository {
         DocumentSnapshot docSnap = await docRef.get();
 
         if (docSnap.exists) {
-          mentionedL.add(kc.copyWith(readStatus: readStatus));
+          mentionedL.add(kc.copyWith(
+              readStatus: readStatus, recentActivity: {"chat": recentM, "says": recentS}));
         } else {
-          kingsCordL.add(kc.copyWith(readStatus: readStatus));
+          kingsCordL.add(kc.copyWith(
+              readStatus: readStatus, recentActivity: {"chat": recentM, "says": recentS}));
         }
       }
     }

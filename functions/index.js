@@ -7,6 +7,12 @@ const { user } = require("firebase-functions/v1/auth");
 
 admin.initializeApp();
 
+// exports.onJoinCm = functions.firestore.document("/communityMembers/{cmId}/members/{userId}")
+//   .onCreate(async (_, context) => {
+//     // send a msg to join room?
+//   }
+// )
+
 exports.onNewJoinRequest = functions.firestore
   .document("/requestToJoinCm/{cmId}/request/{requestingId}")
   .onCreate(async (_, context) => {

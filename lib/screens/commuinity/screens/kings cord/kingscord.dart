@@ -1,8 +1,4 @@
-
-
-
 import 'dart:developer';
-
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,9 +12,11 @@ import 'package:kingsfam/helpers/user_preferences.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
+import 'package:kingsfam/widgets/widgets.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import 'widgets/message_lines.dart';
@@ -53,14 +51,14 @@ class KingsCordScreen extends StatefulWidget {
   final Map<String, dynamic> userInfo;
   final Userr usr;
   final Map<String, dynamic> role;
-  const KingsCordScreen(
-      {Key? key,
-      required this.commuinity,
-      required this.kingsCord,
-      required this.userInfo,
-      required this.usr,
-      required this.role,})
-      : super(key: key);
+  const KingsCordScreen({
+    Key? key,
+    required this.commuinity,
+    required this.kingsCord,
+    required this.userInfo,
+    required this.usr,
+    required this.role,
+  }) : super(key: key);
 
   // will need a static const string route name
   static const String routeName = '/kingsCord';
@@ -107,7 +105,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   bool showMediaPopUp = false;
 
   List<String> UrlBucket = [];
-
 
   @override
   void dispose() {
@@ -404,8 +401,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                       overflow: TextOverflow.fade,
                     ),
                     onTap: () {
-                      
-
                       var oldMessageControllerBody = _messageController.text
                           .substring(0, idxWhereStartWithat);
                       _messageController.text = oldMessageControllerBody +=
@@ -426,19 +421,23 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   }
 
   Widget _permissionDenied({required String messasge}) {
-    return Padding(
-      padding: const EdgeInsets.all(7.0),
-      child: Container(
-        width: double.infinity,
-        height: 30,
-        child: Center(
-            child: Text(
-          messasge,
-          style: Theme.of(context).textTheme.bodyText1,
-        )),
-        decoration: BoxDecoration(
-          color: Colors.grey[900],
-          borderRadius: BorderRadius.circular(7),
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pushNamed(CommunityHome.routeName,
+          arguments: CommunityHomeArgs(cm: widget.commuinity, cmB: null)),
+      child: Padding(
+        padding: const EdgeInsets.all(7.0),
+        child: Container(
+          width: double.infinity,
+          height: 30,
+          child: Center(
+              child: Text(
+            messasge,
+            style: Theme.of(context).textTheme.bodyText1,
+          )),
+          decoration: BoxDecoration(
+            color: Colors.grey[900],
+            borderRadius: BorderRadius.circular(7),
+          ),
         ),
       ),
     );
@@ -447,22 +446,25 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 //============================================================================
   @override
   void initState() {
-    UserPreferences.updateKcTimeStamp(
-        cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!);
     scrollCtrl = ScrollController();
     scrollCtrl!.addListener(() {
       if (scrollCtrl!.position.maxScrollExtent == scrollCtrl!.position.pixels) {
-        context.read<KingscordCubit>().paginateMsg(
-            cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!, limit: 12).then((_) => setState(() {}));
+        context
+            .read<KingscordCubit>()
+            .paginateMsg(
+                cmId: widget.commuinity.id!,
+                kcId: widget.kingsCord.id!,
+                limit: 12)
+            .then((_) => setState(() {}));
       }
     });
     super.initState();
     // isUserUpToDate(context, context.read<AuthBloc>().state.user!.uid, widget.kingsCord.memberInfo);
   }
+
   bool initCubit = true;
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -509,24 +511,41 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           )
         ],
       ),
-      
+
       // the body is a collumn containeing message widgets... with a bottom sheet for the txt controller
       body: BlocConsumer<KingscordCubit, KingscordState>(
-        listener: (context, state) {
-
-        },
+        listener: (context, state) {},
         builder: (context, state) {
           currUsersName = widget.usr.username;
           if (initCubit) {
+            if (widget.kingsCord.readStatus == null &&
+                widget.userInfo["isMember"]) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                snackBar(
+                    snackMessage: "Recieve notifications from room?",
+                    context: context,
+                    bgColor: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+                    callBack: () {
+                      Navigator.of(context).pushNamed(KingsCordSettings.routeName,
+                  arguments: KingsCordSettingsArgs(
+                      cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!));
+                    });
+              });
+            }
+
+            UserPreferences.updateKcTimeStamp(
+                cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!);
+
             context.read<KingscordCubit>().onLoadInit(
-                cmId: widget.commuinity.id!,
-                kcId: widget.kingsCord.id!,
-                limit: 17,
-              );
-              initCubit = false;
+                  cmId: widget.commuinity.id!,
+                  kcId: widget.kingsCord.id!,
+                  limit: 17,
+                );
+            initCubit = false;
           }
 
-          
           return Stack(
             children: [
               Positioned.fill(
@@ -534,90 +553,96 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 height: MediaQuery.of(context).size.height,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                gradient:  LinearGradient(
-              begin: Alignment.bottomLeft,
-              end: Alignment.centerRight,
-              colors: [
-                Theme.of(context).colorScheme.background,
-                Theme.of(context).colorScheme.secondary,
-                Theme.of(context).colorScheme.primary
-              ]),
+                  gradient: LinearGradient(
+                      begin: Alignment.bottomLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        Theme.of(context).colorScheme.background,
+                        Theme.of(context).colorScheme.secondary,
+                        Theme.of(context).colorScheme.primary
+                      ]),
                 ),
               )),
               GestureDetector(
-            onTap: () => FocusScope.of(context).unfocus(),
-            child: Stack(
-              children: [
-                
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                onTap: () => FocusScope.of(context).unfocus(),
+                child: Stack(
                   children: [
-                    state.status == KingsCordStatus.pagMsgs || state.status == KingsCordStatus.getInitmsgs 
-                    ? LinearProgressIndicator(color: Colors.amber[200], backgroundColor: Colors.white,) : SizedBox.shrink(),
-                    // bulid message stream
-                    _buildMessageStream(
-                        commuinity: widget.commuinity,
-                        kingsCord: widget.kingsCord,
-                        msgs: state.msgs),
-                    //divider of a height 1
-                    Divider(height: 1.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        state.status == KingsCordStatus.pagMsgs ||
+                                state.status == KingsCordStatus.getInitmsgs
+                            ? LinearProgressIndicator(
+                                color: Colors.amber[200],
+                                backgroundColor: Colors.white,
+                              )
+                            : SizedBox.shrink(),
+                        // bulid message stream
+                        _buildMessageStream(
+                            commuinity: widget.commuinity,
+                            kingsCord: widget.kingsCord,
+                            msgs: state.msgs),
+                        //divider of a height 1
+                        Divider(height: 1.0),
 
-                    state.replyMessage != null && state.replyMessage!.isNotEmpty
-                        ? _showReplying(state)
-                        : SizedBox.shrink(),
+                        state.replyMessage != null &&
+                                state.replyMessage!.isNotEmpty
+                            ? _showReplying(state)
+                            : SizedBox.shrink(),
 
-                    // this shows all the users that you have mentioned so far in the chat.
-                    state.mentions.length > 0
-                        ? _showMentioned(state)
-                        : SizedBox.shrink(),
+                        // this shows all the users that you have mentioned so far in the chat.
+                        state.mentions.length > 0
+                            ? _showMentioned(state)
+                            : SizedBox.shrink(),
 
-                    // this shows all possible mentions
-                    _mentionUserContainer(username: _mentionedController),
+                        // this shows all possible mentions
+                        _mentionUserContainer(username: _mentionedController),
 
-                    // this is can only ocour if the user is apart of the commuinity. in this case they can share
-                    // content
-                    state.fileShareStatus != FileShareStatus.inital
-                        ? Container(
-                            height: 90,
-                            width: double.infinity,
-                            color: Colors.transparent,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Sharing Files Fam, Sit Tight...",
-                                  overflow: TextOverflow.fade,
+                        // this is can only ocour if the user is apart of the commuinity. in this case they can share
+                        // content
+                        state.fileShareStatus != FileShareStatus.inital
+                            ? Container(
+                                height: 90,
+                                width: double.infinity,
+                                color: Colors.transparent,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Sharing Files Fam, Sit Tight...",
+                                      overflow: TextOverflow.fade,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: state.filesToBePosted
+                                          .map((file) => ProfileImage(
+                                                radius: 27,
+                                                pfpUrl: '',
+                                                pfpImage: file,
+                                              ))
+                                          .toList(),
+                                    ),
+                                  ],
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: state.filesToBePosted
-                                      .map((file) => ProfileImage(
-                                            radius: 27,
-                                            pfpUrl: '',
-                                            pfpImage: file,
-                                          ))
-                                      .toList(),
-                                ),
-                              ],
-                            ),
-                          )
-                        : SizedBox.shrink(),
+                              )
+                            : SizedBox.shrink(),
 
-                    // use the state.isMem to know if the user is a part of cm.
-                    // this values will have to be updated soon tho. because we want
-                    // dynamic roles to be sourced
-                    widget.userInfo["isMember"]
-                        ? _buildBottomTF(state, context)
-                        : _permissionDenied(
-                            messasge: "Join Community To say whats up"),
+                        // use the state.isMem to know if the user is a part of cm.
+                        // this values will have to be updated soon tho. because we want
+                        // dynamic roles to be sourced
+                        widget.userInfo["isMember"]
+                            ? _buildBottomTF(state, context)
+                            : _permissionDenied(
+                                messasge: "Join community to chat here"),
 
-                    showMediaPopUp ? showMedias() : SizedBox.shrink()
+                        showMediaPopUp ? showMedias() : SizedBox.shrink()
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
-          )
+              )
             ],
           );
         },
@@ -718,27 +743,33 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         children: [
           SizedBox(width: 10),
           GestureDetector(
-            onTap: () =>  context.read<KingscordCubit>().clearMention(),
+            onTap: () => context.read<KingscordCubit>().clearMention(),
             child: Text(
               "clear @",
-              style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500),
             ),
           ),
-              SizedBox(width: 5),
-              Container(
+          SizedBox(width: 5),
+          Container(
             height: 15,
             width: MediaQuery.of(context).size.width / 1.8,
             child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: state.mentions.length,
-            itemBuilder: (BuildContext context, int index) {
-              Userr m = state.mentions[index];
-              return Text(
-                m.username,
-                style: TextStyle(fontStyle: FontStyle.italic, fontSize: 14, color: Colors.grey),
-              );
-            },
-          ),
+              scrollDirection: Axis.horizontal,
+              itemCount: state.mentions.length,
+              itemBuilder: (BuildContext context, int index) {
+                Userr m = state.mentions[index];
+                return Text(
+                  m.username,
+                  style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      fontSize: 14,
+                      color: Colors.grey),
+                );
+              },
+            ),
           ),
         ],
       ),

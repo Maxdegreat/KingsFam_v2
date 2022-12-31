@@ -13,16 +13,18 @@ notifSnackBar({
   return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     backgroundColor: Theme.of(context).colorScheme.secondary,
     duration: Duration(seconds: 4),
-          behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.only(
-            bottom: 30 , 
-            left: 10, 
-            right: 10,
-          ),
+    behavior: SnackBarBehavior.floating,
+    margin: EdgeInsets.only(
+      bottom: 30,
+      left: 10,
+      right: 10,
+    ),
     content: GestureDetector(
       onTap: () {
         handleMessage(remoteMessage, context);
-        context.read<BottomnavbarCubit>().updateSelectedItem(BottomNavItem.chats);
+        context
+            .read<BottomnavbarCubit>()
+            .updateSelectedItem(BottomNavItem.chats);
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -39,27 +41,13 @@ snackBar(
     {required String snackMessage,
     required BuildContext context,
     Color? bgColor,
-    bool? showLoading}) {
-
-  return showLoading == null
-      ? ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(snackMessage),
-          backgroundColor: bgColor,
-          duration: Duration(seconds: 3),
-          behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.only(bottom: 30, left: 10, right: 10),
-        ))
-      : showLoading == true
-          ? SnackBar(
-              content: Container(
-                  width: double.infinity,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                      color: Colors.white, strokeWidth: 10)),
-              backgroundColor: bgColor,
-            )
-          : SnackBar(
-              content: Text(snackMessage, style: Theme.of(context).textTheme.bodyText1,),
-              backgroundColor: bgColor,
-            );
+    VoidCallback? callBack = null}) {
+  return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: GestureDetector(
+        onTap: callBack, child: Expanded(child: Text(snackMessage, style: Theme.of(context).textTheme.caption,))),
+    backgroundColor: bgColor,
+    duration: Duration(seconds: 3),
+    behavior: SnackBarBehavior.floating,
+    margin: EdgeInsets.only(bottom: 30, left: 10, right: 10),
+  ));
 }

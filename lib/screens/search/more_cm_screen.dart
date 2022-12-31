@@ -2,11 +2,12 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/blocs/search/search_bloc.dart';
-import 'package:kingsfam/widgets/snackbar.dart';
+import 'package:kingsfam/screens/commuinity/community_home/home.dart';
+
 
 import '../../models/church_model.dart';
 
@@ -50,7 +51,6 @@ class _MoreCmState extends State<MoreCm> {
     });
     super.initState();
   }
-  
 
   void addListenerToScrollCtrl() {
     if (controller.position.atEdge) {
@@ -60,22 +60,12 @@ class _MoreCmState extends State<MoreCm> {
         setState(() {});
         if (widget.type == "global") {
           setState(() {
-            snackBar(
-                snackMessage: "",
-                context: context,
-                showLoading: true,
-                bgColor: Colors.blue);
             widget.bloc
               ..add(PaginateChListNotEqualToLocation(
                   currId: context.read<AuthBloc>().state.user!.uid));
           });
         } else {
           setState(() {
-            snackBar(
-                snackMessage: "",
-                context: context,
-                showLoading: true,
-                bgColor: Colors.blue);
             widget.bloc
               ..add(PaginateChList1(
                   currId: context.read<AuthBloc>().state.user!.uid));
@@ -91,12 +81,13 @@ class _MoreCmState extends State<MoreCm> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: Icon(
-                Icons.arrow_back_ios,
-                color: Theme.of(context).iconTheme.color,
-              )),
-        title: Text("${widget.type} Communities", style: Theme.of(context).textTheme.bodyText1),
+            onPressed: () => Navigator.of(context).pop(),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Theme.of(context).iconTheme.color,
+            )),
+        title: Text("${widget.type} Communities",
+            style: Theme.of(context).textTheme.bodyText1),
       ),
       body: BlocProvider.value(
         value: widget.bloc,
@@ -104,14 +95,10 @@ class _MoreCmState extends State<MoreCm> {
           listener: (context, state) {
             if (state.status == SearchStatus.pag) {
               loading = true;
-              setState(() {
-                
-              });
+              setState(() {});
             } else {
               loading = false;
-              setState(() {
-                
-              });
+              setState(() {});
             }
           },
           builder: (context, state) {
@@ -121,7 +108,6 @@ class _MoreCmState extends State<MoreCm> {
               width: double.infinity,
               child: Stack(
                 children: [
-                  
                   ListView.builder(
                     controller: controller,
                     itemCount: widget.type == "global"
@@ -133,16 +119,14 @@ class _MoreCmState extends State<MoreCm> {
                           : state.churches[index];
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: _cmDisplay(
-                            bgImgUrl: cm.imageUrl,
-                            name: cm.name,
-                            location: cm.location,
-                            count: cm.size.toString()),
+                        child: _cmDisplay(cm: cm),
                       );
                     },
                   ),
                   Positioned(
-                    child: state.status == SearchStatus.pag ? LinearProgressIndicator() : SizedBox.shrink(),
+                    child: state.status == SearchStatus.pag
+                        ? LinearProgressIndicator()
+                        : SizedBox.shrink(),
                   ),
                 ],
               ),
@@ -153,46 +137,49 @@ class _MoreCmState extends State<MoreCm> {
     );
   }
 
-  Widget _cmDisplay(
-      {required String? bgImgUrl,
-      required String name,
-      required String location,
-      required String count}) {
-    location = location == null || location == "" ? "Remote" : location;
-    return Column(
-      children: [
-        Container(
-          height: 152,
-          width: MediaQuery.of(context).size.width / 1.3,
-          decoration: BoxDecoration(
-              color: Color.fromARGB(255, 102, 102, 103),
-              image: bgImgUrl != null
-                  ? DecorationImage(
-                      image: CachedNetworkImageProvider(bgImgUrl),
-                      fit: BoxFit.cover)
-                  : null,
-              borderRadius: BorderRadius.circular(5.0)),
-        ),
-        SizedBox(height: 20),
-        Container(
-          child: Column(
-            children: [
-              Text(
-                name,
-                style: Theme.of(context).textTheme.bodyText1,
-              ),
-              Text(
-                "members: " + count,
-                style: Theme.of(context).textTheme.caption,
-              ),
-              Text(
-                location,
-                style: Theme.of(context).textTheme.caption,
-              )
-            ],
+  Widget _cmDisplay({required Church cm}) {
+    String location =
+        cm.location == null || cm.location == "" ? "Remote" : cm.location;
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed(CommunityHome.routeName,
+            arguments: CommunityHomeArgs(cm: cm, cmB: null));
+      },
+      child: Column(
+        children: [
+          Container(
+            height: 152,
+            width: MediaQuery.of(context).size.width / 1.3,
+            decoration: BoxDecoration(
+                color: Color.fromARGB(255, 102, 102, 103),
+                image: cm.imageUrl != null
+                    ? DecorationImage(
+                        image: CachedNetworkImageProvider(cm.imageUrl),
+                        fit: BoxFit.cover)
+                    : null,
+                borderRadius: BorderRadius.circular(5.0)),
           ),
-        )
-      ],
+          SizedBox(height: 20),
+          Container(
+            child: Column(
+              children: [
+                Text(
+                  cm.name,
+                  style: Theme.of(context).textTheme.bodyText1,
+                ),
+                Text(
+                  "members: " + cm.size.toString(),
+                  style: Theme.of(context).textTheme.caption,
+                ),
+                Text(
+                  location,
+                  style: Theme.of(context).textTheme.caption,
+                )
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }

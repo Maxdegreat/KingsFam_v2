@@ -3,6 +3,7 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/user_model.dart';
 
 const firstMsgEncoded = "ThisIsAFirstMessageAndItIsEncodedJesusIsKing&&&KingsFamIlyForHisGloryYaDiggg";
+const welcomeMsgEncoded = "ThIsIsAnEnCodEdMessageToWelcomeuydh777JesusKing";
 
 class Message {
   //1 class data
@@ -16,12 +17,12 @@ class Message {
   final String? senderUsername;
   final List<String>? mentionedIds;
   final Map<String, int>? reactions;
-  final String? reply; 
+  final String? reply;
 
 //2 gen the constructor
   Message({
     this.id,
-    this.sender, // do not call this in the to doc bc 
+    this.sender, // do not call this in the to doc bc
     this.senderUsername,
     this.text,
     this.imageUrl,
@@ -77,22 +78,28 @@ class Message {
   }
 
   factory Message.empty() {
-    return Message(date: Timestamp.now(), sender: Userr.empty, text: '',);
+    return Message(
+      date: Timestamp.now(),
+      sender: Userr.empty,
+      text: '',
+    );
   }
 
   // 5 make the to doc
   Map<String, dynamic> ToDoc({required String senderId}) {
     return {
-      'sender': FirebaseFirestore.instance.collection(Paths.users).doc(senderId),
+      'sender':
+          FirebaseFirestore.instance.collection(Paths.users).doc(senderId),
       'senderUsername': senderUsername,
       'text': text,
       'imageUrl': imageUrl,
       'thumbnailUrl': thumbnailUrl,
       'videoUrl': videoUrl,
-      'date': date, 
-      'mentionedIds' : mentionedIds,
-      'reactions' : {},
-      'reply' : reply, // This should be a string where the value is the ID of the og message.
+      'date': date,
+      'mentionedIds': mentionedIds,
+      'reactions': {},
+      'reply':
+          reply, // This should be a string where the value is the ID of the og message.
     };
   }
 
@@ -103,7 +110,7 @@ class Message {
     DocumentReference? userRef = data['sender'] as DocumentReference;
     var docSnap = await userRef.get();
     user = Userr.fromDoc(docSnap);
-    
+
     return Message(
       id: doc.id,
       sender: user,
@@ -114,9 +121,8 @@ class Message {
       videoUrl: data['videoUrl'] ?? null,
       date: (data['date']),
       reactions: Map<String, int>.from(data['reactions'] ?? {}),
-      mentionedIds:  List<String>.from(data['mentionedIds'] ?? []),
+      mentionedIds: List<String>.from(data['mentionedIds'] ?? []),
       reply: data['reply'] ?? null,
-      
     );
   }
 }

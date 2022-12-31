@@ -336,9 +336,9 @@ class ChurchRepository extends BaseChurchRepository {
             isNewCm: true); //isNewCm is not required. only called on creation
 
         final kingsCord = KingsCord(
-          mode: mode,
+          mode: "welcome",
           tag: doc.id,
-          cordName: "${church.name}!",
+          cordName: "Welcome 🥳 🎉",
           subscribedIds: [],
           // recentSender: [recentSender.id, recentSender.username],
         );
@@ -716,8 +716,7 @@ class ChurchRepository extends BaseChurchRepository {
         .add(noty.toDoc());
   }
 
-  Future<void> onJoinCommuinity(
-      {required Userr user, required Church commuinity}) async {
+  Future<void> onJoinCommuinity({required Userr user, required Church commuinity}) async {
     // run a transaction
 
     // check if member in both user -> id -> church lst of documents and communityMembers -> cmId -> members -> lst of members if so do nothing
@@ -731,6 +730,7 @@ class ChurchRepository extends BaseChurchRepository {
           .doc(user.id)
           .collection(Paths.church)
           .doc(commuinity.id);
+
       DocumentSnapshot isInUserPathChurchSnap =
           await transaction.get(isInUserPathChurchRef);
 
@@ -756,10 +756,24 @@ class ChurchRepository extends BaseChurchRepository {
           cmId: commuinity.id!, userId: user.id, roleName: "Member");
 
       final docRef = fb.doc(commuinity.id);
+
       if (commuinity.size == null)
         docRef.update({'size': 1});
       else
         docRef.update({'size': commuinity.size! + 1});
+
+      // send welcome message
+      
+      // get welcom kc
+      var path = fire.collection(Paths.church).doc(commuinity.id!).collection(Paths.kingsCord);
+      QuerySnapshot querySnap = await path.where("mode", isEqualTo: "welcome").get();
+
+      // make welcome message
+      Map<String, dynamic> welcomeMsg = await Message.empty().copyWith(text: welcomeMsgEncoded).ToDoc(senderId: user.id);
+
+      // write welcome message
+      path.doc(querySnap.docs.first.id).collection(Paths.messages).add(welcomeMsg);
+      
     });
   }
 
