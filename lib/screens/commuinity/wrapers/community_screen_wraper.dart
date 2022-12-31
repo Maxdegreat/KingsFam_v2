@@ -465,7 +465,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
                           radius: 5,
                         ),
                 ] else if (cord.mode == "says") ...[
-                  Icon(Icons.record_voice_over_rounded),
+                  Icon(Icons.auto_awesome_motion_rounded),
                   SizedBox(width: 3),
                   Container(
                     height: 30,
@@ -514,12 +514,12 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
             if (cord.mode == "chat" &&
                 cord.recentActivity!["chat"] != null) ...[
               Padding(
-                padding: const EdgeInsets.only(left:10),
+                padding: const EdgeInsets.only(left:5),
                 child: DisplayMsg(m: cord.recentActivity!["chat"], s: null,),
               )
             ] else if (cord.mode == "says" &&
                 cord.recentActivity!["says"] != null) ...[
-              Padding(padding: EdgeInsets.only(left:10), child: DisplayMsg(m:null, s: cord.recentActivity!["says"]),)
+              Padding(padding: EdgeInsets.only(left:5), child: DisplayMsg(m:null, s: cord.recentActivity!["says"]))
             ]
           ],
         ),

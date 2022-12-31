@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:kingsfam/extensions/extensions.dart';
 import 'package:kingsfam/models/message_model.dart';
 import 'package:kingsfam/models/says_model.dart';
 
@@ -12,7 +13,7 @@ class DisplayMsg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle s = Theme.of(context).textTheme.caption!;
+    TextTheme s = Theme.of(context).textTheme;
     Size size = MediaQuery.of(context).size;
     if (m != null) {
       if (m!.text == welcomeMsgEncoded) {
@@ -30,24 +31,39 @@ class DisplayMsg extends StatelessWidget {
     }
   }
 
-  _says(Size size, TextStyle s) {
+  _says(Size size, TextTheme s) {
     return Container(
       height: (size.height / 9) / 2.5,
       width: (size.width / 1.3) / 1.4,
       decoration: BoxDecoration(),
       child: Center(
-        child: Text(
-          this.s!.author!.username + ": " + this.s!.title!,
-          softWrap: true,
+        child: RichText(
+          overflow: TextOverflow.clip,
           maxLines: 2,
-          overflow: TextOverflow.fade,
-          style: s,
-        ),
+          softWrap: true,
+          text: TextSpan(
+            text: this.s!.author!.username + ": ",
+            style: s.subtitle1!.copyWith(fontWeight: FontWeight.w400),
+            children: <TextSpan>[
+              TextSpan(text: this.s!.title, style: s.caption),
+
+            ],
+          ),
+)
+        
+        
+        // Text(
+        //   this.s!.author!.username + ": " + this.s!.title!,
+        //   softWrap: true,
+        //   maxLines: 2,
+        //   overflow: TextOverflow.fade,
+        //   style: s,
+        // ),
       ),
     );
   }
 
-  _welcomMsg(Size size, TextStyle s) {
+  _welcomMsg(Size size, TextTheme s) {
     return Container(
       height: (size.height / 9) / 2.5,
       width: (size.width / 1.3) / 1.4,
@@ -56,18 +72,26 @@ class DisplayMsg extends StatelessWidget {
         color: Color.fromARGB(46, 255, 193, 7),
       ),
       child: Center(
-        child: Text(
-          "Welcome " + m!.sender!.username,
+        child: RichText(
+          text: TextSpan( 
+            text: "Welcome " + m!.sender!.username, 
+            style: s.subtitle1!.copyWith(fontWeight: FontWeight.w400),
+            children: [
+              TextSpan(
+                text: "just joined 🥳",
+                style: s.caption!.copyWith(fontStyle: FontStyle.italic)
+              )
+            ]
+          ),
           softWrap: true,
           maxLines: 2,
           overflow: TextOverflow.fade,
-          style: s,
         ),
       ),
     );
   }
 
-  _newRoom(Size size, TextStyle s) {
+  _newRoom(Size size, TextTheme s) {
     return Container(
       height: (size.height / 9) / 2,
       width: (size.width / 1.3) / 1.4,
@@ -80,34 +104,50 @@ class DisplayMsg extends StatelessWidget {
             borderRadius: BorderRadius.circular(7),
             color: Color.fromARGB(45, 36, 255, 7),
           ),
-          child: Padding(
+          child: Padding( // m!.sender!.username + " created This room",
             padding: const EdgeInsets.all(2.0),
-            child: Text(
-              m!.sender!.username + " created This room",
-              softWrap: true,
-              maxLines: 2,
-              overflow: TextOverflow.fade,
-              style: s,
-            ),
+            child: RichText(
+          text: TextSpan( 
+            text: m!.sender!.username + " created This room", 
+            style: s.subtitle1!.copyWith(fontWeight: FontWeight.w400),
+            children: [
+              TextSpan(
+                text: m!.date.timeAgo(),
+                style: s.caption!.copyWith(fontStyle: FontStyle.italic)
+              )
+            ]
+          ),
+          softWrap: true,
+          maxLines: 2,
+          overflow: TextOverflow.fade,
+        ),
           ),
         ),
       ),
     );
   }
 
-  _msg(Size size, TextStyle s) {
+  _msg(Size size, TextTheme s) {
     String msg = m!.text != null ? m!.text! : " shared something";
     return Container(
       height: (size.height / 9) / 2,
       width: (size.width / 1.3) / 1.4,
       decoration: BoxDecoration(),
       child: Center(
-        child: Text(
-          m!.sender!.username + ": " + msg,
+        child: RichText(
+          text: TextSpan(
+            text:  m!.sender!.username + ": ",
+            style: s.subtitle1,
+            children: [
+              TextSpan(
+                text: msg,
+                style: s.caption!.copyWith(fontStyle: FontStyle.italic)
+              )
+            ]
+          ),
           softWrap: true,
           maxLines: 2,
           overflow: TextOverflow.fade,
-          style: s,
         ),
       ),
     );
