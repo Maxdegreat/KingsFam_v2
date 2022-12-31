@@ -89,7 +89,8 @@ class ScreensForPageView {
 
   GestureDetector navToCreateScreen(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).pushNamed(CreateComuinity.routeName),
+      onTap: () =>
+                        Navigator.of(context).pushNamed(BuildChurch.routeName),
       child: Container(
           height: 20,
           width: 20,

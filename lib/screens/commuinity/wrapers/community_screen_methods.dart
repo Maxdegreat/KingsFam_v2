@@ -40,6 +40,8 @@ Widget nativeAdWidget(NativeAd ad, bool hasAdLoaded, BuildContext context) {
           ),
         )
       : SizedBox.shrink();
+
+
 }
 
 // content preview: This holds the post

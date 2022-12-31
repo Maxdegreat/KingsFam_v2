@@ -1,8 +1,12 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:kingsfam/config/constants.dart';
+import 'package:kingsfam/helpers/ad_helper.dart';
 import 'package:kingsfam/models/church_model.dart';
+import 'package:kingsfam/screens/build_church/build_church.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
 import 'package:kingsfam/widgets/widgets.dart';
@@ -16,7 +20,46 @@ class MainDrawer extends StatefulWidget {
   State<MainDrawer> createState() => _MainDrawerState();
 }
 
+
 class _MainDrawerState extends State<MainDrawer> {
+
+late NativeAd _nativeAd;
+  bool _isNativeAdLoaded = false;
+  void _createNativeAd() {
+    _nativeAd = NativeAd(
+        adUnitId: AdHelper.nativeAdUnitId,
+        factoryId: "listTile",
+        listener: NativeAdListener(onAdLoaded: (_) {
+          setState(() {
+            _isNativeAdLoaded = true;
+          });
+        }, onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          log("chatsScreen ad error: ${error.toString()}");
+        }),
+        request: const AdRequest());
+    _nativeAd.load();
+  }
+
+
+
+  @override
+  void initState() {
+    _createNativeAd();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _nativeAd.dispose();
+    super.dispose();
+  }
+
+// Widget build is below -------------------------------------------------------------------------------------
+// Widget build is below -------------------------------------------------------------------------------------
+
+
+
   @override
   Widget build(BuildContext context) {
     Widget start = Padding(
@@ -68,12 +111,57 @@ class _MainDrawerState extends State<MainDrawer> {
         // Add a ListView to the drawer. This ensures the user can scroll
         // through the options in the drawer if there isn't enough vertical
         // space to fit everything.
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          children: drawerLst,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            _cmsList(context, drawerLst),
+            Divider(thickness: 1.5, color: Colors.black,),
+            _createNewCm(),
+            _showAd(),
+          ],
         ),
       ),
     );
+  }
+
+  _createNewCm() {
+    return Expanded(
+      flex: 2,
+        // height: 50, //MediaQuery.of(context).size.height * .3,
+        child: ListTile(
+          onTap: () =>
+                        Navigator.of(context).pushNamed(BuildChurch.routeName),
+            leading: Icon(Iconsax.add_square4, size: 20),
+            title: Text("Create new community",
+                style: Theme.of(context)
+                    .textTheme
+                    .caption!
+                    .copyWith(fontStyle: FontStyle.italic))));
+  }
+
+
+_showAd () {
+  return _isNativeAdLoaded
+      ? Expanded(
+          //height: 50, // MediaQuery.of(context).size.height * .1,
+          flex: 2,
+           // width: MediaQuery.of(context).size.width / 2.2,
+          child: AdWidget(ad: _nativeAd),
+          // decoration: BoxDecoration(
+          //    color: Theme.of(context).colorScheme.primary,
+          //    borderRadius: BorderRadius.circular(10),
+          // ),
+        )
+      : SizedBox.shrink();
+  }
+
+  Container _cmsList(BuildContext context, List<Widget> drawerLst) {
+    return Container(
+        
+        height: MediaQuery.of(context).size.height / 1.4,
+        child: ListView(children: drawerLst));
   }
 }
 

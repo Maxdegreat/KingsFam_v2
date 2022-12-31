@@ -98,9 +98,6 @@ class CustomRoute {
       case BuildChurch.routeName:
         return BuildChurch.route();
 
-      case CreateComuinity.routeName:
-        return CreateComuinity.route();
-
       case KingsCordScreen.routeName:
         return KingsCordScreen.route(settings.arguments as KingsCordArgs);
 

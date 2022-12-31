@@ -20,7 +20,6 @@ class NavScreen extends StatelessWidget {
   final Map<BottomNavItem, GlobalKey<NavigatorState>> navigatorKeys = {
     BottomNavItem.chats: GlobalKey<NavigatorState>(),
     BottomNavItem.search: GlobalKey<NavigatorState>(),
-    BottomNavItem.add: GlobalKey<NavigatorState>(),
     BottomNavItem.notifications: GlobalKey<NavigatorState>(),
     BottomNavItem.profile: GlobalKey<NavigatorState>(),
   };
@@ -28,7 +27,6 @@ class NavScreen extends StatelessWidget {
   final Map<BottomNavItem, Widget> items = const {
     BottomNavItem.chats: Icon(Icons.home, size: 20,),
     BottomNavItem.search: Icon(Icons.search, size: 20),
-    BottomNavItem.add: Icon(Iconsax.add_square4, size: 20),
     BottomNavItem.notifications: Icon(Icons.favorite_border, size: 20),
     BottomNavItem.profile: Icon(Icons.account_circle, size: 20)
   };
