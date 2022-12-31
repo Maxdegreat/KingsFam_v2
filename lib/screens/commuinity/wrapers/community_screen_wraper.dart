@@ -513,12 +513,13 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
             ),
             if (cord.mode == "chat" &&
                 cord.recentActivity!["chat"] != null) ...[
-              Center(child: DisplayMsg(m: cord.recentActivity!["chat"]))
+              Padding(
+                padding: const EdgeInsets.only(left:10),
+                child: DisplayMsg(m: cord.recentActivity!["chat"], s: null,),
+              )
             ] else if (cord.mode == "says" &&
                 cord.recentActivity!["says"] != null) ...[
-              FittedBox(
-                  fit: BoxFit.contain,
-                  child: Text(cord.recentActivity!["says"].author.username))
+              Padding(padding: EdgeInsets.only(left:10), child: DisplayMsg(m:null, s: cord.recentActivity!["says"]),)
             ]
           ],
         ),

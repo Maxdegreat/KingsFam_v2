@@ -112,7 +112,7 @@ class KingsCordRepository extends BaseKingsCordRepository {
                 .doc(cmId)
                 .collection(Paths.kingsCord)
                 .doc(kc.id!)
-                .collection(Paths.messages)
+                .collection(Paths.says)
                 .orderBy('date', descending: true)
                 .limit(1)
                 .get();
@@ -134,14 +134,24 @@ class KingsCordRepository extends BaseKingsCordRepository {
 
         if (docSnap.exists) {
           mentionedL.add(kc.copyWith(
-              readStatus: readStatus, recentActivity: {"chat": recentM, "says": recentS}));
+              readStatus: readStatus,
+              recentActivity: {"chat": recentM, "says": recentS}));
         } else {
           kingsCordL.add(kc.copyWith(
-              readStatus: readStatus, recentActivity: {"chat": recentM, "says": recentS}));
+              readStatus: readStatus,
+              recentActivity: {"chat": recentM, "says": recentS}));
         }
       }
     }
 
+    mentionedL.forEach((e) {
+      log("ml: " + e.recentActivity.toString() + "/n");
+    });
+
+    kingsCordL.forEach((e) {
+      log("kl: " + e.recentActivity.toString() + "/n");
+    });
+    
     Map<String, List<KingsCord>> map = {};
     map[mentioned] = mentionedL;
     map[kingsCord] = kingsCordL;
