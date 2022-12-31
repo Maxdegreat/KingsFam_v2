@@ -79,7 +79,13 @@ class ShowBanedUsersState extends State<ShowBanedUsers> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Baned Users"),
+          leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).iconTheme.color,
+              )),
+          title: Text("Baned Users",  style: Theme.of(context).textTheme.bodyText1,),
         ),
         body: Container(
             height: MediaQuery.of(context).size.height / 2,

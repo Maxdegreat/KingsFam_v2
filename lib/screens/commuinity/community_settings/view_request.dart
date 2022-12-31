@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kingsfam/config/constants.dart';
@@ -63,42 +62,52 @@ class _ReviewPendingRequestState extends State<ReviewPendingRequest> {
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
+              leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).iconTheme.color,
+              )),
               title: Text("Reviewing Pending Join Request",
+              style: Theme.of(context).textTheme.bodyText1,
                   overflow: TextOverflow.ellipsis),
             ),
-            body: Column(
-              children: [
-                Text("You can allow people to join or deny them because you are an admin or owner.", textAlign: TextAlign.center,),
-                Container(
-                    height: MediaQuery.of(context).size.height / 1.4,
-                    child: ListView.builder(
-                      controller: _controller,
-                      itemCount: users.length,
-                      itemBuilder: (context, index) {
-                        Userr user = users[index];
-                        return Card(
-                          color: Color(hc.hexcolorCode("##141829")),
-                          child: Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ListTile(
-                                  leading: ProfileImage(
-                                    pfpUrl: user.profileImageUrl,
-                                    radius: 30,
+            body: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Text("You can allow people to join or deny them because you are an admin or Lead role.", textAlign: TextAlign.center,),
+                  Container(
+                      height: MediaQuery.of(context).size.height / 1.4,
+                      child: ListView.builder(
+                        controller: _controller,
+                        itemCount: users.length,
+                        itemBuilder: (context, index) {
+                          Userr user = users[index];
+                          return Card(
+                            color: Color(hc.hexcolorCode("##141829")),
+                            child: Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ListTile(
+                                    leading: ProfileImage(
+                                      pfpUrl: user.profileImageUrl,
+                                      radius: 30,
+                                    ),
+                                    title: Text(user.username),
                                   ),
-                                  title: Text(user.username),
-                                ),
-                                _trailing(user)
-                              ],
+                                  _trailing(user)
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    )),
-              ],
+                          );
+                        },
+                      )),
+                ],
+              ),
             )));
   }
 

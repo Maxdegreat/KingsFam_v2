@@ -463,12 +463,11 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   SizedBox(width: 2),
-                  cord.readStatus != null && !cord.readStatus!
-                      ? SizedBox.shrink()
-                      : CircleAvatar(
-                          backgroundColor: Colors.amber,
-                          radius: 5,
-                        ),
+                  if (cord.readStatus!=null&&!cord.readStatus!)
+                    SizedBox.shrink()
+                  else if (cord.readStatus!=null&&cord.readStatus! || cord.readStatus == null)
+                    CircleAvatar(backgroundColor: Colors.amber,radius: 5)
+
                 ] else if (cord.mode == "says") ...[
                   Icon(Icons.auto_awesome_motion_rounded),
                   SizedBox(width: 3),
@@ -543,12 +542,15 @@ void onLongPressCord(BuildContext context, KingsCord cord, Church cm) {
         bgColor: Colors.red[400],
         context: context);
   } else {
-    if (cord.mode != "welcome")
+    if (cord.mode == "welcome")
       snackBar(
           snackMessage: "Must have welcome room at this moment",
-          context: context);
+          context: context
+      );
     else if (CmPermHandler.canMakeRoom(context.read<CommuinityBloc>()))
-      _delKcDialog(context: context, cord: cord, commuinity: cm);
+      _delKcDialog(
+        context: context, cord: cord, commuinity: cm
+      );
     else
       snackBar(
           snackMessage: "You do not have permissions to remove this room.",
@@ -571,8 +573,10 @@ void NavtoKcFromRooms(
               },
               commuinity: cm,
               kingsCord: cord))
-      .then((_) =>
-          context.read<CommuinityBloc>().setMentionedToFalse(kcId: cord.id!));
+      .then((_) {
+          context.read<CommuinityBloc>().setReadStatusFalse(kcId: cord.id!);
+          context.read<CommuinityBloc>().setMentionedToFalse(kcId: cord.id!);
+      });
 }
 
 SliverAppBar cmSliverAppBar({

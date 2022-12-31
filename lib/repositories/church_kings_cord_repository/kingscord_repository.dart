@@ -68,8 +68,8 @@ class KingsCordRepository extends BaseKingsCordRepository {
       Message? recentM;
       Says? recentS;
 
-      KingsCord? kc = await future;
-      if (kc != null) {
+      await future.then((kc) async {
+              if (kc != null) {
         List<String>? savedKcTimeStmap =
             await UserPreferences.getKcTimeStamps(cmId);
         if (savedKcTimeStmap != null) {
@@ -96,7 +96,7 @@ class KingsCordRepository extends BaseKingsCordRepository {
                 if (savedKcTimeStmap[i].substring(0, 20) == kc.id!) {
                   localT = DateTime.tryParse(savedKcTimeStmap[i].substring(21));
                   if (localT != null) {
-                    readStatus = !localT.isBefore(tFromMsg) ? false : true;
+                    readStatus = !localT!.isBefore(tFromMsg!) ? false : true;
                   }
                 }
               }
@@ -142,6 +142,8 @@ class KingsCordRepository extends BaseKingsCordRepository {
               recentActivity: {"chat": recentM, "says": recentS}));
         }
       }
+      });
+
     }
 
     mentionedL.forEach((e) {

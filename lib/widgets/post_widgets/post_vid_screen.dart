@@ -28,6 +28,7 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
 
   @override
   void initState() {
+
     videoPlayerController = new VideoPlayerController.network(widget.post.videoUrl!);
 
     videoPlayerController!
@@ -51,6 +52,9 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
 
   @override
   Widget build(BuildContext context) {
+
+    Set<String?> l  = context.read<LikedPostCubit>().state.likedPostsIds;
+    log( "This post is contained in the likedPostIds: " + l.contains(widget.post.id).toString() );
     Size size = MediaQuery.of(context).size;
 
     return Stack(
@@ -107,6 +111,7 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
   Widget _engagmentColumn() {
     TextStyle captionS = Theme.of(context).textTheme.caption!.copyWith(color: Colors.white);
     bool isLikedPost = context.read<LikedPostCubit>().state.likedPostsIds.contains(widget.post.id);
+    log("The val of bool checking if postid is contained is: " + isLikedPost.toString());
     bool recentlyLiked = context.read<LikedPostCubit>().state.recentlyLikedPostIds.contains(widget.post.id);
     String likeCount = recentlyLiked
       ? (widget.post.likes + 1).toString() 
@@ -133,7 +138,7 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
                       context.read<LikedPostCubit>().likePost(post: widget.post);
                     }
                   }, 
-                  icon: Icon(Icons.favorite_outline_rounded, color: recentlyLiked ? Colors.amber : Colors.white,)
+                  icon: Icon(Icons.favorite_outline_rounded, color: (isLikedPost || recentlyLiked) ? Colors.amber : Colors.white,)
                 ),
               
                 SizedBox(height: 10),

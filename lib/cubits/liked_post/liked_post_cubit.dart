@@ -30,12 +30,15 @@ class LikedPostCubit extends Cubit<LikedPostState> {
 
   // This will update our liked post fo this session, and actualy make a new post.
   void likePost({required Post post}) {
-    _postsRepository.createLike(post: post, userId: _authBloc.state.user!.uid);
 
-    emit(state.copyWith(
-        likedPostsIds: Set<String>.from(state.likedPostsIds)..add(post.id!),
-        recentlyLikedPostIds: Set<String>.from(state.recentlyLikedPostIds)..add(post.id!)
-    ));
+    if (!state.likedPostsIds.contains(post.id)) {
+        _postsRepository.createLike(post: post, userId: _authBloc.state.user!.uid);
+
+      emit(state.copyWith(
+          likedPostsIds: Set<String>.from(state.likedPostsIds)..add(post.id!),
+          recentlyLikedPostIds: Set<String>.from(state.recentlyLikedPostIds)..add(post.id!)
+      ));
+    }
   }
 
   void unLikePost({required Post post}) {

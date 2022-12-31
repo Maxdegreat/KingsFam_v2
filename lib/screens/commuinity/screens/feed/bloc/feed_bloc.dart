@@ -101,8 +101,8 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       final postContainers = _makePostContainers(updatedPosts);
 
       final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: posts);
-      yield state.copyWith(posts: updatedPosts, postContainer: postContainers, status: FeedStatus.success);
       _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
+      yield state.copyWith(posts: updatedPosts, postContainer: postContainers, status: FeedStatus.success);
     } catch (e) {  
       yield state.copyWith(
           failure: Failure(

@@ -228,18 +228,19 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
           .listen((kcords) async {
             // if (MockFlag.ISMOCKTESTING) return;
         // final allCords = await Future.wait(kcords);
-        final Map<String, List<KingsCord?>> kingsCords =
+        
             await KingsCordRepository().futureWaitCord(
-                kcords, event.commuinity.id!, _authBloc.state.user!.uid);
+                kcords, event.commuinity.id!, _authBloc.state.user!.uid).then((kingsCords) {
+              // The updated status in the emit is used in cm screen listener. if status is updated we setstate. thats it.
+              emit(state.copyWith(
+                kingCords: kingsCords["kinscord"],
+                mentionedCords: kingsCords["mentioned"],
+                status: CommuintyStatus.updated));
+              emit(state.copyWith(status: CommuintyStatus.inital));
+            });
 
-        // The updated status in the emit is used in cm screen listener. if status is updated we setstate. thats it.
-        emit(state.copyWith(
-            kingCords: kingsCords["kinscord"],
-            mentionedCords: kingsCords["mentioned"],
-            status: CommuintyStatus.updated));
-        Future.delayed(Duration(milliseconds: 50)).then(
-            (value) => emit(state.copyWith(status: CommuintyStatus.inital)));
         // add(CommunityLoadingEvents(cm: event.commuinity));
+      
       });
       add(CommunityLoadingPosts(cm: event.commuinity));
     } catch (e) {

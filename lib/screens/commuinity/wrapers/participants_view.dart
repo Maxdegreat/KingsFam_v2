@@ -583,7 +583,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
                     style: Theme.of(context).textTheme.bodyText2,
                   ),
                   style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).colorScheme.inversePrimary,
+                      primary: Theme.of(context).colorScheme.secondary,
                       shape: StadiumBorder()),
                 ),
                 ElevatedButton(
@@ -596,7 +596,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
                   child: Text("Baned Users",
                       style: Theme.of(context).textTheme.bodyText2),
                   style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).colorScheme.inversePrimary,
+                      primary: Theme.of(context).colorScheme.secondary,
                       shape: StadiumBorder()),
                 )
               ],
