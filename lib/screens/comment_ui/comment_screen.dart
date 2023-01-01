@@ -135,10 +135,10 @@ class _CommentScreenState extends State<CommentScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
 
-            CircleAvatar(
-              radius: 15,
-              backgroundImage: CachedNetworkImageProvider(imageUrl),
-            ),
+            // CircleAvatar(
+            //   radius: 15,
+            //   backgroundImage: CachedNetworkImageProvider(imageUrl),
+            // ),
     
             SizedBox(width: 5),
     

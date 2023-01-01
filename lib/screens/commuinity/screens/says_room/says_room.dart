@@ -93,65 +93,82 @@ class _SaysRoomState extends State<SaysRoom> {
         date: Timestamp.now());
 
     return SafeArea(
-      child: Scaffold(
-               backgroundColor: Theme.of(context).colorScheme.secondary, //Color(hc.hexcolorCode("#141829")),
+      child: BlocConsumer<SaysBloc, SaysState>(
+        listener: (context, state) {
+          // TODO: implement listener
+        },
+        builder: (context, state) {
+          
+          return Scaffold(
+            backgroundColor: Theme.of(context)
+                .colorScheme
+                .secondary, //Color(hc.hexcolorCode("#141829")),
 
-        appBar: AppBar(
-          // backgroundColor: Color(hc.hexcolorCode("#141829")),
-          title: Text(widget.kcName, style: Theme.of(context).textTheme.bodyText1),
-          leading: IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: Icon(
-                Icons.arrow_back_ios,
-                color: Theme.of(context).iconTheme.color,
-              )),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  Church _cmLim = Church.empty;
-                  Navigator.of(context).pushNamed(CreateSays.routeName,
-                      arguments: CreateSaysArgs(
-                          currUsr: widget.currUsr,
-                          chLim: _cmLim.copyWith(
-                              id: widget.cm.id!, name: widget.cm.name),
-                          kcId: widget.kcId));
-                },
-                child: Text("New Says", style: Theme.of(context).textTheme.bodyText1))
-          ],
-        ),
-        body: BlocConsumer<SaysBloc, SaysState>(
-          listener: (context, state) {
-            // TODO: implement listener
-          },
-          builder: (context, state) {
-            return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 1),
-                child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  child: ListView.builder(
-                      // itemCount: state.status == SaysStatus.loading
-                      // ? state.says.length + 1 : state.says.length,
-                      itemCount: state.says.length,
-                      itemBuilder: (context, index) {
-                        Says says = state.says[index]!;
-                        return Column(
-                          children: [
-                            SizedBox(height: 4),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pushNamed(SaysView.routeName, arguments: SaysViewArgs(s: says ,cmId: widget.cm.id!, kcId: widget.kcId));
-                                log("fired");
-                              },
-                              child: SaysContainer(says: says, context: context, localLikesSays: context.read<LikedSaysCubit>().state.localLikedSaysIds)),
-                            SizedBox(height: 4),
-                          ],
-                        );
-                      }),
-                ));
-          },
-        ),
-      ),
-    );
+            appBar: AppBar(
+              // backgroundColor: Color(hc.hexcolorCode("#141829")),
+              title: Text(widget.kcName,
+                  style: Theme.of(context).textTheme.bodyText1),
+              leading: IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: Icon(
+                    Icons.arrow_back_ios,
+                    color: Theme.of(context).iconTheme.color,
+                  )),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Church _cmLim = Church.empty;
+                      Navigator.of(context).pushNamed(CreateSays.routeName,
+                          arguments: CreateSaysArgs(
+                              currUsr: widget.currUsr,
+                              chLim: _cmLim.copyWith(id: widget.cm.id!, name: widget.cm.name),
+                              kcId: widget.kcId)).then((_) {
+                                // we will refresh the says screen to maybe get any new posteds says.
+                              });
+                    },
+                    child: Text("Create Says",
+                        style: Theme.of(context).textTheme.bodyText1))
+              ],
+            ),
+            body: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 1),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      child: ListView.builder(
+                          // itemCount: state.status == SaysStatus.loading
+                          // ? state.says.length + 1 : state.says.length,
+                          itemCount: state.says.length,
+                          itemBuilder: (context, index) {
+                            Says says = state.says[index]!;
+                            return Column(
+                              children: [
+                                SizedBox(height: 4),
+                                GestureDetector(
+                                    onTap: () {
+                                      Navigator.of(context).pushNamed(
+                                          SaysView.routeName,
+                                          arguments: SaysViewArgs(
+                                              s: says,
+                                              cmId: widget.cm.id!,
+                                              kcId: widget.kcId));
+                                      log("fired");
+                                    },
+                                    child: SaysContainer(
+                                        says: says,
+                                        context: context,
+                                        localLikesSays: context
+                                            .read<LikedSaysCubit>()
+                                            .state
+                                            .localLikedSaysIds)),
+                                SizedBox(height: 4),
+                              ],
+                            );
+                          }),
+          )));
+              },
+            ),
+          );
   }
 }

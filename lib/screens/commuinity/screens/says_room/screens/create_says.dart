@@ -78,15 +78,14 @@ class _CreateSaysState extends State<CreateSays> {
             height: 30,
             width: double.infinity,
             child: TextField(
-              cursorColor: Theme.of(context).cursorColor,
+              cursorColor: Theme.of(context).colorScheme.inversePrimary,
               controller: _controllerT,
               decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
+                border: InputBorder.none,
                 fillColor: Theme.of(context).colorScheme.secondary,
                 filled: true,
                 focusColor: Theme.of(context).colorScheme.secondary,
-                hintStyle: Theme.of(context).textTheme.bodyText1,
+                hintStyle: Theme.of(context).textTheme.caption,
                 hintText: "Add a title",
                 contentPadding: EdgeInsets.all(10.0),
               ),
@@ -109,20 +108,18 @@ class _CreateSaysState extends State<CreateSays> {
             children: [
               KingsCordUserDisplay(),
               SizedBox(height: 5),
-              Container(
-                height: MediaQuery.of(context).size.height / 2.8,
+              Expanded(
                 child: TextField(
-                  cursorColor: Theme.of(context).cursorColor,
                   keyboardType: TextInputType.multiline,
-                  expands: true,
                   minLines: null,
-                  maxLines: null,
+                  maxLines: 150,
+                  cursorColor: Theme.of(context).colorScheme.inversePrimary,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                                      fillColor: Theme.of(context).colorScheme.secondary,
-                  filled: true,
-                  focusColor: Theme.of(context).colorScheme.secondary,
+                  decoration: InputDecoration(fillColor: Theme.of(context).colorScheme.secondary,
+                  // filled: true,
+                  // focusColor: Theme.of(context).colorScheme.secondary,
                       border: InputBorder.none,
+                      hintStyle: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 23, fontWeight: FontWeight.bold, color: Colors.grey),
                       hintText: "Share Your Thoughts"),
                   controller: _controller,
                   onSubmitted: (String value) async {
@@ -159,10 +156,9 @@ class _CreateSaysState extends State<CreateSays> {
       padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8),
       child: Container(
         height: 18,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              primary: Color(hc.hexcolorCode(widget.currUsr.colorPref))),
-          child: Text("Done"),
+        child: TextButton(
+          
+          child: Text("Post", style: Theme.of(context).textTheme.bodyText1,),
           onPressed: () {
             try {
               // ignore: unnecessary_null_comparison
@@ -181,7 +177,8 @@ class _CreateSaysState extends State<CreateSays> {
                 }
               }
               // make the says
-              Says says = Says(
+              if (_controller.value.text.length > 0) {
+                Says says = Says(
                   author: widget.currUsr,
                   contentTxt: _controller.value.text,
                   likes: 0,
@@ -198,6 +195,9 @@ class _CreateSaysState extends State<CreateSays> {
               );
               // nav . pop()
               Navigator.of(context).pop();
+              } else {
+                snackBar(snackMessage: "Please share in order to post", context: context, bgColor: Colors.red[400]);
+              }
             } catch (e) {
               log("There was an error in createSays: " + e.toString());
             }

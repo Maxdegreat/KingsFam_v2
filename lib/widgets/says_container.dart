@@ -34,13 +34,13 @@ class _SaysContainerState extends State<SaysContainer> {
   @override
   Widget build(BuildContext context) {
     TextStyle title = TextStyle(
-      fontSize: 18,
+      fontSize: 15,
       color: Color(hc.hexcolorCode(widget.says.author!.colorPref)),
       fontWeight: FontWeight.bold,
     );
 
     TextStyle title2 = TextStyle(
-      fontSize: 20,
+      fontSize: 18,
       fontWeight: FontWeight.bold,
     );
 
@@ -57,8 +57,6 @@ class _SaysContainerState extends State<SaysContainer> {
             children: [
               header_says(title),
               SizedBox(height: 5),
-              title_says(context),
-              SizedBox(height: 5),
               contentTxt_says(),
               SizedBox(height: 10),
               footer(),
@@ -71,6 +69,7 @@ class _SaysContainerState extends State<SaysContainer> {
 
   Widget title_says(BuildContext context) {
     return Text(widget.says.title!,
+    overflow: TextOverflow.fade,
         style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 20));
   }
 
@@ -105,19 +104,17 @@ class _SaysContainerState extends State<SaysContainer> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // cm name as title
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: Text(
-                      widget.says.author!.username,
-                      style: title,
-                      overflow: TextOverflow.fade,
-                      maxLines: 1,
-                    ),
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Text(
+                  widget.says.author!.username,
+                  style: title,
+                  overflow: TextOverflow.fade,
+                  maxLines: 1,
+                ),
               ),
+              SizedBox(height: 1),
+              title_says(context)
             ],
           ),
         ),
@@ -127,14 +124,15 @@ class _SaysContainerState extends State<SaysContainer> {
 
   // creation of the footer
   Widget footer() {
-    return Row(
-      children: [
-        widget.says.contentImgUrl != null
-            ?
-            // show the img or vid thumbnail
-            imgRow()
+    return Align(
+      alignment: Alignment.bottomLeft,
+      child: Row(
+        children: [
+          widget.says.contentImgUrl != null
+            ? imgRow()
             : oneLineReactions()
-      ],
+        ],
+      ),
     );
   }
 
