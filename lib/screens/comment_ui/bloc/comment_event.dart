@@ -35,9 +35,8 @@ class CommentUpdateComments extends CommentEvent {
 class CommentPostComment extends CommentEvent {
   final String content;
   final Post? post;
-  final List<Comment?> comments;
 
-  CommentPostComment({required this.content, required this.post, required this.comments});
+  CommentPostComment({required this.content, required this.post});
   // List<Object?> get props => [content];
   
 }

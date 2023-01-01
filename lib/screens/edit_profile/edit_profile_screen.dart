@@ -159,6 +159,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             TextFormField(
+                              cursorColor: Theme.of(context).colorScheme.inversePrimary,
                               initialValue: widget.userr.username,
                               decoration: InputDecoration(hintText: 'Username'),
                               onChanged: (value) => context
@@ -170,6 +171,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ B I O ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                             TextFormField(
+                              cursorColor: Theme.of(context).colorScheme.inversePrimary,
                               initialValue: widget.userr.bio,
                               decoration: InputDecoration(hintText: 'Bio'),
                               onChanged: (value) => context

@@ -80,7 +80,7 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
           highId: null,
       );
       _postsRepository.createComment(comment: comment, post: event.post!);
-      List<Comment> commentsList = List<Comment>.from(event.comments)
+      List<Comment> commentsList = List<Comment>.from(state.comments)
         ..insert(0, comment);
       yield state.CopyWith(comments: commentsList, post: event.post);
     } catch (e) {}

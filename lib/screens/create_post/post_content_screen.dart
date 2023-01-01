@@ -394,7 +394,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
         caption: caption,
         likes: 0,
         date: Timestamp.now(),
-        height: 0,
+        commentCount: 0,
       );
 
       PostsRepository().createPost(post: post);
@@ -431,7 +431,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
           caption: caption,
           likes: 0,
           date: Timestamp.now(),
-          height: null);
+          commentCount: 0);
 
       PostsRepository().createPost(post: post);
       snackBar(

@@ -223,7 +223,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                               alignment: Alignment.center,
                               child: TextFormField(
                                   // validator: (value) {},
-
+                                  cursorColor: Theme.of(context).colorScheme.inversePrimary,
                                   textAlignVertical: TextAlignVertical.center,
                                   style: TextStyle(fontSize: 18),
                                   autocorrect: true,
@@ -277,7 +277,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                     contentPadding: EdgeInsets.all(2),
                                     border: InputBorder.none,
                                     // filled: true,
-                                    hintText: 'Think first',
+                                    hintText: 'Send message',
                                     isCollapsed: true,
                                     // fillColor: Color(hc.hexcolorCode("#141829")!)
                                   )),

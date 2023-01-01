@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
+import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
+import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/comment_line.dart';
 import 'bloc/comment_bloc.dart';
 import 'package:kingsfam/models/models.dart';
@@ -42,122 +44,190 @@ class CommentScreen extends StatefulWidget {
 }
 
 bool canPost = false;
+TextStyle style = TextStyle(color: Colors.grey);
 
 class _CommentScreenState extends State<CommentScreen> {
   HexColor hc = HexColor();
   Comment? commentReplyingTo = null;
   final TextEditingController _messageController = TextEditingController();
-  double textHeight = 35;
+  double textHeight = 50;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: Theme.of(context).iconTheme.color,
-            )),
-        title: Text(
-          "Comments",
-          style: Theme.of(context).textTheme.bodyText1,
-        ),
-      ),
-      body: SafeArea(
-          child: BlocConsumer<CommentBloc, CommentState>(
-        listener: (context, state) {
-          if (state.status == CommentStatus.error) {
-            snackBar(
-                snackMessage: "${state.failure.message}",
-                context: context,
-                bgColor: Colors.red[400]);
-            log("!!!!!!!!!!!!!!!!!!" + "commentScreen" + "!!!!!!!!!!!!!!!!!!!");
-            log("error: " + state.failure.code);
-          }
-        },
-        builder: (context, state) {
-          return _buildComment(state);
-        },
-      )),
-    );
-  }
+    return BlocConsumer<CommentBloc, CommentState>(
+      listener: (context, state) {
 
-  _buildComment(CommentState state) {
-    return Scaffold(
-      body: commentLoadedWidget(state.comments, state),
-    );
-  }
+      },
 
-  Widget commentLoadedWidget(List<Comment?> comments, CommentState state) {
-    TextStyle style = TextStyle(color: Colors.grey);
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-        state.status == CommentStatus.loading
-            ? LinearProgressIndicator()
-            : SizedBox.shrink(),
-        Expanded(
-          child: ListView.builder(
-            physics: AlwaysScrollableScrollPhysics(),
-            reverse: true,
-            itemCount: comments.length,
-            itemBuilder: (BuildContext context, int index) {
-              Comment? comment = comments[index];
-              return comment != null
-                  ? Column(
-                      children: [
-                        CommentLines(comment: comment),
-                        // _replyBtns(comment: comment, postId: widget.post.id!),
-                        // _showReplys(state: state, comment: comment),
-                      ],
-                    )
-                  : Text("ops, something went wrong");
-            },
-          ),
-        ),
+      builder: (context, state) {
+        return SafeArea(
+          child: Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).iconTheme.color,
+              )),
+              title: Text("Comments", style: Theme.of(context).textTheme.bodyText1,),
+              actions: [
+
+              ],
+            ),
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+
+        if (state.status == CommentStatus.loading)
+            LinearProgressIndicator(),
+            
+        _commentListView(state),
+        Divider(),
        _bottomTf(),
-      ]),
+     
+    
+              ],
+            ),
+          )
+        );
+      }, 
     );
   }
+
+  Expanded _commentListView(CommentState state) {
+    return Expanded(
+        child: ListView.builder(
+          physics: AlwaysScrollableScrollPhysics(),
+          reverse: true,
+          itemCount: state.comments.length,
+          itemBuilder: (BuildContext context, int index) {
+            if (state.comments.length == 0) {
+              return Center(child: Text("Be the first to comment", style: Theme.of(context).textTheme.caption,));
+            } else {
+              Comment? comment = state.comments[index];
+            return comment != null
+                ? Column(
+                    children: [
+                      CommentLines(comment: comment),
+                      // _replyBtns(comment: comment, postId: widget.post.id!),
+                      // _showReplys(state: state, comment: comment),
+                    ],
+                  )
+                : Text("ops, something went wrong");
+            }
+          },
+        ),
+      );
+  }
+
+
 
   _bottomTf() {
-    String? imageUrl = context.read<CommuinityBloc>().state.currUserr.profileImageUrl;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        CircleAvatar(
-          radius: 20,
-          backgroundImage: CachedNetworkImageProvider(imageUrl),
+    String? imageUrl = context.read<ProfileBloc>().state.userr.profileImageUrl;
+    return Container(
+      // height: textHeight + 10,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+
+            CircleAvatar(
+              radius: 15,
+              backgroundImage: CachedNetworkImageProvider(imageUrl),
+            ),
+    
+            SizedBox(width: 5),
+    
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: TextField(
+                            onChanged: _textFieldOnChanged(_messageController),
+                            cursorColor: Theme.of(context).colorScheme.inversePrimary,
+                            textAlignVertical: TextAlignVertical.center,
+                            style: TextStyle(fontSize: 18),
+                            expands: false,
+                            autocorrect: true,
+                            controller: _messageController,
+                            keyboardType: TextInputType.multiline,
+                            maxLines: 8,
+                            minLines: 1,
+                            textCapitalization:
+                                  TextCapitalization.sentences,
+                            decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: "comment",
+                  hintStyle: Theme.of(context).textTheme.caption,
+                  focusColor: Colors.green,
+                            ),
+                          ),
+                ),
+              ),
+            ),
+            
+            SizedBox(width: 5),
+            _postButton(),
+          ]
         ),
-
-        SizedBox(width: 7),
-
-        TextFormField(
-          controller: _messageController,
-          keyboardType: TextInputType.multiline,
-          maxLines: 4,
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: "comment",
-            hintStyle: Theme.of(context).textTheme.caption,
-            focusColor: Colors.green,
-          ),
-        ),
-
-        _postButton(),
-      ]
+      ),
     );
   }
 
   _postButton() {
     return TextButton(
       onPressed: () {
-        context.read<CommentBloc>()
+        if (canPost) {
+          context.read<CommentBloc>().add(CommentPostComment(content: _messageController.value.text, post: widget.post));
+        }
       }, 
-      child: Text("Post")
+      child: Text(
+        "Post", 
+        style: canPost ? 
+          Theme.of(context).textTheme.caption!.copyWith(color: Colors.greenAccent)
+          : Theme.of(context).textTheme.caption!.copyWith(color: Colors.grey)
+      )
     );
+  }
+
+  _textFieldOnChanged(TextEditingController ctrl) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (ctrl.value.text.length > 1) {
+      canPost = true;
+    } else {
+      canPost = false;
+    }
+
+    if (ctrl.value.text.length > 26) {
+       textHeight += 25;
+    }
+
+    if (ctrl.value.text.length > 38) {
+      textHeight += 25;
+    }
+
+    if (ctrl.value.text.length < 26) {
+      textHeight = 50;
+    }
+
+    if (ctrl.value.text.length > 26) {
+      
+      setState(() {});
+      
+    } else if (ctrl.value.text.length > 38) {
+      
+      setState(() {});
+
+    } else if (ctrl.value.text.length < 26) {
+      setState(() {});
+    }
+
+    });
   }
 
   replyBtn(Comment comment) {
