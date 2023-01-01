@@ -27,11 +27,8 @@ class Post extends Equatable {
   final String? soundTrackUrl; //bg sounds like tik tok
   final String? caption;
   final int likes;
-  final Timestamp date;
-  final int? height;
-  final Widget? nativeAd;
-  final String? promoted;
-  final String? webPageUrl; 
+  final Timestamp date; 
+  final int commentCount;
   Post({
     this.id,
     required this.author, //2 make the constructor
@@ -46,21 +43,18 @@ class Post extends Equatable {
     required this.caption,
     required this.likes,
     required this.date,
-    required this.height,
-    this.nativeAd,
-    this.promoted,
-    this.webPageUrl,
+    required this.commentCount,
   });
 
-  static Post empty = Post( author: Userr.empty, quote: null, imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: '', likes: 0, date: Timestamp(0, 0), height: 10);
+  static Post empty = Post( author: Userr.empty, quote: null, imageUrl: null, videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: '', likes: 0, date: Timestamp(0, 0), commentCount: 0);
   
-  static Post mockImg = Post(id: "mockID77", author: Userr.mock, quote: null, imageUrl: "https://github.com/amagalla1394/odin-recipe-git-test/blob/main/recipes/images/Steamed_Pork_Buns.jpg?raw=true", videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum', commuinity: Church.mock, likes: 0, date: Timestamp(0, 0), height: 10);
+  static Post mockImg = Post(id: "mockID77", author: Userr.mock, quote: null, imageUrl: "https://github.com/amagalla1394/odin-recipe-git-test/blob/main/recipes/images/Steamed_Pork_Buns.jpg?raw=true", videoUrl: null, thumbnailUrl: null, soundTrackUrl: null, caption: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum', commuinity: Church.mock, likes: 0, date: Timestamp(0, 0), commentCount: 10);
 
-  static Post mockVid = Post(id: "mockID77", author: Userr.mock, quote: null, imageUrl: null, videoUrl: "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4", thumbnailUrl: "https://github.com/amagalla1394/odin-recipe-git-test/blob/main/recipes/images/Steamed_Pork_Buns.jpg?raw=true", soundTrackUrl: null, caption: 'This is a mock caption. I am making this caption long so that I can see how kingsfam post looks with a long cpation. really i do not care how this caption looks. anyways Thsi is just for mocking pleae remember this and it should not make any sence. letys see how fast I can type.', commuinity: Church.mock, likes: 0, date: Timestamp(0, 0), height: 10);
+  static Post mockVid = Post(id: "mockID77", author: Userr.mock, quote: null, imageUrl: null, videoUrl: "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4", thumbnailUrl: "https://github.com/amagalla1394/odin-recipe-git-test/blob/main/recipes/images/Steamed_Pork_Buns.jpg?raw=true", soundTrackUrl: null, caption: 'This is a mock caption. I am making this caption long so that I can see how kingsfam post looks with a long cpation. really i do not care how this caption looks. anyways Thsi is just for mocking pleae remember this and it should not make any sence. letys see how fast I can type.', commuinity: Church.mock, likes: 0, date: Timestamp(0, 0), commentCount: 10);
 
   @override
   List<Object?> get props =>
-      [id, height, author, commuinity,  quote, imageUrl, videoUrl, thumbnailUrl, soundTrackUrl, caption, likes, date, nativeAd, promoted, webPageUrl]; //3 do props
+      [id, author, commuinity,  quote, imageUrl, videoUrl, thumbnailUrl, soundTrackUrl, caption, likes, date, commentCount]; //3 do props
 
   Post copyWith({
     String? id, //4 do the copy with
@@ -77,8 +71,7 @@ class Post extends Equatable {
     int? likes,
     Timestamp? date,
     int? height,
-    String? promoted,
-    String? webPageUrl,
+    int? commentCount,
   }) {
     return Post(
       id: id ?? this.id,
@@ -94,9 +87,7 @@ class Post extends Equatable {
       caption: caption ?? this.caption,
       likes: likes ?? this.likes,
       date: date ?? this.date,
-      height: height ?? this.height,
-      promoted: promoted ?? this.promoted,
-      webPageUrl: webPageUrl ?? this.webPageUrl
+      commentCount: commentCount ?? this.commentCount,
     );
   }
 
@@ -115,7 +106,7 @@ class Post extends Equatable {
       'caption': caption,
       'likes': likes,
       'date': Timestamp.now(),
-      'height': height,
+      'commentCount': 0
     };
   }
 
@@ -129,7 +120,7 @@ class Post extends Equatable {
       'caption': caption,
       'likes': likes,
       'date': Timestamp.now(),
-      'height': height,
+      'commentCount': 0,
   };
 
   
@@ -155,10 +146,10 @@ class Post extends Equatable {
             videoUrl: data['videoUrl'] ?? null,
             thumbnailUrl: data['thumbnailUrl'] ?? null,
             soundTrackUrl: data['soundTrackUrl'] ?? null,
-            likes: data['likes'] ?? 77,
+            likes: data['likes'] ?? 0,
             caption: data['caption'] ?? null,
             date: (data['date'] ?? null ),
-            height: (data['height']) ?? null,
+            commentCount: data['commentCount'] ?? 0
         );
       } else {
         return Post(
@@ -170,10 +161,10 @@ class Post extends Equatable {
             videoUrl: data['videoUrl'] ?? null,
             thumbnailUrl: data['thumbnailUrl'] ?? null,
             soundTrackUrl: data['soundTrackUrl'] ?? null,
-            likes: data['likes'] ?? 77,
+            likes: data['likes'] ?? 0,
             caption: data['caption'] ?? null,
             date: (data['date'] ?? null ),
-            height: (data['height']) ?? null,
+            commentCount: data['commentCount'] ?? 0
         );
       }   
     }
@@ -194,7 +185,7 @@ class Post extends Equatable {
             likes: (data['likes']).toInt() ?? 77,
             caption: data['caption'] ?? null,
             date: (data['date'] ?? null ),
-            height: (data['height']) ?? null,
+            commentCount: data['commentCount'] ?? 0
         );
       }    
     }

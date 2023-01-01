@@ -379,6 +379,13 @@ class PostsRepository extends BasePostsRepository {
         .delete();
   }
 
+  Future<void> reportPost({required String postId, required String cmId}) async {
+    FirebaseFirestore.instance
+          .collection(Paths.report)
+          .doc(cmId)
+          .set({"postId": postId});
+  }
+
   //GET LIKED POSTS
   @override
   Future<Set<String>> getLikedPostIds(

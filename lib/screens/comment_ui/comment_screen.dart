@@ -1,10 +1,12 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:kingsfam/extensions/date_time_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
+import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/widgets/comment_line.dart';
 import 'bloc/comment_bloc.dart';
 import 'package:kingsfam/models/models.dart';
@@ -39,6 +41,8 @@ class CommentScreen extends StatefulWidget {
   State<CommentScreen> createState() => _CommentScreenState();
 }
 
+bool canPost = false;
+
 class _CommentScreenState extends State<CommentScreen> {
   HexColor hc = HexColor();
   Comment? commentReplyingTo = null;
@@ -48,13 +52,16 @@ class _CommentScreenState extends State<CommentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading:  IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: Icon(
-                Icons.arrow_back_ios,
-                color: Theme.of(context).iconTheme.color,
-              )),
-        title: Text("Comments", style: Theme.of(context).textTheme.bodyText1, ),
+        leading: IconButton(
+            onPressed: () => Navigator.of(context).pop(),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Theme.of(context).iconTheme.color,
+            )),
+        title: Text(
+          "Comments",
+          style: Theme.of(context).textTheme.bodyText1,
+        ),
       ),
       body: SafeArea(
           child: BlocConsumer<CommentBloc, CommentState>(
@@ -108,87 +115,48 @@ class _CommentScreenState extends State<CommentScreen> {
             },
           ),
         ),
-        Column(
-          children: [
-            commentReplyingTo == null
-                ? SizedBox.shrink()
-                : Container(
-                    child: Text(
-                      "replying to ~ " + commentReplyingTo!.author.username,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    color: Color(hc.hexcolorCode('#141829')),
-                    height: 15,
-                    width: double.infinity),
-            Row(children: [
-              Expanded(
-                  child: Container(
-                height: 50,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: TextFormField(
-                      validator: (val) {
-                        if (val != null && val.length > 200) {
-                          return "Keep each comment to less than 200 chars. Thanks fam.";
-                        }
-                      },
-                      controller: _messageController,
-                      textAlignVertical: TextAlignVertical.center,
-                      style: TextStyle(fontSize: 18),
-                      keyboardType: TextInputType.multiline,
-                      decoration:
-                          InputDecoration(hintText: "Add A Comment Fam..."),
-                      maxLines: null,
-                      expands: true,
-                      textCapitalization: TextCapitalization.sentences,
-                      onChanged: (messageText) {
-                        if (messageText.length >= 29)
-                          setState(() => textHeight = 50.0);
-                        else if (messageText.length >= 87)
-                          setState(() => textHeight = 65.0);
-                        else
-                          setState(() => textHeight = 30.0);
-                      },
-                    ),
-                  ),
-                ),
-              )),
-              IconButton(
-                  onPressed: () {
-                    String content = _messageController.text.trim();
-                    if (content.isNotEmpty) {
-                      if (commentReplyingTo != null) {
-                        content = "@" +
-                            commentReplyingTo!.author.username +
-                            " " +
-                            _messageController.text.trim();
-    
-                        context.read<CommentBloc>().onAddReply(
-                            comment: commentReplyingTo!,
-                            content: content,
-                            post: widget.post);
-                        context
-                            .read<CommentBloc>()
-                            .onViewReplys(commentReplyingTo!, widget.post.id!)
-                            .then((_) => setState(() {}));
-                        commentReplyingTo = null;
-                        setState(() {});
-                      } else {
-                        context.read<CommentBloc>().add(CommentPostComment(
-                            comments: comments,
-                            content: content,
-                            post: widget.post));
-                      }
-                      _messageController.clear();
-                    }
-                  },
-                  icon: Icon(Icons.send))
-            ]),
-          ],
-        )
+       _bottomTf(),
       ]),
+    );
+  }
+
+  _bottomTf() {
+    String? imageUrl = context.read<CommuinityBloc>().state.currUserr.profileImageUrl;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        CircleAvatar(
+          radius: 20,
+          backgroundImage: CachedNetworkImageProvider(imageUrl),
+        ),
+
+        SizedBox(width: 7),
+
+        TextFormField(
+          controller: _messageController,
+          keyboardType: TextInputType.multiline,
+          maxLines: 4,
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: "comment",
+            hintStyle: Theme.of(context).textTheme.caption,
+            focusColor: Colors.green,
+          ),
+        ),
+
+        _postButton(),
+      ]
+    );
+  }
+
+  _postButton() {
+    return TextButton(
+      onPressed: () {
+        context.read<CommentBloc>()
+      }, 
+      child: Text("Post")
     );
   }
 

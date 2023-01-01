@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/cubits/cubits.dart';
 import 'package:kingsfam/models/post_model.dart';
+import 'package:kingsfam/repositories/post/post_repository.dart';
 import 'package:kingsfam/screens/comment_ui/comment_screen.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
+import 'package:kingsfam/widgets/snackbar.dart';
 import 'package:kingsfam/widgets/videos/video_player.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -129,7 +131,6 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              
                 IconButton(
                   onPressed: () {
                     if (isLikedPost || recentlyLiked) {
@@ -141,7 +142,7 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
                   icon: Icon(Icons.favorite_outline_rounded, color: (isLikedPost || recentlyLiked) ? Colors.amber : Colors.white,)
                 ),
               
-                SizedBox(height: 10),
+                SizedBox(height: 7),
               
                 Text(likeCount, style: captionS,),
               
@@ -153,14 +154,19 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
                   }, 
                   icon: Icon(Icons.messenger_outline_outlined, color: Colors.white)
                 ),
-              
+                
+                SizedBox(height: 7),
+
+                Text(widget.post.commentCount.toString(), style: captionS,),
+                            
                 SizedBox(height: 15),
               
                 IconButton(
-                  onPressed: () {}, 
+                  onPressed: () {
+                    _showPostOptions();
+                  }, 
                   icon: Icon(Icons.more_vert, color: Colors.white,) 
                 ),
-              
             ],
           ),
         ),
@@ -168,6 +174,28 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
     );
   }
 
+  _showPostOptions() {
+    return showModalBottomSheet(
+      context: context, 
+      builder: ((context) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              onTap: () {
+                PostsRepository().reportPost(postId: widget.post.id!, cmId: widget.post.commuinity!.id!);
+                Future.delayed(Duration(seconds: 10)).then((value) => snackBar(snackMessage: "Post will be reviewed", context: context));
+              },
+              leading: Icon(Icons.report_gmailerrorred, color: Colors.red[400]),
+              title: Text("Report this post", style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.red[400]),),
+            )
+          ],
+        );
+      }
+    ));
+  }
 
   Widget _captionSection() {
     TextStyle captionS = Theme.of(context).textTheme.caption!.copyWith(color: Colors.white, fontStyle: FontStyle.italic);
