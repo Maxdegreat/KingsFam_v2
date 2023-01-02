@@ -47,8 +47,8 @@ class _SaysContainerState extends State<SaysContainer> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Container(
+        height: 180,
         color: Theme.of(context).colorScheme.primary,
-        height: 210,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -56,9 +56,9 @@ class _SaysContainerState extends State<SaysContainer> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               header_says(title),
-              SizedBox(height: 5),
+              SizedBox(height: 20),
               contentTxt_says(),
-              SizedBox(height: 10),
+              Expanded(child: SizedBox.shrink()),
               footer(),
             ],
           ),
@@ -79,6 +79,7 @@ class _SaysContainerState extends State<SaysContainer> {
       child: Text(
         widget.says.contentTxt,
         maxLines: 2,
+        softWrap: true,
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 17),
       ),
@@ -148,7 +149,7 @@ class _SaysContainerState extends State<SaysContainer> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(
-              Icons.keyboard_double_arrow_up_outlined,
+              Icons.favorite_border_outlined,
                color: context.read<LikedSaysCubit>().state.localLikedSaysIds.contains(widget.says.id) 
                 ? Colors.amber
                 : Theme.of(context).iconTheme.color,
@@ -158,12 +159,12 @@ class _SaysContainerState extends State<SaysContainer> {
                ? (widget.says.likes + 1).toString()
                : widget.says.likes.toString(),
                 style: Theme.of(context).textTheme.caption),
-            SizedBox(width: 7),
-            Icon(Icons.mode_comment_outlined),
-            SizedBox(width: 1),
-            Text(widget.says.commentsCount.toString(),
-                style: Theme.of(context).textTheme.caption),
-            SizedBox(width: 7),
+            // SizedBox(width: 7),
+            // Icon(Icons.mode_comment_outlined),
+            // SizedBox(width: 5),
+            // Text(widget.says.commentsCount.toString(),
+            //     style: Theme.of(context).textTheme.caption),
+            // SizedBox(width: 7),
           ],
         ),
         Text(widget.says.date.timeAgo(),

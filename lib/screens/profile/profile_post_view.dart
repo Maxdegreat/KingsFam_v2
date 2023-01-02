@@ -10,6 +10,8 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
+import 'package:kingsfam/widgets/post_widgets/post_img_screen.dart';
+import 'package:kingsfam/widgets/post_widgets/post_vid_screen.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -140,26 +142,12 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                   itemBuilder: (context, index) {
                     final Post? post = state.post[index];
                     if (post != null) {
-                      final LikedPostState =
-                          context.watch<LikedPostCubit>().state;
-                      final isLiked =
-                          LikedPostState.likedPostsIds.contains(post.id!);
-                      final recentlyLiked = LikedPostState.recentlyLikedPostIds
-                          .contains(post.id!);
-                      return PostSingleView(
-                        isLiked: isLiked,
-                        post: post,
-                        recentlyLiked: recentlyLiked,
-                        onLike: () {
-                          if (isLiked) {
-                            context
-                                .read<LikedPostCubit>()
-                                .unLikePost(post: post);
-                          } else {
-                            context.read<LikedPostCubit>().likePost(post: post);
-                          }
-                        },
-                      );
+                      if (post.imageUrl != null) {
+                        return ImgPost1_1(post: post);
+                      } else if (post.videoUrl != null) {
+                        return PostFullVideoView16_9(post: post);
+                      } else 
+                        return SizedBox.shrink();
                     }
                     return Text("post is null");
                   },

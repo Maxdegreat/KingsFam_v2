@@ -76,21 +76,23 @@ class _SaysViewState extends State<SaysView> {
                         sayId: widget.s.id!,
                         currLikes: widget.s.likes)
                     .then((value) => setState(() {}));
-              } else
+              } else 
                 snackBar(
                     snackMessage: "s.id is null",
                     context: context,
                     bgColor: Colors.red);
             },
             child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  _title(context, widget.s),
-                  _body(context, widget.s),
-                ],
+              child: Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    _title(context, widget.s),
+                    _body(context, widget.s),
+                  ],
+                ),
               ),
             ),
           ),
@@ -104,7 +106,7 @@ class _SaysViewState extends State<SaysView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(
-                      Icons.keyboard_double_arrow_up_outlined,
+                      Icons.favorite_border_outlined,
                       size: 25,
                       color: hasLiked
                           ? Colors.amber
@@ -115,12 +117,12 @@ class _SaysViewState extends State<SaysView> {
                             ? (widget.s.likes + 1).toString()
                             : widget.s.likes.toString(),
                         style: Theme.of(context).textTheme.caption),
-                    SizedBox(width: 7),
-                    Icon(Icons.mode_comment_outlined),
-                    SizedBox(width: 1),
-                    Text(widget.s.commentsCount.toString(),
-                        style: Theme.of(context).textTheme.caption),
-                    SizedBox(width: 7),
+                    // SizedBox(width: 7),
+                    // Icon(Icons.mode_comment_outlined),
+                    // SizedBox(width: 1),
+                    // Text(widget.s.commentsCount.toString(),
+                    //     style: Theme.of(context).textTheme.caption),
+                    // SizedBox(width: 7),
                   ],
                 ),
                 Padding(

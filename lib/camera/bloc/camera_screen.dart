@@ -167,7 +167,7 @@ class _CameraScreenState extends State<CameraScreen>
               color: Theme.of(context).iconTheme.color,
             )),
         backgroundColor: Colors.black,
-        title: Text('Share Something',
+        title: Text('Share whats going on',
             style: Theme.of(context)
                 .textTheme
                 .bodyText1!
