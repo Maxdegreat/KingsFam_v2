@@ -131,11 +131,14 @@ class _PostContentScreenState extends State<PostContentScreen> {
   Widget submitButton() {
     return TextButton(
       onPressed: () {
-        if (submitting != true && canSubmit) submit();
+        if (submitting != true && canSubmit) {
+          snackBar(snackMessage: "Posting", context: context);
+          submit();
+        };
       },
       child: Row(
         children: [
-          Text("POST", style: TextStyle(color: Colors.green)),
+          Text("POST", style: TextStyle(color: canSubmit ? Colors.green : Colors.grey,)),
           Icon(
             Icons.arrow_forward,
             color: canSubmit ? Colors.green : Colors.grey,
@@ -316,7 +319,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
         children: [
           GestureDetector(
             onTap: () {
-              if (cmIdPostingTo != null) 
+              if (cmIdPostingTo == null) 
                 canSubmit = true;
               else 
                 canSubmit = false;
@@ -364,7 +367,11 @@ class _PostContentScreenState extends State<PostContentScreen> {
     if (submitting == true) return;
     submitting = true;
     setState(() {});
-    final author = context.read<ProfileBloc>().state.userr;
+    
+    final author = await UserrRepository().getUserrWithId(userrId: context.read<AuthBloc>().state.user!.uid);
+    if (author.id == Userr.empty.id) {
+      Navigator.of(context).pop();
+    }
     final Church ch = Church(
         cmPrivacy: CmPrivacy.open,
         searchPram: [],

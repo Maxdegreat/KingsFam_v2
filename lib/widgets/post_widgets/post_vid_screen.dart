@@ -157,9 +157,9 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
                 
                 SizedBox(height: 7),
 
-                Text(widget.post.commentCount.toString(), style: captionS,),
+                // Text(widget.post.commentCount.toString(), style: captionS,),
                             
-                SizedBox(height: 15),
+                // SizedBox(height: 15),
               
                 IconButton(
                   onPressed: () {

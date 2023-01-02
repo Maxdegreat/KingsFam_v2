@@ -679,12 +679,41 @@ class _CameraScreenState extends State<CameraScreen>
               },
             ),
           SizedBox(width: 10),
-          IconButton(
-              onPressed: () {
-                _showGall = !_showGall;
+
+          GestureDetector(
+            onTap: () {
+               _showGall = !_showGall;
                 setState(() {});
-              },
-              icon: Icon(Iconsax.gallery, color: Colors.white)),
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(7),
+              gradient: LinearGradient(
+                colors: [Colors.amber, Colors.blue],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Row(
+                children: [
+                  Text('Gallery', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),),
+                  SizedBox(width: 5),
+                  Icon(Iconsax.gallery, color: Colors.black)
+                ],
+              ),
+            ),
+          ), SizedBox(width: 5),
+              ],
+            ),
+          )
+         
           ],
           SizedBox(width: 10),
           if (videoController != null || imageFile != null) ...[
@@ -760,7 +789,7 @@ class _CameraScreenState extends State<CameraScreen>
                 }
                 setState(() {});
               },
-              icon: Icon(Icons.image),
+              icon: Icon(Icons.image, color: Colors.white),
             ),
             IconButton(
                 onPressed: () async {
@@ -775,7 +804,7 @@ class _CameraScreenState extends State<CameraScreen>
                   }
                   setState(() {});
                 },
-                icon: Icon(Icons.video_collection_rounded))
+                icon: Icon(Icons.video_collection_rounded, color: Colors.white))
           ],
         ),
       ),

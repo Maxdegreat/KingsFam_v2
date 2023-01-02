@@ -45,7 +45,7 @@ snackBar(
   return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: GestureDetector(
         onTap: callBack, child: Expanded(child: Text(snackMessage, style: Theme.of(context).textTheme.caption,))),
-    backgroundColor: bgColor,
+    backgroundColor: bgColor?? Colors.black,
     duration: Duration(seconds: 3),
     behavior: SnackBarBehavior.floating,
     margin: EdgeInsets.only(bottom: 30, left: 10, right: 10),

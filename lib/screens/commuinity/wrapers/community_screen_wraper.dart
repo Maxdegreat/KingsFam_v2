@@ -38,7 +38,8 @@ Widget _mainScrollView(
                 end: Alignment.bottomLeft,
                 colors: [
                   Theme.of(context).colorScheme.secondary,
-                  Color.fromARGB(255, 17, 59, 122),
+                  Colors.black54
+                  // Color.fromARGB(255, 17, 59, 122),
                 ]),
           ),
         )),

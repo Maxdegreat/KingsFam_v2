@@ -122,10 +122,11 @@ class _ProfilePostViewState extends State<ProfilePostView> {
       },
       builder: (context, state) {
         return Scaffold(
+          backgroundColor: Colors.black,
           appBar: AppBar(
             title: loaded
-                ? Text("${state.post[0]!.author.username}\'s posts")
-                : Text("posts"),
+                ? Text("${state.post[0]!.author.username}\'s posts", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.black),)
+                : Text("posts", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.black)),
             actions: [],
           ),
           body: loaded
