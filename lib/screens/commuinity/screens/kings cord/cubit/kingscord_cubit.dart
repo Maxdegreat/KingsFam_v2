@@ -67,6 +67,20 @@ class KingscordCubit extends Cubit<KingscordState> {
     emit(state.copyWith(potentialMentions: users));
   }
 
+  Future<void> getInitPotentialMentions(String cmId) async {
+    if (state.potentialMentions.length == 0) {
+      CollectionReference colR = FirebaseFirestore.instance.collection(Paths.communityMembers).doc(cmId).collection(Paths.members);
+    QuerySnapshot docSaps = await colR.limit(5).get();
+    List<Userr> users = [];
+    for (DocumentSnapshot s in docSaps.docs) {
+      Userr u = await UserrRepository().getUserrWithId(userrId: s.id);
+      users.add(u);
+    }
+    List<Userr> pMentions = List<Userr>.from(state.potentialMentions)..addAll(users);
+    emit(state.copyWith(potentialMentions: pMentions));
+    }
+  }
+
   void selectMention({required Userr userr}) {
     // add to the mentioned list or whatever
     if (!state.mentions.contains(userr)) {

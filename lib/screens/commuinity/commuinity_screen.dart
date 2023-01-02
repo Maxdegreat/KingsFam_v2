@@ -11,13 +11,11 @@ import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get_connect.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/camera/bloc/camera_screen.dart';
-import 'package:kingsfam/config/cm_type.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
@@ -26,8 +24,6 @@ import 'package:kingsfam/helpers/cm_perm_handler.dart';
 import 'package:kingsfam/helpers/dynamic_links.dart';
 
 import 'package:kingsfam/helpers/helpers.dart';
-import 'package:kingsfam/helpers/kingscord_path.dart';
-import 'package:kingsfam/helpers/user_preferences.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
@@ -35,12 +31,9 @@ import 'package:kingsfam/screens/build_church/cubit/buildchurch_cubit.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
-import 'package:kingsfam/screens/commuinity/screens/events/create_event.dart';
-import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 // ignore: unused_import
 import 'package:kingsfam/extensions/date_time_extension.dart';
-import 'package:kingsfam/screens/commuinity/screens/kings%20cord/widgets/message_lines.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 
 import 'package:kingsfam/screens/screens.dart';
@@ -56,7 +49,6 @@ import 'package:kingsfam/screens/commuinity/actions.dart';
 import '../profile/bloc/profile_bloc.dart';
 // ignore: unnecessary_import
 import 'screens/kings cord/widgets/display_msg.dart';
-import 'screens/says_room/says_room.dart';
 
 part 'wrapers/community_screen_wraper.dart';
 part 'wrapers/community_screen_methods.dart';

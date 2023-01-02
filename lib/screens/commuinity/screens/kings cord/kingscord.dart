@@ -357,7 +357,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   // for the mention user =================================================
   Widget _mentionUserContainer({required String? username}) {
     int? _containerHeight;
-    List<Userr> potentialMentions = [];
+
+
+    
     if (username != null) {
       // for (Userr member in widget.commuinity.members.keys) {
       //   if (member.username.startsWith(username)) {
@@ -366,8 +368,11 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       // }
 
       // read on the path of cm members while using the username caseList
-      context.read<KingscordCubit>().searchMentionedUsers(
-          cmId: widget.commuinity.id!, username: username);
+      if (username.isEmpty) {
+        context.read<KingscordCubit>().getInitPotentialMentions(widget.commuinity.id!);
+      } else {
+        context.read<KingscordCubit>().searchMentionedUsers(cmId: widget.commuinity.id!, username: username);
+      }
     }
     var state = context.read<KingscordCubit>().state;
     if (state.potentialMentions.length == 0)
