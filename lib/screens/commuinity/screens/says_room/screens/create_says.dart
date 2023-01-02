@@ -158,7 +158,7 @@ class _CreateSaysState extends State<CreateSays> {
         height: 18,
         child: TextButton(
           
-          child: Text("Post", style: Theme.of(context).textTheme.bodyText1,),
+          child: Text("Post", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.white),),
           onPressed: () {
             try {
               // ignore: unnecessary_null_comparison
