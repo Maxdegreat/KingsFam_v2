@@ -146,13 +146,13 @@ class KingsCordRepository extends BaseKingsCordRepository {
 
     }
 
-    mentionedL.forEach((e) {
-      log("ml: " + e.recentActivity.toString() + "/n");
-    });
+    // mentionedL.forEach((e) {
+    //   log("ml: " + e.recentActivity.toString() + "/n");
+    // });
 
-    kingsCordL.forEach((e) {
-      log("kl: " + e.recentActivity.toString() + "/n");
-    });
+    // kingsCordL.forEach((e) {
+    //   log("kl: " + e.recentActivity.toString() + "/n");
+    // });
     
     Map<String, List<KingsCord>> map = {};
     map[mentioned] = mentionedL;

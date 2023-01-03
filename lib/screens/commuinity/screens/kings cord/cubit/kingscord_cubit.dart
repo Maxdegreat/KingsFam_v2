@@ -67,19 +67,21 @@ class KingscordCubit extends Cubit<KingscordState> {
     emit(state.copyWith(potentialMentions: users));
   }
 
-  Future<void> getInitPotentialMentions(String cmId) async {
-    if (state.potentialMentions.length == 0) {
-      CollectionReference colR = FirebaseFirestore.instance.collection(Paths.communityMembers).doc(cmId).collection(Paths.members);
-    QuerySnapshot docSaps = await colR.limit(5).get();
-    List<Userr> users = [];
-    for (DocumentSnapshot s in docSaps.docs) {
-      Userr u = await UserrRepository().getUserrWithId(userrId: s.id);
-      users.add(u);
-    }
-    List<Userr> pMentions = List<Userr>.from(state.potentialMentions)..addAll(users);
-    emit(state.copyWith(potentialMentions: pMentions));
-    }
-  }
+  // Future<void> getInitPotentialMentions(String cmId, String msg) async {
+  //   if (state.potentialMentions.length == 0 && msg.contains("@")) {
+  //     CollectionReference colR = FirebaseFirestore.instance.collection(Paths.communityMembers).doc(cmId).collection(Paths.members);
+  //   QuerySnapshot docSaps = await colR.limit(5).get();
+  //   List<Userr> users = [];
+  //   for (DocumentSnapshot s in docSaps.docs) {
+  //     Userr u = await UserrRepository().getUserrWithId(userrId: s.id);
+  //     users.add(u);
+  //   }
+  //   List<Userr> pMentions = List<Userr>.from(state.potentialMentions)..addAll(users);
+  //   emit(state.copyWith(potentialMentions: pMentions));
+  //   } else {
+  //     emit(state.copyWith(potentialMentions: []));
+  //   }
+  // }
 
   void selectMention({required Userr userr}) {
     // add to the mentioned list or whatever
@@ -203,6 +205,8 @@ class KingscordCubit extends Cubit<KingscordState> {
     // This should tell the cloud that the mentioned id was mentioned through the cloud
     // I have added the function to send a noti to the users phone. the update for this to happen is in the
     // functions index.js file
+
+    emit(state.copyWith(mentions: [], potentialMentions: []));
 
     Set mentionedIds = new Set();
 

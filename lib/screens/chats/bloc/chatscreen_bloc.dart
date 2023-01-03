@@ -44,12 +44,12 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
         _churchRepository = churchRepository,
         super(ChatscreenState.initial());
 
-  @override
-  Future<void> close() {
-    _chatsStreamSubscription!.cancel();
-    _churchStreamSubscription!.cancel();
-    return super.close();
-  }
+  // @override
+  // Future<void> close() {
+  //   _chatsStreamSubscription!.cancel();
+  //   _churchStreamSubscription!.cancel();
+  //   return super.close();
+  // }
 
   @override
   Stream<ChatscreenState> mapEventToState(

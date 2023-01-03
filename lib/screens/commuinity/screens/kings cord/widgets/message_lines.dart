@@ -632,91 +632,97 @@ class _MessageLinesState extends State<MessageLines> {
 
   Widget _messageWelcomeWidget() {
     if (widget.message.text == firstMsgEncoded) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(widget.cm.imageUrl),
-            radius: 57,
-          ),
-          SizedBox(height: 10),
-          Text(widget.cm.name,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText1!
-                  .copyWith(fontSize: 20, fontWeight: FontWeight.w500)),
-          SizedBox(height: 7),
-          Text("Welcome to " + widget.kc.cordName,
-              style: Theme.of(context)
-                  .textTheme
-                  .caption!
-                  .copyWith(fontSize: 15, fontWeight: FontWeight.w300)),
-          SizedBox(height: 7),
-          Text(widget.message.sender!.username + " created this room",
-              style: Theme.of(context)
-                  .textTheme
-                  .caption!
-                  .copyWith(fontStyle: FontStyle.italic)),
-          SizedBox(height: 7),
-          Text("${widget.message.date.timeAgo()}",
-              style: Theme.of(context)
-                  .textTheme
-                  .caption!
-                  .copyWith(fontStyle: FontStyle.italic)),
-        ],
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircleAvatar(
+              backgroundImage: CachedNetworkImageProvider(widget.cm.imageUrl),
+              radius: 57,
+            ),
+            SizedBox(height: 10),
+            Text(widget.cm.name,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1!
+                    .copyWith(fontSize: 20, fontWeight: FontWeight.w500)),
+            SizedBox(height: 7),
+            Text("Welcome to " + widget.kc.cordName,
+                style: Theme.of(context)
+                    .textTheme
+                    .caption!
+                    .copyWith(fontSize: 15, fontWeight: FontWeight.w300)),
+            SizedBox(height: 7),
+            Text(widget.message.sender!.username + " created this room",
+                style: Theme.of(context)
+                    .textTheme
+                    .caption!
+                    .copyWith(fontStyle: FontStyle.italic)),
+            SizedBox(height: 7),
+            Text("${widget.message.date.timeAgo()}",
+                style: Theme.of(context)
+                    .textTheme
+                    .caption!
+                    .copyWith(fontStyle: FontStyle.italic)),
+          ],
+        ),
       );
     } else if (widget.message.text == welcomeMsgEncoded) {
-      return Container(
-        decoration: BoxDecoration(
-            color: Color.fromARGB(46, 255, 193, 7),
-            borderRadius: BorderRadius.circular(7)),
-        child: Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    backgroundImage:
-                        CachedNetworkImageProvider(widget.cm.imageUrl),
-                    radius: 25,
-                  ),
-                  SizedBox(width: 7),
-                  Text(widget.message.sender!.username,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText1!
-                          .copyWith(fontSize: 20, fontWeight: FontWeight.w500)),
-                ],
-              ),
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: Container(
+          decoration: BoxDecoration(
+              color: Color.fromARGB(46, 255, 193, 7),
+              borderRadius: BorderRadius.circular(7)),
+          child: Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      backgroundImage:
+                          CachedNetworkImageProvider(widget.cm.imageUrl),
+                      radius: 25,
+                    ),
+                    SizedBox(width: 7),
+                    Text(widget.message.sender!.username,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyText1!
+                            .copyWith(fontSize: 20, fontWeight: FontWeight.w500)),
+                  ],
+                ),
 
-              SizedBox(height: 7),
+                SizedBox(height: 7),
 
-              Text("Welcome to " + widget.kc.cordName,
-                  style: Theme.of(context)
-                      .textTheme
-                      .caption!
-                      .copyWith(fontSize: 15, fontWeight: FontWeight.w300)),
+                Text("Welcome to " + widget.kc.cordName,
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(fontSize: 15, fontWeight: FontWeight.w300)),
 
-              SizedBox(height: 7),
+                SizedBox(height: 7),
 
-              // Text(widget.message.sender!.username + " created this room", style: Theme.of(context).textTheme.caption!.copyWith(fontStyle: FontStyle.italic)),
+                // Text(widget.message.sender!.username + " created this room", style: Theme.of(context).textTheme.caption!.copyWith(fontStyle: FontStyle.italic)),
 
-              // SizedBox(height: 7),
+                // SizedBox(height: 7),
 
-              Text("${widget.message.date.timeAgo()}",
-                  style: Theme.of(context)
-                      .textTheme
-                      .caption!
-                      .copyWith(fontStyle: FontStyle.italic)),
-            ],
+                Text("${widget.message.date.timeAgo()}",
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(fontStyle: FontStyle.italic)),
+              ],
+            ),
           ),
         ),
       );

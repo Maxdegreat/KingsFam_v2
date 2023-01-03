@@ -139,7 +139,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     List<MessageLines> messageLines = [];
 
     message.forEach((sms) {
-      log("GOT A NEW SMS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       MessageLines messageLine;
       if (sms != null) {
         if (messageLines.length > 0) {
@@ -234,6 +233,13 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                   textCapitalization:
                                       TextCapitalization.sentences,
                                   onChanged: (messageText) {
+                                    int length = _messageController.value.text.length;
+                                    if (_mentionedController == null && _messageController.value.text.contains("@") && _messageController.value.text[length - 1] == "@") {
+                                      context.read<KingscordCubit>().getInitPotentialMentions(widget.commuinity.id!, _messageController.value.text);
+                                    } else if (_mentionedController != null) {
+                                      context.read<KingscordCubit>().searchMentionedUsers(cmId: widget.commuinity.id!, username: _mentionedController!);
+                                    }
+
                                     if (messageText == '' ||
                                         messageText == ' ') {
                                       _mentionedController = null;
@@ -366,13 +372,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       //     potentialMentions.add(member);
       //   }
       // }
-
+      int length = _messageController.value.text.length;
       // read on the path of cm members while using the username caseList
-      if (username.isEmpty) {
-        context.read<KingscordCubit>().getInitPotentialMentions(widget.commuinity.id!);
-      } else {
-        context.read<KingscordCubit>().searchMentionedUsers(cmId: widget.commuinity.id!, username: username);
-      }
+
     }
     var state = context.read<KingscordCubit>().state;
     if (state.potentialMentions.length == 0)
@@ -529,9 +531,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 snackBar(
                     snackMessage: "Recieve notifications from room?",
                     context: context,
-                    bgColor: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
                     callBack: () {
                       Navigator.of(context).pushNamed(KingsCordSettings.routeName,
                   arguments: KingsCordSettingsArgs(

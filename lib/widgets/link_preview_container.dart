@@ -44,7 +44,6 @@ class LinkPreviewContainerState extends State<LinkPreviewContainer> {
     }
     return _preview != null
         ? Container(
-            height: 200,
             width:  MediaQuery.of(context).size.width/ 1.5,
             decoration: BoxDecoration(
               color: Color.fromARGB(110, 255, 193, 7),
@@ -60,7 +59,7 @@ class LinkPreviewContainerState extends State<LinkPreviewContainer> {
                         child: Text(_title!,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
-                            style: Theme.of(context).textTheme.caption!.copyWith(fontStyle: FontStyle.italic, color: Colors.blue)),
+                            style: Theme.of(context).textTheme.caption!.copyWith(fontStyle: FontStyle.italic, color: Colors.white, fontSize: 17)),
                       ),
 
                       _imageUrl != null
@@ -70,6 +69,7 @@ class LinkPreviewContainerState extends State<LinkPreviewContainer> {
                                 height: 140,
                                 width: MediaQuery.of(context).size.width/ 1.7,
                                 decoration: BoxDecoration(
+                                  border: Border.all(width: 1, color: Colors.amber),
                                   borderRadius: BorderRadius.circular(4.0),
                                     image: DecorationImage( fit: BoxFit.cover,
                                         image: CachedNetworkImageProvider(
@@ -82,8 +82,8 @@ class LinkPreviewContainerState extends State<LinkPreviewContainer> {
             ),
           )
         : Container(
-            height: 130,
-            width: 200,
+            height: 200,
+            width: MediaQuery.of(context).size.width/ 1.5,
             child: Center(child: Text("Loading...")),
             decoration: BoxDecoration(
               color: Color.fromARGB(110, 255, 193, 7),
