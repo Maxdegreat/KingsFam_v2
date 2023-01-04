@@ -83,8 +83,6 @@ class _CreateRoomState extends State<CreateRoom> {
              Padding(
                padding: const EdgeInsets.all(8.0),
                child: TextButton(
-                      style:
-                          ElevatedButton.styleFrom(primary: Colors.greenAccent),
                       onPressed: () async {
                         if (_txtController.value.text.length == 0) {
                           snackBar(

@@ -124,7 +124,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       style: Theme.of(context).textTheme.bodyText1,
                     ),
                     style: ElevatedButton.styleFrom(
-                        shadowColor: Colors.transparent),
+                        shape: StadiumBorder(),
+                          primary: Theme.of(context).colorScheme.secondary),
                   )),
                 ),
                 Container(
@@ -146,7 +147,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                       style: ElevatedButton.styleFrom(
-                          shadowColor: Colors.transparent),
+                        shape: StadiumBorder(),
+                          primary: Theme.of(context).colorScheme.secondary),
                     ),
                   ),
                 ),
@@ -261,11 +263,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   TextButton(
                                     onLongPress: () =>
                                         context.read<AuthRepository>().logout(),
-                                    onPressed: () => ScaffoldMessenger.of(
-                                            context)
-                                        .showSnackBar(SnackBar(
-                                            content: Text(
-                                                "Long Press For 5 Seconds To Log Out"))),
+                                    onPressed: () => snackBar(snackMessage: "Long Press For 5 Seconds To Log Out", context: context),
+
                                     child: Text(
                                       "Log Me Out",
                                       style:
@@ -286,11 +285,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                   "Your account was not deleted.",
                                               context: context);
                                     },
-                                    onPressed: () => ScaffoldMessenger.of(
-                                            context)
-                                        .showSnackBar(SnackBar(
-                                            content: Text(
-                                                "Long Press For 5 Seconds To to delete your account. Note your account will be forever deleted"))),
+                                    onPressed: () => snackBar(snackMessage:
+                                                "Long Press For 5 Seconds To to delete your account. Note your account will be forever deleted", context: context),
                                     child: Text(
                                       "Delete my account",
                                       style: TextStyle(color: Colors.red),

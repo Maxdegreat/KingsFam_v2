@@ -43,11 +43,23 @@ snackBar(
     Color? bgColor,
     VoidCallback? callBack = null}) {
   return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    content: GestureDetector(
-        onTap: callBack, child: Expanded(child: Text(snackMessage, style: Theme.of(context).textTheme.caption,))),
-    backgroundColor: bgColor?? Colors.black,
-    duration: Duration(seconds: 3),
+    backgroundColor: bgColor,
+    duration: Duration(seconds: 4),
     behavior: SnackBarBehavior.floating,
-    margin: EdgeInsets.only(bottom: 30, left: 10, right: 10),
+    margin: EdgeInsets.only(
+      bottom: 30,
+      left: 10,
+      right: 10,
+    ),
+    content: GestureDetector(
+      onTap: callBack,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          snackMessage,
+          style: Theme.of(context).textTheme.caption,
+        ),
+      ),
+    ),
   ));
 }

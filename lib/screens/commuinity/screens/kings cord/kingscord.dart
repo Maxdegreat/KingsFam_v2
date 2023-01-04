@@ -115,7 +115,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     super.dispose();
   }
 
-
   _buildMessageStream(
       {required Church commuinity,
       required KingsCord kingsCord,
@@ -171,160 +170,177 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 // building the bottom sheet
   _buildBottomTF(KingscordState state, BuildContext context) {
     final ctx = context.read<KingscordCubit>();
-    return Container(
-        // margin: EdgeInsets.symmetric(horizontal: 5.0),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              
-                  IconButton(
-                      // onPressed: () async => mediaBottomSheet(
-                      //     kingscordCubit: ctx,
-                      //     context: context,
-                      //     cmId: widget.commuinity.id!,
-                      //     kcId: widget.kingsCord.id!,
-                      //     seenderUsername: currUsersName,
-                      // ),
-                      onPressed: () {
-                        showMediaPopUp = !showMediaPopUp;
-                        setState(() {});
-                      },
-                      icon: Icon(Icons.add)),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
+    return VisibilityDetector(
+      key: ObjectKey(_messageController),
+      onVisibilityChanged: (vis) {
+        if (vis.visibleFraction == 1) {
+          
+          CurrentKingsCordRoomId.updateRoomId(roomId: widget.kingsCord.id!);
+        } else {
+          CurrentKingsCordRoomId.updateRoomId(roomId: null);
+        }
+      },
+      child: Container(
+          // margin: EdgeInsets.symmetric(horizontal: 5.0),
+          child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    IconButton(
+                        // onPressed: () async => mediaBottomSheet(
+                        //     kingscordCubit: ctx,
+                        //     context: context,
+                        //     cmId: widget.commuinity.id!,
+                        //     kcId: widget.kingsCord.id!,
+                        //     seenderUsername: currUsersName,
+                        // ),
+                        onPressed: () {
+                          showMediaPopUp = !showMediaPopUp;
+                          setState(() {});
+                        },
+                        icon: Icon(Icons.add)),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.secondary,
                           borderRadius: BorderRadius.circular(7),
                         ),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextFormField(
-                              // validator: (value) {},
-                              cursorColor: Theme.of(context).colorScheme.inversePrimary,
-                              textAlignVertical: TextAlignVertical.center,
-                              style: TextStyle(fontSize: 18),
-                              autocorrect: true,
-                              controller: _messageController,
-                              keyboardType: TextInputType.multiline,
-                              maxLines: 4,
-                              minLines: 1,
-                              expands: false,
-                              textCapitalization:
-                                  TextCapitalization.sentences,
-                              onChanged: (messageText) {
-                                if (messageText == '' ||
-                                    messageText == ' ' || messageText.isEmpty) {
-                                  _mentionedController = null;
-                                  containsAt = false;
-                                  context.read<KingscordCubit>().onIsTyping(false);
-                                }
-                                if (messageText[messageText.length - 1] ==
-                                    '@') {
-                                  containsAt = true;
-                                  idxWhereStartWithat =
-                                      messageText.length - 1;
-                                  log("here you can add the @ container");
-                                }
-                                if (containsAt)
-                                  setState(() => _mentionedController =
-                                      messageText.substring(
-                                          idxWhereStartWithat + 1,
-                                          messageText.length));
-                                if (messageText.endsWith(' ') || !messageText.contains("@")) {
-                                  containsAt = false;
-                                  idxWhereStartWithat = 0;
-                                  _mentionedController = null;
-                                }
-                               
-                                if (_messageController.text.length > 0)
-                                  ctx.onIsTyping(true);
-                                else
-                                  ctx.onIsTyping(false);
-                                setState(() {});
-                              },
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.all(2),
-                                border: InputBorder.none,
-                                // filled: true,
-                                hintText: 'Send message',
-                                isCollapsed: true,
-                                // fillColor: Color(hc.hexcolorCode("#141829")!)
-                              )),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                                // validator: (value) {},
+                                cursorColor: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary,
+                                textAlignVertical: TextAlignVertical.center,
+                                style: TextStyle(fontSize: 18),
+                                autocorrect: true,
+                                controller: _messageController,
+                                keyboardType: TextInputType.multiline,
+                                maxLines: 4,
+                                minLines: 1,
+                                expands: false,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                                onChanged: (messageText) {
+                                  if (messageText == '' ||
+                                      messageText == ' ' ||
+                                      messageText.isEmpty) {
+                                    _mentionedController = null;
+                                    containsAt = false;
+                                    context
+                                        .read<KingscordCubit>()
+                                        .onIsTyping(false);
+                                  }
+                                  if (messageText[messageText.length - 1] ==
+                                      '@') {
+                                    containsAt = true;
+                                    idxWhereStartWithat =
+                                        messageText.length - 1;
+                                    log("here you can add the @ container");
+                                  }
+                                  if (containsAt)
+                                    setState(() => _mentionedController =
+                                        messageText.substring(
+                                            idxWhereStartWithat + 1,
+                                            messageText.length));
+                                  if (messageText.endsWith(' ') ||
+                                      !messageText.contains("@")) {
+                                    containsAt = false;
+                                    idxWhereStartWithat = 0;
+                                    _mentionedController = null;
+                                  }
+
+                                  if (_messageController.text.length > 0)
+                                    ctx.onIsTyping(true);
+                                  else
+                                    ctx.onIsTyping(false);
+                                  setState(() {});
+                                },
+                                decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.all(2),
+                                  border: InputBorder.none,
+                                  // filled: true,
+                                  hintText: 'Send message',
+                                  isCollapsed: true,
+                                  // fillColor: Color(hc.hexcolorCode("#141829")!)
+                                )),
+                          ),
                         ),
                       ),
                     ),
-                  ),
- 
-              Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: IconButton(
-                    icon: !state.isTyping
-                        ? Icon(Iconsax.send_1, size: 18,)
-                        : Icon(Iconsax.send_21, size: 18),
-                    color: state.isTyping ? Colors.amber : Colors.white,
-                    onPressed: state.isTyping
-                        ? () {
-                            // this will be passed to the cubit then to the db. upon a get msg lines will psrse for a good look
-                            String messageWithsSmbolesForParsing = "";
-                            // map of mentioned info that will be added to the kc cubit
-                            Map<String, dynamic> mentionedInfo = {};
-                            for (var u in state.mentions) {
-                              mentionedInfo[u.id] = {
-                                "username": u.username,
-                                "token": u.token,
-                                'communityName': widget.commuinity.name,
-                                'kingsCordName': widget.kingsCord.cordName,
-                              };
-                            }
-                            var msgAsLst = _messageController.text.split(' ');
-                            // for (String msg in msgAsLst) {
-                            //   // handels if a shares a link
+                    Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: IconButton(
+                          icon: !state.isTyping
+                              ? Icon(
+                                  Iconsax.send_1,
+                                  size: 18,
+                                )
+                              : Icon(Iconsax.send_21, size: 18),
+                          color: state.isTyping ? Colors.amber : Colors.white,
+                          onPressed: state.isTyping
+                              ? () {
+                                  // this will be passed to the cubit then to the db. upon a get msg lines will psrse for a good look
+                                  String messageWithsSmbolesForParsing = "";
+                                  // map of mentioned info that will be added to the kc cubit
+                                  Map<String, dynamic> mentionedInfo = {};
+                                  for (var u in state.mentions) {
+                                    mentionedInfo[u.id] = {
+                                      "username": u.username,
+                                      "token": u.token,
+                                      'communityName': widget.commuinity.name,
+                                      'kingsCordName':
+                                          widget.kingsCord.cordName,
+                                    };
+                                  }
+                                  var msgAsLst =
+                                      _messageController.text.split(' ');
+                                  // for (String msg in msgAsLst) {
+                                  //   // handels if a shares a link
 
-                            //   if (msg.length > 8 &&
-                            //       msg.substring(0, 8) == 'https://') {
-                            //     messageWithsSmbolesForParsing += '{{a-$msg}}';
-                            //     // we want to check if the msg is mentioning someone
-                            //   } else {
-                            //     messageWithsSmbolesForParsing += '$msg ';
-                            //   }
-                            // }
-                            if (_messageController.text.length > 0 &&
-                                _messageController.text.trim() != "") {
-                              ctx.removeReply();
-                              ctx.onSendTxtMsg(
-                                churchId: widget.commuinity.id!,
-                                kingsCordId: widget.kingsCord.id!,
-                                txtMsgBodyWithSymbolsForParcing:
-                                    _messageController
-                                        .text, //messageWithsSmbolesForParsing,
-                                txtMsgWithOutSymbolesForParcing:
-                                    _messageController.text,
-                                mentionedInfo: mentionedInfo,
-                                cmTitle: widget.commuinity.name,
-                                kingsCordData: widget.kingsCord,
-                                currUserName: currUsersName,
-                                reply: state.replyMessage,
-                              );
-                            }
-                            ctx.onIsTyping(false);
-                            _messageController.clear();
-                            ctx.clearMention();
-                          }
-                        : null,
-                  ))
-            ],
-          ),
-        ));
+                                  //   if (msg.length > 8 &&
+                                  //       msg.substring(0, 8) == 'https://') {
+                                  //     messageWithsSmbolesForParsing += '{{a-$msg}}';
+                                  //     // we want to check if the msg is mentioning someone
+                                  //   } else {
+                                  //     messageWithsSmbolesForParsing += '$msg ';
+                                  //   }
+                                  // }
+                                  if (_messageController.text.length > 0 &&
+                                      _messageController.text.trim() != "") {
+                                    ctx.removeReply();
+                                    ctx.onSendTxtMsg(
+                                      churchId: widget.commuinity.id!,
+                                      kingsCordId: widget.kingsCord.id!,
+                                      txtMsgBodyWithSymbolsForParcing:
+                                          _messageController
+                                              .text, //messageWithsSmbolesForParsing,
+                                      txtMsgWithOutSymbolesForParcing:
+                                          _messageController.text,
+                                      mentionedInfo: mentionedInfo,
+                                      cmTitle: widget.commuinity.name,
+                                      kingsCordData: widget.kingsCord,
+                                      currUserName: currUsersName,
+                                      reply: state.replyMessage,
+                                    );
+                                  }
+                                  ctx.onIsTyping(false);
+                                  _messageController.clear();
+                                  ctx.clearMention();
+                                }
+                              : null,
+                        )),
+                  ]))),
+    );
   }
 
   // for the mention user =================================================
   Widget _mentionUserContainer({required String? username}) {
-
     if (username != null) {
       // for (Userr member in widget.commuinity.members.keys) {
       //   if (member.username.startsWith(username)) {
@@ -333,20 +349,24 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       // }
       int length = _messageController.value.text.length;
       // read on the path of cm members while using the username caseList
-      if (username.isEmpty && _messageController.value.text.contains("@") && _messageController.value.text[length - 1] == "@") {
-        context.read<KingscordCubit>().getInitPotentialMentions(widget.commuinity.id!);
+      if (username.isEmpty &&
+          _messageController.value.text.contains("@") &&
+          _messageController.value.text[length - 1] == "@") {
+        context
+            .read<KingscordCubit>()
+            .getInitPotentialMentions(widget.commuinity.id!);
       } else {
-        context.read<KingscordCubit>().searchMentionedUsers(cmId: widget.commuinity.id!, username: username);
+        context.read<KingscordCubit>().searchMentionedUsers(
+            cmId: widget.commuinity.id!, username: username);
       }
     }
     var state = context.read<KingscordCubit>().state;
-    
 
     return username != null
         ? Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
                 decoration: BoxDecoration(
                     color: Color.fromARGB(110, 255, 193, 7),
                     borderRadius: BorderRadius.circular(15)),
@@ -369,8 +389,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                               .substring(0, idxWhereStartWithat);
                           _messageController.text = oldMessageControllerBody +=
                               '@${_mentioned.username} ';
-                          _messageController.selection = TextSelection.fromPosition(
-                              TextPosition(offset: _messageController.text.length));
+                          _messageController.selection =
+                              TextSelection.fromPosition(TextPosition(
+                                  offset: _messageController.text.length));
                           context
                               .read<KingscordCubit>()
                               .selectMention(userr: _mentioned);
@@ -381,8 +402,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                       );
                     }),
               ),
-          ),
-        )
+            ),
+          )
         : SizedBox.shrink();
   }
 
@@ -491,9 +512,11 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                     snackMessage: "Recieve notifications from room?",
                     context: context,
                     callBack: () {
-                      Navigator.of(context).pushNamed(KingsCordSettings.routeName,
-                  arguments: KingsCordSettingsArgs(
-                      cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!));
+                      Navigator.of(context).pushNamed(
+                          KingsCordSettings.routeName,
+                          arguments: KingsCordSettingsArgs(
+                              cmId: widget.commuinity.id!,
+                              kcId: widget.kingsCord.id!));
                     });
               });
             }

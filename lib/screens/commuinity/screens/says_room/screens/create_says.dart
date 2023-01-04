@@ -152,58 +152,47 @@ class _CreateSaysState extends State<CreateSays> {
   }
 
   _sendSays() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8),
-      child: Container(
-        height: 18,
-        child: TextButton(
-          
-          child: Text("Post", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.white),),
-          onPressed: () {
-            try {
-              // ignore: unnecessary_null_comparison
-              String? title = _controllerT.value.text.isEmpty ||
-                      _controllerT.value.text.isEmpty == null
-                  ? null
-                  : _controllerT.value.text;
+    return TextButton(
+      
+      child: Text("Post", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.white),),
+      onPressed: () {
+        try {
+          // ignore: unnecessary_null_comparison
+          String? title = _controllerT.value.text.isEmpty ||
+                  _controllerT.value.text.isEmpty == null
+              ? null
+              : _controllerT.value.text;
 
-              if (title != null) {
-                if (_controllerT.value.text.length > 15) {
-                  snackBar(
-                      snackMessage: "Make sure your title is 15 or less chars",
-                      context: context,
-                      bgColor: Colors.red[400]);
-                  return;
-                }
-              }
-              // make the says
-              if (_controller.value.text.length > 0) {
-                Says says = Says(
-                  author: widget.currUsr,
-                  contentTxt: _controller.value.text,
-                  likes: 0,
-                  commentsCount: 0,
-                  date: Timestamp.now(),
-                  kcId: widget.kcId,
-                  title: title);
-              // send the Says using repo
-              SaysRepository().createSays(
-                  cmId: widget.cm.id!, kcId: widget.kcId, says: says);
-              SnackBar(
-                content: Text("Nice! Working On Your Says"),
-                backgroundColor: Colors.green,
-              );
-              // nav . pop()
-              Navigator.of(context).pop();
-              } else {
-                snackBar(snackMessage: "Please share in order to post", context: context, bgColor: Colors.red[400]);
-              }
-            } catch (e) {
-              log("There was an error in createSays: " + e.toString());
+          if (title != null) {
+            if (_controllerT.value.text.length > 25) {
+              snackBar(
+                  snackMessage: "Make sure your title is 25 or less chars",
+                  context: context,
+                  bgColor: Colors.red[400]);
+              return;
             }
-          },
-        ),
-      ),
+          }
+          // make the says
+          if (_controller.value.text.length > 0) {
+            Says says = Says(
+              author: widget.currUsr,
+              contentTxt: _controller.value.text,
+              likes: 0,
+              commentsCount: 0,
+              date: Timestamp.now(),
+              kcId: widget.kcId,
+              title: title);
+          // send the Says using repo
+          SaysRepository().createSays(cmId: widget.cm.id!, kcId: widget.kcId, says: says);
+          snackBar(snackMessage: "Working on post...", context: context, bgColor: Colors.green);
+          Navigator.of(context).pop();
+          } else {
+            snackBar(snackMessage: "Please share in order to post", context: context, bgColor: Colors.red[400]);
+          }
+        } catch (e) {
+          log("There was an error in createSays: " + e.toString());
+        }
+      },
     );
   }
 
