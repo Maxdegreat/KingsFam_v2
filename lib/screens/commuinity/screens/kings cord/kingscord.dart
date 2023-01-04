@@ -115,7 +115,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     super.dispose();
   }
 
-  double textHeight = 50;
+
   _buildMessageStream(
       {required Church commuinity,
       required KingsCord kingsCord,
@@ -139,6 +139,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     List<MessageLines> messageLines = [];
 
     message.forEach((sms) {
+      log("GOT A NEW SMS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       MessageLines messageLine;
       if (sms != null) {
         if (messageLines.length > 0) {
@@ -171,7 +172,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   _buildBottomTF(KingscordState state, BuildContext context) {
     final ctx = context.read<KingscordCubit>();
     return Container(
-        height: textHeight + 10,
         // margin: EdgeInsets.symmetric(horizontal: 5.0),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -179,132 +179,94 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                width: MediaQuery.of(context).size.width / 1.28,
-                height: textHeight,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
-                  //border: Border.all(color: Colors.blue[900]!, width: .5),
-                  borderRadius: BorderRadius.circular(7),
-                ),
-                child: VisibilityDetector(
-                  key: ObjectKey(scrollCtrl),
-                  onVisibilityChanged: (vis) {
-                    if (vis.visibleFraction == 1) {
-                      CurrentKingsCordRoomId.updateRoomId(
-                          roomId: widget.kingsCord.id!);
-                    } else {
-                      CurrentKingsCordRoomId.updateRoomId(roomId: null);
-                    }
-                  },
-                  child: Row(
-                    children: [
-                      IconButton(
-                          // onPressed: () async => mediaBottomSheet(
-                          //     kingscordCubit: ctx,
-                          //     context: context,
-                          //     cmId: widget.commuinity.id!,
-                          //     kcId: widget.kingsCord.id!,
-                          //     seenderUsername: currUsersName,
-                          // ),
-                          onPressed: () {
-                            showMediaPopUp = !showMediaPopUp;
-                            setState(() {});
-                          },
-                          icon: Icon(Icons.add)),
-                      Expanded(
-                        child: Container(
-                          height: textHeight,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 3.0),
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: TextFormField(
-                                  // validator: (value) {},
-                                  cursorColor: Theme.of(context).colorScheme.inversePrimary,
-                                  textAlignVertical: TextAlignVertical.center,
-                                  style: TextStyle(fontSize: 18),
-                                  autocorrect: true,
-                                  controller: _messageController,
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  expands: true,
-                                  textCapitalization:
-                                      TextCapitalization.sentences,
-                                  onChanged: (messageText) {
-                                    int length = _messageController.value.text.length;
-                                    if (_mentionedController == null && _messageController.value.text.contains("@") && _messageController.value.text[length - 1] == "@") {
-                                      context.read<KingscordCubit>().getInitPotentialMentions(widget.commuinity.id!, _messageController.value.text);
-                                    } else if (_mentionedController != null) {
-                                      context.read<KingscordCubit>().searchMentionedUsers(cmId: widget.commuinity.id!, username: _mentionedController!);
-                                    }
-
-                                    if (messageText == '' ||
-                                        messageText == ' ') {
-                                      _mentionedController = null;
-                                      containsAt = false;
-                                    }
-                                    if (messageText[messageText.length - 1] ==
-                                        '@') {
-                                      containsAt = true;
-                                      idxWhereStartWithat =
-                                          messageText.length - 1;
-                                      log("here you can add the @ container");
-                                    }
-                                    if (containsAt)
-                                      setState(() => _mentionedController =
-                                          messageText.substring(
-                                              idxWhereStartWithat + 1,
-                                              messageText.length));
-                                    if (messageText.endsWith(' ')) {
-                                      containsAt = false;
-                                      idxWhereStartWithat = 0;
-                                      _mentionedController = null;
-                                      setState(() {});
-                                    }
-                                    if (messageText.length > 26)
-                                      setState(() => textHeight = 70.0);
-                                    else if (messageText.length > 57)
-                                      setState(() {
-                                        textHeight = 90;
-                                      });
-                                    else if (messageText.length < 24)
-                                      setState(() => textHeight = 50.0);
-                                    if (_messageController.text.length > 0) {
-                                      ctx.onIsTyping(true);
-                                      setState(() {});
-                                    } else {
-                                      ctx.onIsTyping(false);
-                                      setState(() {});
-                                    }
-                                  },
-                                  decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.all(2),
-                                    border: InputBorder.none,
-                                    // filled: true,
-                                    hintText: 'Send message',
-                                    isCollapsed: true,
-                                    // fillColor: Color(hc.hexcolorCode("#141829")!)
-                                  )),
-                            ),
-                          ),
+              
+                  IconButton(
+                      // onPressed: () async => mediaBottomSheet(
+                      //     kingscordCubit: ctx,
+                      //     context: context,
+                      //     cmId: widget.commuinity.id!,
+                      //     kcId: widget.kingsCord.id!,
+                      //     seenderUsername: currUsersName,
+                      // ),
+                      onPressed: () {
+                        showMediaPopUp = !showMediaPopUp;
+                        setState(() {});
+                      },
+                      icon: Icon(Icons.add)),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.secondary,
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextFormField(
+                              // validator: (value) {},
+                              cursorColor: Theme.of(context).colorScheme.inversePrimary,
+                              textAlignVertical: TextAlignVertical.center,
+                              style: TextStyle(fontSize: 18),
+                              autocorrect: true,
+                              controller: _messageController,
+                              keyboardType: TextInputType.multiline,
+                              maxLines: 4,
+                              minLines: 1,
+                              expands: false,
+                              textCapitalization:
+                                  TextCapitalization.sentences,
+                              onChanged: (messageText) {
+                                if (messageText == '' ||
+                                    messageText == ' ' || messageText.isEmpty) {
+                                  _mentionedController = null;
+                                  containsAt = false;
+                                  context.read<KingscordCubit>().onIsTyping(false);
+                                }
+                                if (messageText[messageText.length - 1] ==
+                                    '@') {
+                                  containsAt = true;
+                                  idxWhereStartWithat =
+                                      messageText.length - 1;
+                                  log("here you can add the @ container");
+                                }
+                                if (containsAt)
+                                  setState(() => _mentionedController =
+                                      messageText.substring(
+                                          idxWhereStartWithat + 1,
+                                          messageText.length));
+                                if (messageText.endsWith(' ') || !messageText.contains("@")) {
+                                  containsAt = false;
+                                  idxWhereStartWithat = 0;
+                                  _mentionedController = null;
+                                }
+                               
+                                if (_messageController.text.length > 0)
+                                  ctx.onIsTyping(true);
+                                else
+                                  ctx.onIsTyping(false);
+                                setState(() {});
+                              },
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.all(2),
+                                border: InputBorder.none,
+                                // filled: true,
+                                hintText: 'Send message',
+                                isCollapsed: true,
+                                // fillColor: Color(hc.hexcolorCode("#141829")!)
+                              )),
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
+ 
               Container(
                   margin: const EdgeInsets.symmetric(horizontal: 4.0),
                   child: IconButton(
                     icon: !state.isTyping
-                        ? Icon(Iconsax.send_1)
-                        : Icon(
-                            Iconsax.send_21,
-                            size: 18,
-                          ),
-                    color: state.isTyping ? Colors.red[400] : Colors.white,
+                        ? Icon(Iconsax.send_1, size: 18,)
+                        : Icon(Iconsax.send_21, size: 18),
+                    color: state.isTyping ? Colors.amber : Colors.white,
                     onPressed: state.isTyping
                         ? () {
                             // this will be passed to the cubit then to the db. upon a get msg lines will psrse for a good look
@@ -362,10 +324,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
   // for the mention user =================================================
   Widget _mentionUserContainer({required String? username}) {
-    int? _containerHeight;
 
-
-    
     if (username != null) {
       // for (Userr member in widget.commuinity.members.keys) {
       //   if (member.username.startsWith(username)) {
@@ -374,56 +333,56 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       // }
       int length = _messageController.value.text.length;
       // read on the path of cm members while using the username caseList
-
+      if (username.isEmpty && _messageController.value.text.contains("@") && _messageController.value.text[length - 1] == "@") {
+        context.read<KingscordCubit>().getInitPotentialMentions(widget.commuinity.id!);
+      } else {
+        context.read<KingscordCubit>().searchMentionedUsers(cmId: widget.commuinity.id!, username: username);
+      }
     }
     var state = context.read<KingscordCubit>().state;
-    if (state.potentialMentions.length == 0)
-      _containerHeight = 0;
-    else if (state.potentialMentions.length == 1)
-      _containerHeight = 70;
-    else if (state.potentialMentions.length == 2)
-      _containerHeight = 120;
-    else if (state.potentialMentions.length == 3)
-      _containerHeight = 175;
-    else if (state.potentialMentions.length >= 4) _containerHeight = 220;
+    
 
     return username != null
-        ? Container(
-            decoration: BoxDecoration(
-                color: Colors.grey[900],
-                borderRadius: BorderRadius.circular(15)),
-            height: _containerHeight!.toDouble(),
-            width: double.infinity,
-            child: ListView.builder(
-                itemCount: state.potentialMentions.length,
-                itemBuilder: (BuildContext context, int index) {
-                  Userr _mentioned = state.potentialMentions[index];
-                  return ListTile(
-                    leading: ProfileImage(
-                        radius: 24, pfpUrl: _mentioned.profileImageUrl),
-                    title: Text(
-                      _mentioned.username,
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary),
-                      overflow: TextOverflow.fade,
-                    ),
-                    onTap: () {
-                      var oldMessageControllerBody = _messageController.text
-                          .substring(0, idxWhereStartWithat);
-                      _messageController.text = oldMessageControllerBody +=
-                          '@${_mentioned.username} ';
-                      _messageController.selection = TextSelection.fromPosition(
-                          TextPosition(offset: _messageController.text.length));
-                      context
-                          .read<KingscordCubit>()
-                          .selectMention(userr: _mentioned);
-                      username = null;
-                      state.mentions.length = 0;
-                      setState(() {});
-                    },
-                  );
-                }),
-          )
+        ? Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+                decoration: BoxDecoration(
+                    color: Color.fromARGB(110, 255, 193, 7),
+                    borderRadius: BorderRadius.circular(15)),
+                // width: double.infinity,
+                child: ListView.builder(
+                    itemCount: state.potentialMentions.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      Userr _mentioned = state.potentialMentions[index];
+                      return ListTile(
+                        leading: ProfileImage(
+                            radius: 24, pfpUrl: _mentioned.profileImageUrl),
+                        title: Text(
+                          _mentioned.username,
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary),
+                          overflow: TextOverflow.fade,
+                        ),
+                        onTap: () {
+                          var oldMessageControllerBody = _messageController.text
+                              .substring(0, idxWhereStartWithat);
+                          _messageController.text = oldMessageControllerBody +=
+                              '@${_mentioned.username} ';
+                          _messageController.selection = TextSelection.fromPosition(
+                              TextPosition(offset: _messageController.text.length));
+                          context
+                              .read<KingscordCubit>()
+                              .selectMention(userr: _mentioned);
+                          username = null;
+                          state.mentions.length = 0;
+                          setState(() {});
+                        },
+                      );
+                    }),
+              ),
+          ),
+        )
         : SizedBox.shrink();
   }
 

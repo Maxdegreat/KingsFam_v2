@@ -164,7 +164,7 @@ class _CommentScreenState extends State<CommentScreen> {
                   border: InputBorder.none,
                   hintText: "comment",
                   hintStyle: Theme.of(context).textTheme.caption,
-                  focusColor: Colors.green,
+                
                             ),
                           ),
                 ),

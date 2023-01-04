@@ -64,24 +64,26 @@ class KingscordCubit extends Cubit<KingscordState> {
       Userr user = await UserrRepository().getUserrWithId(userrId: j.id);
       users.add(user);
     }
+    if (username.isEmpty) {
+    emit(state.copyWith(potentialMentions: []));
+    } else {
     emit(state.copyWith(potentialMentions: users));
+    }
   }
 
-  // Future<void> getInitPotentialMentions(String cmId, String msg) async {
-  //   if (state.potentialMentions.length == 0 && msg.contains("@")) {
-  //     CollectionReference colR = FirebaseFirestore.instance.collection(Paths.communityMembers).doc(cmId).collection(Paths.members);
-  //   QuerySnapshot docSaps = await colR.limit(5).get();
-  //   List<Userr> users = [];
-  //   for (DocumentSnapshot s in docSaps.docs) {
-  //     Userr u = await UserrRepository().getUserrWithId(userrId: s.id);
-  //     users.add(u);
-  //   }
-  //   List<Userr> pMentions = List<Userr>.from(state.potentialMentions)..addAll(users);
-  //   emit(state.copyWith(potentialMentions: pMentions));
-  //   } else {
-  //     emit(state.copyWith(potentialMentions: []));
-  //   }
-  // }
+  Future<void> getInitPotentialMentions(String cmId) async {
+    if (state.potentialMentions.length == 0) {
+      CollectionReference colR = FirebaseFirestore.instance.collection(Paths.communityMembers).doc(cmId).collection(Paths.members);
+    QuerySnapshot docSaps = await colR.limit(4).get();
+    List<Userr> users = [];
+    for (DocumentSnapshot s in docSaps.docs) {
+      Userr u = await UserrRepository().getUserrWithId(userrId: s.id);
+      users.add(u);
+    }
+    List<Userr> pMentions = List<Userr>.from(state.potentialMentions)..addAll(users);
+    emit(state.copyWith(potentialMentions: pMentions));
+    }
+  }
 
   void selectMention({required Userr userr}) {
     // add to the mentioned list or whatever
@@ -230,10 +232,14 @@ class KingscordCubit extends Cubit<KingscordState> {
             });
             mentionedIds.add(id);
       }
-    }
+    } 
+    log("!!!!!!!!!!!!!!!!!!!!!!");
+    log("reply: " + reply.toString());
+    log("mentionIds: " + mentionedIds.toString());
 
-    if (reply != null && !mentionedIds.contains(reply.substring(163, 183))) {
-      if (reply.isNotEmpty) {
+   
+     if (reply != null  ) {
+      if (reply.isNotEmpty && !mentionedIds.contains(reply.substring(163, 183)) ) {
 
         var path = FirebaseFirestore.instance.collection(Paths.mention).doc(reply.substring(163, 183))
         .collection(churchId).doc(kingsCordId);
@@ -250,7 +256,8 @@ class KingscordCubit extends Cubit<KingscordState> {
           });
         });
       }
-    }
+    
+   }
 
     List<String> toSendNotifications = state.allNotifLst;
     List<dynamic> toSendNotificationsT =  state.recentMsgIdToTokenMap.values.toList();
