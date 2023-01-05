@@ -66,6 +66,10 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
   // This is the maping of commuinity to state
 
+  void updateSelectedCm( Church cm) {
+    emit(state.copyWith(selectedCh: cm));
+  }
+
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
       String? lastVisitedCmId = await UserPreferences.getLastVisitedCm();

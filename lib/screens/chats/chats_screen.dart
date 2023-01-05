@@ -76,9 +76,6 @@ class _ChatsScreenState extends State<ChatsScreen>
 
       // do not show a notif if alredy in that room.
       if (CurrentKingsCordRoomId.currentKingsCordRoomId != remoteMessage.data['kcId']) {
-        log((CurrentKingsCordRoomId.currentKingsCordRoomId != remoteMessage.data['kcId']).toString());
-        log(remoteMessage.data['kcId']);
-        log(CurrentKingsCordRoomId.currentKingsCordRoomId.toString());
         notifSnackBar(remoteMessage: remoteMessage, context: context);
       }
     });

@@ -15,6 +15,8 @@ import '../models/church_kingscord_model.dart';
 
 Future<void> handleMessage(RemoteMessage message, BuildContext context) async {
     log("MESSAGE.DATA['TYPE'] IS OF VAL: " + message.data['type'].toString());
+    log("MESSAGE.DATA: " +  message.data.toString());
+    
     if (message.data['type'] == 'kc_type') {
       // type: kc_type has a cmId and a kcId. see cloud functions onMentionedUser for reference
       // var snap = await FirebaseFirestore.instance.collection(Paths.church).doc(message.data['cmId']).collection(Paths.kingsCord).doc(message.data['kcId']).get();
@@ -27,7 +29,7 @@ Future<void> handleMessage(RemoteMessage message, BuildContext context) async {
       if (!snap.exists) {
         log("SNAP DOES NOT EXIST OF TYPE kc_type -> RETURNING");
         return;
-      }
+      } else log("snap exists");
 
       if (message.data['kcId'] != null) {
         var snapK = await FirebaseFirestore.instance
@@ -59,7 +61,7 @@ Future<void> handleMessage(RemoteMessage message, BuildContext context) async {
       // ignore: unnecessary_null_comparison
       Church? cm = await Church.fromDoc(snap);
       if (cm != null) {
-
+        context.read<ChatscreenBloc>().updateSelectedCm(cm);
         // log ("PROOF U CAN GET THE KC STILL: " + kc.cordName);
         // update the selected ch of chatscreen bloc w/ ch that is pulled from the noty. or also nav to the message room.
         // Navigator.of(context).pushNamed(CommuinityScreen.routeName,
