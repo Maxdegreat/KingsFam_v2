@@ -201,6 +201,7 @@ class KingscordCubit extends Cubit<KingscordState> {
     required KingsCord kingsCordData,
     required String currUserName, // aka sender username
     required String? reply,
+    required Message? prevMsgSender,
   }) async {
     // log("recent: " + state.recentNotifLst.toString());
     // log("all: " + state.allNotifLst.toString());
@@ -233,11 +234,7 @@ class KingscordCubit extends Cubit<KingscordState> {
             mentionedIds.add(id);
       }
     } 
-    log("!!!!!!!!!!!!!!!!!!!!!!");
-    log("reply: " + reply.toString());
-    log("mentionIds: " + mentionedIds.toString());
 
-   
      if (reply != null  ) {
       if (reply.isNotEmpty && !mentionedIds.contains(reply.substring(163, 183)) ) {
 
@@ -260,8 +257,12 @@ class KingscordCubit extends Cubit<KingscordState> {
    }
 
     List<String> toSendNotifications = state.allNotifLst;
-    List<dynamic> toSendNotificationsT =  state.recentMsgIdToTokenMap.values.toList();
-
+    Set<dynamic> toSendNotificationsT =  state.recentMsgIdToTokenMap.values.toSet();
+    
+    // log("prevSender: " + prevMsgSender!.sender!.token[0].toString());
+    if (prevMsgSender != null) 
+      toSendNotifications.add(prevMsgSender.sender!.id);
+      // toSendNotificationsT.add(prevMsgSender.sender!.token[0]);
     
     for (var i in toSendNotifications) {
       if (state.recentMsgIdToTokenMap.containsKey(i))

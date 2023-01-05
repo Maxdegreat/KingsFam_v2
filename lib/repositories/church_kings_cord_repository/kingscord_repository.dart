@@ -70,9 +70,7 @@ class KingsCordRepository extends BaseKingsCordRepository {
 
       await future.then((kc) async {
               if (kc != null) {
-        List<String>? savedKcTimeStmap =
-            await UserPreferences.getKcTimeStamps(cmId);
-        if (savedKcTimeStmap != null) {
+        
           QuerySnapshot qs = await FirebaseFirestore.instance
               .collection(Paths.church)
               .doc(cmId)
@@ -82,14 +80,14 @@ class KingsCordRepository extends BaseKingsCordRepository {
               .orderBy('date', descending: true)
               .limit(1)
               .get();
+
           if (qs.docs.isNotEmpty) {
             Message m = await Message.fromDoc(qs.docs[0]);
             recentM = m;
-            DocumentReference userRef =
-                FirebaseFirestore.instance.collection(Paths.users).doc(uid);
-            // sender is a docRef on the cloud
-            // if curr is last to send leave the readStatus as default which is false or null
-            if (m.sender != userRef) {
+            
+            List<String>? savedKcTimeStmap = await UserPreferences.getKcTimeStamps(cmId);
+            DocumentReference userRef = FirebaseFirestore.instance.collection(Paths.users).doc(uid);
+            if (savedKcTimeStmap != null && m.sender != userRef) {
               tFromMsg = DateTime.fromMicrosecondsSinceEpoch(
                   m.date.microsecondsSinceEpoch);
               for (int i = 0; i < savedKcTimeStmap.length; i++) {
@@ -100,11 +98,8 @@ class KingsCordRepository extends BaseKingsCordRepository {
                   }
                 }
               }
-            } else {
-              // has not been seen bf so pass null... i think.
-              // also null will show the kc as not read via the cm wraper
-              readStatus = false;
-            }
+            } else  readStatus = false;
+            
           } else {
             // if empty it could be a says
             QuerySnapshot qs = await FirebaseFirestore.instance
@@ -122,8 +117,7 @@ class KingsCordRepository extends BaseKingsCordRepository {
               // we do not currently save kc time stamps
             }
           }
-        }
-        // kingsCordL.add(kc);
+        
         var docRef = await FirebaseFirestore.instance
             .collection(Paths.mention)
             .doc(uid)

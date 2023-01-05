@@ -80,7 +80,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       String uid = _authBloc.state.user!.uid;
       Userr currUserr = await _userrRepository.getUserrWithId(userrId: uid);
       emit(state.copyWith(currUserr: currUserr));
-      // just some pre-reqs
+      
       Church cm = Church.empty.copyWith(
         id: event.commuinity.id,
         members: event.commuinity.members,
@@ -94,7 +94,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
       emit(state.copyWith(isBaned: isBan));
 
-      // load if member and handel as the cm requires
+      // load if is member then handel as the cm requirments
       late bool isMem;
 
       var ism = await _churchRepository.streamIsCmMember(
@@ -126,38 +126,19 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
                 .get();
 
             if (requestSnap.exists) {
-              log("a request snap exist");
-              // show cms but set status to requestPending
+
               if (cmPrivacy == CmPrivacy.armored) {
-                // say request to join. if requested please wait for approval
-                log("requested: this is a armored cm");
-                emitWhenCmIsArmored(
-                    isMem, CommuintyStatus.armormed, RequestStatus.pending);
-              } else if (cmPrivacy == CmPrivacy.shielded) {
-                // show cm HIDE ALL cords DO NOT ALLOW TO OPEN CORDS AND EVENTS
-                // has to request access to join
-                log("requested: this is a shielded cm");
-                emitWhenCmIsShielded(isMem, [], [], CommuintyStatus.shielded,
-                    RequestStatus.pending);
-                add(CommunityLoadingPosts(cm: event.commuinity));
-              }
+                // pending bc request exits alredy
+                emitWhenCmIsArmored(isMem, CommuintyStatus.armormed, RequestStatus.pending);
+              } 
             } else {
               // allow users to request if it is required
               if (cmPrivacy == CmPrivacy.armored) {
-                log("make a request to this armored cm");
-                // say request to join. if requested please wait for approval
-                emitWhenCmIsArmored(
-                    isMem, CommuintyStatus.armormed, RequestStatus.none);
-              } else if (cmPrivacy == CmPrivacy.shielded) {
-                // show cm HIDE ALL DO NOT ALLOW TO OPEN CORDS
-                // has to request access to join
-                
-                emitWhenCmIsShielded(isMem, [], [], CommuintyStatus.shielded,
-                    RequestStatus.none);
-                // add(CommunityLoadingPosts(cm: event.commuinity));
+
+                emitWhenCmIsArmored( isMem, CommuintyStatus.armormed, RequestStatus.none);
               } else {
                 
-                // allow to join and read cords. all is chill
+                // open cm
                 emitWhenCmIsOpen(isMem, [], [], CommuintyStatus.loaded);
                 add(CommunityLoadingCords(commuinity: event.commuinity));
               }
@@ -218,8 +199,8 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     // STILL LOADING SO NO YIELD YET
     try {
       // ignore: unused_local_variable
-      final Userr userr = await _userrRepository.getUserrWithId(
-          userrId: _authBloc.state.user!.uid);
+      // final Userr userr = await _userrRepository.getUserrWithId(
+      //     userrId: _authBloc.state.user!.uid);
 
       // stream subscription for community cords
       _streamSubscriptionKingsCord?.cancel();
@@ -244,8 +225,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       });
       add(CommunityLoadingPosts(cm: event.commuinity));
     } catch (e) {
-      emit(state.copyWith(
-          failure: Failure(message: failed, code: e.toString())));
+      emit(state.copyWith( failure: Failure(message: failed, code: e.toString())));
     }
   }
 

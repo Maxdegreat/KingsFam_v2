@@ -314,7 +314,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                   if (_messageController.text.length > 0 &&
                                       _messageController.text.trim() != "") {
                                     ctx.removeReply();
+
+                                    log("last msg: " + state.msgs.first!.sender!.token.toString() + "\n");
                                     ctx.onSendTxtMsg(
+                                      prevMsgSender: state.msgs.first,
                                       churchId: widget.commuinity.id!,
                                       kingsCordId: widget.kingsCord.id!,
                                       txtMsgBodyWithSymbolsForParcing:
