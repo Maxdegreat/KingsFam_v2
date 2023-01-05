@@ -476,14 +476,14 @@ exports.onKingsCordMessageSent = functions.firestore
     var senderId = kcMsgData.sender.path.split("/")[1];
     var senderUsername = kcMsgData.senderUsername;
 
-    var recentMessage;
-    if (kcMsgData.imageUrl !== null) {
-      recentMessage = "An image was shared";
-    } else if (kcMsgData.videoUrl !== null) {
-      recentMessage = "A video was shared";
-    } else {
-      recentMessage = kcMsgData.text;
-    }
+    // var recentMessage;
+    // if (kcMsgData.imageUrl !== null) {
+    //   recentMessage = "An image was shared";
+    // } else if (kcMsgData.videoUrl !== null) {
+    //   recentMessage = "A video was shared";
+    // } else {
+    //   recentMessage = kcMsgData.text;
+    // }
 
     cmRef.update({
       recentMsgTime: kcMsgData.date,
@@ -554,6 +554,64 @@ async function deleteQueryBatch(db, query, resolve) {
   });
 }
 
+// when a user has opted to recieve notifications in a kings cord room
+exports.onRecieveKcRoomNotif = functions.firestore
+.document("/kcMsgNotif/{cmId}/kingsCord/{kcId}")
+.onCreate(async (snapshot, context) => {
+  const cmId = context.params.cmId;
+  const kcId = context.params.kcId;
+
+  var info = snapshot.data();
+
+  const message = {
+    notification: {
+      title: info.communityName,
+      body: info.username + ": " + info.messageBody,
+    },
+    data: {
+      type: String(info.type),
+      cmId: String(cmId),
+      kcId: String(kcId),
+
+    }
+  };
+
+  const options = {
+    priority: "high",
+    timeToLive: 60 * 60 * 24,
+  };
+
+  admin.messaging().sendToDevice(info.token, message, options);
+
+});
+
+exports.onRecieveKcRoomNotifUpdate = functions.firestore
+.document("/kcMsgNotif/{cmId}/kingsCord/{kcId}")
+.onUpdate((change, context) => {
+  const cmId = context.params.cmId;
+  const kcId = context.params.kcId;
+  var info = change.after.data();
+  functions.logger.log("value of tokens is: ", info.token);
+
+  const message = {
+    notification: {
+      title: info.communityName,
+      body: info.username + ": " + info.messageBody,
+    },
+    data: {
+      type: String(info.type),
+      cmId: String(cmId),
+      kcId: String(kcId),
+
+    }
+  };
+
+  const options = {
+    priority: "high",
+    timeToLive: 60 * 60 * 24,
+  };
+  admin.messaging().sendToDevice(info.token, message, options);
+});
 // exports.onUpdatePost = functions.firestore
 //   .document('/posts/{postId}')
 //   .onUpdate(async (snapshot, context) => {
