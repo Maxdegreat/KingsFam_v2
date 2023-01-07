@@ -29,6 +29,7 @@ class ThemeInfo {
         onPrimary: Colors.grey[400],
         inversePrimary: Colors.black,
         ),
+        canvasColor: Colors.white,
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
@@ -79,6 +80,7 @@ class ThemeInfo {
           inversePrimary: Colors.grey[400],
           onPrimary: Colors.white,
         background: Color(hexcolor.hexcolorCode("#434e7d"))),
+        canvasColor:  Color(hexcolor.hexcolorCode("#141829")),
         bottomSheetTheme: BottomSheetThemeData(backgroundColor: Color(hexcolor.hexcolorCode("#141829"))),
         cardColor: Color(hexcolor.hexcolorCode('#141829')),
         primaryColorDark: Colors.white,

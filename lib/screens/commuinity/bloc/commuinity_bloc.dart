@@ -518,7 +518,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   setReadStatusFalse({required String kcId}) {
     // seting the read status false for a given kc tracked by the KCid.
-    log("this is the method to the read status");
     for (KingsCord? kc in state.kingCords) {
       if (kc != null && kc.id! == kcId) {
         log("we found the kc that we want to update its state");

@@ -37,10 +37,12 @@ void main() async {
   EquatableConfig.stringify = kDebugMode;
   Bloc.observer = SimpleBlocObserver();
   await UserPreferences.init();
+
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations(
@@ -137,6 +139,9 @@ class MyApp extends StatelessWidget {
                   likedPostCubit: context.read<LikedPostCubit>(),
                   churchRepository: context.read<ChurchRepository>())),
         ],
+
+        
+
         child: MaterialApp(
           //THEME DATA
           themeMode: ThemeMode.dark,

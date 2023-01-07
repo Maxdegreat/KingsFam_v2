@@ -33,14 +33,15 @@ Widget _mainScrollView(
           height: MediaQuery.of(context).size.height,
           width: double.infinity,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.center,
-                end: Alignment.bottomLeft,
-                colors: [
-                  Theme.of(context).colorScheme.secondary,
-                  Colors.black54
-                  // Color.fromARGB(255, 17, 59, 122),
-                ]),
+            color: Theme.of(context).colorScheme.secondary,
+            // gradient: LinearGradient(
+            //     begin: Alignment.center,
+            //     end: Alignment.bottomLeft,
+            //     colors: [
+            //       Theme.of(context).colorScheme.secondary,
+            //       Colors.black,
+            //       // Color.fromARGB(255, 17, 59, 122),
+            //     ]),
           ),
         )),
         CustomScrollView(
@@ -434,102 +435,105 @@ Widget _mainScrollView(
 
 Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
   return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 3.0),
-    child: Container(
-      height: MediaQuery.of(context).size.height / 9,
-      width: MediaQuery.of(context).size.width / 1.05,
-      decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
-          // Color(hc.hexcolorCode("#0a0c14")),
-          borderRadius: BorderRadius.circular(8)),
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                if (cord.mode == "chat") ...[
-                  Icon(
-                    Icons.numbers,
-                    color: Theme.of(context).iconTheme.color,
-                  ),
-                  SizedBox(width: 5),
-                  Text(
-                    cord.cordName,
-                    overflow: TextOverflow.fade,
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                  SizedBox(width: 2),
-                  if (cord.readStatus!=null&&!cord.readStatus!)
-                    SizedBox.shrink()
-                  else if (cord.readStatus!=null&&cord.readStatus! || cord.readStatus == null)
-                    CircleAvatar(backgroundColor: Colors.amber,radius: 5)
-
-                ] else if (cord.mode == "says") ...[
-                  Icon(Icons.auto_awesome_motion_rounded),
-                  SizedBox(width: 3),
-                  Container(
-                    height: 30,
-                    //width: MediaQuery.of(context).size.width -
-                    // 50,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 7),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            cord.cordName,
-                            overflow: TextOverflow.fade,
-                            style: Theme.of(context).textTheme.bodyText1,
-                          ),
-                        ],
+    padding: const EdgeInsets.symmetric(vertical: 3),
+    child: Expanded(
+      child: Container(
+        // height: MediaQuery.of(context).size.height / 9,
+        width: MediaQuery.of(context).size.width / 1, // 1.05,
+        decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary,
+            // Color(hc.hexcolorCode("#0a0c14")),
+            borderRadius: BorderRadius.circular(8),
+          ),
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  if (cord.mode == "chat") ...[
+                    Icon(
+                      Icons.numbers,
+                      color: Theme.of(context).iconTheme.color,
+                    ),
+                    SizedBox(width: 5),
+                    Text(
+                      cord.cordName,
+                      overflow: TextOverflow.fade,
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    SizedBox(width: 2),
+                    if (cord.readStatus!=null&&!cord.readStatus!)
+                      SizedBox.shrink()
+                    else if (cord.readStatus!=null&&cord.readStatus! || cord.readStatus == null)
+                      CircleAvatar(backgroundColor: Colors.amber,radius: 3)
+    
+                  ] else if (cord.mode == "says") ...[
+                    Icon(Icons.auto_awesome_motion_rounded),
+                    SizedBox(width: 3),
+                    Container(
+                      height: 30,
+                      //width: MediaQuery.of(context).size.width -
+                      // 50,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 7),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              cord.cordName,
+                              overflow: TextOverflow.fade,
+                              style: Theme.of(context).textTheme.bodyText1,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ] else if (cord.mode == "welcome") ...[
-                  Icon(Icons.waving_hand_outlined),
-                  SizedBox(width: 3),
-                  Container(
-                    height: 30,
-                    //width: MediaQuery.of(context).size.width -
-                    // 50,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 7),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            cord.cordName,
-                            overflow: TextOverflow.fade,
-                            style: Theme.of(context).textTheme.bodyText1,
-                          ),
-                        ],
+                  ] else if (cord.mode == "welcome") ...[
+                    Icon(Icons.waving_hand_outlined),
+                    SizedBox(width: 3),
+                    Container(
+                      height: 30,
+                      //width: MediaQuery.of(context).size.width -
+                      // 50,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 7),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              cord.cordName,
+                              overflow: TextOverflow.fade,
+                              style: Theme.of(context).textTheme.bodyText1,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ]
-              ],
-            ),
-            if (cord.mode == "chat" &&
-                cord.recentActivity!["chat"] != null) ...[
-              Padding(
-                padding: const EdgeInsets.only(left:20, top: 2),
-                child: DisplayMsg(m: cord.recentActivity!["chat"], s: null,),
-              )
-            ] else if (cord.mode == "says" &&
-                cord.recentActivity!["says"] != null) ...[
-             Padding(
-                padding: const EdgeInsets.only(left:20, top: 2),
-                child: DisplayMsg(m:null, s: cord.recentActivity!["says"]),
-              )
-            ]
-          ],
+                  ]
+                ],
+              ),
+              if (cord.mode == "chat" &&
+                  cord.recentActivity!["chat"] != null) ...[
+                Padding(
+                  padding: const EdgeInsets.only(left:20, top: 2),
+                  child: DisplayMsg(m: cord.recentActivity!["chat"], s: null,),
+                )
+              ] else if (cord.mode == "says" &&
+                  cord.recentActivity!["says"] != null) ...[
+               Padding(
+                  padding: const EdgeInsets.only(left:20, top: 2),
+                  child: DisplayMsg(m:null, s: cord.recentActivity!["says"]),
+                )
+              ]
+            ],
+          ),
         ),
       ),
     ),
@@ -629,7 +633,7 @@ SliverAppBar cmSliverAppBar({
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: <Color>[
-                  Color.fromARGB(82, 93, 125, 172),
+                  Colors.transparent,
                   Color.fromARGB(83, 13, 72, 161),
                   Theme.of(context).colorScheme.secondary,
                 ],

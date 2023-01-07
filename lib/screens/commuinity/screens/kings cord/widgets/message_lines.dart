@@ -1,9 +1,13 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:giphy_get/giphy_get.dart';
+import 'package:kingsfam/api/giphy.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
@@ -12,6 +16,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/extensions/extensions.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
 import 'package:kingsfam/screens/screens.dart';
+import 'package:kingsfam/widgets/giphy/giphy_widget.dart';
 import 'package:kingsfam/widgets/link_preview_container.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -159,79 +164,65 @@ class _MessageLinesState extends State<MessageLines> {
                   ],
                 ),
                 SizedBox(height: 7),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    //  GestureDetector(
-                    //    onTap: () {
-                    //     // tell ui that this is a replyed message
-                    //       log("the inhearatedCtx is not null");
-                    //       inhearatedCtx.read<KingscordCubit>().onReplyMessage(replyingToMessage: message,);
-                    //       Navigator.of(context).pop();
-                    //     // add the og msg sender id in data / payload on onbackend
-
-                    //     // send a notification to to og sender onbackend
-
-                    //    },
-                    //    child: Container(
-                    //      child: Text("Reply", style: Theme.of(context).textTheme.bodyMedium),
-                    //    ),
-                    //  ),
-                    //  SizedBox(width: 5,),
-                    GestureDetector(
-                      onTap: () {
-                        if (widget.message.sender!.id ==
-                            context.read<AuthBloc>().state.user!.uid) {
-                          if (widget.message.text != null &&
-                              widget.message.text == "(code:unsent 10987345)") {
-                            snackBar(
-                                snackMessage: "You can\'t del this fam",
-                                context: context,
-                                bgColor: Colors.red[400]!);
-                          } else {
-                            Message messageForDel = widget.message.copyWith(
-                              text: "(code:unsent 10987345)",
-                              imageUrl: null,
-                              mentionedIds: null,
-                              thumbnailUrl: null,
-                              videoUrl: null,
-                            );
-                            FirebaseFirestore.instance
-                                .collection(Paths.church)
-                                .doc(this.widget.cm.id!)
-                                .collection(Paths.kingsCord)
-                                .doc(this.widget.kc.id!)
-                                .collection(Paths.messages)
-                                .doc(this.widget.message.id)
-                                .update(messageForDel.ToDoc(
-                                    senderId: widget.message.sender!.id));
-                          }
-                        } else
-                          snackBar(
-                              snackMessage:
-                                  "hmm, can't del a message that is not yours fam",
-                              context: context,
-                              bgColor: Colors.red[400]!);
-                      },
-                      child: Container(
-                        child: Text("Unsend",
-                            style: Theme.of(context).textTheme.bodyText1),
-                      ),
+                     SizedBox(width: 7),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.delete),
+                        SizedBox(width: 5),
+                        GestureDetector(
+                          onTap: () {
+                            if (widget.message.sender!.id ==
+                                context.read<AuthBloc>().state.user!.uid) {
+                                FirebaseFirestore.instance
+                                    .collection(Paths.church)
+                                    .doc(this.widget.cm.id!)
+                                    .collection(Paths.kingsCord)
+                                    .doc(this.widget.kc.id!)
+                                    .collection(Paths.messages)
+                                    .doc(this.widget.message.id)
+                                    .delete();
+                                    Navigator.of(context).pop();
+                            } else
+                              snackBar(
+                                  snackMessage:
+                                      "hmm, can't del a message that is not yours fam",
+                                  context: context,
+                                  bgColor: Colors.red[400]!);
+                          },
+                          child: Container(
+                            child: Text("Unsend",
+                                style: Theme.of(context).textTheme.bodyText1),
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(width: 7),
-                    GestureDetector(
-                        onTap: () {
-                          if (widget.message.text != null) {
-                            copyTextToClip(widget.message.text!);
-                            snackBar(snackMessage: "copied", context: context);
-                          } else {
-                            snackBar(
-                                snackMessage: "can not copy", context: context);
-                          }
-                        },
-                        child: Text("Copy",
-                            style: Theme.of(context).textTheme.bodyText1))
+                    Row(
+                     mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.copy),
+                        SizedBox(width: 5),
+                        GestureDetector(
+                            onTap: () {
+                              if (widget.message.text != null) {
+                                copyTextToClip(widget.message.text!);
+                                snackBar(snackMessage: "copied", context: context);
+                              } else {
+                                snackBar(
+                                    snackMessage: "can not copy", context: context);
+                              }
+                            },
+                            child: Text("Copy",
+                                style: Theme.of(context).textTheme.bodyText1)),
+                      ],
+                    )
                   ],
                 ),
               ],
@@ -492,13 +483,14 @@ class _MessageLinesState extends State<MessageLines> {
   }
 
   Widget messageLineChild() {
+    var messageType = (widget.message.text == firstMsgEncoded ||
+        widget.message.text == welcomeMsgEncoded);
     return Padding(
       padding:
           const EdgeInsets.only(top: 2.5, bottom: 2.5, left: 8.0, right: 8.0),
       child: Container(
         // color: Colors.white24,
-        child: (widget.message.text == firstMsgEncoded ||
-                widget.message.text == welcomeMsgEncoded)
+        child: messageType
             ? _messageWelcomeWidget()
             : Column(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -573,7 +565,10 @@ class _MessageLinesState extends State<MessageLines> {
                                 maxWidth:
                                     MediaQuery.of(context).size.width / 1.4,
                               ),
-                              child: widget.message.text != null
+                              child:
+                              widget.message.giphyId != null 
+                              ? DisplayGif(giphyId: widget.message.giphyId!) 
+                              : widget.message.text != null
                                   ? _buildText(context)
                                   : widget.message.videoUrl != null &&
                                           widget.message.thumbnailUrl != null
@@ -667,6 +662,8 @@ class _MessageLinesState extends State<MessageLines> {
                     .textTheme
                     .caption!
                     .copyWith(fontStyle: FontStyle.italic)),
+            SizedBox(height: 5),
+            Divider(color: Colors.white, height: 7)
           ],
         ),
       );
@@ -695,10 +692,8 @@ class _MessageLinesState extends State<MessageLines> {
                     ),
                     SizedBox(width: 7),
                     Text(widget.message.sender!.username,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyText1!
-                            .copyWith(fontSize: 20, fontWeight: FontWeight.w500)),
+                        style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                            fontSize: 20, fontWeight: FontWeight.w500)),
                   ],
                 ),
 
@@ -726,7 +721,7 @@ class _MessageLinesState extends State<MessageLines> {
           ),
         ),
       );
-    } else
-      return SizedBox.shrink();
+    } 
+    return SizedBox.shrink();
   }
 }

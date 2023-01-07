@@ -36,14 +36,14 @@ class DisplayMsg extends StatelessWidget {
   _says(Size size, TextTheme s) {
     return Container(
       height: (size.height / 9) / 2.5,
-      width: (size.width / 1.3) / 1.4,
+      // width: (size.width / 1.3) / 1.4,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7),
         //color: Color.fromARGB(46, 255, 193, 7),
       ),
       child: RichText(
         overflow: TextOverflow.ellipsis,
-        maxLines: 2,
+        maxLines: 1,
         softWrap: true,
         text: TextSpan(
           text: this.s!.author!.username,
@@ -60,8 +60,8 @@ class DisplayMsg extends StatelessWidget {
 
   _welcomMsg(Size size, TextTheme s) {
     return Container(
-      height: (size.height / 9) / 2.5,
-      width: (size.width / 1.3) / 1.4,
+      //height: (size.height / 9) / 2.5,
+      // width: (size.width / 1.3) / 1.4,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7),
         color: Color.fromARGB(46, 255, 193, 7),
@@ -78,16 +78,16 @@ class DisplayMsg extends StatelessWidget {
           ]
         ),
         softWrap: true,
-        maxLines: 2,
-        overflow: TextOverflow.fade,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
 
   _newRoom(Size size, TextTheme s) {
     return Container(
-      height: (size.height / 9) / 2,
-      width: (size.width / 1.3) / 1.4,
+      //height: (size.height / 9) / 2,
+      // width: (size.width / 1.3) / 1.4,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7),
       ),
@@ -110,8 +110,8 @@ class DisplayMsg extends StatelessWidget {
           ]
         ),
         softWrap: true,
-        maxLines: 2,
-        overflow: TextOverflow.fade,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
         ),
       ),
@@ -121,8 +121,8 @@ class DisplayMsg extends StatelessWidget {
   _msg(Size size, TextTheme s) {
     String msg = m!.text != null ? m!.text! : " shared something";
     return Container(
-      height: (size.height / 9) / 2,
-      width: (size.width / 1.3) / 1.4,
+      //height: (size.height / 9) / 2,
+      //width: (size.width / 1.3) / 1.4,
       decoration: BoxDecoration(),
       child: RichText(
         text: TextSpan(
@@ -136,8 +136,8 @@ class DisplayMsg extends StatelessWidget {
           ]
         ),
         softWrap: true,
-        maxLines: 2,
-        overflow: TextOverflow.fade,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }

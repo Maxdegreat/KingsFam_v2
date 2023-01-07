@@ -312,6 +312,37 @@ class KingscordCubit extends Cubit<KingscordState> {
         senderId: _authBloc.state.user!.uid);
   }
 
+  Future<void> onSendGiphyMessage({
+    required String giphyId,
+    required String cmId,
+    required String kcId,
+    required String currUsername,
+  }) async {
+    // make message that sends Giphy
+    Message m = Message(
+      date: Timestamp.now(),
+      giphyId: giphyId,
+      senderUsername: currUsername,
+    );
+    try {
+      
+      // send msg via krepo
+      await _kingsCordRepository.onSendGiphyMessage(
+        cmId: cmId,
+        giphyId: giphyId,
+        kcId: kcId,
+        msg: m,
+        senderId: _authBloc.state.user!.uid,
+      );
+      // return bool value
+      // return true;
+
+    } catch (e) {
+      log("error in kingsCordCubit");
+      log("error in onSendGiphyMessage: " + e.toString());
+    }
+  }
+
   void onUploadVideo(
       {required File videoFile,
       required String kcId,

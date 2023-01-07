@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/user_model.dart';
@@ -18,6 +20,7 @@ class Message {
   final List<String>? mentionedIds;
   final Map<String, int>? reactions;
   final String? reply;
+  final String? giphyId;
 
 //2 gen the constructor
   Message({
@@ -32,6 +35,7 @@ class Message {
     required this.date,
     this.reactions,
     this.reply,
+    this.giphyId,
   });
 
   //3  make the props
@@ -47,6 +51,7 @@ class Message {
         mentionedIds,
         reactions,
         reply,
+        giphyId,
       ];
 
   // 4 make the copy with
@@ -62,6 +67,7 @@ class Message {
     List<String>? mentionedIds,
     Map<String, int>? reactions,
     String? reply,
+    String? giphyLocal,
   }) {
     return Message(
       id: id ?? this.id,
@@ -74,6 +80,7 @@ class Message {
       date: date ?? this.date,
       mentionedIds: mentionedIds ?? this.mentionedIds,
       reply: reply ?? this.reply,
+      giphyId: giphyId ?? this.giphyId
     );
   }
 
@@ -87,9 +94,9 @@ class Message {
 
   // 5 make the to doc
   Map<String, dynamic> ToDoc({required String senderId}) {
-    return {
-      'sender':
-          FirebaseFirestore.instance.collection(Paths.users).doc(senderId),
+    try {
+      return {
+      'sender': FirebaseFirestore.instance.collection(Paths.users).doc(senderId),
       'senderUsername': senderUsername,
       'text': text,
       'imageUrl': imageUrl,
@@ -98,9 +105,14 @@ class Message {
       'date': date,
       'mentionedIds': mentionedIds,
       'reactions': {},
-      'reply':
-          reply, // This should be a string where the value is the ID of the og message.
+       // This should be a string where the value is the ID of the og message.
+      'reply': reply,
+      "giphyId": giphyId,
     };
+    } catch (e) {
+      log("error in Message.ToDoc: " + e.toString());
+      return {};
+    }
   }
 
   //6 make the fromDoc
@@ -123,6 +135,7 @@ class Message {
       reactions: Map<String, int>.from(data['reactions'] ?? {}),
       mentionedIds: List<String>.from(data['mentionedIds'] ?? []),
       reply: data['reply'] ?? null,
+      giphyId: data['giphyId'] ?? null,
     );
   }
 }

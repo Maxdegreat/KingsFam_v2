@@ -53,6 +53,23 @@ class KingsCordRepository extends BaseKingsCordRepository {
         .add(message.ToDoc(senderId: senderId));
   }
 
+  Future<void> onSendGiphyMessage({required String giphyId, required String cmId, required String kcId, required Message msg, required String senderId}) async {
+    try {
+      log("starting");
+      _firebaseFirestore
+      .collection(Paths.church)
+      .doc(cmId)
+      .collection(Paths.kingsCord)
+      .doc(kcId)
+      .collection(Paths.messages)
+      .add(msg.ToDoc(senderId: senderId)).then((value) => log(value.toString()));
+      log("done");
+    } catch (e) {
+      log("error in kingsCordRepo");
+      log("error message: " + e.toString());
+    }
+  }
+
   Future<Map<String, List<KingsCord?>>> futureWaitCord(
       List<Future<KingsCord?>> futures, String cmId, String uid) async {
     String mentioned = "mentioned";
