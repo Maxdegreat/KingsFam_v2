@@ -1,11 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:giphy_get/giphy_get.dart';
 import 'package:http/http.dart' as http;
 
 // Replace API_KEY with your actual API key
 // ignore: constant_identifier_names
-const API_KEY = "ge17PWpKQ9OmxKuPE8ejeYmI3SHLZOeY";
+final API_KEY = dotenv.env['giphy_api_key'];
 
 class GiphyAPI {
  static Future<GiphyGif> fetchGif(String gifId) async {

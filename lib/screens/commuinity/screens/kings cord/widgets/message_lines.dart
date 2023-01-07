@@ -156,7 +156,16 @@ class _MessageLinesState extends State<MessageLines> {
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                           onTap: () {
-                            uploadReaction('👀', messageId, messageReactions!);
+                            uploadReaction('😎', messageId, messageReactions!);
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('😎', style: TextStyle(fontSize: 27))),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                          onTap: () {
+                            uploadReaction('👀😎😎😎😎😎😎', messageId, messageReactions!);
                             Navigator.of(context).pop();
                           },
                           child: Text('👀', style: TextStyle(fontSize: 27))),
@@ -164,66 +173,70 @@ class _MessageLinesState extends State<MessageLines> {
                   ],
                 ),
                 SizedBox(height: 7),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                     SizedBox(width: 7),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(Icons.delete),
-                        SizedBox(width: 5),
-                        GestureDetector(
-                          onTap: () {
-                            if (widget.message.sender!.id ==
-                                context.read<AuthBloc>().state.user!.uid) {
-                                FirebaseFirestore.instance
-                                    .collection(Paths.church)
-                                    .doc(this.widget.cm.id!)
-                                    .collection(Paths.kingsCord)
-                                    .doc(this.widget.kc.id!)
-                                    .collection(Paths.messages)
-                                    .doc(this.widget.message.id)
-                                    .delete();
-                                    Navigator.of(context).pop();
-                            } else
-                              snackBar(
-                                  snackMessage:
-                                      "hmm, can't del a message that is not yours fam",
-                                  context: context,
-                                  bgColor: Colors.red[400]!);
-                          },
-                          child: Container(
-                            child: Text("Unsend",
-                                style: Theme.of(context).textTheme.bodyText1),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(width: 7),
-                    Row(
-                     mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(Icons.copy),
-                        SizedBox(width: 5),
-                        GestureDetector(
+                Padding(
+                  padding: EdgeInsets.only(left: MediaQuery.of(context).size.width / 7),
+
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                       SizedBox(width: 7),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.delete),
+                          SizedBox(width: 5),
+                          GestureDetector(
                             onTap: () {
-                              if (widget.message.text != null) {
-                                copyTextToClip(widget.message.text!);
-                                snackBar(snackMessage: "copied", context: context);
-                              } else {
+                              if (widget.message.sender!.id ==
+                                  context.read<AuthBloc>().state.user!.uid) {
+                                  FirebaseFirestore.instance
+                                      .collection(Paths.church)
+                                      .doc(this.widget.cm.id!)
+                                      .collection(Paths.kingsCord)
+                                      .doc(this.widget.kc.id!)
+                                      .collection(Paths.messages)
+                                      .doc(this.widget.message.id)
+                                      .delete();
+                                      Navigator.of(context).pop();
+                              } else
                                 snackBar(
-                                    snackMessage: "can not copy", context: context);
-                              }
+                                    snackMessage:
+                                        "hmm, can't del a message that is not yours fam",
+                                    context: context,
+                                    bgColor: Colors.red[400]!);
                             },
-                            child: Text("Copy",
-                                style: Theme.of(context).textTheme.bodyText1)),
-                      ],
-                    )
-                  ],
+                            child: Container(
+                              child: Text("Unsend",
+                                  style: Theme.of(context).textTheme.bodyText1),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(width: 7),
+                      Row(
+                       mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.copy),
+                          SizedBox(width: 5),
+                          GestureDetector(
+                              onTap: () {
+                                if (widget.message.text != null) {
+                                  copyTextToClip(widget.message.text!);
+                                  snackBar(snackMessage: "copied", context: context);
+                                } else {
+                                  snackBar(
+                                      snackMessage: "can not copy", context: context);
+                                }
+                              },
+                              child: Text("Copy",
+                                  style: Theme.of(context).textTheme.bodyText1)),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ],
             ),

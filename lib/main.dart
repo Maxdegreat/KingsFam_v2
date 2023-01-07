@@ -24,6 +24,7 @@ import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/theme_club_house/theme_info.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'screens/build_church/cubit/buildchurch_cubit.dart';
 import 'screens/screens.dart';
@@ -37,7 +38,7 @@ void main() async {
   EquatableConfig.stringify = kDebugMode;
   Bloc.observer = SimpleBlocObserver();
   await UserPreferences.init();
-
+  await dotenv.load(fileName: ".env");
   runApp(MyApp());
 }
 
