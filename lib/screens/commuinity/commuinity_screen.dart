@@ -136,7 +136,6 @@ class _CommuinityScreenState extends State<CommuinityScreen>
       create: (context) {
         log("Passing through bloc consumer");
         return CommuinityBloc(
-          callRepository: context.read<CallRepository>(),
           authBloc: context.read<AuthBloc>(),
           churchRepository: context.read<ChurchRepository>(),
           storageRepository: context.read<StorageRepository>(),

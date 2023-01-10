@@ -79,16 +79,17 @@ Widget _mainScrollView(
                                 ),
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                      primary:
-                                          Theme.of(context).colorScheme.primary),
+                                      primary: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
                                   onPressed: () async {
                                     List<CameraDescription> _cameras =
                                         <CameraDescription>[];
                                     _cameras = await availableCameras();
                                     Navigator.of(context).pushNamed(
                                         CameraScreen.routeName,
-                                        arguments:
-                                            CameraScreenArgs(cameras: _cameras));
+                                        arguments: CameraScreenArgs(
+                                            cameras: _cameras));
                                     // createMediaPopUpSheet(context: context),
                                   },
                                   child: Icon(
@@ -107,8 +108,9 @@ Widget _mainScrollView(
                                 ),
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                      primary:
-                                          Theme.of(context).colorScheme.primary),
+                                      primary: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
                                   onPressed: () => Navigator.of(context)
                                       .pushNamed(CommunityHome.routeName,
                                           arguments: CommunityHomeArgs(
@@ -116,8 +118,9 @@ Widget _mainScrollView(
                                               cmB: context
                                                   .read<CommuinityBloc>())),
                                   child: Text("Home",
-                                      style:
-                                          Theme.of(context).textTheme.bodyText1),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1),
                                 ),
                               ),
                             ],
@@ -133,12 +136,14 @@ Widget _mainScrollView(
                             ),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                  primary: Theme.of(context).colorScheme.primary),
+                                  primary:
+                                      Theme.of(context).colorScheme.primary),
                               onPressed: () async {
                                 String generatedDeepLink =
                                     await FirebaseDynamicLinkService
                                         .createDynamicLink(cm, true);
-                                communityInvitePopUp(context, generatedDeepLink);
+                                communityInvitePopUp(
+                                    context, generatedDeepLink);
                               },
                               child: Text("Invite",
                                   style: Theme.of(context).textTheme.bodyText1),
@@ -153,7 +158,7 @@ Widget _mainScrollView(
                       child: Column(
                         children: [
                           // child 1. this is a display of post and ooms 111111111111111111111111111111111111111111111111111111111111111111111111111111111111
-  
+
                           Padding(
                             padding: const EdgeInsets.all(7.0),
                             child: Container(
@@ -177,13 +182,13 @@ Widget _mainScrollView(
                                         }
                                       })
                                   : Center(
-                                      child:
-                                          state.status == CommuintyStatus.loading
-                                              ? Text("One Second ...")
-                                              : SizedBox.shrink()),
+                                      child: state.status ==
+                                              CommuintyStatus.loading
+                                          ? Text("One Second ...")
+                                          : SizedBox.shrink()),
                             ),
                           ),
-  
+
                           Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,12 +222,12 @@ Widget _mainScrollView(
                                             // deletion of a noti if it eist. we check if noty eist by through a function insde the bloc.
                                             NavtoKcFromRooms(
                                                 context, state, cm, cord);
-  
+
                                             // Future.delayed(Duration(seconds: 1)).then((value) {
                                             //   log("setting the state");
                                             //   setStateCallBack();
                                             // });
-  
+
                                             // del the @ notification (del the mention)
                                             String currId = context
                                                 .read<AuthBloc>()
@@ -267,7 +272,8 @@ Widget _mainScrollView(
                                                 borderRadius:
                                                     BorderRadius.circular(8)),
                                             child: Padding(
-                                              padding: const EdgeInsets.all(4.0),
+                                              padding:
+                                                  const EdgeInsets.all(4.0),
                                               child: Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.start,
@@ -282,12 +288,14 @@ Widget _mainScrollView(
                                                     SizedBox(width: 5),
                                                     Text(
                                                       cord.cordName,
-                                                      overflow: TextOverflow.fade,
+                                                      overflow:
+                                                          TextOverflow.fade,
                                                       style: Theme.of(context)
                                                           .textTheme
                                                           .bodyText1!
                                                           .copyWith(
-                                                              color: Colors.amber,
+                                                              color:
+                                                                  Colors.amber,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w900),
@@ -313,9 +321,10 @@ Widget _mainScrollView(
                                                       //width: MediaQuery.of(context).size.width -
                                                       // 50,
                                                       child: Padding(
-                                                        padding: const EdgeInsets
-                                                                .symmetric(
-                                                            horizontal: 7),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                horizontal: 7),
                                                         child: Column(
                                                           crossAxisAlignment:
                                                               CrossAxisAlignment
@@ -368,12 +377,16 @@ Widget _mainScrollView(
                                   CmPermHandler.canMakeRoom(
                                           context.read<CommuinityBloc>())
                                       ? new_kingscord(
-                                          cmBloc: context.read<CommuinityBloc>(),
+                                          cmBloc:
+                                              context.read<CommuinityBloc>(),
                                           cm: cm,
                                           context: context)
                                       : SizedBox.shrink(),
                                 ],
                               ),
+
+                              _showVc(state, context),
+
                               Column(children: [
                                 if (state.collapseCordColumn) ...[
                                   Text("...",
@@ -441,10 +454,10 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
         // height: MediaQuery.of(context).size.height / 9,
         width: MediaQuery.of(context).size.width / 1, // 1.05,
         decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            // Color(hc.hexcolorCode("#0a0c14")),
-            borderRadius: BorderRadius.circular(8),
-          ),
+          color: Theme.of(context).colorScheme.primary,
+          // Color(hc.hexcolorCode("#0a0c14")),
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(4.0),
           child: Column(
@@ -467,11 +480,11 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
                       style: Theme.of(context).textTheme.bodyText1,
                     ),
                     SizedBox(width: 2),
-                    if (cord.readStatus!=null&&!cord.readStatus!)
+                    if (cord.readStatus != null && !cord.readStatus!)
                       SizedBox.shrink()
-                    else if (cord.readStatus!=null&&cord.readStatus! || cord.readStatus == null)
-                      CircleAvatar(backgroundColor: Colors.amber,radius: 3)
-    
+                    else if (cord.readStatus != null && cord.readStatus! ||
+                        cord.readStatus == null)
+                      CircleAvatar(backgroundColor: Colors.amber, radius: 3)
                   ] else if (cord.mode == "says") ...[
                     Icon(Icons.auto_awesome_motion_rounded),
                     SizedBox(width: 3),
@@ -522,14 +535,17 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
               if (cord.mode == "chat" &&
                   cord.recentActivity!["chat"] != null) ...[
                 Padding(
-                  padding: const EdgeInsets.only(left:20, top: 2),
-                  child: DisplayMsg(m: cord.recentActivity!["chat"], s: null,),
+                  padding: const EdgeInsets.only(left: 20, top: 2),
+                  child: DisplayMsg(
+                    m: cord.recentActivity!["chat"],
+                    s: null,
+                  ),
                 )
               ] else if (cord.mode == "says" &&
                   cord.recentActivity!["says"] != null) ...[
-               Padding(
-                  padding: const EdgeInsets.only(left:20, top: 2),
-                  child: DisplayMsg(m:null, s: cord.recentActivity!["says"]),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, top: 2),
+                  child: DisplayMsg(m: null, s: cord.recentActivity!["says"]),
                 )
               ]
             ],
@@ -550,12 +566,9 @@ void onLongPressCord(BuildContext context, KingsCord cord, Church cm) {
     if (cord.mode == "welcome")
       snackBar(
           snackMessage: "Must have welcome room at this moment",
-          context: context
-      );
+          context: context);
     else if (CmPermHandler.canMakeRoom(context.read<CommuinityBloc>()))
-      _delKcDialog(
-        context: context, cord: cord, commuinity: cm
-      );
+      _delKcDialog(context: context, cord: cord, commuinity: cm);
     else
       snackBar(
           snackMessage: "You do not have permissions to remove this room.",
@@ -579,9 +592,45 @@ void NavtoKcFromRooms(
               commuinity: cm,
               kingsCord: cord))
       .then((_) {
-          context.read<CommuinityBloc>().setReadStatusFalse(kcId: cord.id!);
-          context.read<CommuinityBloc>().setMentionedToFalse(kcId: cord.id!);
-      });
+    context.read<CommuinityBloc>().setReadStatusFalse(kcId: cord.id!);
+    context.read<CommuinityBloc>().setMentionedToFalse(kcId: cord.id!);
+  });
+}
+
+_showVc(CommuinityState state, BuildContext context) {
+  return Padding(
+    padding: const EdgeInsets.only(right: 4.0, bottom: 4),
+    child: SingleChildScrollView(
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: state.vc.map((kc) {
+            return GestureDetector(
+              onTap: () {
+                if (kc != null)
+                  Navigator.of(context).pushNamed(VcScreen.routeName, arguments: VcScreenArgs(kc: kc, currUserr: state.currUserr));
+                else 
+                  snackBar(snackMessage: "No VC", context: context);
+              },
+              child: Container(
+                width:  MediaQuery.of(context).size.width / 2.31,
+                // height: 80,
+                child: Column(
+                  children: [
+                    Icon(Icons.multitrack_audio_outlined, size: 30, color: Colors.white,),
+                    SizedBox(height: 2),
+                    Text(kc!.cordName, style: Theme.of(context).textTheme.caption, maxLines: 1, overflow: TextOverflow.ellipsis,),
+                  ],
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(7),
+                  color: Colors.black45,
+                ),
+              ),
+            );
+          }).toList()),
+    ),
+  );
 }
 
 SliverAppBar cmSliverAppBar({

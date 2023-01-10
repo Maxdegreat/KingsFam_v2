@@ -209,7 +209,10 @@ class CustomRoute {
         args: settings.arguments as CameraScreenArgs
       );
     
-
+    case VcScreen.routeName:
+      return VcScreen.route(
+        args: settings.arguments as VcScreenArgs
+    );
 
       default:
         return _errorRoute();

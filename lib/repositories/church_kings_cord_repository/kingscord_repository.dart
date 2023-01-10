@@ -74,9 +74,11 @@ class KingsCordRepository extends BaseKingsCordRepository {
       List<Future<KingsCord?>> futures, String cmId, String uid) async {
     String mentioned = "mentioned";
     String kingsCord = "kinscord";
+    String vc = "vc";
 
     List<KingsCord> mentionedL = [];
     List<KingsCord> kingsCordL = [];
+    List<KingsCord> vcL = [];
 
     for (Future<KingsCord?> future in futures) {
       DateTime? tFromMsg;
@@ -87,7 +89,15 @@ class KingsCordRepository extends BaseKingsCordRepository {
 
       await future.then((kc) async {
               if (kc != null) {
-        
+          
+          if (kc.mode == "vc") {
+            vcL.add(kc);
+          } else {
+            // handle other modes
+
+
+          
+
           QuerySnapshot qs = await FirebaseFirestore.instance
               .collection(Paths.church)
               .doc(cmId)
@@ -153,6 +163,8 @@ class KingsCordRepository extends BaseKingsCordRepository {
               recentActivity: {"chat": recentM, "says": recentS}));
         }
       }
+              }
+
       });
 
     }
@@ -168,6 +180,7 @@ class KingsCordRepository extends BaseKingsCordRepository {
     Map<String, List<KingsCord>> map = {};
     map[mentioned] = mentionedL;
     map[kingsCord] = kingsCordL;
+    map[vc] = vcL;
     return map;
   }
 }

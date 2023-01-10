@@ -33,7 +33,6 @@ class BuildChurch extends StatefulWidget {
         settings: const RouteSettings(name: routeName),
         builder: (context) => BlocProvider<BuildchurchCubit>(
               create: (_) => (BuildchurchCubit(
-                  callRepository: context.read<CallRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   userrRepository: context.read<UserrRepository>(),
                   storageRepository: context.read<StorageRepository>(),

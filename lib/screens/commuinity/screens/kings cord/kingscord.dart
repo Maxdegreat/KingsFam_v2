@@ -336,6 +336,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                   ctx.onIsTyping(false);
                                   _messageController.clear();
                                   ctx.clearMention();
+                                  setState(() {});
                                 }
                               : null,
                         )),
@@ -698,6 +699,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                       kingsCordId: widget.kingsCord.id!,
                       senderUsername: widget.usr.username);
                 }
+                setState(() {});
               },
               icon: Icon(Icons.image),
             ),

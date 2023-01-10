@@ -176,7 +176,6 @@ _delKcDialog({
         context: context,
         builder: (ctx) => BlocProvider<CommuinityBloc>(
             create: (_) => CommuinityBloc(
-                callRepository: ctx.read<CallRepository>(),
                 churchRepository: ctx.read<ChurchRepository>(),
                 storageRepository: ctx.read<StorageRepository>(),
                 authBloc: ctx.read<AuthBloc>(),
@@ -369,7 +368,6 @@ Future<dynamic> _inviteBottomSheet(
         context: context,
         builder: (context) => BlocProvider<BuildchurchCubit>(
               create: (context) => BuildchurchCubit(
-                  callRepository: context.read<CallRepository>(),
                   churchRepository: context.read<ChurchRepository>(),
                   storageRepository: context.read<StorageRepository>(),
                   authBloc: context.read<AuthBloc>(),

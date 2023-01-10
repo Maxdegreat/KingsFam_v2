@@ -33,6 +33,7 @@ class Paths {
   static const String communityBan = "communityBan";
   static const String bans = "bans";
   static const String says = "says";
+  static const String vc = "vc";
 
   //sub collections
   static const String postsComments = 'postComments';

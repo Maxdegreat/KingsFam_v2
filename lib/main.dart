@@ -62,7 +62,6 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<StorageRepository>(
             create: (_) => StorageRepository()),
         RepositoryProvider<PostsRepository>(create: (_) => PostsRepository()),
-        RepositoryProvider<CallRepository>(create: (_) => CallRepository()),
         RepositoryProvider<NotificationRepository>(
           create: (_) => NotificationRepository(),
         ),
@@ -109,7 +108,6 @@ class MyApp extends StatelessWidget {
           BlocProvider<BuildchurchCubit>(
               // TODO                                        PLEASE NOTE THIS DOES NOT NEED TO BE A GLOBAL THING. NOTE IT IS USED IN CM SCREEN ON A GLOBAL SCOPE BUT IT CAN BE REFACTORED.
               create: (context) => BuildchurchCubit(
-                  callRepository: context.read<CallRepository>(),
                   churchRepository: context.read<ChurchRepository>(),
                   storageRepository: context.read<StorageRepository>(),
                   authBloc: context.read<AuthBloc>(),
@@ -125,7 +123,6 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider<CommuinityBloc>(
               create: (context) => CommuinityBloc(
-                  callRepository: context.read<CallRepository>(),
                   churchRepository: context.read<ChurchRepository>(),
                   storageRepository: context.read<StorageRepository>(),
                   authBloc: context.read<AuthBloc>(),

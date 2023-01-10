@@ -80,40 +80,37 @@ class _CreateRoomState extends State<CreateRoom> {
             style: Theme.of(context).textTheme.bodyText1,
           ),
           actions: [
-             Padding(
-               padding: const EdgeInsets.all(8.0),
-               child: TextButton(
-                      onPressed: () async {
-                        if (_txtController.value.text.length == 0) {
-                          snackBar(
-                              snackMessage:
-                                  "be sure you add a name for the room you are making",
-                              context: context,
-                              bgColor: Colors.red[400]);
-                        } else if (_txtController.value.text.length > 17) {
-                          snackBar(
-                              snackMessage:
-                                  "Less than or equal to 17 chars please and thanks",
-                              context: context,
-                              bgColor: Colors.red[400]);
-                        } else {
-                          await ChurchRepository().newKingsCord2(
-                              currUserId: context.read<AuthBloc>().state.user!.uid,
-                              ch: widget.cm,
-                              cordName: _txtController.value.text,
-                              mode: selectedMode,
-                              rolesAllowed: null);
-                          Navigator.of(context).pop();
-                        }
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Text(
-                          "Create",
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                      )),
-             )
+             TextButton(
+                    onPressed: () async {
+                      if (_txtController.value.text.length == 0) {
+                        snackBar(
+                            snackMessage:
+                                "be sure you add a name for the room you are making",
+                            context: context,
+                            bgColor: Colors.red[400]);
+                      } else if (_txtController.value.text.length > 17) {
+                        snackBar(
+                            snackMessage:
+                                "Less than or equal to 17 chars please and thanks",
+                            context: context,
+                            bgColor: Colors.red[400]);
+                      } else {
+                        await ChurchRepository().newKingsCord2(
+                            currUserId: context.read<AuthBloc>().state.user!.uid,
+                            ch: widget.cm,
+                            cordName: _txtController.value.text,
+                            mode: selectedMode,
+                            rolesAllowed: null);
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: Text(
+                        "Create",
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                    ))
           ],
         ),
         body: BlocProvider.value(
@@ -139,9 +136,9 @@ class _CreateRoomState extends State<CreateRoom> {
                             "A chat room allows for communication via text messages. You can share GIF's, images, videos, text, and react to messages"),
                         // child 3 will be the says room type
                         _createRoomContainerDisplay(context, "says", "Says room",
-                            "A says room allows for users to share announcements or just say what is on their minds")
-                        // child 4 will be the documents room type
-                        //TODO
+                            "A says room allows for users to share announcements or just say what is on their minds"),
+                        // child 4 vc room
+                        _createRoomContainerDisplay(context, "vc", 'VC', "A VC room stands for voice chat. This room also alloWs for video calls.")
                       ],
                     ),
                   ));
