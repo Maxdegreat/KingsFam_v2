@@ -63,10 +63,7 @@ const generateAccessToken = (req, res) => {
 exports.agoraTokenGenerator = functions.https.onRequest((req, res) => {
   res.send(generateAccessToken(req, res));
 });
-exports.generateTokenTest = functions.https.onRequest((req, res) => {
-  const token = {"test" : "test"}
-  res.send(generateAccessToken(req, res));
-});
+
 
 exports.onNewJoinRequest = functions.firestore
   .document("/requestToJoinCm/{cmId}/request/{requestingId}")

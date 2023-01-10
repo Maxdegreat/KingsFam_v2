@@ -385,7 +385,7 @@ Widget _mainScrollView(
                                 ],
                               ),
 
-                              _showVc(state, context),
+                              _showVc(state, context, cm),
 
                               Column(children: [
                                 if (state.collapseCordColumn) ...[
@@ -597,7 +597,7 @@ void NavtoKcFromRooms(
   });
 }
 
-_showVc(CommuinityState state, BuildContext context) {
+_showVc(CommuinityState state, BuildContext context, Church cm) {
   return Padding(
     padding: const EdgeInsets.only(right: 4.0, bottom: 4),
     child: SingleChildScrollView(
@@ -608,7 +608,7 @@ _showVc(CommuinityState state, BuildContext context) {
             return GestureDetector(
               onTap: () {
                 if (kc != null)
-                  Navigator.of(context).pushNamed(VcScreen.routeName, arguments: VcScreenArgs(kc: kc, currUserr: state.currUserr));
+                  Navigator.of(context).pushNamed(VcScreen.routeName, arguments: VcScreenArgs(kc: kc, currUserr: state.currUserr, cm: cm));
                 else 
                   snackBar(snackMessage: "No VC", context: context);
               },
