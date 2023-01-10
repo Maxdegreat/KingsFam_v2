@@ -2,16 +2,71 @@
 // or $ firebase deploy --only functions:func1,functions:func2
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const express = require('express');
+const {RtcTokenBuilder, RtcToken, RtcRole} = require('agora-access-token');
+require('dotenv').config()
 const { user } = require("firebase-functions/v1/auth");
 //var serviceAccount = require("./kingsfam-9b1f8-firebase-adminsdk-dgh0u-38f8d6850d.json");
 
 admin.initializeApp();
 
-// exports.onJoinCm = functions.firestore.document("/communityMembers/{cmId}/members/{userId}")
-//   .onCreate(async (_, context) => {
-//     // send a msg to join room?
-//   }
-// )
+const APP_ID = "706f3b99f31a4ca89b001b4671652c18" //process.env.APP_ID;
+const APP_CERTIFICATE = "5c33c35890b1441e8a1a2a9da878e74a" //process.env.APP_CERTIFICATE;
+
+const app = express();
+
+const nocache = (req, resp, next) => {
+  resp.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  resp.header('Pragma', 'no-cache');
+  resp.header('Expires', '0');
+  next();
+}
+
+exports.sayHi = functions.https.onRequest((request, response) => {
+  console.log("say hi");
+  response.send("Hi");
+})
+
+const generateAccessToken = (req, res) => {
+  // set res header
+  res.header('Access-Control-Allow-Origin', '*');
+  // get channel name
+  const channelName = req.query.channelName;
+  if (!channelName || channelName === '') {
+      return res.status(505).json({'error': 'A channel naem is required'});
+  }
+
+  // get uid
+  let uid = req.query.uid;
+  if (!uid || uid === '') {
+      uid = 0;
+  }
+  // get role
+  let role = RtcRole.SUBSCRIBER;
+  if (req.query.role === 'publisher') {
+      role = RtcRole.PUBLISHER;
+  }
+
+  // get the expire time
+  let expireTime = req.query.expireTime;
+  if (!expireTime || expireTime === '') {
+      expireTime = 3600; // an hr
+  }
+  const currentTime = Math.floor(Date.now() / 1000);
+  const privilegExpireTime = currentTime + expireTime;
+  // build the token
+  const token = RtcTokenBuilder.buildTokenWithUid(APP_ID, APP_CERTIFICATE, channelName, uid, role, privilegExpireTime);
+  // return the token
+  return res.json({'token':token})
+}
+
+exports.agoraTokenGenerator = functions.https.onRequest((req, res) => {
+  res.send(generateAccessToken(req, res));
+});
+exports.generateTokenTest = functions.https.onRequest((req, res) => {
+  const token = {"test" : "test"}
+  res.send(generateAccessToken(req, res));
+});
 
 exports.onNewJoinRequest = functions.firestore
   .document("/requestToJoinCm/{cmId}/request/{requestingId}")
