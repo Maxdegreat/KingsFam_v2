@@ -118,7 +118,6 @@ class NotificationHelper {
   // show notification
   static Future<void> showNotification(RemoteMessage remoteMessage) async {
 
-    
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails('high_importance_channel', 'High Importance Notifications',
             channelDescription: 'This channel is used for important notifications.',
@@ -133,6 +132,28 @@ class NotificationHelper {
         1, 
         remoteMessage.notification!.title, 
         remoteMessage.notification!.body, 
+        notificationDetails,
+        payload: 'item x'
+      );
+  }
+
+  static Future<void> showNotificationNonRemote(Map<String, dynamic> info) async {
+
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails('high_importance_channel', 'High Importance Notifications',
+            channelDescription: 'This channel is used for important notifications.',
+            playSound: true,
+            importance: Importance.max,
+            priority: Priority.high,
+            ticker: 'ticker');
+
+    const NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
+
+    await flutterLocalNotificationsPlugin.show(
+        777, 
+        info["title"], 
+        info["body"], 
         notificationDetails,
         payload: 'item x'
       );

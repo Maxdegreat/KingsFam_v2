@@ -193,7 +193,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
               ] else if (cord.mode == "vc") ... [
                 Padding(
                   padding: const EdgeInsets.only(left: 20, top: 2),
-                  child: DisplayMsg(m: null, s: null, amountInVc: '3 / 10',),
+                  child: DisplayMsg(m: null, s: null, amountInVc: cord.metaData!["inCall"]),
                 )
               ]
             ],

@@ -138,7 +138,7 @@ class _CreateRoomState extends State<CreateRoom> {
                         _createRoomContainerDisplay(context, "says", "Says room",
                             "A says room allows for users to share announcements or just say what is on their minds"),
                         // child 4 vc room
-                        _createRoomContainerDisplay(context, "vc", 'VC', "A VC room stands for voice chat. This room also alloWs for video calls.")
+                       // _createRoomContainerDisplay(context, "vc", 'VC', "A VC room stands for voice chat. This room also alloWs for video calls.")
                       ],
                     ),
                   ));

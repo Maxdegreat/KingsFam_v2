@@ -90,7 +90,7 @@ class VcRepository {
     if (k != null) {
       if (k.metaData == null) count = 0;
       else if (!k.metaData!.containsKey("inCall")) count = 0;
-      else count = k.metaData!["inCall"] + -1;
+      else count = k.metaData!["inCall"] - 1;
     } else {
       count = 0;
     }

@@ -8,7 +8,7 @@ import 'package:kingsfam/models/says_model.dart';
 class DisplayMsg extends StatelessWidget {
   final Message? m;
   final Says? s;
-  final String? amountInVc;
+  final int? amountInVc;
   const DisplayMsg({Key? key, required this.m, required this.s, required this.amountInVc})
       : super(key: key);
 
@@ -88,7 +88,7 @@ class DisplayMsg extends StatelessWidget {
 
   _newRoom(Size size, TextTheme s) {
     return Container(
-      //height: (size.height / 9) / 2,
+      // height: (size.height / 9) / 2,
       // width: (size.width / 1.3) / 1.4,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7),
@@ -145,6 +145,6 @@ class DisplayMsg extends StatelessWidget {
   }
 
   _showAmountInVc(TextTheme s) {
-    return Text(amountInVc!, style: s.caption!.copyWith(fontStyle: FontStyle.italic));
+    return Text(amountInVc.toString() + " / 10", style: s.caption!.copyWith(fontStyle: FontStyle.italic));
   }
 }

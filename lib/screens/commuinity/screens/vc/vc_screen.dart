@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kingsfam/api/agora.dart';
+import 'package:kingsfam/helpers/notification_helper.dart';
 import 'package:kingsfam/models/church_kingscord_model.dart';
 import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/models/user_model.dart';
@@ -49,8 +50,8 @@ class VcScreen extends StatefulWidget {
   @override
   State<VcScreen> createState() => _VcScreenState();
 }
-
-class _VcScreenState extends State<VcScreen> {
+  
+class _VcScreenState extends State<VcScreen>  with WidgetsBindingObserver{
   String? token;
   int uid = Random().nextInt(100);
   int? _remoteUid;
@@ -80,6 +81,20 @@ class _VcScreenState extends State<VcScreen> {
     super.dispose();
   }
 
+  // #docregion AppLifecycle
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+
+    if (state == AppLifecycleState.inactive) {
+      // add a notification that can not be removed saying in call
+      NotificationHelper.showNotificationNonRemote({"title": "In Call KingsFam", "body": widget.cm.name + " - " + widget.kc.cordName});
+    } else if (state == AppLifecycleState.resumed) {
+      // keep notification
+    }
+  }
+  // #enddocregion AppLifecycle
+  
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<VcBloc, VcState>(
@@ -101,6 +116,9 @@ class _VcScreenState extends State<VcScreen> {
                   child: ListView.builder(
                       itemCount: state.participants.length,
                       itemBuilder: ((context, index) {
+                        if (state.participants.length == 0) {
+                          Center(child:Text("No participants in call",style: Theme.of(context).textTheme.bodyText1,));
+                        }
                         Userr u = state.participants[index];
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -178,8 +196,7 @@ class _VcScreenState extends State<VcScreen> {
       ),
     );
 
-    // token =
-    //     "007eJxTYFgq7rTup/MFaw3hePOET5cY1yddevOSXeei+6E8tRateQcUGMwNzNKMkywt04wNE02SEy0skwwMDJNMzMwNzUyNkg0t3t7fm9wQyMgQeXU2IyMDBIL48gzu+SkKxfk5KalFxam5oSHeqRmpaSaW/qaBHoFhxkmlDAwALBgpCQ==";
+    
     token = await AgoraApi.agoraTokenGenerator(
       widget.kc.cordName + widget.kc.id!,
       "publisher",
@@ -204,7 +221,7 @@ class _VcScreenState extends State<VcScreen> {
       options: options,
       uid: uid,
     );
-
+     NotificationHelper.showNotificationNonRemote({"title": "In Call KingsFam", "body": widget.cm.name + " - " + widget.kc.cordName});
     isJoined = true;
     isMute = true;
     setState(() {});
@@ -217,6 +234,13 @@ class _VcScreenState extends State<VcScreen> {
       _remoteUid = null;
     });
     await rtcEngine.leaveChannel();
+    _leaveCallBtn();
+    context.read<VcBloc>()
+            ..add(VcEventUserLeft(
+                cmId: widget.cm.id!,
+                kcId: widget.kc.id!,
+                userr: widget.currUserr));
+          context.read<VcBloc>().rmvUserSetState(widget.currUserr.id);
   }
 
   // ----- widgets below -----
@@ -292,12 +316,7 @@ class _VcScreenState extends State<VcScreen> {
         ),
         onPressed: () {
           leave();
-          context.read<VcBloc>()
-            ..add(VcEventUserLeft(
-                cmId: widget.cm.id!,
-                kcId: widget.kc.id!,
-                userr: widget.currUserr));
-          context.read<VcBloc>().rmvUserSetState(widget.currUserr.id);
+          
         },
         child: Container(
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(7)),

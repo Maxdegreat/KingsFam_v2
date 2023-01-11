@@ -91,13 +91,16 @@ class KingsCordRepository extends BaseKingsCordRepository {
               if (kc != null) {
           
           if (kc.mode == "vc") {
-            vcL.add(kc.copyWith(metaData: kc.metaData));
+
+            if (kc.metaData == null) 
+              kc = kc.copyWith(metaData: {"inCall": 0});
+            else if (kc.metaData!["inCall"] != null)
+              kc;
+            else 
+              kc = kc.copyWith(metaData: {"inCall": 0 });
+            
+            vcL.add(kc);
           } else {
-            // handle other modes
-
-
-          
-
           QuerySnapshot qs = await FirebaseFirestore.instance
               .collection(Paths.church)
               .doc(cmId)
@@ -162,10 +165,10 @@ class KingsCordRepository extends BaseKingsCordRepository {
               readStatus: readStatus,
               recentActivity: {"chat": recentM, "says": recentS}));
         }
-      }
+      }}
               }
 
-      });
+      );;
 
     }
 
