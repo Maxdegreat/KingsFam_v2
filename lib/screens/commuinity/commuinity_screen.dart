@@ -34,6 +34,7 @@ import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 // ignore: unused_import
 import 'package:kingsfam/extensions/date_time_extension.dart';
+import 'package:kingsfam/screens/commuinity/wrapers/cm_widgets.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 
 import 'package:kingsfam/screens/screens.dart';
@@ -213,7 +214,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                   context: context),
               context,
             ),
-            body: SafeArea(
+              body: SafeArea(
               child: state.status == CommuintyStatus.armormed
                   ?
                   // status is armormed

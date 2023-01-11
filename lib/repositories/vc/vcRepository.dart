@@ -46,6 +46,25 @@ class VcRepository {
         .collection("participants")
         .doc(userr.id)
         .set({});
+
+    DocumentSnapshot docSnap = await pathCm
+        .doc(cmId)
+        .collection(Paths.kingsCord)
+        .doc(kcId).get();
+
+    KingsCord? k = await KingsCord.fromDoc(docSnap);
+    int count = 0;
+    if (k != null) {
+      if (k.metaData == null) count = 1;
+      else if (!k.metaData!.containsKey("inCall")) count = 1;
+      else count = k.metaData!["inCall"] + 1;
+    } else {
+      count = 1;
+    }
+    pathCm
+        .doc(cmId)
+        .collection(Paths.kingsCord)
+        .doc(kcId).update({"metaData" : { "inCall" : count}});
   }
 
     Future<void> userLeaveVc(
@@ -60,6 +79,25 @@ class VcRepository {
         .collection("participants")
         .doc(userr.id)
         .delete();
+
+        DocumentSnapshot docSnap = await pathCm
+        .doc(cmId)
+        .collection(Paths.kingsCord)
+        .doc(kcId).get();
+
+    KingsCord? k = await KingsCord.fromDoc(docSnap);
+    int count = 0;
+    if (k != null) {
+      if (k.metaData == null) count = 0;
+      else if (!k.metaData!.containsKey("inCall")) count = 0;
+      else count = k.metaData!["inCall"] + -1;
+    } else {
+      count = 0;
+    }
+    pathCm
+        .doc(cmId)
+        .collection(Paths.kingsCord)
+        .doc(kcId).update({"metaData" : { "inCall" : count}});
   }
 
   

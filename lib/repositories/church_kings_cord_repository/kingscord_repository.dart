@@ -91,7 +91,7 @@ class KingsCordRepository extends BaseKingsCordRepository {
               if (kc != null) {
           
           if (kc.mode == "vc") {
-            vcL.add(kc);
+            vcL.add(kc.copyWith(metaData: kc.metaData));
           } else {
             // handle other modes
 

@@ -8,7 +8,8 @@ import 'package:kingsfam/models/says_model.dart';
 class DisplayMsg extends StatelessWidget {
   final Message? m;
   final Says? s;
-  const DisplayMsg({Key? key, required this.m, required this.s})
+  final String? amountInVc;
+  const DisplayMsg({Key? key, required this.m, required this.s, required this.amountInVc})
       : super(key: key);
 
   @override
@@ -17,7 +18,6 @@ class DisplayMsg extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     if (m != null) {
       if (m!.text == welcomeMsgEncoded) {
-        log("seen");
         return _welcomMsg(size, s);
       } else if (m!.text == firstMsgEncoded) {
         return _newRoom(size, s);
@@ -28,9 +28,11 @@ class DisplayMsg extends StatelessWidget {
       }
     } else if (this.s != null) {
       return _says(size, s);
-    } else {
+    } else if (this.amountInVc != null) {
+      return _showAmountInVc(s);
+    } else 
       return _welcomMsg(size, s);
-    }
+   
   }
 
   _says(Size size, TextTheme s) {
@@ -47,10 +49,10 @@ class DisplayMsg extends StatelessWidget {
         softWrap: true,
         text: TextSpan(
           text: this.s!.author!.username,
-          style: s.subtitle1!.copyWith(fontWeight: FontWeight.w400),
+          style: s.subtitle1!.copyWith(color: Colors.grey)!.copyWith(fontWeight: FontWeight.w400),
           children: <TextSpan>[
-            TextSpan(text: " posted ", style: s.subtitle1!.copyWith(fontWeight: FontWeight.w300, fontStyle: FontStyle.italic)),
-            TextSpan(text: this.s!.title!+"\n", style: s.subtitle1!.copyWith(fontWeight: FontWeight.w400)),
+            TextSpan(text: " posted ", style: s.subtitle1!.copyWith(color: Colors.grey)!.copyWith(fontWeight: FontWeight.w300, fontStyle: FontStyle.italic)),
+            TextSpan(text: this.s!.title!+"\n", style: s.subtitle1!.copyWith(color: Colors.grey)!.copyWith(fontWeight: FontWeight.w400)),
             TextSpan(text: this.s!.contentTxt, style: s.caption,),
           ],
         ),
@@ -69,7 +71,7 @@ class DisplayMsg extends StatelessWidget {
       child: RichText(
         text: TextSpan( 
           text: "Welcome " + m!.sender!.username, 
-          style: s.subtitle1!.copyWith(fontWeight: FontWeight.w400),
+          style: s.subtitle1!.copyWith(color: Colors.grey)!.copyWith(fontWeight: FontWeight.w400),
           children: [
             TextSpan(
               text: "just joined 🥳",
@@ -101,7 +103,7 @@ class DisplayMsg extends StatelessWidget {
           child: RichText(
         text: TextSpan( 
           text: m!.sender!.username + " created This room\n", 
-          style: s.subtitle1!.copyWith(fontWeight: FontWeight.w400),
+          style: s.subtitle1!.copyWith(color: Colors.grey)!.copyWith(fontWeight: FontWeight.w400),
           children: [
             TextSpan(
               text: m!.date.timeAgo(),
@@ -127,7 +129,7 @@ class DisplayMsg extends StatelessWidget {
       child: RichText(
         text: TextSpan(
           text:  m!.sender!.username + ": ",
-          style: s.subtitle1,
+          style: s.subtitle1!.copyWith(color: Colors.grey),
           children: [
             TextSpan(
               text: msg,
@@ -140,5 +142,9 @@ class DisplayMsg extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
       ),
     );
+  }
+
+  _showAmountInVc(TextTheme s) {
+    return Text(amountInVc!, style: s.caption!.copyWith(fontStyle: FontStyle.italic));
   }
 }
