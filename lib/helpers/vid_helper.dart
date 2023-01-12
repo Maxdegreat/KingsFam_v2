@@ -6,7 +6,7 @@ import 'package:kingsfam/helpers/navigator_helper.dart';
 import 'package:video_player/video_player.dart';
 import 'package:helpers/helpers.dart'
     show OpacityTransition, SwipeTransition, AnimatedInteractiveViewer;
-import 'package:video_editor/video_editor.dart';
+
 
 Future<bool> isVidLong({required File file})  async {
   VideoPlayerController ctrl = VideoPlayerController.file(file);

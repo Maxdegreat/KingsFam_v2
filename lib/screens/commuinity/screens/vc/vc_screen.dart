@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+// import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -57,7 +57,7 @@ class _VcScreenState extends State<VcScreen>  with WidgetsBindingObserver{
   int? _remoteUid;
   bool isJoined = false;
   bool isMute = true;
-  late RtcEngine rtcEngine;
+  //late RtcEngine rtcEngine;
 
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>(); // Global key to access the scaffold
@@ -68,18 +68,18 @@ class _VcScreenState extends State<VcScreen>  with WidgetsBindingObserver{
     ));
   }
 
-  @override
-  void initState() {
-    setupVoiceSDKEngine();
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   setupVoiceSDKEngine();
+  //   super.initState();
+  // }
 
-  // Clean up the resources when you leave
-  @override
-  void dispose() async {
-    leave();
-    super.dispose();
-  }
+  // // Clean up the resources when you leave
+  // @override
+  // void dispose() async {
+  //   leave();
+  //   super.dispose();
+  // }
 
   // #docregion AppLifecycle
   @override
@@ -104,9 +104,9 @@ class _VcScreenState extends State<VcScreen>  with WidgetsBindingObserver{
       builder: (context, state) {
         return SafeArea(
           child: Scaffold(
-            appBar: AppBar(
-              title: _appBarTitle(context, state),
-            ),
+            // appBar: AppBar(
+            //   title: _appBarTitle(context, state),
+            // ),
             body: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -145,7 +145,7 @@ class _VcScreenState extends State<VcScreen>  with WidgetsBindingObserver{
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          !isJoined ? _joinCallBtn() : _inCallRow()
+                         // !isJoined ? _joinCallBtn() : _inCallRow()
                         ],
                       ),
                     ),
@@ -159,173 +159,173 @@ class _VcScreenState extends State<VcScreen>  with WidgetsBindingObserver{
     );
   }
 
-  Future<void> setupVoiceSDKEngine() async {
-    // retrieve or request camera and microphone permissions
-    await [Permission.microphone].request();
+  // Future<void> setupVoiceSDKEngine() async {
+  //   // retrieve or request camera and microphone permissions
+  //   await [Permission.microphone].request();
 
-    //create an instance of the Agora engine
-    rtcEngine = createAgoraRtcEngine();
-    await rtcEngine
-        .initialize(RtcEngineContext(appId: dotenv.env['AGORA_APP_ID']));
+  //   //create an instance of the Agora engine
+  //   rtcEngine = createAgoraRtcEngine();
+  //   await rtcEngine
+  //       .initialize(RtcEngineContext(appId: dotenv.env['AGORA_APP_ID']));
 
-    // await rtcEngine.enableVideo();
+  //   // await rtcEngine.enableVideo();
 
-    // Register the event handler
-    rtcEngine.registerEventHandler(
-      RtcEngineEventHandler(
-        onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-          showMessage(
-              "Local user uid:${connection.localUid} joined the channel");
-          setState(() {
-            isJoined = true;
-          });
-        },
-        onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-          showMessage("Remote user uid:$remoteUid joined the channel");
-          setState(() {
-            _remoteUid = remoteUid;
-          });
-        },
-        onUserOffline: (RtcConnection connection, int remoteUid,
-            UserOfflineReasonType reason) {
-          showMessage("Remote user uid:$remoteUid left the channel");
-          setState(() {
-            _remoteUid = null;
-          });
-        },
-      ),
-    );
+  //   // Register the event handler
+  //   rtcEngine.registerEventHandler(
+  //     RtcEngineEventHandler(
+  //       onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+  //         showMessage(
+  //             "Local user uid:${connection.localUid} joined the channel");
+  //         setState(() {
+  //           isJoined = true;
+  //         });
+  //       },
+  //       onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+  //         showMessage("Remote user uid:$remoteUid joined the channel");
+  //         setState(() {
+  //           _remoteUid = remoteUid;
+  //         });
+  //       },
+  //       onUserOffline: (RtcConnection connection, int remoteUid,
+  //           UserOfflineReasonType reason) {
+  //         showMessage("Remote user uid:$remoteUid left the channel");
+  //         setState(() {
+  //           _remoteUid = null;
+  //         });
+  //       },
+  //     ),
+  //   );
 
     
-    token = await AgoraApi.agoraTokenGenerator(
-      widget.kc.cordName + widget.kc.id!,
-      "publisher",
-      uid,
-    );
-  }
+  //   token = await AgoraApi.agoraTokenGenerator(
+  //     widget.kc.cordName + widget.kc.id!,
+  //     "publisher",
+  //     uid,
+  //   );
+  // }
 
-  void join() async {
-    // await rtcEngine.startPreview();
+  // void join() async {
+  //   // await rtcEngine.startPreview();
 
-    // Set channel options including the client role and channel profile
-    ChannelMediaOptions options = const ChannelMediaOptions(
-      clientRoleType: ClientRoleType.clientRoleBroadcaster,
-      channelProfile: ChannelProfileType.channelProfileCommunication,
-    );
+  //   // Set channel options including the client role and channel profile
+  //   ChannelMediaOptions options = const ChannelMediaOptions(
+  //     clientRoleType: ClientRoleType.clientRoleBroadcaster,
+  //     channelProfile: ChannelProfileType.channelProfileCommunication,
+  //   );
 
 
-    await rtcEngine.joinChannel(
-      token: token!,
-      channelId:
-          widget.kc.cordName + widget.kc.id!,
-      options: options,
-      uid: uid,
-    );
-     NotificationHelper.showNotificationNonRemote({"title": "In Call KingsFam", "body": widget.cm.name + " - " + widget.kc.cordName});
-    isJoined = true;
-    isMute = true;
-    setState(() {});
-  }
+  //   await rtcEngine.joinChannel(
+  //     token: token!,
+  //     channelId:
+  //         widget.kc.cordName + widget.kc.id!,
+  //     options: options,
+  //     uid: uid,
+  //   );
+  //    NotificationHelper.showNotificationNonRemote({"title": "In Call KingsFam", "body": widget.cm.name + " - " + widget.kc.cordName});
+  //   isJoined = true;
+  //   isMute = true;
+  //   setState(() {});
+  // }
 
-  void leave() async {
-    setState(() {
-      isJoined = false;
-      isMute = true;
-      _remoteUid = null;
-    });
-    await rtcEngine.leaveChannel();
-    _leaveCallBtn();
-    context.read<VcBloc>()
-            ..add(VcEventUserLeft(
-                cmId: widget.cm.id!,
-                kcId: widget.kc.id!,
-                userr: widget.currUserr));
-          context.read<VcBloc>().rmvUserSetState(widget.currUserr.id);
-  }
+  // void leave() async {
+  //   setState(() {
+  //     isJoined = false;
+  //     isMute = true;
+  //     _remoteUid = null;
+  //   });
+  //   await rtcEngine.leaveChannel();
+  //   _leaveCallBtn();
+  //   context.read<VcBloc>()
+  //           ..add(VcEventUserLeft(
+  //               cmId: widget.cm.id!,
+  //               kcId: widget.kc.id!,
+  //               userr: widget.currUserr));
+  //         context.read<VcBloc>().rmvUserSetState(widget.currUserr.id);
+  // }
 
   // ----- widgets below -----
-  Widget _appBarTitle(BuildContext context, VcState state) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _Icon_VcName(),
-        Text(widget.cm.name, style: Theme.of(context).textTheme.caption)
-      ],
-    );
-  }
+  // Widget _appBarTitle(BuildContext context, VcState state) {
+  //   return Column(
+  //     mainAxisAlignment: MainAxisAlignment.start,
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       _Icon_VcName(),
+  //       Text(widget.cm.name, style: Theme.of(context).textTheme.caption)
+  //     ],
+  //   );
+  // }
 
-  Widget _Icon_VcName() => Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(Icons.multitrack_audio_outlined),
-          SizedBox(width: 5),
-          Text(widget.kc.cordName,style: Theme.of(context).textTheme.bodyText1),
-        ],
-      );
-  Widget _inCallRow() => Row(
-    children: [
-      _leaveCallBtn(),
-      SizedBox(width: 8),
-      _muteMicBtn()
-    ],
-  );
+  // Widget _Icon_VcName() => Row(
+  //       mainAxisAlignment: MainAxisAlignment.start,
+  //       crossAxisAlignment: CrossAxisAlignment.center,
+  //       children: [
+  //         Icon(Icons.multitrack_audio_outlined),
+  //         SizedBox(width: 5),
+  //         Text(widget.kc.cordName,style: Theme.of(context).textTheme.bodyText1),
+  //       ],
+  //     );
+  // Widget _inCallRow() => Row(
+  //   children: [
+  //     _leaveCallBtn(),
+  //     SizedBox(width: 8),
+  //     _muteMicBtn()
+  //   ],
+  // );
 
-  Widget _joinCallBtn() => ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          primary: Color.fromARGB(111, 76, 175, 79),
-        ),
-        onPressed: () {
-          join();
-          context.read<VcBloc>()
-            ..add(VcEventUserJoined(
-                cmId: widget.cm.id!,
-                kcId: widget.kc.id!,
-                userr: widget.currUserr));
-        },
-        child: Container(
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(7)),
-          width: MediaQuery.of(context).size.width / 2,
-          child: Text("Join Call",
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText1!
-                  .copyWith(color: Colors.green)),
-        ),
-      );
+  // Widget _joinCallBtn() => ElevatedButton(
+  //       style: ElevatedButton.styleFrom(
+  //         primary: Color.fromARGB(111, 76, 175, 79),
+  //       ),
+  //       onPressed: () {
+  //         join();
+  //         context.read<VcBloc>()
+  //           ..add(VcEventUserJoined(
+  //               cmId: widget.cm.id!,
+  //               kcId: widget.kc.id!,
+  //               userr: widget.currUserr));
+  //       },
+  //       child: Container(
+  //         decoration: BoxDecoration(borderRadius: BorderRadius.circular(7)),
+  //         width: MediaQuery.of(context).size.width / 2,
+  //         child: Text("Join Call",
+  //             style: Theme.of(context)
+  //                 .textTheme
+  //                 .bodyText1!
+  //                 .copyWith(color: Colors.green)),
+  //       ),
+  //     );
 
-  Widget _muteMicBtn() => GestureDetector(
-    onTap: () {
-      isMute = !isMute;
-      rtcEngine.muteRemoteAudioStream(uid: uid, mute: isMute);
-      setState(() {});
-    } ,
-    child: Container(
-      decoration: BoxDecoration(
-        color: Colors.black45,
-        shape: BoxShape.circle,
-      ),
-      child: !isMute ? Icon(Icons.mic, color: Colors.white,) :Icon(Icons.mic_off_outlined, color: Colors.white,) ,
-    ),
-  );
+  // Widget _muteMicBtn() => GestureDetector(
+  //   onTap: () {
+  //     isMute = !isMute;
+  //     rtcEngine.muteRemoteAudioStream(uid: uid, mute: isMute);
+  //     setState(() {});
+  //   } ,
+  //   child: Container(
+  //     decoration: BoxDecoration(
+  //       color: Colors.black45,
+  //       shape: BoxShape.circle,
+  //     ),
+  //     child: !isMute ? Icon(Icons.mic, color: Colors.white,) :Icon(Icons.mic_off_outlined, color: Colors.white,) ,
+  //   ),
+  // );
 
-  Widget _leaveCallBtn() => ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          primary: Color.fromARGB(110, 175, 78, 76),
-        ),
-        onPressed: () {
-          leave();
+  // Widget _leaveCallBtn() => ElevatedButton(
+  //       style: ElevatedButton.styleFrom(
+  //         primary: Color.fromARGB(110, 175, 78, 76),
+  //       ),
+  //       onPressed: () {
+  //         leave();
           
-        },
-        child: Container(
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(7)),
-          width: MediaQuery.of(context).size.width / 2,
-          child: Text("Leave Call",
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText1!
-                  .copyWith(color: Colors.red)),
-        ),
-      );
+  //       },
+  //       child: Container(
+  //         decoration: BoxDecoration(borderRadius: BorderRadius.circular(7)),
+  //         width: MediaQuery.of(context).size.width / 2,
+  //         child: Text("Leave Call",
+  //             style: Theme.of(context)
+  //                 .textTheme
+  //                 .bodyText1!
+  //                 .copyWith(color: Colors.red)),
+  //       ),
+  //     );
 }

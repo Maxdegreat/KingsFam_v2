@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kingsfam/helpers/permission_helper.dart';
-import 'package:video_editor/video_editor.dart';
+
 
 class ImageHelper {
   //IF WE ARE SELECTING A VIDEO FROM GALLERY
