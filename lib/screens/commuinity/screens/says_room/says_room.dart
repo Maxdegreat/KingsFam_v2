@@ -144,7 +144,7 @@ class _SaysRoomState extends State<SaysRoom> {
                             Says says = state.says[index]!;
                             return Column(
                               children: [
-                                SizedBox(height: 4),
+                                // SizedBox(height: 4),
                                 GestureDetector(
                                     onTap: () {
                                       Navigator.of(context).pushNamed(
@@ -162,7 +162,7 @@ class _SaysRoomState extends State<SaysRoom> {
                                             .read<LikedSaysCubit>()
                                             .state
                                             .localLikedSaysIds)),
-                                SizedBox(height: 4),
+                                // SizedBox(height: 4),
                               ],
                             );
                           }),

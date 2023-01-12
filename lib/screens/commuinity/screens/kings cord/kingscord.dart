@@ -190,13 +190,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     IconButton(
-                        // onPressed: () async => mediaBottomSheet(
-                        //     kingscordCubit: ctx,
-                        //     context: context,
-                        //     cmId: widget.commuinity.id!,
-                        //     kcId: widget.kingsCord.id!,
-                        //     seenderUsername: currUsersName,
-                        // ),
                         onPressed: () {
                           showMediaPopUp = !showMediaPopUp;
                           setState(() {});
@@ -237,13 +230,12 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                         .read<KingscordCubit>()
                                         .onIsTyping(false);
                                   }
-                                  if (messageText[messageText.length - 1] ==
-                                      '@') {
+
+                                  if (messageText[messageText.length - 1] =='@') {
                                     containsAt = true;
-                                    idxWhereStartWithat =
-                                        messageText.length - 1;
-                                    log("here you can add the @ container");
+                                    idxWhereStartWithat = messageText.length - 1;
                                   }
+
                                   if (containsAt)
                                     setState(() => _mentionedController =
                                         messageText.substring(
@@ -402,6 +394,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                               .selectMention(userr: _mentioned);
                           username = null;
                           state.mentions.length = 0;
+                          containsAt = false;
+                          _mentionedController = null;
                           setState(() {});
                         },
                       );

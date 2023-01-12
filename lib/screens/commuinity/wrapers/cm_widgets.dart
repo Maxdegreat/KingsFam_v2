@@ -1,10 +1,13 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/camera/bloc/camera_screen.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/cm_perm_handler.dart';
@@ -59,7 +62,7 @@ Widget cmTopColumnHomeInvite(Church cm, VoidCallback k, BuildContext context) {
     children: [
       Container(
           height: 20,
-          width: MediaQuery.of(context).size.width / 4,
+          // width: MediaQuery.of(context).size.width / 7,
           child: ElevatedButton(
               onPressed: () => Navigator.of(context).pushNamed(
                   CommunityHome.routeName,
@@ -70,14 +73,34 @@ Widget cmTopColumnHomeInvite(Church cm, VoidCallback k, BuildContext context) {
                 style: Theme.of(context)
                     .textTheme
                     .caption!
-                    .copyWith(color: Colors.white),
+                    .copyWith(color: Colors.white, fontSize: 15),
+              ))),
+              SizedBox(
+        width: 4,
+      ),
+      Container(
+          height: 20,
+          width: MediaQuery.of(context).size.width / 8,
+          child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  primary: Theme.of(context).colorScheme.primary),
+              onPressed: () async {
+                List<CameraDescription> cameras = await availableCameras();
+               Navigator.of(context).pushNamed(CameraScreen.routeName, arguments: CameraScreenArgs(cameras: cameras));
+              },
+              child: Center(
+                child: Icon(
+                  Icons.add,
+                  color: Theme.of(context).iconTheme.color,
+                  size: 15,
+                ),
               ))),
       SizedBox(
         width: 4,
       ),
       Container(
           height: 20,
-          width: MediaQuery.of(context).size.width / 4.5,
+          width: MediaQuery.of(context).size.width / 8,
           child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                   primary: Theme.of(context).colorScheme.primary),
@@ -87,10 +110,13 @@ Widget cmTopColumnHomeInvite(Church cm, VoidCallback k, BuildContext context) {
                         cm, true);
                 communityInvitePopUp(context, generatedDeepLink);
               },
-              child: Icon(
-                Icons.share,
-                color: Theme.of(context).iconTheme.color,
-                size: 17,
+              child: Align(
+                alignment: Alignment.center,
+                child: Icon(
+                  Icons.share,
+                  color: Theme.of(context).iconTheme.color,
+                  size: 15,
+                ),
               )))
     ],
   );

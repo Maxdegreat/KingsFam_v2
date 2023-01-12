@@ -283,10 +283,10 @@ Widget header({
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: <Color>[
-                  Colors.transparent,
-                  Color.fromARGB(83, 13, 72, 161),
-                  Theme.of(context).colorScheme.secondary,
+                  Colors.black38,
+                  Theme.of(context).colorScheme.primary,
                 ],
+                stops: [0.25, 1.0],
                 tileMode: TileMode.mirror,
               ),
             ))
