@@ -30,18 +30,15 @@ class BuildchurchCubit extends Cubit<BuildchurchState> {
   final StorageRepository _storageRepository;
   final AuthBloc _authBloc;
   final UserrRepository _userrRepository;
-  final CallRepository _callRepository;
   BuildchurchCubit({
     required ChurchRepository churchRepository,
     required StorageRepository storageRepository,
     required AuthBloc authBloc,
-    required CallRepository callRepository,
     required UserrRepository userrRepository,
   })  : _churchRepository = churchRepository,
         _storageRepository = storageRepository,
         _authBloc = authBloc,
         _userrRepository = userrRepository,
-        _callRepository = callRepository,
         super(BuildchurchState.initial());
 
   final _fb = FirebaseFirestore.instance;

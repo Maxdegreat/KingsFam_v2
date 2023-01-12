@@ -7,11 +7,10 @@ import 'package:kingsfam/config/mock_flag.dart';
 class AdHelper {
   static String get nativeAdUnitId {
     String testNativeAdUnitId = "ca-app-pub-3940256099942544/2247696110";
-    String prodNativeAdUnitIdAndroid =
-        testNativeAdUnitId; // "ca-app-pub-5583578072631354/4772946038";
+    String prodNativeAdUnitIdAndroid = "ca-app-pub-5583578072631354/4772946038";
     String prodNativeAdUnitIdIos = "ca-app-pub-5583578072631354/8261954275";
 
-    if (MockFlag.ISMOCKTESTING) 
+    // if (MockFlag.ISMOCKTESTING) 
       return testNativeAdUnitId;
 
     if (Platform.isAndroid) {
@@ -25,11 +24,10 @@ class AdHelper {
 
   static String get bannerAdUnitId {
     String testAdUnitId = "ca-app-pub-3940256099942544/6300978111";
-    String prodAdUnitIdA =
-        testAdUnitId; //"ca-app-pub-5583578072631354/4427022170";
+    String prodAdUnitIdA = "ca-app-pub-5583578072631354/4427022170";
     String prodBannerAdIos = "ca-app-pub-5583578072631354/9875177985";
 
-    if (MockFlag.ISMOCKTESTING)
+    // if (MockFlag.ISMOCKTESTING)
       return testAdUnitId;
 
     if (Platform.isAndroid) {

@@ -24,6 +24,7 @@ import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/theme_club_house/theme_info.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'screens/build_church/cubit/buildchurch_cubit.dart';
 import 'screens/screens.dart';
@@ -37,10 +38,12 @@ void main() async {
   EquatableConfig.stringify = kDebugMode;
   Bloc.observer = SimpleBlocObserver();
   await UserPreferences.init();
+  await dotenv.load(fileName: ".env");
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations(
@@ -59,7 +62,6 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<StorageRepository>(
             create: (_) => StorageRepository()),
         RepositoryProvider<PostsRepository>(create: (_) => PostsRepository()),
-        RepositoryProvider<CallRepository>(create: (_) => CallRepository()),
         RepositoryProvider<NotificationRepository>(
           create: (_) => NotificationRepository(),
         ),
@@ -106,7 +108,6 @@ class MyApp extends StatelessWidget {
           BlocProvider<BuildchurchCubit>(
               // TODO                                        PLEASE NOTE THIS DOES NOT NEED TO BE A GLOBAL THING. NOTE IT IS USED IN CM SCREEN ON A GLOBAL SCOPE BUT IT CAN BE REFACTORED.
               create: (context) => BuildchurchCubit(
-                  callRepository: context.read<CallRepository>(),
                   churchRepository: context.read<ChurchRepository>(),
                   storageRepository: context.read<StorageRepository>(),
                   authBloc: context.read<AuthBloc>(),
@@ -122,7 +123,6 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider<CommuinityBloc>(
               create: (context) => CommuinityBloc(
-                  callRepository: context.read<CallRepository>(),
                   churchRepository: context.read<ChurchRepository>(),
                   storageRepository: context.read<StorageRepository>(),
                   authBloc: context.read<AuthBloc>(),
@@ -137,6 +137,9 @@ class MyApp extends StatelessWidget {
                   likedPostCubit: context.read<LikedPostCubit>(),
                   churchRepository: context.read<ChurchRepository>())),
         ],
+
+        
+
         child: MaterialApp(
           //THEME DATA
           themeMode: ThemeMode.dark,

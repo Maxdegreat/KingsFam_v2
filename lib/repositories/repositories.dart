@@ -6,5 +6,4 @@ export 'post/post_repository.dart';
 export 'chat/chat_repository.dart';
 export 'church/church_repository.dart';
 export 'church_kings_cord_repository/kingscord_repository.dart';
-export 'call/call_repository.dart';
 export 'notification/noty_repository.dart';

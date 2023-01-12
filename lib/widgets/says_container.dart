@@ -47,7 +47,7 @@ class _SaysContainerState extends State<SaysContainer> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Container(
-        height: 180,
+        //height: MediaQuery.of(context).size.height / 4.5,
         color: Theme.of(context).colorScheme.primary,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -58,7 +58,7 @@ class _SaysContainerState extends State<SaysContainer> {
               header_says(title),
               SizedBox(height: 20),
               contentTxt_says(),
-              Expanded(child: SizedBox.shrink()),
+              // Expanded(child: SizedBox.shrink()),
               footer(),
             ],
           ),
@@ -146,7 +146,7 @@ class _SaysContainerState extends State<SaysContainer> {
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(
               Icons.favorite_border_outlined,
@@ -154,6 +154,7 @@ class _SaysContainerState extends State<SaysContainer> {
                 ? Colors.amber
                 : Theme.of(context).iconTheme.color,
               ),
+              SizedBox(width: 8),
             Text(
               context.read<LikedSaysCubit>().state.localLikedSaysIds.contains(widget.says.id)
                ? (widget.says.likes + 1).toString()
@@ -167,6 +168,7 @@ class _SaysContainerState extends State<SaysContainer> {
             // SizedBox(width: 7),
           ],
         ),
+        SizedBox(height: 8),
         Text(widget.says.date.timeAgo(),
             style: Theme.of(context).textTheme.caption)
       ],

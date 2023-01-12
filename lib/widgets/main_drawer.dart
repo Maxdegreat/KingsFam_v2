@@ -117,7 +117,7 @@ late NativeAd _nativeAd;
           mainAxisSize: MainAxisSize.max,
           children: [
             _cmsList(context, drawerLst),
-            Divider(thickness: 1.5, color: Colors.black,),
+            Divider(color: Colors.white,),
             _createNewCm(),
             _showAd(),
           ],

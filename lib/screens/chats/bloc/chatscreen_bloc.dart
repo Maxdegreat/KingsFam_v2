@@ -6,6 +6,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/mock_flag.dart';
 import 'package:kingsfam/config/paths.dart';
@@ -72,6 +73,17 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
+
+      // update the user token. Ios has an issue of loosing tokens over time. 
+      FirebaseMessaging.instance.getToken().then((token) {
+        // log("token is: " + token.toString());
+        _saveTokenToDatabase(token!).then((_) {
+          FirebaseMessaging.instance.onTokenRefresh.listen(_saveTokenToDatabase);
+          // log("saved the token: Done");
+        });
+      });
+      
+
       String? lastVisitedCmId = await UserPreferences.getLastVisitedCm();
       if (lastVisitedCmId != null) {
         bool isInCm_ = await _churchRepository.isInCmById(
@@ -104,7 +116,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
             await _churchRepository.FutureChurchsAndMentioned(
                 c: churchs, uid: _authBloc.state.user!.uid);
         for (var i in chsAndMentionedMap["c"]) {
-          log(i.id! + "len of joinedCms: " + churchs.length.toString() + "\n" + " ----------------------------------------------"  );
+         
         }
         if (chsAndMentionedMap["c"].isEmpty) {
           emit(state.copyWith(selectedCh: null));
@@ -128,7 +140,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   }
 
   Future<void> getChsToJoinIfNeeded(bool isInCm, List<Church> chsToJoin) async {
-    log(state.chsToJoin.length.toString() + " chs to join len" );
+
     if (!isInCm && state.chsToJoin.isEmpty) {
       int limit = MockFlag.ISMOCKTESTING ? 1 : 15;
       chsToJoin = await _churchRepository.grabChurchs(limit: limit);
@@ -169,7 +181,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   }
 
   void leftCm({required String id}) {
-    log("in left cm");
+   
     var lst = state.chs;
     for (var c in lst!) {
       if (c!.id == id) {
@@ -177,6 +189,14 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
         emit(state.copyWith(chs: lst));
       }
     }
+  }
+
+    
+    Future<void> _saveTokenToDatabase(String token) async {
+    String userId = _authBloc.state.user!.uid;
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
+      'token': [token] //FieldValue.arrayUnion([token])
+    });
   }
 
   // This is the maping of chats to state, (this is currently not being used, rather a streamblder in UI is

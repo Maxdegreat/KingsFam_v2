@@ -28,7 +28,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   final StorageRepository _storageRepository;
   final AuthBloc _authBloc;
   final UserrRepository _userrRepository;
-  final CallRepository _callRepository;
 
   // three stream subscriptions used for listening to new values of each
   // respectivly
@@ -39,13 +38,11 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     required ChurchRepository churchRepository,
     required StorageRepository storageRepository,
     required AuthBloc authBloc,
-    required CallRepository callRepository,
     required UserrRepository userrRepository,
   })  : _churchRepository = churchRepository,
         _storageRepository = storageRepository,
         _authBloc = authBloc,
         _userrRepository = userrRepository,
-        _callRepository = callRepository,
         super(CommuinityState.inital());
 
   @override
@@ -215,6 +212,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
               // The updated status in the emit is used in cm screen listener. if status is updated we setstate. thats it.
               emit(state.copyWith(
                 kingCords: kingsCords["kinscord"],
+                vc: kingsCords["vc"],
                 mentionedCords: kingsCords["mentioned"],
                 status: CommuintyStatus.updated));
               emit(state.copyWith(status: CommuintyStatus.inital));
@@ -518,7 +516,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   setReadStatusFalse({required String kcId}) {
     // seting the read status false for a given kc tracked by the KCid.
-    log("this is the method to the read status");
     for (KingsCord? kc in state.kingCords) {
       if (kc != null && kc.id! == kcId) {
         log("we found the kc that we want to update its state");
@@ -528,6 +525,8 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       }
     }
   }
+
+
 
   setMentionedToFalse({required String kcId}) {
     // also will update the read status

@@ -264,7 +264,6 @@ class _CommunityHomemState extends State<CommunityHome> {
     if (widget.cmB == null) {
       return await CommuinityBloc(
         authBloc: context.read<AuthBloc>(),
-        callRepository: context.read<CallRepository>(),
         churchRepository: context.read<ChurchRepository>(),
         storageRepository: context.read<StorageRepository>(),
         userrRepository: context.read<UserrRepository>(),

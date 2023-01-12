@@ -53,13 +53,32 @@ class KingsCordRepository extends BaseKingsCordRepository {
         .add(message.ToDoc(senderId: senderId));
   }
 
+  Future<void> onSendGiphyMessage({required String giphyId, required String cmId, required String kcId, required Message msg, required String senderId}) async {
+    try {
+      log("starting");
+      _firebaseFirestore
+      .collection(Paths.church)
+      .doc(cmId)
+      .collection(Paths.kingsCord)
+      .doc(kcId)
+      .collection(Paths.messages)
+      .add(msg.ToDoc(senderId: senderId)).then((value) => log(value.toString()));
+      log("done");
+    } catch (e) {
+      log("error in kingsCordRepo");
+      log("error message: " + e.toString());
+    }
+  }
+
   Future<Map<String, List<KingsCord?>>> futureWaitCord(
       List<Future<KingsCord?>> futures, String cmId, String uid) async {
     String mentioned = "mentioned";
     String kingsCord = "kinscord";
+    String vc = "vc";
 
     List<KingsCord> mentionedL = [];
     List<KingsCord> kingsCordL = [];
+    List<KingsCord> vcL = [];
 
     for (Future<KingsCord?> future in futures) {
       DateTime? tFromMsg;
@@ -70,7 +89,18 @@ class KingsCordRepository extends BaseKingsCordRepository {
 
       await future.then((kc) async {
               if (kc != null) {
-        
+          
+          if (kc.mode == "vc") {
+
+            if (kc.metaData == null) 
+              kc = kc.copyWith(metaData: {"inCall": 0});
+            else if (kc.metaData!["inCall"] != null)
+              kc;
+            else 
+              kc = kc.copyWith(metaData: {"inCall": 0 });
+            
+            vcL.add(kc);
+          } else {
           QuerySnapshot qs = await FirebaseFirestore.instance
               .collection(Paths.church)
               .doc(cmId)
@@ -135,8 +165,10 @@ class KingsCordRepository extends BaseKingsCordRepository {
               readStatus: readStatus,
               recentActivity: {"chat": recentM, "says": recentS}));
         }
-      }
-      });
+      }}
+              }
+
+      );;
 
     }
 
@@ -151,6 +183,7 @@ class KingsCordRepository extends BaseKingsCordRepository {
     Map<String, List<KingsCord>> map = {};
     map[mentioned] = mentionedL;
     map[kingsCord] = kingsCordL;
+    map[vc] = vcL;
     return map;
   }
 }

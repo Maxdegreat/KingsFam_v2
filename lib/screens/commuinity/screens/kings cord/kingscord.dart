@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:giphy_get/giphy_get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_cropper/image_cropper.dart';
 
@@ -17,6 +18,7 @@ import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
 import 'package:kingsfam/widgets/widgets.dart';
+import 'package:uuid/uuid.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import 'widgets/message_lines.dart';
@@ -138,7 +140,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     List<MessageLines> messageLines = [];
 
     message.forEach((sms) {
-      log("GOT A NEW SMS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       MessageLines messageLine;
       if (sms != null) {
         if (messageLines.length > 0) {
@@ -189,13 +190,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     IconButton(
-                        // onPressed: () async => mediaBottomSheet(
-                        //     kingscordCubit: ctx,
-                        //     context: context,
-                        //     cmId: widget.commuinity.id!,
-                        //     kcId: widget.kingsCord.id!,
-                        //     seenderUsername: currUsersName,
-                        // ),
                         onPressed: () {
                           showMediaPopUp = !showMediaPopUp;
                           setState(() {});
@@ -236,13 +230,12 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                         .read<KingscordCubit>()
                                         .onIsTyping(false);
                                   }
-                                  if (messageText[messageText.length - 1] ==
-                                      '@') {
+
+                                  if (messageText[messageText.length - 1] =='@') {
                                     containsAt = true;
-                                    idxWhereStartWithat =
-                                        messageText.length - 1;
-                                    log("here you can add the @ container");
+                                    idxWhereStartWithat = messageText.length - 1;
                                   }
+
                                   if (containsAt)
                                     setState(() => _mentionedController =
                                         messageText.substring(
@@ -335,6 +328,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                   ctx.onIsTyping(false);
                                   _messageController.clear();
                                   ctx.clearMention();
+                                  setState(() {});
                                 }
                               : null,
                         )),
@@ -400,6 +394,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                               .selectMention(userr: _mentioned);
                           username = null;
                           state.mentions.length = 0;
+                          containsAt = false;
+                          _mentionedController = null;
                           setState(() {});
                         },
                       );
@@ -650,6 +646,39 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             IconButton(
+              onPressed: () {
+                GiphyGet.getGif(
+                  context: context, 
+                  apiKey: "ge17PWpKQ9OmxKuPE8ejeYmI3SHLZOeY",
+                  modal: true,
+                  randomID: Uuid().v4().toString(),
+                  tabColor: Colors.amber,
+                  ).then((gif) {
+                    
+                    if (gif != null) {
+                    // send the Giphy as a message.
+                    // snackBar(snackMessage: "snackMessage", context: context);
+                    context.read<KingscordCubit>().onSendGiphyMessage(
+                      giphyId: gif.id!, 
+                      cmId: widget.commuinity.id!, 
+                      kcId: widget.kingsCord.id!,
+                      currUsername: widget.usr.username
+                    ).then((value) => log("sent giphy"));
+
+                    } else {
+                      // snackBar(
+                      //   snackMessage: "Ops... Something went wrong", 
+                      //   context: context,
+                      //   bgColor: Colors.red[400]
+                      // );
+                    }
+                    
+                  });
+              }, 
+              icon: Icon(Icons.gif)
+            ),
+
+            IconButton(
               onPressed: () async {
                 showMediaPopUp = !showMediaPopUp;
                 setState(() {});
@@ -664,6 +693,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                       kingsCordId: widget.kingsCord.id!,
                       senderUsername: widget.usr.username);
                 }
+                setState(() {});
               },
               icon: Icon(Icons.image),
             ),

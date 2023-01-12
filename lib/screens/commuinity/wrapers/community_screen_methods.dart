@@ -32,10 +32,13 @@ Widget nativeAdWidget(NativeAd ad, bool hasAdLoaded, BuildContext context) {
   return hasAdLoaded
       ? Container(
           height: 50,
-          width: MediaQuery.of(context).size.width / 2.2,
-          child: AdWidget(ad: ad),
+          width: MediaQuery.of(context).size.width / 2.1,
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: AdWidget(ad: ad),
+          ),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).colorScheme.onPrimary,
             borderRadius: BorderRadius.circular(10),
           ),
         )
@@ -56,57 +59,51 @@ Widget contentPreview(
           .pushNamed(CommuinityFeedScreen.routeName,
               arguments: CommuinityFeedScreenArgs(commuinity: cm, passedPost: null))
           .then((_) => context.read<BottomnavbarCubit>().showBottomNav(true)),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            width: MediaQuery.of(context).size.width / 2.2,
-            decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.circular(10)),
-            child: Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Row(
-                children: [
-                  Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      color: Color(hc.hexcolorCode("#141829")),
-                      borderRadius: BorderRadius.circular(10),
-                      image: post.imageUrl != null
+      child: Container(
+        width: MediaQuery.of(context).size.width / 2.2,
+        decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.onPrimary,
+            borderRadius: BorderRadius.circular(10)),
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Row(
+            children: [
+              Container(
+                height: 50,
+                width: 50,
+                decoration: BoxDecoration(
+                  color: Color(hc.hexcolorCode("#141829")),
+                  borderRadius: BorderRadius.circular(10),
+                  image: post.imageUrl != null
+                      ? DecorationImage(
+                          image: CachedNetworkImageProvider(post.imageUrl!),
+                          fit: BoxFit.fitWidth)
+                      : post.thumbnailUrl != null
                           ? DecorationImage(
-                              image: CachedNetworkImageProvider(post.imageUrl!),
+                              image: CachedNetworkImageProvider(
+                                  post.thumbnailUrl!),
                               fit: BoxFit.fitWidth)
-                          : post.thumbnailUrl != null
-                              ? DecorationImage(
-                                  image: CachedNetworkImageProvider(
-                                      post.thumbnailUrl!),
-                                  fit: BoxFit.fitWidth)
-                              : null,
-                    ),
-                  ),
-                  SizedBox(width: 5),
-                  Flexible(
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 5.0),
-                        child: Text(
-                          post.author.username,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.caption,
-                          maxLines: 1,
-                          overflow: TextOverflow.fade,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                          : null,
+                ),
               ),
-            ),
+              SizedBox(width: 5),
+              Flexible(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 5.0),
+                    child: Text(
+                      post.author.username,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.caption,
+                      maxLines: 1,
+                      overflow: TextOverflow.fade,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     ),
   );
@@ -176,7 +173,6 @@ _delKcDialog({
         context: context,
         builder: (ctx) => BlocProvider<CommuinityBloc>(
             create: (_) => CommuinityBloc(
-                callRepository: ctx.read<CallRepository>(),
                 churchRepository: ctx.read<ChurchRepository>(),
                 storageRepository: ctx.read<StorageRepository>(),
                 authBloc: ctx.read<AuthBloc>(),
@@ -369,7 +365,6 @@ Future<dynamic> _inviteBottomSheet(
         context: context,
         builder: (context) => BlocProvider<BuildchurchCubit>(
               create: (context) => BuildchurchCubit(
-                  callRepository: context.read<CallRepository>(),
                   churchRepository: context.read<ChurchRepository>(),
                   storageRepository: context.read<StorageRepository>(),
                   authBloc: context.read<AuthBloc>(),

@@ -415,7 +415,7 @@ class ChurchRepository extends BaseChurchRepository {
         cordName: cordName,
         mode: mode,
         rolesAllowed: rolesAllowed,
-        subscribedIds: [],
+        //subscribedIds: [],
       );
 
       await pathToKc.add(kc.toDoc()).then((doc) {

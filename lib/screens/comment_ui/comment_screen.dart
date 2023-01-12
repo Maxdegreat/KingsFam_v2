@@ -1,19 +1,14 @@
 import 'dart:developer';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:kingsfam/extensions/date_time_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
-import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
-import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/comment_line.dart';
 import 'bloc/comment_bloc.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
-import 'package:kingsfam/widgets/widgets.dart';
 
 // args
 class CommentScreenArgs {
@@ -135,9 +130,9 @@ class _CommentScreenState extends State<CommentScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
 
-            // CircleAvatar(
-            //   radius: 15,
-            //   backgroundImage: CachedNetworkImageProvider(imageUrl),
+            // IconButton(
+            //   onPressed: () {}, 
+            //   icon: Icon(Icons.gif),
             // ),
     
             SizedBox(width: 5),
@@ -184,6 +179,7 @@ class _CommentScreenState extends State<CommentScreen> {
       onPressed: () {
         if (canPost) {
           context.read<CommentBloc>().add(CommentPostComment(content: _messageController.value.text, post: widget.post));
+          _messageController.clear();
         }
       }, 
       child: Text(
