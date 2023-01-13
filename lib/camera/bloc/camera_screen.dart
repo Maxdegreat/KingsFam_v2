@@ -8,6 +8,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/helpers/image_helper.dart';
+import 'package:kingsfam/helpers/navigator_helper.dart';
 import 'package:kingsfam/paint/hollow_circle.dart';
 import 'package:kingsfam/screens/create_post/post_content_screen.dart';
 import 'package:kingsfam/widgets/snackbar.dart';
@@ -800,7 +801,8 @@ class _CameraScreenState extends State<CameraScreen>
                     // showInSnackBar('Video recorded to ${file.path}');
                     // controller != null ? controller!.dispose() : null;
                     videoFile = File(pickedFile.path);
-                    _startVideoPlayer();
+                      NavHelper().navToVideoEditor(context, videoFile!, PostContentScreen.routeName);
+                    // _startVideoPlayer();
                   }
                   setState(() {});
                 },

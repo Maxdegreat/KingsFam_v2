@@ -362,7 +362,7 @@ class KingscordCubit extends Cubit<KingscordState> {
     if (thumbnail == null)
       return
           // add thumbnail to queue
-          print("abt to add $thumbnail into the queue");
+          log("abt to add $thumbnail into the queue");
     state.filesToBePosted.addFirst(File(thumbnail));
     print("added $thumbnail in the queue");
     FileShareStatus fileShareStatus = FileShareStatus.imgSharing;

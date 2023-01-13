@@ -33,8 +33,6 @@ class _DisplayGifState extends State<DisplayGif> {
     GiphyAPI.fetchGif(widget.giphyId).then((value) {
       gif  = value;
       setState(() {});
-      log("gif: " + gif.toString());
-      log("value: " + value.toString());
     });
   }
 
@@ -44,7 +42,7 @@ class _DisplayGifState extends State<DisplayGif> {
     gif != null ?
     _showGiphyDisplay()
     :
-    Container(child: Text("giphy is null"));
+    Container(child: Text("https://api.giphy.com/v1/gifs/${widget.giphyId}", style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 15, color: Colors.blue),));
   }
 
   TextStyle buttonsTextStyle = TextStyle(

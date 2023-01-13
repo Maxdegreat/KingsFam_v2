@@ -44,7 +44,7 @@ class LinkPreviewContainerState extends State<LinkPreviewContainer> {
     }
     return _preview != null
         ? Container(
-            width:  MediaQuery.of(context).size.width/ 1.5,
+            width:  MediaQuery.of(context).size.width/ 1.7,
             decoration: BoxDecoration(
               color: Color.fromARGB(110, 255, 193, 7),
               borderRadius: BorderRadius.circular(4),

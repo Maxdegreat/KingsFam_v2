@@ -2,41 +2,33 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:kingsfam/helpers/navigator_helper.dart';
+import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
+import 'package:kingsfam/screens/create_post/post_content_screen.dart';
 import 'package:video_player/video_player.dart';
-import 'package:helpers/helpers.dart'
-    show OpacityTransition, SwipeTransition, AnimatedInteractiveViewer;
+import 'package:video_trimmer/video_trimmer.dart';
 
 
-Future<bool> isVidLong({required File file})  async {
-  VideoPlayerController ctrl = VideoPlayerController.file(file);
-  await ctrl.initialize();
-  if (ctrl.value.isInitialized == true && ctrl.value.duration > Duration(seconds: 60)) {
-    ctrl.dispose();
-    return false;
-  } else {
-    ctrl.dispose();
-    return true;
-  }
-}
-//------------------------//
-///---VideoEditorScreen--//
-///--------------------///
+
+
 class VideoEditorArgs {
   final File file;
-  VideoEditorArgs({required this.file});
+  final String? nextScreen;
+  final Map<String, dynamic>? data;
+  VideoEditorArgs({required this.file, required this.nextScreen, this.data});
 }
 
 
 class VideoEditor extends StatefulWidget {
-  const VideoEditor({Key? key, required this.file}) : super(key: key);
+  const VideoEditor({Key? key, required this.file, required this.nextScreen, this.data}) : super(key: key);
 
-  final File? file;
+  final File file;
+  final String? nextScreen;
+  final Map<String, dynamic>? data;
   static const String routeName = "/videoEditor";
   static Route route (VideoEditorArgs args) {
     return MaterialPageRoute(
       settings: const RouteSettings(name: routeName),
-      builder: (context) => VideoEditor(file: args.file)
+      builder: (context) => VideoEditor(file: args.file, nextScreen: args.nextScreen)
     );
   }
   @override
@@ -44,442 +36,136 @@ class VideoEditor extends StatefulWidget {
 }
 
 class _VideoEditorState extends State<VideoEditor> {
-  final _exportingProgress = ValueNotifier<double>(0.0);
-  final _isExporting = ValueNotifier<bool>(false);
-  final double height = 60;
+  
+ final Trimmer _trimmer = Trimmer();
 
-  bool _exported = false;
-  String _exportText = "";
-  File? newFile;
-  late VideoEditorController _controller;
+  double _startValue = 0.0;
+  double _endValue = 0.0;
+
+  bool _isPlaying = false;
+  bool _progressVisibility = false;
 
   @override
   void initState() {
-    if (widget.file != null) {
-      _controller = VideoEditorController.file(widget.file!,
-        maxDuration: const Duration(seconds: 30))
-      ..initialize().then((_) => setState(() {}));
-    } else {/*Navigator.of(context).pop();*/}
     super.initState();
+
+    _loadVideo();
   }
 
-  @override
-  void dispose() {
-    _exportingProgress.dispose();
-    _isExporting.dispose();
-    _controller.dispose();
-    super.dispose();
+  void _loadVideo() {
+    _trimmer.loadVideo(videoFile: widget.file);
   }
 
-  void _openCropScreen() => Navigator.push(
-      context,
-      MaterialPageRoute<void>(
-          builder: (BuildContext context) =>
-              CropScreen(controller: _controller)));
+  _saveVideo() {
+    setState(() {
+      _progressVisibility = true;
+    });
 
-  void _exportVideo() async {
-    _exportingProgress.value = 0;
-    _isExporting.value = true;
-    // NOTE: To use `-crf 1` and [VideoExportPreset] you need `ffmpeg_kit_flutter_min_gpl` package (with `ffmpeg_kit` only it won't work)
-    await _controller.exportVideo(
-      // preset: VideoExportPreset.medium,
-      // customInstruction: "-crf 17",
-      onProgress: (stats, value) => _exportingProgress.value = value,
-      onError: (e, s) => _exportText = "Error on export video :(",
-      onCompleted: (file) {
-        newFile = file;
-        _isExporting.value = false;
-        setState(() {});
-        if (newFile != null) {
-          _controller.video.pause();
-          NavHelper().navToPostContent(context, newFile!, 'video') . then((value) => Navigator.of(context).pop());
-        } else {
-          _controller.video.pause();
-          NavHelper().navToPostContent(context, widget.file!, 'video') . then((value) => Navigator.of(context).pop());
+    _trimmer.saveTrimmedVideo(
+      startValue: _startValue,
+      endValue: _endValue,
+      onSave: (outputPath) {
+
+        debugPrint('OUTPUT PATH: $outputPath');
+        var arguments;
+        if (widget.nextScreen == PostContentScreen.routeName) {
+          arguments = PostContentArgs(type: "video", content: File(outputPath!));
+          Navigator.of(context).pushNamed(widget.nextScreen!, arguments: arguments);
+        }
+        else {
+          Navigator.of(context).pop(File(outputPath!));
         }
       },
     );
   }
 
-  void _exportCover() async {
-    setState(() => _exported = false);
-    await _controller.extractCover(
-      onError: (e, s) => _exportText = "Error on cover exportation :(",
-      onCompleted: (cover) {
-        if (!mounted) return;
 
-        _exportText = "Cover exported! ${cover.path}";
-        showDialog(
-          context: context,
-          builder: (_) => Padding(
-            padding: const EdgeInsets.all(30),
-            child: Center(child: Image.memory(cover.readAsBytesSync())),
-          ),
-        );
-
-        setState(() => _exported = true);
-        Future.delayed(const Duration(seconds: 2),
-            () => setState(() => _exported = false));
-      },
-    );
-  }
-
-  Widget _doneBtn() {
-    return TextButton(onPressed: () {
-      _exportVideo();
-      
-    }, child: Text("Done"));
-  }
+  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(title: Text("Trim Post"),
+      appBar: AppBar(
+        leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).iconTheme.color,
+              )),
+        title: Text("Trim Post", style: Theme.of(context).textTheme.bodyText1),
       actions: [
-        _doneBtn()
+        TextButton(
+                  onPressed: _progressVisibility ? null : () => _saveVideo(),
+                  child: Text("continue", style: _progressVisibility ? Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.grey) : Theme.of(context).textTheme.bodyText1!),
+                ),
       ],),
-      body: _controller.initialized
-          ? SafeArea(
-              child: Stack(children: [
-              Column(children: [
-                _topNavBar(),
+      body: Center(
+          child: Container(
+            padding: const EdgeInsets.only(bottom: 30.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Visibility(
+                  visible: _progressVisibility,
+                  child: const LinearProgressIndicator(
+                    backgroundColor: Colors.white,
+                  ),
+                ),
+                
                 Expanded(
-                    child: DefaultTabController(
-                        length: 2,
-                        child: Column(children: [
-                          Expanded(
-                              child: TabBarView(
-                            physics: const NeverScrollableScrollPhysics(),
-                            children: [
-                              Stack(alignment: Alignment.center, children: [
-                                CropGridViewer(
-                                  controller: _controller,
-                                  showGrid: false,
-                                ),
-                                AnimatedBuilder(
-                                  animation: _controller.video,
-                                  builder: (_, __) => OpacityTransition(
-                                    visible: !_controller.isPlaying,
-                                    child: GestureDetector(
-                                      onTap: _controller.video.play,
-                                      child: Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: const BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Icon(Icons.play_arrow,
-                                            color: Colors.black),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ]),
-                              CoverViewer(controller: _controller)
-                            ],
-                          )),
-                          Container(
-                              height: 200,
-                              margin: const EdgeInsets.only(top: 10),
-                              child: Column(children: [
-                                TabBar(
-                                  indicatorColor: Colors.white,
-                                  tabs: [
-                                    Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: const [
-                                          Padding(
-                                              padding: EdgeInsets.all(5),
-                                              child: Icon(Icons.content_cut)),
-                                          Text('Trim')
-                                        ]),
-                                    Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: const [
-                                          Padding(
-                                              padding: EdgeInsets.all(5),
-                                              child: Icon(Icons.video_label)),
-                                          Text('Cover')
-                                        ]),
-                                  ],
-                                ),
-                                Expanded(
-                                  child: TabBarView(
-                                    children: [
-                                      Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: _trimSlider()),
-                                      Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [_coverSelection()]),
-                                    ],
-                                  ),
-                                )
-                              ])),
-                          _customSnackBar(),
-                          ValueListenableBuilder(
-                            valueListenable: _isExporting,
-                            builder: (_, bool export, __) => OpacityTransition(
-                              visible: export,
-                              child: AlertDialog(
-                                backgroundColor: Colors.white,
-                                title: ValueListenableBuilder(
-                                  valueListenable: _exportingProgress,
-                                  builder: (_, double value, __) => Text(
-                                    "Exporting video ${(value * 100).ceil()}%",
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                        ])))
-              ])
-            ]))
-          : const Center(child: CircularProgressIndicator()),
-    );
-  }
-
-  Widget _topNavBar() {
-    return SafeArea(
-      child: SizedBox(
-        height: height,
-        child: Row(
-          children: [
-            Expanded(
-              child: IconButton(
-                onPressed: () =>
-                    _controller.rotate90Degrees(RotateDirection.left),
-                icon: const Icon(Icons.rotate_left),
-              ),
-            ),
-            Expanded(
-              child: IconButton(
-                onPressed: () =>
-                    _controller.rotate90Degrees(RotateDirection.right),
-                icon: const Icon(Icons.rotate_right),
-              ),
-            ),
-            Expanded(
-              child: IconButton(
-                onPressed: _openCropScreen,
-                icon: const Icon(Icons.crop),
-              ),
-            ),
-            // Expanded(
-            //   child: IconButton(
-            //     onPressed: _exportCover,
-            //     icon: const Icon(Icons.save_alt, color: Colors.white),
-            //   ),
-            // ),
-            // Expanded(
-            //   child: IconButton(
-            //     onPressed: _exportVideo,
-            //     icon: const Icon(Icons.save),
-            //   ),
-            // ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String formatter(Duration duration) => [
-        duration.inMinutes.remainder(60).toString().padLeft(2, '0'),
-        duration.inSeconds.remainder(60).toString().padLeft(2, '0')
-      ].join(":");
-
-  List<Widget> _trimSlider() {
-    return [
-      AnimatedBuilder(
-        animation: _controller.video,
-        builder: (_, __) {
-          final duration = _controller.video.value.duration.inSeconds;
-          final pos = _controller.trimPosition * duration;
-          final start = _controller.minTrim * duration;
-          final end = _controller.maxTrim * duration;
-
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: height / 4),
-            child: Row(children: [
-              Text(formatter(Duration(seconds: pos.toInt()))),
-              const Expanded(child: SizedBox()),
-              OpacityTransition(
-                visible: _controller.isTrimming,
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Text(formatter(Duration(seconds: start.toInt()))),
-                  const SizedBox(width: 10),
-                  Text(formatter(Duration(seconds: end.toInt()))),
-                ]),
-              )
-            ]),
-          );
-        },
-      ),
-      Container(
-        width: MediaQuery.of(context).size.width,
-        margin: EdgeInsets.symmetric(vertical: height / 4),
-        child: TrimSlider(
-            controller: _controller,
-            height: height,
-            horizontalMargin: height / 4,
-            child: TrimTimeline(
-                controller: _controller,
-                margin: const EdgeInsets.only(top: 10))),
-      )
-    ];
-  }
-
-  Widget _coverSelection() {
-    return Container(
-        margin: EdgeInsets.symmetric(horizontal: height / 4),
-        child: CoverSelection(
-          controller: _controller,
-          height: height,
-          quantity: 8,
-        ));
-  }
-
-  Widget _customSnackBar() {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: SwipeTransition(
-        visible: _exported,
-        axisAlignment: 1.0,
-        child: Container(
-          height: height,
-          width: double.infinity,
-          color: Colors.black.withOpacity(0.8),
-          child: Center(
-            child: Text(_exportText,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-
-
-
-//-----------------//
-//CROP VIDEO SCREEN//
-//-----------------//
-class CropScreen extends StatelessWidget {
-  const CropScreen({Key? key, required this.controller}) : super(key: key);
-
-  final VideoEditorController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(30),
-          child: Column(children: [
-            Row(children: [
-              Expanded(
-                child: IconButton(
-                  onPressed: () =>
-                      controller.rotate90Degrees(RotateDirection.left),
-                  icon: const Icon(Icons.rotate_left),
+                  child: VideoViewer(trimmer: _trimmer),
                 ),
-              ),
-              Expanded(
-                child: IconButton(
-                  onPressed: () =>
-                      controller.rotate90Degrees(RotateDirection.right),
-                  icon: const Icon(Icons.rotate_right),
-                ),
-              )
-            ]),
-            const SizedBox(height: 15),
-            Expanded(
-              child: AnimatedInteractiveViewer(
-                maxScale: 2.4,
-                child: CropGridViewer(
-                    controller: controller, horizontalMargin: 60),
-              ),
-            ),
-            const SizedBox(height: 15),
-            Row(children: [
-              Expanded(
-                child: IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Center(
-                    child: Text(
-                      "CANCEL",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TrimViewer(
+                      trimmer: _trimmer,
+                      viewerHeight: 50.0,
+                      viewerWidth: MediaQuery.of(context).size.width,
+                      durationStyle: DurationStyle.FORMAT_MM_SS,
+                      maxVideoLength: const Duration(seconds: 20),
+                      editorProperties: TrimEditorProperties(
+                        borderPaintColor: Colors.amber,
+                        borderWidth: 4,
+                        borderRadius: 5,
+                        circlePaintColor: Colors.yellow.shade800,
+                      ),
+                      areaProperties: TrimAreaProperties.edgeBlur(
+                        thumbnailQuality: 10,
+                      ),
+                      onChangeStart: (value) => _startValue = value,
+                      onChangeEnd: (value) => _endValue = value,
+                      onChangePlaybackState: (value) =>
+                          setState(() => _isPlaying = value),
                     ),
                   ),
                 ),
-              ),
-              buildSplashTap("16:9", 16 / 9,
-                  padding: const EdgeInsets.symmetric(horizontal: 10)),
-              buildSplashTap("1:1", 1 / 1),
-              buildSplashTap("4:5", 4 / 5,
-                  padding: const EdgeInsets.symmetric(horizontal: 10)),
-              buildSplashTap("NO", null,
-                  padding: const EdgeInsets.only(right: 10)),
-              Expanded(
-                child: IconButton(
-                  onPressed: () {
-                    //2 WAYS TO UPDATE CROP
-                    //WAY 1:
-                    controller.updateCrop();
-                    /*WAY 2:
-                    controller.minCrop = controller.cacheMinCrop;
-                    controller.maxCrop = controller.cacheMaxCrop;
-                    */
-                    Navigator.pop(context);
+                TextButton(
+                  child: _isPlaying
+                      ? const Icon(
+                          Icons.pause,
+                          size: 80.0,
+                          color: Colors.white,
+                        )
+                      : const Icon(
+                          Icons.play_arrow,
+                          size: 80.0,
+                          color: Colors.white,
+                        ),
+                  onPressed: () async {
+                    bool playbackState = await _trimmer.videoPlaybackControl(
+                      startValue: _startValue,
+                      endValue: _endValue,
+                    );
+                    setState(() => _isPlaying = playbackState);
                   },
-                  icon: const Center(
-                    child: Text(
-                      "OK",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              ),
-            ]),
-          ]),
-        ),
-      ),
+                )
+              ],
+            ),
+          ))
     );
   }
 
-  Widget buildSplashTap(
-    String title,
-    double? aspectRatio, {
-    EdgeInsetsGeometry? padding,
-  }) {
-    return InkWell(
-      onTap: () => controller.preferredCropAspectRatio = aspectRatio,
-      child: Padding(
-        padding: padding ?? EdgeInsets.zero,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.aspect_ratio, color: Colors.white),
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

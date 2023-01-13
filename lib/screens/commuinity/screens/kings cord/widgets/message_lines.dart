@@ -6,8 +6,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:giphy_get/giphy_get.dart';
-import 'package:kingsfam/api/giphy.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
@@ -87,19 +85,24 @@ class _MessageLinesState extends State<MessageLines> {
   }
 
   _showReactionBarUi({required Map<String, int>? messageReactions}) {
-    return widget.message.reactions == {} || messageReactions == {'': 0}
-        ? SizedBox.shrink()
-        : Container(
-            height: MediaQuery.of(context).size.height / 20,
-            child: Row(
-                children: messageReactions!.keys.map((e) {
-              return Padding(
-                padding: const EdgeInsets.only(top: 5.0, bottom: 5.0, right: 7),
-                child: reactionContainer(
-                    reaction: e, num: widget.message.reactions![e]!),
-              );
-            }).toList()),
-          );
+    if ( !(widget.message.reactions!.length > 0) ) {
+      return SizedBox.shrink();
+    } else {
+      return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Container(
+              height: MediaQuery.of(context).size.height / 20,
+              child: Row(
+                  children: messageReactions!.keys.map((e) {
+                return Padding(
+                  padding: const EdgeInsets.only(top: 5.0, bottom: 5.0, right: 7),
+                  child: reactionContainer(
+                      reaction: e, num: widget.message.reactions![e]!),
+                );
+              }).toList()),
+            ),
+        ); 
+    }
   }
 
   _showReactionsBar(String messageId, Map<String, int>? messageReactions,
@@ -165,7 +168,7 @@ class _MessageLinesState extends State<MessageLines> {
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                           onTap: () {
-                            uploadReaction('👀😎😎😎😎😎😎', messageId, messageReactions!);
+                            uploadReaction('👀', messageId, messageReactions!);
                             Navigator.of(context).pop();
                           },
                           child: Text('👀', style: TextStyle(fontSize: 27))),
@@ -325,6 +328,7 @@ class _MessageLinesState extends State<MessageLines> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               LinkPreviewContainer(link: links.last),
               // if a link was sent only without any text
@@ -332,6 +336,7 @@ class _MessageLinesState extends State<MessageLines> {
               Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: textWithLinksForColumn.map((e) => e).toList()),
               _showReactionBarUi(messageReactions: widget.message.reactions)
             ],
@@ -385,10 +390,9 @@ class _MessageLinesState extends State<MessageLines> {
             width: size.width * 0.6,
             decoration: BoxDecoration(
                 border: Border.all(
-                    width: 2.0,
-                    color: const Color(
-                        0xFFFFFFFF)), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
-                borderRadius: BorderRadius.circular(20.0),
+                    width: 1.0,
+                    color: Colors.amber), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
+                borderRadius: BorderRadius.circular(7),
                 image: DecorationImage(
                     fit: BoxFit.cover,
                     image:
@@ -427,7 +431,7 @@ class _MessageLinesState extends State<MessageLines> {
                   ),
                   decoration: BoxDecoration(
                     color: Colors.black45,
-                    borderRadius: BorderRadius.circular(20.0),
+                    borderRadius: BorderRadius.circular(7),
                   ),
                 ),
               ),
@@ -437,10 +441,9 @@ class _MessageLinesState extends State<MessageLines> {
           width: size.width * 0.6,
           decoration: BoxDecoration(
               border: Border.all(
-                  width: 2.0,
-                  color: const Color(
-                      0xFFFFFFFF)), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
-              borderRadius: BorderRadius.circular(20.0),
+                  width: 1.0,
+                  color: Colors.amber), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
+              borderRadius: BorderRadius.circular(7.0),
               image: DecorationImage(
                   fit: BoxFit.cover,
                   image: CachedNetworkImageProvider(
@@ -500,7 +503,7 @@ class _MessageLinesState extends State<MessageLines> {
         widget.message.text == welcomeMsgEncoded);
     return Padding(
       padding:
-          const EdgeInsets.only(top: 2.5, bottom: 2.5, left: 8.0, right: 8.0),
+          const EdgeInsets.only(bottom: 20, left: 8.0, right: 8.0),
       child: Container(
         // color: Colors.white24,
         child: messageType

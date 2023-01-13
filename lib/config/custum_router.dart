@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:kingsfam/camera/bloc/camera_screen.dart';
+import 'package:kingsfam/helpers/vid_helper.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/events/create_event.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
@@ -160,8 +161,8 @@ class CustomRoute {
       case SaysView.routeName:
         return SaysView.route(args: settings.arguments as SaysViewArgs);
 
-      // case VideoEditor.routeName:
-      //   return VideoEditor.route(settings.arguments as VideoEditorArgs);
+       case VideoEditor.routeName:
+         return VideoEditor.route(settings.arguments as VideoEditorArgs);
 
       case ShowBanedUsers.routeName:
         return ShowBanedUsers.route(settings.arguments as ShowBanedUsersArgs);

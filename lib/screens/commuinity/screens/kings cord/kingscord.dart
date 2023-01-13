@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/helpers/helpers.dart';
 import 'package:kingsfam/helpers/kingscord_path.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
+import 'package:kingsfam/helpers/vid_helper.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
@@ -701,15 +703,16 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 onPressed: () async {
                   showMediaPopUp = !showMediaPopUp;
                   setState(() {});
-                  final pickedFile =
-                      await ImageHelper.pickVideoFromGallery(context);
-                  if (pickedFile != null) {
+                  var pickedFile = await ImageHelper.pickVideoFromGallery(context);
+                  Navigator.of(context).pushNamed(VideoEditor.routeName, arguments: VideoEditorArgs(file: pickedFile!, nextScreen: null)).then((trimed) {
+                  if (trimed is File) {
                     context.read<KingscordCubit>().onUploadVideo(
-                        videoFile: pickedFile,
+                        videoFile: trimed,
                         cmId: widget.commuinity.id!,
                         kcId: widget.kingsCord.id!,
                         senderUsername: widget.usr.username);
-                  } else {}
+                  }
+                  });
                 },
                 icon: Icon(Icons.video_collection_rounded))
           ],
