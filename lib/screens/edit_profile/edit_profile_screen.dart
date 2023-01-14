@@ -115,18 +115,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                      child: ElevatedButton(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: ElevatedButton(
                     onPressed: () => _pickBannerImage(context),
                     child: Text(
-                      "Edit banner image",
-                      style: Theme.of(context).textTheme.bodyText1,
+                  "Edit banner image",
+                  style: Theme.of(context).textTheme.bodyText1,
                     ),
                     style: ElevatedButton.styleFrom(
-                        shape: StadiumBorder(),
-                          primary: Theme.of(context).colorScheme.secondary),
-                  )),
+                    //shape: StadiumBorder(),
+                      backgroundColor: Theme.of(context).colorScheme.primary),
+                  ),
                 ),
                 Container(
                     child: GestureDetector(
@@ -138,18 +137,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 )),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    child: ElevatedButton(
-                      onPressed: () => _pickProfileImage(context),
-                      child: Text(
-                        "Edit banner image",
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        shape: StadiumBorder(),
-                          primary: Theme.of(context).colorScheme.secondary),
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: ElevatedButton(
+                    onPressed: () => _pickProfileImage(context),
+                    child: Text(
+                      "Edit banner image",
+                      style: Theme.of(context).textTheme.bodyText1,
                     ),
+                    style: ElevatedButton.styleFrom(
+                      // shape: StadiumBorder(),
+                        backgroundColor: Theme.of(context).colorScheme.primary),
                   ),
                 ),
                 Padding(
@@ -244,12 +241,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             SizedBox(height: 15.0),
                             ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                    primary: Colors.green[400]),
+                                    backgroundColor: Theme.of(context).colorScheme.primary),
                                 onPressed: () => _submitForm(
                                     context,
                                     state.status ==
                                         EditProfileStatus.submitting),
-                                child: Text('Done!?')),
+                                child: Text('Save changes', style: Theme.of(context).textTheme.bodyText1,)),
 
                             SizedBox(
                               height: 20,
@@ -347,8 +344,9 @@ Future delAcc(BuildContext context) {
                 child: Text("No, keep account",
                     style: Theme.of(context).textTheme.bodyText1)),
             SizedBox(
-              height: 10,
+              height: 20,
             ),
+            
             GestureDetector(
                 onTap: () => Navigator.pop(context, true),
                 child: Text("Delete your account",

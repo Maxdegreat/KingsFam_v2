@@ -125,7 +125,7 @@ class _ChatsScreenState extends State<ChatsScreen>
           } 
 
           if (state.chs == null)
-            return Center(child: Text("KingsFam"));
+            return Center(child: Text("KingsFam", style: Theme.of(context).textTheme.bodyText1,));
           else if (state.chs!.isEmpty)
             return GettingStarted(
                 bloc: context.read<ChatscreenBloc>(),

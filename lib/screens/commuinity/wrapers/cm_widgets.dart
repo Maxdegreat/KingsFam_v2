@@ -44,7 +44,7 @@ Widget cmTopColumn(Church cm, BuildContext context) {
     children: [
       Text(
         cm.name,
-        style: Theme.of(context).textTheme.bodyText1,
+        style: Theme.of(context).brightness == ThemeMode.dark ? Theme.of(context).textTheme.bodyText1 : Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.white),
       ),
       SizedBox(
         height: 4,
@@ -69,12 +69,20 @@ Widget cmTopColumnHomeInvite(Church cm, VoidCallback k, BuildContext context) {
                   CommunityHome.routeName,
                   arguments: CommunityHomeArgs(
                       cm: cm, cmB: context.read<CommuinityBloc>())),
-              child: Text(
-                "Home",
-                style: Theme.of(context)
-                    .textTheme
-                    .caption!
-                    .copyWith(color: Colors.white, fontSize: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Home",
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(fontSize: 12, color: Theme.of(context).colorScheme.primary),
+                  ),
+                  Icon(Icons.home_filled, size: 12, color: Theme.of(context).colorScheme.primary,)
+                ],
               ))),
               SizedBox(
         width: 4,
@@ -217,7 +225,7 @@ Widget showRooms(BuildContext context, Church cm) {
               child: Text(
                 "Chat Rooms", // ----------------------------------------------------------------- Rooms
                 style: TextStyle(
-                  color: Colors.grey,
+                  color: Theme.of(context).brightness == ThemeMode.dark ? Colors.grey : Colors.black87,
                   fontSize: 21,
                   fontWeight: FontWeight.w800,
                 ),
@@ -284,7 +292,7 @@ Widget showMentions(BuildContext context, Church cm) {
               child: Text(
                   "Mentions", // ---------------------------------------------- MENTIONS
                   style: TextStyle(
-                    color: Colors.grey,
+                    color: Theme.of(context).brightness == ThemeMode.dark ? Colors.grey : Colors.black87,
                     fontSize: 21,
                     fontWeight: FontWeight.w800,
                   ),
@@ -426,7 +434,7 @@ Widget showVoice(BuildContext context, Church cm) {
               child: Text(
                 "V/C Rooms",
                 style: TextStyle(
-                  color: Colors.grey,
+                  color: Theme.of(context).brightness == ThemeMode.dark ? Colors.grey : Colors.black87,
                   fontSize: 21,
                   fontWeight: FontWeight.w800,
                 ),

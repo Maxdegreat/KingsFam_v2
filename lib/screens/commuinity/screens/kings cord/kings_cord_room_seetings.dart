@@ -82,13 +82,13 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text("Room name"),
+                    Text("Room name", style: Theme.of(context).textTheme.bodyText1),
                     SizedBox(height: 20),
                     // update title if has mod role
                     _updateTitle(theme),
                     Divider(
                       height: 8,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.inversePrimary,
                     ),
                     SizedBox(
                       height: 7,
@@ -185,19 +185,19 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // child 1 is lead
-          _listTileForWritePermissions("Lead"),
-          _listTileForWritePermissions("Admin"),
-          _listTileForWritePermissions("Mod"),
-          _listTileForWritePermissions("Member")
+          _listTileForWritePermissions("Lead", theme),
+          _listTileForWritePermissions("Admin", theme),
+          _listTileForWritePermissions("Mod", theme),
+          _listTileForWritePermissions("Member", theme)
         ],
       ),
     );
   }
 
-  Widget _listTileForWritePermissions(String role) => ListTile(
-            leading: Text(role),
+  Widget _listTileForWritePermissions(String role, ThemeData t) => ListTile(
+            leading: Text(role, style: t.textTheme.bodyText1),
             onTap: () {
-              setState(() {roleWithWritePermissions = role;  });
+              setState(() {roleWithWritePermissions = role;});
             },
             trailing: Checkbox(
               checkColor: Theme.of(context).colorScheme.onPrimary,

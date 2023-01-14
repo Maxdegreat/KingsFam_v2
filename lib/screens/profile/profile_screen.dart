@@ -338,7 +338,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Theme.of(context).colorScheme.primary,
                   ]),
               border: Border.all(color: Colors.amber, width: 1),
-              borderRadius: BorderRadius.circular(2.0)),
+              borderRadius: BorderRadius.circular(7.0)),
         ),
       ),
     );

@@ -679,7 +679,7 @@ class _MessageLinesState extends State<MessageLines> {
                     .caption!
                     .copyWith(fontStyle: FontStyle.italic)),
             SizedBox(height: 5),
-            Divider(color: Colors.white, height: 7)
+            Divider(color: Theme.of(context).colorScheme.inversePrimary, height: 7)
           ],
         ),
       );

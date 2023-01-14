@@ -102,11 +102,12 @@ class FancyListTile extends StatelessWidget {
         ),
         decoration: BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.bottomLeft,
-              end: Alignment.topCenter,
+              begin: Alignment.topCenter,
+              end: Alignment.bottomRight,
               colors: [
-                Theme.of(context).colorScheme.secondary,
-                Theme.of(context).colorScheme.primary
+                        Theme.of(context).scaffoldBackgroundColor,
+                        Theme.of(context).colorScheme.secondary,
+                        // Theme.of(context).colorScheme.onPrimary,
               ]),
             borderRadius: BorderRadius.circular(15),
             border: Border.all(

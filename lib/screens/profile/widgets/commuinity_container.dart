@@ -4,7 +4,6 @@ import 'package:kingsfam/config/constants.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
-import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 import '../../commuinity/community_home/home.dart';
@@ -93,18 +92,12 @@ CommuinityListTile(List<Church?>cms, BuildContext context, String ownerId) {
                 );
               }),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal:10 , vertical: 0),
+        padding: EdgeInsets.symmetric(horizontal:10 , vertical: 7),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Text("See More", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),),
-                SizedBox(width: 10),
-                Text(" communites",  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),)
-              ],
-            ), 
+            Text("See More communites", style: Theme.of(context).textTheme.caption,), 
             SizedBox(height: 5,),
             Container(
               child: !moreBtn ? Container() : greaterThan2 ? twoCommuinitys : oneCommuinitys,

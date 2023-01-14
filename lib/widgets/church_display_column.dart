@@ -9,13 +9,13 @@ Widget search_Church_container(
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Container(
-      height: MediaQuery.of(context).size.height / 5,
+      // height: MediaQuery.of(context).size.height / 5,
       width: MediaQuery.of(context).size.width * .70,
       child: Stack(
         alignment: Alignment.center,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
+            padding: const EdgeInsets.only(top: 8.0, bottom: 12.0, left: 12, right: 12),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -24,19 +24,28 @@ Widget search_Church_container(
                     height: MediaQuery.of(context).size.height / 10,
                     width: MediaQuery.of(context).size.width / 3,
                     decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(7),
                       image: DecorationImage(
                           image: CachedNetworkImageProvider(church.imageUrl),
                           fit: BoxFit.cover),
                     )),
                 SizedBox(height: 10),
                 Text(
-                  church.about,
+                  church.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodyText1,
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 2),
+                Text(
+                  church.about,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.caption,
+                  textAlign: TextAlign.center
+                ),
+                SizedBox(height: 2),
                 Text(
                   "Members: ${church.size}",
                   style: Theme.of(context).textTheme.caption,
@@ -49,14 +58,13 @@ Widget search_Church_container(
       decoration: BoxDecoration(
           gradient: LinearGradient(
               begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
+              end: Alignment.topRight,
               colors: [
                 Theme.of(context).colorScheme.secondary,
-                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.onPrimary,
               ]),
-          border:
-              Border.all(color: Colors.amber, width: .5),
-          borderRadius: BorderRadius.circular(2.0)),
+          // border:Border.all(color: Colors.amber, width: .5),
+          borderRadius: BorderRadius.circular(10.0)),
     ),
   );
 

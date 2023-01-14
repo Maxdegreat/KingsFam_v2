@@ -17,8 +17,8 @@ Widget prayerSnipit(String? prayer, int? passedColor, BuildContext context) {
               begin: Alignment.bottomLeft,
               end: Alignment.topRight,
               colors: [
-                Theme.of(context).colorScheme.secondary,
-                Theme.of(context).colorScheme.primary
+                        Theme.of(context).scaffoldBackgroundColor,
+                        Theme.of(context).colorScheme.secondary,
               ]),
         borderRadius: BorderRadius.circular(15),
         color: Theme.of(context).colorScheme.secondary),

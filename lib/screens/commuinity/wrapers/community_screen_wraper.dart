@@ -74,11 +74,12 @@ Widget _mainScrollView(
 
 Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
   return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 3),
+    padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
     child: Container(
       // height: MediaQuery.of(context).size.height / 9,
       width: MediaQuery.of(context).size.width / 1, // 1.05,
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
         color: Theme.of(context).colorScheme.secondary,
         // Color(hc.hexcolorCode("#0a0c14")),
         // borderRadius: BorderRadius.circular(8),

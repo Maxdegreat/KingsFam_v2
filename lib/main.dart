@@ -142,7 +142,7 @@ class MyApp extends StatelessWidget {
 
         child: MaterialApp(
           //THEME DATA
-          themeMode: ThemeMode.dark,
+          themeMode: ThemeMode.light,
           theme: ThemeInfo().themeClubHouseLight(),
           darkTheme: ThemeInfo().themeClubHouseDark(),
           debugShowCheckedModeBanner: false,

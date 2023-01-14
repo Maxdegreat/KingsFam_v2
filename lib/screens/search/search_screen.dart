@@ -188,15 +188,14 @@ class _SearchScreenState extends State<SearchScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text("Local Communities",
-                          style: GoogleFonts.aBeeZee(
-                              color: Color(hexcolor.hexcolorCode('#FFC050')),
-                              fontSize: 20)),
+                          style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 20)
+                        ),
                       TextButton(
                           onPressed: () => NavHelper().navToMoreCm(
                               context, "local", context.read<SearchBloc>()),
                           child: Text(
-                            "More Cm's",
-                            style: Theme.of(context).textTheme.bodyText1,
+                            "More ...",
+                            style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).colorScheme.primary),
                           ))
                     ],
                   ),
@@ -227,16 +226,14 @@ class _SearchScreenState extends State<SearchScreen> {
                     children: [
                       Text(
                         "Global Communitys",
-                        style: GoogleFonts.aBeeZee(
-                            color: Color(hexcolor.hexcolorCode('#FFC050')),
-                            fontSize: 20),
+                        style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 20),
                       ),
                       TextButton(
                           onPressed: () => NavHelper().navToMoreCm(
                               context, "global", context.read<SearchBloc>()),
                           child: Text(
-                            "More Cm's",
-                            style: Theme.of(context).textTheme.bodyText1,
+                            "More ...",
+                            style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).colorScheme.primary),
                           ))
                     ],
                   ),
