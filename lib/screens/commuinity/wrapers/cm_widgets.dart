@@ -225,7 +225,7 @@ Widget showRooms(BuildContext context, Church cm) {
               child: Text(
                 "Chat Rooms", // ----------------------------------------------------------------- Rooms
                 style: TextStyle(
-                  color: Theme.of(context).brightness == ThemeMode.dark ? Colors.grey : Colors.black87,
+                  color: Theme.of(context).colorScheme.outline,
                   fontSize: 21,
                   fontWeight: FontWeight.w800,
                 ),

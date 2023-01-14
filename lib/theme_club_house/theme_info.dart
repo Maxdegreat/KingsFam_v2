@@ -27,6 +27,7 @@ class ThemeInfo {
         primary: Colors.amber,
         onPrimary: Colors.grey,
         inversePrimary: Colors.black,
+        outline: Colors.grey[800]
         ),
         canvasColor: Colors.white,
       bottomSheetTheme: BottomSheetThemeData(
@@ -82,6 +83,7 @@ class ThemeInfo {
           primary: Colors.amber,
           inversePrimary: Colors.grey[400],
           onPrimary: Colors.black,
+          outline: Colors.white30
         ),
         cardColor: Colors.grey[900],
         primaryColorDark: Colors.white,
