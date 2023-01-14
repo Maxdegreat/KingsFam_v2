@@ -79,7 +79,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
       // height: MediaQuery.of(context).size.height / 9,
       width: MediaQuery.of(context).size.width / 1, // 1.05,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.onPrimary,
+        color: Theme.of(context).colorScheme.secondary,
         // Color(hc.hexcolorCode("#0a0c14")),
         // borderRadius: BorderRadius.circular(8),
       ),
@@ -96,7 +96,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
                 if (cord.mode == "chat") ...[
                   Icon(
                     Icons.numbers,
-                    color: Theme.of(context).iconTheme.color,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   SizedBox(width: 5),
                   Text(
@@ -111,7 +111,8 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
                       cord.readStatus == null)
                     CircleAvatar(backgroundColor: Colors.amber, radius: 3)
                 ] else if (cord.mode == "says") ...[
-                  Icon(Icons.auto_awesome_motion_rounded),
+                  Icon(Icons.auto_awesome_motion_rounded,
+                  color: Theme.of(context).colorScheme.primary,),
                   SizedBox(width: 3),
                   Container(
                     height: 30,
@@ -133,7 +134,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
                     ),
                   ),
                 ] else if (cord.mode == "welcome") ...[
-                  Icon(Icons.waving_hand_outlined),
+                  Icon(Icons.waving_hand_outlined, color: Theme.of(context).colorScheme.primary),
                   SizedBox(width: 3),
                   Container(
                     height: 30,
@@ -157,7 +158,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
                 ] else if (cord.mode == "vc") ...[
                   Icon(
                     Icons.multitrack_audio_rounded,
-                    color: Theme.of(context).iconTheme.color,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   SizedBox(width: 5),
                   Text(
@@ -284,7 +285,7 @@ Widget header({
                 end: Alignment.bottomCenter,
                 colors: <Color>[
                   Colors.black38,
-                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).scaffoldBackgroundColor,
                 ],
                 stops: [0.25, 1.0],
                 tileMode: TileMode.mirror,

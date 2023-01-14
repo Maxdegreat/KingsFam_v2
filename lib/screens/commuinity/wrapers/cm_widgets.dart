@@ -64,6 +64,7 @@ Widget cmTopColumnHomeInvite(Church cm, VoidCallback k, BuildContext context) {
           height: 20,
           // width: MediaQuery.of(context).size.width / 7,
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.secondary),
               onPressed: () => Navigator.of(context).pushNamed(
                   CommunityHome.routeName,
                   arguments: CommunityHomeArgs(
@@ -83,7 +84,7 @@ Widget cmTopColumnHomeInvite(Church cm, VoidCallback k, BuildContext context) {
           width: MediaQuery.of(context).size.width / 8,
           child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).colorScheme.primary),
+                  backgroundColor: Theme.of(context).colorScheme.secondary),
               onPressed: () async {
                 List<CameraDescription> cameras = await availableCameras();
                Navigator.of(context).pushNamed(CameraScreen.routeName, arguments: CameraScreenArgs(cameras: cameras));
@@ -91,7 +92,7 @@ Widget cmTopColumnHomeInvite(Church cm, VoidCallback k, BuildContext context) {
               child: Center(
                 child: Icon(
                   Icons.add,
-                  color: Theme.of(context).iconTheme.color,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 15,
                 ),
               ))),
@@ -103,7 +104,7 @@ Widget cmTopColumnHomeInvite(Church cm, VoidCallback k, BuildContext context) {
           width: MediaQuery.of(context).size.width / 8,
           child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).colorScheme.primary),
+                  backgroundColor: Theme.of(context).colorScheme.secondary),
               onPressed: () async {
                 String generatedDeepLink =
                     await FirebaseDynamicLinkService.createDynamicLink(
@@ -114,7 +115,7 @@ Widget cmTopColumnHomeInvite(Church cm, VoidCallback k, BuildContext context) {
                 alignment: Alignment.center,
                 child: Icon(
                   Icons.share,
-                  color: Theme.of(context).iconTheme.color,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 15,
                 ),
               )))

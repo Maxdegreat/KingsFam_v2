@@ -17,6 +17,7 @@ import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/screens/search/more_cm_screen.dart';
 import 'package:kingsfam/screens/search/widgets/show_following.dart';
 
+
 class CustomRoute {
   static Route onGenerateRoute(RouteSettings settings) {
     log('Route: ${settings.name}');
@@ -192,9 +193,12 @@ class CustomRoute {
       case CreateRole.routeName:
         return CreateRole.route(args: settings.arguments as CreateRoleArgs);
 
-      case KingsCordSettings.routeName:
-        return KingsCordSettings.route(
-            args: settings.arguments as KingsCordSettingsArgs);
+      case KingsCordNotifSettings.routeName:
+        return KingsCordNotifSettings.route(
+            args: settings.arguments as KingsCordNotifSettingsArgs);
+
+      case KingsCordRoomSettings.routeName:
+        return KingsCordRoomSettings.route(a: settings.arguments as KingsCordRoomSettingsArgs);
 
       case Participant_deep_view.routeName:
         return Participant_deep_view.route(

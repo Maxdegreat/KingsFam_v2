@@ -17,6 +17,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
+import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kings_cord_room_seetings.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
 import 'package:kingsfam/widgets/widgets.dart';
@@ -177,7 +178,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       key: ObjectKey(_messageController),
       onVisibilityChanged: (vis) {
         if (vis.visibleFraction == 1) {
-          
           CurrentKingsCordRoomId.updateRoomId(roomId: widget.kingsCord.id!);
         } else {
           CurrentKingsCordRoomId.updateRoomId(roomId: null);
@@ -233,9 +233,11 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                         .onIsTyping(false);
                                   }
 
-                                  if (messageText[messageText.length - 1] =='@') {
+                                  if (messageText[messageText.length - 1] ==
+                                      '@') {
                                     containsAt = true;
-                                    idxWhereStartWithat = messageText.length - 1;
+                                    idxWhereStartWithat =
+                                        messageText.length - 1;
                                   }
 
                                   if (containsAt)
@@ -310,7 +312,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                       _messageController.text.trim() != "") {
                                     ctx.removeReply();
 
-                                    log("last msg: " + state.msgs.first!.sender!.token.toString() + "\n");
+                                    log("last msg: " +
+                                        state.msgs.first!.sender!.token
+                                            .toString() +
+                                        "\n");
                                     ctx.onSendTxtMsg(
                                       prevMsgSender: state.msgs.first,
                                       churchId: widget.commuinity.id!,
@@ -471,27 +476,25 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           style: Theme.of(context).textTheme.bodyText1,
         ),
         actions: [
-          // if (widget.role["permissions"].contains("*") || widget.role["permissions"].contains("#"))
-          // IconButton(
-          //   onPressed: () {
-          //     // Nav to a settings room that will
-          //     // 1) allow only certian roles to enter the room. only an owner / admin can do this
-          //     // 2) allow someone to subscribe to get notifications
-          //     Navigator.of(context).pushNamed(KingsCordSettings.routeName,
-          //         arguments: KingsCordSettingsArgs(
-          //             cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!, ));
-          //   },
-          //   icon: Icon(Icons.notifications_on_outlined),
-          //   iconSize: 15,
-          //   color: Theme.of(context).iconTheme.color,
-          // ),
+
+          if (widget.role["roleName"] == "Admin" || widget.role["roleName"] == "Lead") ...[
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed(
+                      KingsCordRoomSettings.routeName,
+                      arguments: KingsCordRoomSettingsArgs(
+                          cmId: widget.commuinity.id!, kc: widget.kingsCord));
+                },
+                icon: Icon(Icons.more_horiz, color: Theme.of(context).iconTheme.color)),
+          ],
+
           IconButton(
             onPressed: () {
               // Nav to a settings room that will
               // 1) allow only certian roles to enter the room. only an owner / admin can do this
               // 2) allow someone to subscribe to get notifications
-              Navigator.of(context).pushNamed(KingsCordSettings.routeName,
-                  arguments: KingsCordSettingsArgs(
+              Navigator.of(context).pushNamed(KingsCordNotifSettings.routeName,
+                  arguments: KingsCordNotifSettingsArgs(
                       cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!));
             },
             icon: Icon(Icons.notifications_on_outlined),
@@ -514,8 +517,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                     context: context,
                     callBack: () {
                       Navigator.of(context).pushNamed(
-                          KingsCordSettings.routeName,
-                          arguments: KingsCordSettingsArgs(
+                          KingsCordNotifSettings.routeName,
+                          arguments: KingsCordNotifSettings(
                               cmId: widget.commuinity.id!,
                               kcId: widget.kingsCord.id!));
                     });
@@ -544,9 +547,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                       begin: Alignment.bottomLeft,
                       end: Alignment.centerRight,
                       colors: [
-                        Theme.of(context).colorScheme.background,
+                        Theme.of(context).scaffoldBackgroundColor,
                         Theme.of(context).colorScheme.secondary,
-                        Theme.of(context).colorScheme.primary
+                        Theme.of(context).colorScheme.onPrimary
                       ]),
                 ),
               )),
@@ -648,38 +651,35 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             IconButton(
-              onPressed: () {
-                GiphyGet.getGif(
-                  context: context, 
-                  apiKey: "ge17PWpKQ9OmxKuPE8ejeYmI3SHLZOeY",
-                  modal: true,
-                  randomID: Uuid().v4().toString(),
-                  tabColor: Colors.amber,
+                onPressed: () {
+                  GiphyGet.getGif(
+                    context: context,
+                    apiKey: "ge17PWpKQ9OmxKuPE8ejeYmI3SHLZOeY",
+                    modal: true,
+                    randomID: Uuid().v4().toString(),
+                    tabColor: Colors.amber,
                   ).then((gif) {
-                    
                     if (gif != null) {
-                    // send the Giphy as a message.
-                    // snackBar(snackMessage: "snackMessage", context: context);
-                    context.read<KingscordCubit>().onSendGiphyMessage(
-                      giphyId: gif.id!, 
-                      cmId: widget.commuinity.id!, 
-                      kcId: widget.kingsCord.id!,
-                      currUsername: widget.usr.username
-                    ).then((value) => log("sent giphy"));
-
+                      // send the Giphy as a message.
+                      // snackBar(snackMessage: "snackMessage", context: context);
+                      context
+                          .read<KingscordCubit>()
+                          .onSendGiphyMessage(
+                              giphyId: gif.id!,
+                              cmId: widget.commuinity.id!,
+                              kcId: widget.kingsCord.id!,
+                              currUsername: widget.usr.username)
+                          .then((value) => log("sent giphy"));
                     } else {
                       // snackBar(
-                      //   snackMessage: "Ops... Something went wrong", 
+                      //   snackMessage: "Ops... Something went wrong",
                       //   context: context,
                       //   bgColor: Colors.red[400]
                       // );
                     }
-                    
                   });
-              }, 
-              icon: Icon(Icons.gif)
-            ),
-
+                },
+                icon: Icon(Icons.gif)),
             IconButton(
               onPressed: () async {
                 showMediaPopUp = !showMediaPopUp;
@@ -703,15 +703,20 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 onPressed: () async {
                   showMediaPopUp = !showMediaPopUp;
                   setState(() {});
-                  var pickedFile = await ImageHelper.pickVideoFromGallery(context);
-                  Navigator.of(context).pushNamed(VideoEditor.routeName, arguments: VideoEditorArgs(file: pickedFile!, nextScreen: null)).then((trimed) {
-                  if (trimed is File) {
-                    context.read<KingscordCubit>().onUploadVideo(
-                        videoFile: trimed,
-                        cmId: widget.commuinity.id!,
-                        kcId: widget.kingsCord.id!,
-                        senderUsername: widget.usr.username);
-                  }
+                  var pickedFile =
+                      await ImageHelper.pickVideoFromGallery(context);
+                  Navigator.of(context)
+                      .pushNamed(VideoEditor.routeName,
+                          arguments: VideoEditorArgs(
+                              file: pickedFile!, nextScreen: null))
+                      .then((trimed) {
+                    if (trimed is File) {
+                      context.read<KingscordCubit>().onUploadVideo(
+                          videoFile: trimed,
+                          cmId: widget.commuinity.id!,
+                          kcId: widget.kingsCord.id!,
+                          senderUsername: widget.usr.username);
+                    }
                   });
                 },
                 icon: Icon(Icons.video_collection_rounded))

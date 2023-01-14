@@ -59,6 +59,7 @@ class ThemeInfo {
   }
 
   ThemeData themeClubHouseDark() {
+    // https://m2.material.io/design/color/dark-theme.html#anatomy
     HexColor hexcolor = HexColor(); 
     return ThemeData(
       
@@ -68,21 +69,21 @@ class ThemeInfo {
         appBarTheme: AppBarTheme( 
           // thats it! but what looks better. the app bar or screen body?
           toolbarHeight: 45,
-          color: Color(hexcolor.hexcolorCode('#20263c')),// whats the hex val?
+          color: Colors.grey[900],// whats the hex val?
           elevation: 1,
         ),
         iconTheme: IconThemeData(color: Colors.white),
-        drawerTheme: DrawerThemeData(backgroundColor: Color(hexcolor.hexcolorCode('#20263c'))),
-        scaffoldBackgroundColor: Color(hexcolor.hexcolorCode('#20263d')),
+        drawerTheme: DrawerThemeData(backgroundColor: Color(hexcolor.hexcolorCode('#121212'))),
+        scaffoldBackgroundColor: Color(hexcolor.hexcolorCode('#121212')),
+        canvasColor:  Color(hexcolor.hexcolorCode("#141829")),
+        bottomSheetTheme: BottomSheetThemeData(backgroundColor: Color(hexcolor.hexcolorCode('#121212'))),
         colorScheme: ColorScheme.fromSwatch().copyWith(
           brightness: Brightness.dark,
-          secondary: Color(hexcolor.hexcolorCode('282f4b')),
-          primary: Color(hexcolor.hexcolorCode("1F2744")),
+          secondary: Colors.grey[900],
+          primary: Colors.amber,
           inversePrimary: Colors.grey[400],
-          onPrimary: Color(hexcolor.hexcolorCode('#1a1e31')),
+          onPrimary: Colors.black,
         background: Color(hexcolor.hexcolorCode("#434e7d"))),
-        canvasColor:  Color(hexcolor.hexcolorCode("#141829")),
-        bottomSheetTheme: BottomSheetThemeData(backgroundColor: Color(hexcolor.hexcolorCode("#141829"))),
         cardColor: Color(hexcolor.hexcolorCode('#141829')),
         primaryColorDark: Colors.white,
         splashColor: Color.fromARGB(255, 13, 15, 63),

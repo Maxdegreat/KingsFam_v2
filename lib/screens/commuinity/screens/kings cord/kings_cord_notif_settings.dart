@@ -46,32 +46,32 @@ class RoomNotifications extends Equatable {
   }
 }
 
-class KingsCordSettingsArgs {
+class KingsCordNotifSettingsArgs {
   final String kcId;
   final String cmId;
-  const KingsCordSettingsArgs({required this.cmId, required this.kcId});
+  const KingsCordNotifSettingsArgs({required this.cmId, required this.kcId});
 }
 
-class KingsCordSettings extends StatefulWidget {
+class KingsCordNotifSettings extends StatefulWidget {
   final String kcId;
   final String cmId;
-  const KingsCordSettings({Key? key, required this.cmId, required this.kcId})
+  const KingsCordNotifSettings({Key? key, required this.cmId, required this.kcId})
       : super(key: key);
 
   // ok so now we do the do the route and route name
-  static const String routeName = "KingsCordSettingsArgs";
+  static const String routeName = "KingsCordNotifSettingsArgs";
 
-  static Route route({required KingsCordSettingsArgs args}) {
+  static Route route({required KingsCordNotifSettingsArgs args}) {
     return MaterialPageRoute(builder: (context) {
-      return KingsCordSettings(cmId: args.cmId, kcId: args.kcId);
+      return KingsCordNotifSettings(cmId: args.cmId, kcId: args.kcId);
     });
   }
 
   @override
-  State<KingsCordSettings> createState() => _KingsCordSettingsState();
+  State<KingsCordNotifSettings> createState() => _KingsCordNotifSettingsState();
 }
 
-class _KingsCordSettingsState extends State<KingsCordSettings> {
+class _KingsCordNotifSettingsState extends State<KingsCordNotifSettings> {
   // class properties
 
   // this is the status for the individual user

@@ -38,7 +38,7 @@ Widget nativeAdWidget(NativeAd ad, bool hasAdLoaded, BuildContext context) {
             child: AdWidget(ad: ad),
           ),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Theme.of(context).colorScheme.secondary,
             borderRadius: BorderRadius.circular(10),
           ),
         )
@@ -62,7 +62,7 @@ Widget contentPreview(
       child: Container(
         width: MediaQuery.of(context).size.width / 2.2,
         decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Theme.of(context).colorScheme.secondary,
             borderRadius: BorderRadius.circular(10)),
         child: Padding(
           padding: const EdgeInsets.all(5.0),
