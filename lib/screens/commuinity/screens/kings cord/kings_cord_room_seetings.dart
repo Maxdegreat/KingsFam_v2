@@ -46,7 +46,7 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
         widget.kc.metaData!.containsKey("writePermissions"))
       roleWithWritePermissions = widget.kc.metaData!["writePermissions"];
 
-    if (widget.kc.mode == "anouncment")
+    if (widget.kc.mode == "announcement")
       switchValue = true;
     else
       switchValue = false;

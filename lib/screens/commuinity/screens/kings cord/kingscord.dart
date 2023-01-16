@@ -172,176 +172,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
 //===========================================================================
 // building the bottom sheet
-  _buildBottomTF(KingscordState state, BuildContext context) {
-    final ctx = context.read<KingscordCubit>();
-    return VisibilityDetector(
-      key: ObjectKey(_messageController),
-      onVisibilityChanged: (vis) {
-        if (vis.visibleFraction == 1) {
-          CurrentKingsCordRoomId.updateRoomId(roomId: widget.kingsCord.id!);
-        } else {
-          CurrentKingsCordRoomId.updateRoomId(roomId: null);
-        }
-      },
-      child: Container(
-          // margin: EdgeInsets.symmetric(horizontal: 5.0),
-          child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          showMediaPopUp = !showMediaPopUp;
-                          setState(() {});
-                        },
-                        icon: Icon(Icons.add)),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.secondary,
-                          borderRadius: BorderRadius.circular(7),
-                        ),
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextFormField(
-                                // validator: (value) {},
-                                cursorColor: Theme.of(context)
-                                    .colorScheme
-                                    .inversePrimary,
-                                textAlignVertical: TextAlignVertical.center,
-                                style: TextStyle(fontSize: 18),
-                                autocorrect: true,
-                                controller: _messageController,
-                                keyboardType: TextInputType.multiline,
-                                maxLines: 4,
-                                minLines: 1,
-                                expands: false,
-                                textCapitalization:
-                                    TextCapitalization.sentences,
-                                onChanged: (messageText) {
-                                  if (messageText == '' ||
-                                      messageText == ' ' ||
-                                      messageText.isEmpty) {
-                                    _mentionedController = null;
-                                    containsAt = false;
-                                    context
-                                        .read<KingscordCubit>()
-                                        .onIsTyping(false);
-                                  }
-
-                                  if (messageText[messageText.length - 1] ==
-                                      '@') {
-                                    containsAt = true;
-                                    idxWhereStartWithat =
-                                        messageText.length - 1;
-                                  }
-
-                                  if (containsAt)
-                                    setState(() => _mentionedController =
-                                        messageText.substring(
-                                            idxWhereStartWithat + 1,
-                                            messageText.length));
-                                  if (messageText.endsWith(' ') ||
-                                      !messageText.contains("@")) {
-                                    containsAt = false;
-                                    idxWhereStartWithat = 0;
-                                    _mentionedController = null;
-                                  }
-
-                                  if (_messageController.text.length > 0)
-                                    ctx.onIsTyping(true);
-                                  else
-                                    ctx.onIsTyping(false);
-                                  setState(() {});
-                                },
-                                decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.all(2),
-                                  border: InputBorder.none,
-                                  // filled: true,
-                                  hintText: 'Send message',
-                                  isCollapsed: true,
-                                  // fillColor: Color(hc.hexcolorCode("#141829")!)
-                                )),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: IconButton(
-                          icon: !state.isTyping
-                              ? Icon(
-                                  Iconsax.send_1,
-                                  size: 18,
-                                )
-                              : Icon(Iconsax.send_21, size: 18),
-                          color: state.isTyping ? Colors.amber : Colors.white,
-                          onPressed: state.isTyping
-                              ? () {
-                                  // this will be passed to the cubit then to the db. upon a get msg lines will psrse for a good look
-                                  String messageWithsSmbolesForParsing = "";
-                                  // map of mentioned info that will be added to the kc cubit
-                                  Map<String, dynamic> mentionedInfo = {};
-                                  for (var u in state.mentions) {
-                                    mentionedInfo[u.id] = {
-                                      "username": u.username,
-                                      "token": u.token,
-                                      'communityName': widget.commuinity.name,
-                                      'kingsCordName':
-                                          widget.kingsCord.cordName,
-                                    };
-                                  }
-                                  var msgAsLst =
-                                      _messageController.text.split(' ');
-                                  // for (String msg in msgAsLst) {
-                                  //   // handels if a shares a link
-
-                                  //   if (msg.length > 8 &&
-                                  //       msg.substring(0, 8) == 'https://') {
-                                  //     messageWithsSmbolesForParsing += '{{a-$msg}}';
-                                  //     // we want to check if the msg is mentioning someone
-                                  //   } else {
-                                  //     messageWithsSmbolesForParsing += '$msg ';
-                                  //   }
-                                  // }
-                                  if (_messageController.text.length > 0 &&
-                                      _messageController.text.trim() != "") {
-                                    ctx.removeReply();
-
-                                    log("last msg: " +
-                                        state.msgs.first!.sender!.token
-                                            .toString() +
-                                        "\n");
-                                    ctx.onSendTxtMsg(
-                                      prevMsgSender: state.msgs.first,
-                                      churchId: widget.commuinity.id!,
-                                      kingsCordId: widget.kingsCord.id!,
-                                      txtMsgBodyWithSymbolsForParcing:
-                                          _messageController
-                                              .text, //messageWithsSmbolesForParsing,
-                                      txtMsgWithOutSymbolesForParcing:
-                                          _messageController.text,
-                                      mentionedInfo: mentionedInfo,
-                                      cmTitle: widget.commuinity.name,
-                                      kingsCordData: widget.kingsCord,
-                                      currUserName: currUsersName,
-                                      reply: state.replyMessage,
-                                    );
-                                  }
-                                  ctx.onIsTyping(false);
-                                  _messageController.clear();
-                                  ctx.clearMention();
-                                  setState(() {});
-                                }
-                              : null,
-                        )),
-                  ]))),
-    );
-  }
+  
 
   // for the mention user =================================================
   Widget _mentionUserContainer({required String? username}) {
@@ -414,24 +245,30 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   }
 
   Widget _permissionDenied({required String messasge}) {
-    return GestureDetector(
-      onTap: () => Navigator.of(context).pushNamed(CommunityHome.routeName,
-          arguments: CommunityHomeArgs(cm: widget.commuinity, cmB: null)),
-      child: Padding(
-        padding: const EdgeInsets.all(7.0),
-        child: Container(
-          width: double.infinity,
-          height: 30,
-          child: Center(
-              child: Text(
-            messasge,
-            style: Theme.of(context).textTheme.bodyText1,
-          )),
-          decoration: BoxDecoration(
-            color: Colors.grey[900],
-            borderRadius: BorderRadius.circular(7),
-          ),
+    return Padding(
+      padding: const EdgeInsets.all(7.0),
+      child: Container(
+        width: double.infinity,
+        height: 50,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text("Must be a member to join ${widget.kingsCord.mode}"),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(CommunityHome.routeName,
+        arguments: CommunityHomeArgs(cm: widget.commuinity, cmB: null));
+              }, 
+              child: Text("Join", style: Theme.of(context).textTheme.bodyText1,),
+              style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
+            )
+          ],
         ),
+        decoration: BoxDecoration(
+          color: Colors.grey[900],
+          borderRadius: BorderRadius.circular(7),
+        ),     
       ),
     );
   }
@@ -623,7 +460,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                         // this values will have to be updated soon tho. because we want
                         // dynamic roles to be sourced
                         widget.userInfo["isMember"]
-                            ? _buildBottomTF(state, context)
+                            ? buildBottomTF(state, context, widget.kingsCord.mode)
                             : _permissionDenied(
                                 messasge: "Join community to chat here"),
 
@@ -758,6 +595,187 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       ),
     );
   }
+
+
+  
+buildBottomTF(KingscordState state, BuildContext context, String mode) {
+    final ctx = context.read<KingscordCubit>();
+    return VisibilityDetector(
+      key: ObjectKey(_messageController),
+      onVisibilityChanged: (vis) {
+        if (vis.visibleFraction == 1) {
+          CurrentKingsCordRoomId.updateRoomId(roomId: widget.kingsCord.id!);
+        } else {
+          CurrentKingsCordRoomId.updateRoomId(roomId: null);
+        }
+      },
+      child: Container(
+          // margin: EdgeInsets.symmetric(horizontal: 5.0),
+          child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  if (mode == "announcement") ... [
+                    Align(alignment: Alignment.centerRight, child: Text("Announcement mode", style: Theme.of(context).textTheme.caption!.copyWith(color: Theme.of(context).colorScheme.primary),))
+                  ],
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              showMediaPopUp = !showMediaPopUp;
+                              setState(() {});
+                            },
+                            icon: Icon(Icons.add)),
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.secondary,
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: TextFormField(
+                                    // validator: (value) {},
+                                    cursorColor: Theme.of(context)
+                                        .colorScheme
+                                        .inversePrimary,
+                                    textAlignVertical: TextAlignVertical.center,
+                                    style: TextStyle(fontSize: 18),
+                                    autocorrect: true,
+                                    controller: _messageController,
+                                    keyboardType: TextInputType.multiline,
+                                    maxLines: 4,
+                                    minLines: 1,
+                                    expands: false,
+                                    textCapitalization:
+                                        TextCapitalization.sentences,
+                                    onChanged: (messageText) {
+                                      if (messageText == '' ||
+                                          messageText == ' ' ||
+                                          messageText.isEmpty) {
+                                        _mentionedController = null;
+                                        containsAt = false;
+                                        context
+                                            .read<KingscordCubit>()
+                                            .onIsTyping(false);
+                                      }
+
+                                      if (messageText[messageText.length - 1] ==
+                                          '@') {
+                                        containsAt = true;
+                                        idxWhereStartWithat =
+                                            messageText.length - 1;
+                                      }
+
+                                      if (containsAt)
+                                        setState(() => _mentionedController =
+                                            messageText.substring(
+                                                idxWhereStartWithat + 1,
+                                                messageText.length));
+                                      if (messageText.endsWith(' ') ||
+                                          !messageText.contains("@")) {
+                                        containsAt = false;
+                                        idxWhereStartWithat = 0;
+                                        _mentionedController = null;
+                                      }
+
+                                      if (_messageController.text.length > 0)
+                                        ctx.onIsTyping(true);
+                                      else
+                                        ctx.onIsTyping(false);
+                                      setState(() {});
+                                    },
+                                    decoration: InputDecoration(
+                                      contentPadding: EdgeInsets.all(2),
+                                      border: InputBorder.none,
+                                      // filled: true,
+                                      hintText: mode == "chat" ? 'Send message' : "Send an anouncement",
+                                      isCollapsed: true,
+                                      // fillColor: Color(hc.hexcolorCode("#141829")!)
+                                    )),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                            child: IconButton(
+                              icon: !state.isTyping
+                                  ? Icon(
+                                      Iconsax.send_1,
+                                      size: 18,
+                                    )
+                                  : Icon(Iconsax.send_21, size: 18),
+                              color: state.isTyping ? Colors.amber : Colors.white,
+                              onPressed: state.isTyping
+                                  ? () {
+                                      // this will be passed to the cubit then to the db. upon a get msg lines will psrse for a good look
+                                      String messageWithsSmbolesForParsing = "";
+                                      // map of mentioned info that will be added to the kc cubit
+                                      Map<String, dynamic> mentionedInfo = {};
+                                      for (var u in state.mentions) {
+                                        mentionedInfo[u.id] = {
+                                          "username": u.username,
+                                          "token": u.token,
+                                          'communityName': widget.commuinity.name,
+                                          'kingsCordName':
+                                              widget.kingsCord.cordName,
+                                        };
+                                      }
+                                      var msgAsLst =
+                                          _messageController.text.split(' ');
+                                      // for (String msg in msgAsLst) {
+                                      //   // handels if a shares a link
+
+                                      //   if (msg.length > 8 &&
+                                      //       msg.substring(0, 8) == 'https://') {
+                                      //     messageWithsSmbolesForParsing += '{{a-$msg}}';
+                                      //     // we want to check if the msg is mentioning someone
+                                      //   } else {
+                                      //     messageWithsSmbolesForParsing += '$msg ';
+                                      //   }
+                                      // }
+                                      if (_messageController.text.length > 0 &&
+                                          _messageController.text.trim() != "") {
+                                        ctx.removeReply();
+
+                                        log("last msg: " +
+                                            state.msgs.first!.sender!.token
+                                                .toString() +
+                                            "\n");
+                                        ctx.onSendTxtMsg(
+                                          prevMsgSender: state.msgs.first,
+                                          churchId: widget.commuinity.id!,
+                                          kingsCordId: widget.kingsCord.id!,
+                                          txtMsgBodyWithSymbolsForParcing:
+                                              _messageController
+                                                  .text, //messageWithsSmbolesForParsing,
+                                          txtMsgWithOutSymbolesForParcing:
+                                              _messageController.text,
+                                          mentionedInfo: mentionedInfo,
+                                          cmTitle: widget.commuinity.name,
+                                          kingsCordData: widget.kingsCord,
+                                          currUserName: currUsersName,
+                                          reply: state.replyMessage,
+                                        );
+                                      }
+                                      ctx.onIsTyping(false);
+                                      _messageController.clear();
+                                      ctx.clearMention();
+                                      setState(() {});
+                                    }
+                                  : null,
+                            )),
+                      ]),
+                ],
+              ))),
+    );
+  }
+
 
   _showMentioned(KingscordState state) {
     return Container(

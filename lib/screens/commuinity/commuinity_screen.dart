@@ -34,7 +34,7 @@ import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 // ignore: unused_import
 import 'package:kingsfam/extensions/date_time_extension.dart';
-import 'package:kingsfam/screens/commuinity/wrapers/cm_widgets.dart';
+// import 'package:kingsfam/screens/commuinity/wrapers/cm_widgets.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 
 import 'package:kingsfam/screens/screens.dart';
@@ -53,6 +53,7 @@ import 'screens/kings cord/widgets/display_msg.dart';
 
 part 'wrapers/community_screen_wraper.dart';
 part 'wrapers/community_screen_methods.dart';
+part 'wrapers/cm_widgets.dart';
 
 class CommuinityScreenArgs {
   final Church commuinity;

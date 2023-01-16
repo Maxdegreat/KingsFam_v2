@@ -1,29 +1,6 @@
-import 'dart:developer';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:camera/camera.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/camera/bloc/camera_screen.dart';
-import 'package:kingsfam/config/constants.dart';
-import 'package:kingsfam/config/paths.dart';
-import 'package:kingsfam/helpers/cm_perm_handler.dart';
-import 'package:kingsfam/helpers/dynamic_links.dart';
-import 'package:kingsfam/models/church_model.dart';
-import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
-import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
-import 'package:kingsfam/screens/commuinity/community_home/home.dart';
-import 'package:kingsfam/screens/commuinity/screens/feed/commuinity_feed.dart';
-import 'package:kingsfam/screens/commuinity/screens/vc/vc_screen.dart';
-import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
-import 'package:kingsfam/widgets/profile_image.dart';
-import 'package:kingsfam/widgets/snackbar.dart';
 
-import '../screens/says_room/says_room.dart';
+part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 
 Widget cmContainerImage(Church cm) {
   return Container(
@@ -44,7 +21,12 @@ Widget cmTopColumn(Church cm, BuildContext context) {
     children: [
       Text(
         cm.name,
-        style: Theme.of(context).brightness == ThemeMode.dark ? Theme.of(context).textTheme.bodyText1 : Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.white),
+        style: Theme.of(context).brightness == ThemeMode.dark
+            ? Theme.of(context).textTheme.bodyText1
+            : Theme.of(context)
+                .textTheme
+                .bodyText1!
+                .copyWith(color: Colors.white),
       ),
       SizedBox(
         height: 4,
@@ -64,7 +46,8 @@ Widget cmTopColumnHomeInvite(Church cm, VoidCallback k, BuildContext context) {
           height: 20,
           // width: MediaQuery.of(context).size.width / 7,
           child: ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.secondary),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.secondary),
               onPressed: () => Navigator.of(context).pushNamed(
                   CommunityHome.routeName,
                   arguments: CommunityHomeArgs(
@@ -76,15 +59,18 @@ Widget cmTopColumnHomeInvite(Church cm, VoidCallback k, BuildContext context) {
                 children: [
                   Text(
                     "Home",
-                    style: Theme.of(context)
-                        .textTheme
-                        .caption!
-                        .copyWith(fontSize: 12, color: Theme.of(context).colorScheme.primary),
+                    style: Theme.of(context).textTheme.caption!.copyWith(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.primary),
                   ),
-                  Icon(Icons.home_filled, size: 12, color: Theme.of(context).colorScheme.primary,)
+                  Icon(
+                    Icons.home_filled,
+                    size: 12,
+                    color: Theme.of(context).colorScheme.primary,
+                  )
                 ],
               ))),
-              SizedBox(
+      SizedBox(
         width: 4,
       ),
       Container(
@@ -95,7 +81,8 @@ Widget cmTopColumnHomeInvite(Church cm, VoidCallback k, BuildContext context) {
                   backgroundColor: Theme.of(context).colorScheme.secondary),
               onPressed: () async {
                 List<CameraDescription> cameras = await availableCameras();
-               Navigator.of(context).pushNamed(CameraScreen.routeName, arguments: CameraScreenArgs(cameras: cameras));
+                Navigator.of(context).pushNamed(CameraScreen.routeName,
+                    arguments: CameraScreenArgs(cameras: cameras));
               },
               child: Center(
                 child: Icon(
@@ -267,6 +254,8 @@ Widget showRooms(BuildContext context, Church cm) {
                               cm: cm,
                               kcName: cord.cordName,
                               kcId: cord.id!));
+                    } else if (cord.mode == "announcement") {
+                      NavtoKcFromRooms(context, state, cm, cord);
                     }
                   },
                   onLongPress: () {
@@ -288,17 +277,19 @@ Widget showMentions(BuildContext context, Church cm) {
       children: [
         state.mentionedCords.isNotEmpty
             ? Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
                   "Mentions", // ---------------------------------------------- MENTIONS
                   style: TextStyle(
-                    color: Theme.of(context).brightness == ThemeMode.dark ? Colors.grey : Colors.black87,
+                    color: Theme.of(context).brightness == ThemeMode.dark
+                        ? Colors.grey
+                        : Colors.black87,
                     fontSize: 21,
                     fontWeight: FontWeight.w800,
                   ),
                   overflow: TextOverflow.fade,
                 ),
-            )
+              )
             : SizedBox.shrink(),
         if (state.mentionedCords.isNotEmpty)
           ...state.mentionedCords.map((cord) {
@@ -434,7 +425,7 @@ Widget showVoice(BuildContext context, Church cm) {
               child: Text(
                 "V/C Rooms",
                 style: TextStyle(
-                  color: Theme.of(context).brightness == ThemeMode.dark ? Colors.grey : Colors.black87,
+                 color: Theme.of(context).colorScheme.outline,
                   fontSize: 21,
                   fontWeight: FontWeight.w800,
                 ),
@@ -453,10 +444,264 @@ Widget showVoice(BuildContext context, Church cm) {
                     else
                       snackBar(snackMessage: "No VC", context: context);
                   },
+                  onLongPress: () {
+                    if (!CmPermHandler.canMakeRoom(
+                        context.read<CommuinityBloc>())) {
+                      snackBar(
+                          snackMessage: "You do not have permissions for this",
+                          bgColor: Colors.red[400],
+                          context: context);
+                    } else {
+                      if (CmPermHandler.canMakeRoom(
+                          context.read<CommuinityBloc>()))
+                        _delKcDialog(
+                            context: context, cord: kc!, commuinity: cm);
+                      else
+                        snackBar(
+                            snackMessage:
+                                "You do not have permissions to remove this room.",
+                            context: context,
+                            bgColor: Colors.red[400]);
+                    }
+                  },
                   child: showCordAsCmRoom(context, kc!, cm),
                 ));
           }).toList()
         ]),
+  );
+}
+
+Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
+    child: Container(
+      // height: MediaQuery.of(context).size.height / 9,
+      width: MediaQuery.of(context).size.width / 1, // 1.05,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Theme.of(context).colorScheme.secondary,
+        // Color(hc.hexcolorCode("#0a0c14")),
+        // borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                if (cord.mode == "chat") ...[
+                  Icon(
+                    Icons.numbers,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    cord.cordName,
+                    overflow: TextOverflow.fade,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  SizedBox(width: 2),
+                  if (cord.readStatus != null && !cord.readStatus!)
+                    SizedBox.shrink()
+                  else if (cord.readStatus != null && cord.readStatus! ||
+                      cord.readStatus == null)
+                    CircleAvatar(backgroundColor: Colors.amber, radius: 3)
+                ] else if (cord.mode == "says") ...[
+                  Icon(Icons.auto_awesome_motion_rounded,
+                  color: Theme.of(context).colorScheme.primary,),
+                  SizedBox(width: 3),
+                  Container(
+                    height: 30,
+                    //width: MediaQuery.of(context).size.width -
+                    // 50,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 7),
+                      child: Text(
+                        cord.cordName,
+                        overflow: TextOverflow.fade,
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                    ),
+                  ),
+                ] else if (cord.mode == "welcome") ...[
+                  Icon(Icons.waving_hand_outlined, color: Theme.of(context).colorScheme.primary),
+                  SizedBox(width: 3),
+                  Container(
+                    height: 30,
+                    //width: MediaQuery.of(context).size.width -
+                    // 50,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 7),
+                      child: Text(
+                        cord.cordName,
+                        overflow: TextOverflow.fade,
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                    ),
+                  ),
+                ] else if (cord.mode == "vc") ...[
+                  Icon(
+                    Icons.multitrack_audio_rounded,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    cord.cordName,
+                    overflow: TextOverflow.fade,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  SizedBox(width: 2),
+                  // if (cord.metaData["isLive"])
+                  //   SizedBox.shrink()
+                  // else if (cord.readStatus != null && cord.readStatus! ||
+                  //     cord.readStatus == null)
+                  //   CircleAvatar(backgroundColor: Colors.amber, radius: 3)
+                ] else if (cord.mode == "announcement") ... [
+                   Icon(
+                    Icons.volume_up_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    cord.cordName,
+                    overflow: TextOverflow.fade,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                ]
+              ],
+            ),
+            if (cord.mode == "chat" &&
+                cord.recentActivity!["chat"] != null) ...[
+              Padding(
+                padding: const EdgeInsets.only(left: 20, top: 2),
+                child: DisplayMsg(
+                  m: cord.recentActivity!["chat"],
+                  s: null, amountInVc: null,
+                ),
+              )
+            ] else if (cord.mode == "says" &&
+                cord.recentActivity!["says"] != null) ...[
+              Padding(
+                padding: const EdgeInsets.only(left: 20, top: 2),
+                child: DisplayMsg(m: null, s: cord.recentActivity!["says"], amountInVc: null,),
+              )
+            ] else if (cord.mode == "welcome") ... [
+              Padding(
+                padding: const EdgeInsets.only(left: 20, top: 2),
+                child: DisplayMsg(m: cord.recentActivity!["chat"], s: null, amountInVc: null),
+              )
+            ]else if (cord.mode == "vc") ... [
+              // Padding(
+              //   padding: const EdgeInsets.only(left: 20, top: 2),
+              //   child: DisplayMsg(m: null, s: null, amountInVc: cord.metaData!["inCall"]),
+              // )
+            ] else if (cord.mode == "announcement") ... [
+              Padding(
+                padding: const EdgeInsets.only(left: 20, top: 2),
+                child: DisplayMsg(m: cord.recentActivity!["chat"], s: null, amountInVc: null),
+              )
+            ]
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+void onLongPressCord(BuildContext context, KingsCord cord, Church cm) {
+  if (!CmPermHandler.canMakeRoom(context.read<CommuinityBloc>())) {
+    snackBar(
+        snackMessage: "You do not have permissions for this",
+        bgColor: Colors.red[400],
+        context: context);
+  } else {
+    if (cord.mode == "welcome")
+      snackBar(
+          snackMessage: "Must have welcome room at this moment",
+          context: context);
+    else if (CmPermHandler.canMakeRoom(context.read<CommuinityBloc>()))
+      _delKcDialog(context: context, cord: cord, commuinity: cm);
+    else
+      snackBar(
+          snackMessage: "You do not have permissions to remove this room.",
+          context: context,
+          bgColor: Colors.red[400]);
+  }
+  return;
+}
+
+void NavtoKcFromRooms(
+    BuildContext context, CommuinityState state, Church cm, KingsCord cord) {
+  bool isMember = context.read<CommuinityBloc>().state.isMember ?? false;
+  Navigator.of(context)
+      .pushNamed(KingsCordScreen.routeName,
+          arguments: KingsCordArgs(
+              role: context.read<CommuinityBloc>().state.role,
+              usr: state.currUserr,
+              userInfo: {
+                "isMember": isMember,
+              },
+              commuinity: cm,
+              kingsCord: cord))
+      .then((_) {
+    context.read<CommuinityBloc>().setReadStatusFalse(kcId: cord.id!);
+    context.read<CommuinityBloc>().setMentionedToFalse(kcId: cord.id!);
+  });
+}
+
+Widget header({
+  required BuildContext context,
+  required CommuinityBloc cmBloc,
+  required Church cm,
+}) {
+  return SliverAppBar(
+     backgroundColor: Colors.transparent,
+    expandedHeight: MediaQuery.of(context).size.height / 4.4,
+    flexibleSpace: FlexibleSpaceBar(
+      centerTitle: true,
+      title: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Row(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+        cmContainerImage(cm),
+        SizedBox(width: 7),
+        cmTopColumn(cm, context),
+    ],
+  ),
+      ),
+
+      background: Center(
+        child: Stack(
+          children: [
+            Container(
+                height: MediaQuery.of(context).size.height / 4.4,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: CachedNetworkImageProvider(cm.imageUrl),
+                      fit: BoxFit.cover),
+                )),
+            Container(
+                decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[
+                  Colors.black38,
+                  Theme.of(context).scaffoldBackgroundColor,
+                ],
+                stops: [0.25, 1.0],
+                tileMode: TileMode.mirror,
+              ),
+            ))
+          ],
+        ),))
   );
 }
 // Widget makePost() {
