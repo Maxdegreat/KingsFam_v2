@@ -254,7 +254,7 @@ Widget showRooms(BuildContext context, Church cm) {
                               cm: cm,
                               kcName: cord.cordName,
                               kcId: cord.id!));
-                    } else if (cord.mode == "announcement") {
+                    } else if (cord.mode == Mode.announcement) {
                       NavtoKcFromRooms(context, state, cm, cord);
                     }
                   },
@@ -560,7 +560,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
                   // else if (cord.readStatus != null && cord.readStatus! ||
                   //     cord.readStatus == null)
                   //   CircleAvatar(backgroundColor: Colors.amber, radius: 3)
-                ] else if (cord.mode == "announcement") ... [
+                ] else if (cord.mode == Mode.announcement) ... [
                    Icon(
                     Icons.volume_up_outlined,
                     color: Theme.of(context).colorScheme.primary,
@@ -599,7 +599,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
               //   padding: const EdgeInsets.only(left: 20, top: 2),
               //   child: DisplayMsg(m: null, s: null, amountInVc: cord.metaData!["inCall"]),
               // )
-            ] else if (cord.mode == "announcement") ... [
+            ] else if (cord.mode == Mode.announcement) ... [
               Padding(
                 padding: const EdgeInsets.only(left: 20, top: 2),
                 child: DisplayMsg(m: cord.recentActivity!["chat"], s: null, amountInVc: null),

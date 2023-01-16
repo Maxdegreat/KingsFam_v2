@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
@@ -696,6 +697,9 @@ class ChurchRepository extends BaseChurchRepository {
     } else {
       docRef.update({'size': commuinity.size! - 1});
     }
+
+    FirebaseMessaging.instance.unsubscribeFromTopic("/church/${commuinity.id}");
+
   }
 
   void inviteUserToCommuinity(
@@ -775,6 +779,10 @@ class ChurchRepository extends BaseChurchRepository {
       path.doc(querySnap.docs.first.id).collection(Paths.messages).add(welcomeMsg);
       
     });
+    
+    // subscribe to topic for anouncments
+    FirebaseMessaging.instance.subscribeToTopic("/church/${commuinity.id}");
+
   }
 
   Future<Stream<bool>> streamIsCmMember(

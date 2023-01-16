@@ -102,7 +102,7 @@ class KingsCord extends Equatable {
       subscribedIds: List<String>.from(data['subscribedIds']) ?? [],
       mode: data['mode'],
       rolesAllowed: data['rolesAllowed'] ?? Roles.Member,
-      metaData: data['metaData']
+      metaData: data['metaData'] ?? {},
     );
   }
 
@@ -114,7 +114,7 @@ class KingsCord extends Equatable {
         cordName: data['cordName'] ?? 'MainRoom',
         subscribedIds: List<String>.from(data['subscribedIds']) ?? [],
         mode: data['mode'],
-        metaData: data['metaData'],
+        metaData: data['metaData'] ?? {},
         rolesAllowed: data['rolesAllowed'] ?? Roles.Member);
   }
 }

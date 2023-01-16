@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flare_flutter/base/animation/interpolation/linear.dart';
 import 'package:flutter/material.dart';
+import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/notification_helper.dart';
 import 'package:kingsfam/models/church_kingscord_model.dart';
@@ -46,7 +47,7 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
         widget.kc.metaData!.containsKey("writePermissions"))
       roleWithWritePermissions = widget.kc.metaData!["writePermissions"];
 
-    if (widget.kc.mode == "announcement")
+    if (widget.kc.mode == Mode.announcement)
       switchValue = true;
     else
       switchValue = false;
@@ -138,7 +139,7 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
             // direct api call
             FirebaseFirestore.instance.collection(Paths.church).doc(widget.cmId).collection(Paths.kingsCord).doc(widget.kc.id).update({
               "cordName" : kcName,
-              "mode": switchValue ? "anouncments" : "chat",
+              "mode": switchValue ? Mode.announcement : Mode.chat,
               "metaData": temp
             });
             snackBar(snackMessage: "Saving", context: context, bgColor: Colors.green);

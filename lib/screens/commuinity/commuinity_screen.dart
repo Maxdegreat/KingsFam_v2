@@ -17,6 +17,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/camera/bloc/camera_screen.dart';
 import 'package:kingsfam/config/constants.dart';
+import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
 import 'package:kingsfam/helpers/clipboard.dart';

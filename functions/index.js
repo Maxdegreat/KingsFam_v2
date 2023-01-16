@@ -2,68 +2,74 @@
 // or $ firebase deploy --only functions:func1,functions:func2
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const express = require('express');
-const {RtcTokenBuilder, RtcToken, RtcRole} = require('agora-access-token');
-require('dotenv').config()
+const express = require("express");
+const { RtcTokenBuilder, RtcToken, RtcRole } = require("agora-access-token");
+require("dotenv").config();
 const { user } = require("firebase-functions/v1/auth");
 //var serviceAccount = require("./kingsfam-9b1f8-firebase-adminsdk-dgh0u-38f8d6850d.json");
 
 admin.initializeApp();
 
-const APP_ID = "706f3b99f31a4ca89b001b4671652c18" //process.env.APP_ID;
-const APP_CERTIFICATE = "5c33c35890b1441e8a1a2a9da878e74a" //process.env.APP_CERTIFICATE;
+const APP_ID = "706f3b99f31a4ca89b001b4671652c18"; //process.env.APP_ID;
+const APP_CERTIFICATE = "5c33c35890b1441e8a1a2a9da878e74a"; //process.env.APP_CERTIFICATE;
 
 const app = express();
 
 const nocache = (req, resp, next) => {
-  resp.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-  resp.header('Pragma', 'no-cache');
-  resp.header('Expires', '0');
+  resp.header("Cache-Control", "private, no-cache, no-store, must-revalidate");
+  resp.header("Pragma", "no-cache");
+  resp.header("Expires", "0");
   next();
-}
+};
 
 exports.sayHi = functions.https.onRequest((request, response) => {
   console.log("say hi");
   response.send("Hi");
-})
+});
 
 const generateAccessToken = (req, res) => {
   // set res header
-  res.header('Access-Control-Allow-Origin', '*');
+  res.header("Access-Control-Allow-Origin", "*");
   // get channel name
   const channelName = req.query.channelName;
-  if (!channelName || channelName === '') {
-      return res.status(505).json({'error': 'A channel naem is required'});
+  if (!channelName || channelName === "") {
+    return res.status(505).json({ error: "A channel naem is required" });
   }
 
   // get uid
   let uid = req.query.uid;
-  if (!uid || uid === '') {
-      uid = 0;
+  if (!uid || uid === "") {
+    uid = 0;
   }
   // get role
   let role = RtcRole.SUBSCRIBER;
-  if (req.query.role === 'publisher') {
-      role = RtcRole.PUBLISHER;
+  if (req.query.role === "publisher") {
+    role = RtcRole.PUBLISHER;
   }
 
   // get the expire time
   let expireTime = req.query.expireTime;
-  if (!expireTime || expireTime === '') {
-      expireTime = 3600; // an hr
+  if (!expireTime || expireTime === "") {
+    expireTime = 3600; // an hr
   }
   const currentTime = Math.floor(Date.now() / 1000);
   const privilegExpireTime = currentTime + expireTime;
   // build the token
-  const token = RtcTokenBuilder.buildTokenWithUid(APP_ID, APP_CERTIFICATE, channelName, uid, role, privilegExpireTime);
+  const token = RtcTokenBuilder.buildTokenWithUid(
+    APP_ID,
+    APP_CERTIFICATE,
+    channelName,
+    uid,
+    role,
+    privilegExpireTime
+  );
   // return the token
-  return res.json({'token':token})
-}
+  return res.json({ token: token });
+};
 
 exports.agoraTokenGenerator = functions.https.onRequest((req, res) => {
   res.send(generateAccessToken(req, res));
 });
-
 
 exports.onNewJoinRequest = functions.firestore
   .document("/requestToJoinCm/{cmId}/request/{requestingId}")
@@ -545,6 +551,36 @@ exports.onKingsCordMessageSent = functions.firestore
       recentTimestamp: kcMsgData.date,
       // 'recentMessage' : recentMessage,
     });
+    // send notif as topic if msg contains "anouncment" in metadata
+    if (snapshot.data().metadata["anouncment"] !== undefined) {
+      var snap = snapshot.data();
+      var cmSnap = await cmRef.get();
+      var cmData = cmSnap.data();
+      var messageBody;
+      if (snap.text === undefined || snap.text === "")
+        messageBody = "shared something";
+      else 
+        messageBody = snap.text;
+      const topicGroup = "/church/$cmId";
+      const message = {
+        notification: {
+          title: "anouncment:" + cmData.name,
+          body: snap.username + ": " + messageBody,
+        },
+        data: {
+          type: String("kc_type"),
+          cmId: String(cmId),
+          kcId: String(kcId),
+        },
+      };
+
+      const options = {
+        priority: "high",
+        timeToLive: 60 * 60 * 24,
+      };
+
+      admin.messaging().sendToTopic(topicGroup, message, options);
+    }
   });
 
 exports.onUpdateChat = functions.firestore
@@ -608,62 +644,59 @@ async function deleteQueryBatch(db, query, resolve) {
 
 // when a user has opted to recieve notifications in a kings cord room
 exports.onRecieveKcRoomNotif = functions.firestore
-.document("/kcMsgNotif/{cmId}/kingsCord/{kcId}")
-.onCreate(async (snapshot, context) => {
-  const cmId = context.params.cmId;
-  const kcId = context.params.kcId;
+  .document("/kcMsgNotif/{cmId}/kingsCord/{kcId}")
+  .onCreate(async (snapshot, context) => {
+    const cmId = context.params.cmId;
+    const kcId = context.params.kcId;
 
-  var info = snapshot.data();
+    var info = snapshot.data();
 
-  const message = {
-    notification: {
-      title: info.communityName,
-      body: info.username + ": " + info.messageBody,
-    },
-    data: {
-      type: String(info.type),
-      cmId: String(cmId),
-      kcId: String(kcId),
+    const message = {
+      notification: {
+        title: info.communityName,
+        body: info.username + ": " + info.messageBody,
+      },
+      data: {
+        type: String(info.type),
+        cmId: String(cmId),
+        kcId: String(kcId),
+      },
+    };
 
-    }
-  };
+    const options = {
+      priority: "high",
+      timeToLive: 60 * 60 * 24,
+    };
 
-  const options = {
-    priority: "high",
-    timeToLive: 60 * 60 * 24,
-  };
-
-  admin.messaging().sendToDevice(info.token, message, options);
-
-});
+    admin.messaging().sendToDevice(info.token, message, options);
+  });
 
 exports.onRecieveKcRoomNotifUpdate = functions.firestore
-.document("/kcMsgNotif/{cmId}/kingsCord/{kcId}")
-.onUpdate((change, context) => {
-  const cmId = context.params.cmId;
-  const kcId = context.params.kcId;
-  var info = change.after.data();
-  functions.logger.log("value of tokens is: ", info.token);
+  .document("/kcMsgNotif/{cmId}/kingsCord/{kcId}")
+  .onUpdate((change, context) => {
+    const cmId = context.params.cmId;
+    const kcId = context.params.kcId;
+    var info = change.after.data();
+    functions.logger.log("value of tokens is: ", info.token);
 
-  const message = {
-    notification: {
-      title: info.communityName,
-      body: info.username + ": " + info.messageBody,
-    },
-    data: {
-      type: String(info.type),
-      cmId: String(cmId),
-      kcId: String(kcId),
+    const message = {
+      notification: {
+        title: info.communityName,
+        body: info.username + ": " + info.messageBody,
+      },
+      data: {
+        type: String(info.type),
+        cmId: String(cmId),
+        kcId: String(kcId),
+      },
+    };
 
-    }
-  };
-
-  const options = {
-    priority: "high",
-    timeToLive: 60 * 60 * 24,
-  };
-  admin.messaging().sendToDevice(info.token, message, options);
-});
+    const options = {
+      priority: "high",
+      timeToLive: 60 * 60 * 24,
+    };
+    admin.messaging().sendToDevice(info.token, message, options);
+  });
 // exports.onUpdatePost = functions.firestore
 //   .document('/posts/{postId}')
 //   .onUpdate(async (snapshot, context) => {

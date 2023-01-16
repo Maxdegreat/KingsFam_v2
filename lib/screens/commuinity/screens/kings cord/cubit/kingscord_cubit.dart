@@ -202,6 +202,7 @@ class KingscordCubit extends Cubit<KingscordState> {
     required String currUserName, // aka sender username
     required String? reply,
     required Message? prevMsgSender,
+    required Map<String, dynamic> metadata,
   }) async {
     // log("recent: " + state.recentNotifLst.toString());
     // log("all: " + state.allNotifLst.toString());
@@ -213,7 +214,8 @@ class KingscordCubit extends Cubit<KingscordState> {
 
     Set mentionedIds = new Set();
 
-    for (var id in mentionedInfo.keys) {
+    if (!metadata.containsKey("anouncement")) {
+          for (var id in mentionedInfo.keys) {
       if (txtMsgBodyWithSymbolsForParcing.length > 1 &&
           txtMsgBodyWithSymbolsForParcing.length < 450) {
         var path = FirebaseFirestore.instance
@@ -294,7 +296,8 @@ class KingscordCubit extends Cubit<KingscordState> {
         })
         .then((value) => path.delete())
         .catchError((error) => log("Failed to add user: $error"));
-
+    }
+    log("the metadata is: " + metadata.toString());
     // the creation of the message
     final message = Message(
       text: txtMsgBodyWithSymbolsForParcing,
@@ -302,6 +305,7 @@ class KingscordCubit extends Cubit<KingscordState> {
       imageUrl: null,
       senderUsername: currUserName,
       reply: reply,
+      metadata: metadata
     );
     // ------------------------------------------------------------- BELOW IS WHERE WE SEND THE MESSAGE -------------------------------------------------------------
     // uploading the message to cloud

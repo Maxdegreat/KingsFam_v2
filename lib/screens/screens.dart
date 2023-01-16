@@ -38,4 +38,4 @@ export 'package:kingsfam/screens/commuinity/wrapers/participants_view.dart';
 export 'package:kingsfam/screens/commuinity/screens/kings%20cord/kings_cord_notif_settings.dart';
 export 'package:kingsfam/screens/commuinity/wrapers/participant_deep_view.dart';
 export 'package:kingsfam/screens/commuinity/screens/vc/vc_screen.dart';
-export 'package:kingsfam/screens/commuinity/screens/kings cord/kings_cord_room_seetings.dart';
+export 'package:kingsfam/screens/commuinity/screens/kings%20cord/kings_cord_room_settings.dart';

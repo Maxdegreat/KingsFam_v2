@@ -31,7 +31,7 @@ class DisplayMsg extends StatelessWidget {
     } else if (this.amountInVc != null) {
       return _showAmountInVc(s);
     } else 
-      return _welcomMsg(size, s);
+      return SizedBox.shrink();
    
   }
 

@@ -19,6 +19,7 @@ class Message {
   final String? senderUsername;
   final List<String>? mentionedIds;
   final Map<String, int>? reactions;
+  final Map<String, dynamic>? metadata; // was Map<String, int> reactions
   final String? reply;
   final String? giphyId;
 
@@ -32,8 +33,9 @@ class Message {
     this.thumbnailUrl,
     this.videoUrl,
     this.mentionedIds,
-    required this.date,
     this.reactions,
+    required this.date,
+    this.metadata,
     this.reply,
     this.giphyId,
   });
@@ -49,7 +51,7 @@ class Message {
         videoUrl,
         date,
         mentionedIds,
-        reactions,
+        metadata,
         reply,
         giphyId,
       ];
@@ -65,7 +67,7 @@ class Message {
     String? videoUrl,
     Timestamp? date,
     List<String>? mentionedIds,
-    Map<String, int>? reactions,
+    Map<String, dynamic>? metadata,
     String? reply,
     String? giphyLocal,
   }) {
@@ -104,7 +106,7 @@ class Message {
       'videoUrl': videoUrl,
       'date': date,
       'mentionedIds': mentionedIds,
-      'reactions': {},
+      'metadata': metadata ?? {},
        // This should be a string where the value is the ID of the og message.
       'reply': reply,
       "giphyId": giphyId,
@@ -132,6 +134,7 @@ class Message {
       thumbnailUrl: data['thumbnailUrl'] ?? null,
       videoUrl: data['videoUrl'] ?? null,
       date: (data['date']),
+      metadata: Map<String, dynamic>.from(data['metadata'] ?? {}),
       reactions: Map<String, int>.from(data['reactions'] ?? {}),
       mentionedIds: List<String>.from(data['mentionedIds'] ?? []),
       reply: data['reply'] ?? null,

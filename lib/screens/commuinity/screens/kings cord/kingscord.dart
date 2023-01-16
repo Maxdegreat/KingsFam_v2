@@ -8,6 +8,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:image_cropper/image_cropper.dart';
 
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/helpers/helpers.dart';
 import 'package:kingsfam/helpers/kingscord_path.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
@@ -17,7 +18,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
-import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kings_cord_room_seetings.dart';
+import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kings_cord_room_settings.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
 import 'package:kingsfam/widgets/widgets.dart';
@@ -110,6 +111,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   bool showMediaPopUp = false;
 
   List<String> UrlBucket = [];
+
+  Map<String, dynamic> metadata = {};
+  
 
   @override
   void dispose() {
@@ -276,6 +280,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 //============================================================================
   @override
   void initState() {
+    if (widget.kingsCord.mode == Mode.announcement) {
+      metadata[Mode.announcement] = 1;
+    }
     scrollCtrl = ScrollController();
     scrollCtrl!.addListener(() {
       if (scrollCtrl!.position.maxScrollExtent == scrollCtrl!.position.pixels) {
@@ -607,7 +614,7 @@ buildBottomTF(KingscordState state, BuildContext context, String mode) {
           CurrentKingsCordRoomId.updateRoomId(roomId: widget.kingsCord.id!);
         } else {
           CurrentKingsCordRoomId.updateRoomId(roomId: null);
-        }
+        } 
       },
       child: Container(
           // margin: EdgeInsets.symmetric(horizontal: 5.0),
@@ -615,8 +622,14 @@ buildBottomTF(KingscordState state, BuildContext context, String mode) {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  if (mode == "announcement") ... [
-                    Align(alignment: Alignment.centerRight, child: Text("Announcement mode", style: Theme.of(context).textTheme.caption!.copyWith(color: Theme.of(context).colorScheme.primary),))
+                  if (mode == Mode.announcement) ... [
+                    if (widget.kingsCord.metaData!.containsKey("writePermissions") && widget.kingsCord.metaData!["writePermissions"] == widget.role["roleName"] || widget.role["roleName"] == "Lead")
+                    Padding(
+                      padding: const EdgeInsets.only(left: 9.0, bottom: 8),
+                      child: Align(alignment: Alignment.centerLeft, child: Text("Announcement mode", style: Theme.of(context).textTheme.caption!.copyWith(fontWeight: FontWeight.w700),)),
+                    )
+                    else 
+                      Text("do not have permission to share announcements", style: Theme.of(context).textTheme.caption)
                   ],
                   Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -761,6 +774,7 @@ buildBottomTF(KingscordState state, BuildContext context, String mode) {
                                           kingsCordData: widget.kingsCord,
                                           currUserName: currUsersName,
                                           reply: state.replyMessage,
+                                          metadata: metadata
                                         );
                                       }
                                       ctx.onIsTyping(false);

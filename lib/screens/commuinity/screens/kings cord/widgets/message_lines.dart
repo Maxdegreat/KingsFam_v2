@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/helpers/clipboard.dart';
@@ -41,7 +42,8 @@ class MessageLines extends StatefulWidget {
 }
 
 class _MessageLinesState extends State<MessageLines> {
-  uploadReaction(String reaction, String msgId, Map<String, int> reactions) {
+
+  uploadReaction(String reaction, String msgId, Map<String, int> reactions, Map<String, dynamic> metadata) {
     int? incrementedReaction = reactions[reaction];
     if (incrementedReaction == null) {
       incrementedReaction = 1;
@@ -49,6 +51,7 @@ class _MessageLinesState extends State<MessageLines> {
       incrementedReaction += 1;
     }
     reactions[reaction] = incrementedReaction;
+    metadata['reactions'] = reactions;
     FirebaseFirestore.instance
         .collection(Paths.church)
         .doc(widget.cm.id!)
@@ -56,7 +59,7 @@ class _MessageLinesState extends State<MessageLines> {
         .doc(widget.kc.id!)
         .collection(Paths.messages)
         .doc(msgId)
-        .update({'reactions': reactions});
+        .update({'metadata': metadata});
   }
 
   Container reactionContainer({required String reaction, required int num}) {
@@ -84,29 +87,32 @@ class _MessageLinesState extends State<MessageLines> {
     );
   }
 
-  _showReactionBarUi({required Map<String, int>? messageReactions}) {
-    if ( !(widget.message.reactions!.length > 0) ) {
+  _showReactionBarUi({required Map<String, dynamic>? messageReactions}) {
+    Map<String, dynamic> reactions = {};
+    if (widget.message.metadata!.containsKey("reactions"))
+      reactions = widget.message.metadata!['reactions']; 
+    if (!(reactions.length > 0)) {
       return SizedBox.shrink();
     } else {
       return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Container(
-              height: MediaQuery.of(context).size.height / 20,
-              child: Row(
-                  children: messageReactions!.keys.map((e) {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 5.0, bottom: 5.0, right: 7),
-                  child: reactionContainer(
-                      reaction: e, num: widget.message.reactions![e]!),
-                );
-              }).toList()),
-            ),
-        ); 
+        scrollDirection: Axis.horizontal,
+        child: Container(
+          height: MediaQuery.of(context).size.height / 20,
+          child: Row(
+              children: reactions.keys.map((e) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 5.0, bottom: 5.0, right: 7),
+              child: reactionContainer(
+                  reaction: e, num: reactions[e]!),
+            );
+          }).toList()),
+        ),
+      );
     }
   }
 
   _showReactionsBar(String messageId, Map<String, int>? messageReactions,
-      BuildContext context) {
+      BuildContext context, Map<String, dynamic> metadata) {
     if (messageReactions == null) {
       messageReactions = {};
     }
@@ -129,7 +135,8 @@ class _MessageLinesState extends State<MessageLines> {
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                           onTap: () {
-                            uploadReaction('💖', messageId, messageReactions!);
+                            uploadReaction(
+                                '💖', messageId, messageReactions!, metadata);
                             Navigator.of(context).pop();
                           },
                           child: Text(
@@ -141,7 +148,8 @@ class _MessageLinesState extends State<MessageLines> {
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                           onTap: () {
-                            uploadReaction('😁', messageId, messageReactions!);
+                            uploadReaction(
+                                '😁', messageId, messageReactions!, metadata);
                             Navigator.of(context).pop();
                           },
                           child: Text('😁', style: TextStyle(fontSize: 27))),
@@ -150,7 +158,8 @@ class _MessageLinesState extends State<MessageLines> {
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                           onTap: () {
-                            uploadReaction('😭', messageId, messageReactions!);
+                            uploadReaction(
+                                '😭', messageId, messageReactions!, metadata);
                             Navigator.of(context).pop();
                           },
                           child: Text('😭', style: TextStyle(fontSize: 27))),
@@ -159,7 +168,8 @@ class _MessageLinesState extends State<MessageLines> {
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                           onTap: () {
-                            uploadReaction('😎', messageId, messageReactions!);
+                            uploadReaction(
+                                '😎', messageId, messageReactions!, metadata);
                             Navigator.of(context).pop();
                           },
                           child: Text('😎', style: TextStyle(fontSize: 27))),
@@ -168,7 +178,8 @@ class _MessageLinesState extends State<MessageLines> {
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                           onTap: () {
-                            uploadReaction('👀', messageId, messageReactions!);
+                            uploadReaction(
+                                '👀', messageId, messageReactions!, metadata);
                             Navigator.of(context).pop();
                           },
                           child: Text('👀', style: TextStyle(fontSize: 27))),
@@ -177,13 +188,13 @@ class _MessageLinesState extends State<MessageLines> {
                 ),
                 SizedBox(height: 7),
                 Padding(
-                  padding: EdgeInsets.only(left: MediaQuery.of(context).size.width / 7),
-
+                  padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width / 7),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                       SizedBox(width: 7),
+                      SizedBox(width: 7),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,15 +205,15 @@ class _MessageLinesState extends State<MessageLines> {
                             onTap: () {
                               if (widget.message.sender!.id ==
                                   context.read<AuthBloc>().state.user!.uid) {
-                                  FirebaseFirestore.instance
-                                      .collection(Paths.church)
-                                      .doc(this.widget.cm.id!)
-                                      .collection(Paths.kingsCord)
-                                      .doc(this.widget.kc.id!)
-                                      .collection(Paths.messages)
-                                      .doc(this.widget.message.id)
-                                      .delete();
-                                      Navigator.of(context).pop();
+                                FirebaseFirestore.instance
+                                    .collection(Paths.church)
+                                    .doc(this.widget.cm.id!)
+                                    .collection(Paths.kingsCord)
+                                    .doc(this.widget.kc.id!)
+                                    .collection(Paths.messages)
+                                    .doc(this.widget.message.id)
+                                    .delete();
+                                Navigator.of(context).pop();
                               } else
                                 snackBar(
                                     snackMessage:
@@ -219,7 +230,7 @@ class _MessageLinesState extends State<MessageLines> {
                       ),
                       SizedBox(width: 7),
                       Row(
-                       mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Icon(Icons.copy),
@@ -228,14 +239,17 @@ class _MessageLinesState extends State<MessageLines> {
                               onTap: () {
                                 if (widget.message.text != null) {
                                   copyTextToClip(widget.message.text!);
-                                  snackBar(snackMessage: "copied", context: context);
+                                  snackBar(
+                                      snackMessage: "copied", context: context);
                                 } else {
                                   snackBar(
-                                      snackMessage: "can not copy", context: context);
+                                      snackMessage: "can not copy",
+                                      context: context);
                                 }
                               },
                               child: Text("Copy",
-                                  style: Theme.of(context).textTheme.bodyText1)),
+                                  style:
+                                      Theme.of(context).textTheme.bodyText1)),
                         ],
                       )
                     ],
@@ -261,8 +275,8 @@ class _MessageLinesState extends State<MessageLines> {
 
   // if i send the message.
   _buildText(BuildContext context) {
-    if (widget.message.reactions == {}) {
-      widget.message.reactions![''] = 0;
+    if (widget.message.metadata!['reactions'] == {}) {
+      widget.message.metadata!['reactions']![''] = 0;
     }
 
     List<String> links = [];
@@ -293,7 +307,10 @@ class _MessageLinesState extends State<MessageLines> {
           },
           onLongPress: () {
             _showReactionsBar(
-                widget.message.id!, widget.message.reactions, context);
+                widget.message.id!,
+                widget.message.metadata!.containsKey('reactions') ? widget.message.metadata!['reactions'] : {} ,
+                context,
+                widget.message.metadata!);
           },
           child: Text(element,
               style: Theme.of(context)
@@ -319,7 +336,10 @@ class _MessageLinesState extends State<MessageLines> {
       // the return of the build text when the links are not empty
       return GestureDetector(
           onLongPress: () => _showReactionsBar(
-              widget.message.id!, widget.message.reactions, context),
+              widget.message.id!,
+              widget.message.metadata!['reactions'],
+              context,
+              widget.message.metadata!),
           onTap: () {
             if (links.length == 1) {
               launch(links[0]);
@@ -338,7 +358,8 @@ class _MessageLinesState extends State<MessageLines> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: textWithLinksForColumn.map((e) => e).toList()),
-              _showReactionBarUi(messageReactions: widget.message.reactions)
+              _showReactionBarUi(
+                  messageReactions: widget.message.metadata!["reactions"])
             ],
           ));
     }
@@ -346,7 +367,10 @@ class _MessageLinesState extends State<MessageLines> {
     RegExp regExp = RegExp(r'^@.+');
     return GestureDetector(
       onLongPress: () => _showReactionsBar(
-          widget.message.id!, widget.message.reactions, context),
+          widget.message.id!,
+          widget.message.metadata!['reactions'],
+          context,
+          widget.message.metadata!),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -365,7 +389,9 @@ class _MessageLinesState extends State<MessageLines> {
                         .bodyText1!
                         .copyWith(fontWeight: FontWeight.w500, fontSize: 15)),
               )),
-          _showReactionBarUi(messageReactions: widget.message.reactions)
+          _showReactionBarUi(
+            messageReactions: widget.message.metadata!["reactions"],
+          )
         ],
       ),
     );
@@ -380,7 +406,10 @@ class _MessageLinesState extends State<MessageLines> {
       children: [
         GestureDetector(
           onLongPress: () => _showReactionsBar(
-              widget.message.id!, widget.message.reactions, context),
+              widget.message.id!,
+              widget.message.metadata!['reactions'],
+              context,
+              widget.message.metadata!),
           onTap: () => Navigator.of(context).pushNamed(UrlViewScreen.routeName,
               arguments: UrlViewArgs(
                   urlImg: widget.message.imageUrl!,
@@ -391,7 +420,8 @@ class _MessageLinesState extends State<MessageLines> {
             decoration: BoxDecoration(
                 border: Border.all(
                     width: 1.0,
-                    color: Colors.amber), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
+                    color: Colors
+                        .amber), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
                 borderRadius: BorderRadius.circular(7),
                 image: DecorationImage(
                     fit: BoxFit.cover,
@@ -399,7 +429,8 @@ class _MessageLinesState extends State<MessageLines> {
                         CachedNetworkImageProvider(widget.message.imageUrl!))),
           ),
         ),
-        _showReactionBarUi(messageReactions: widget.message.reactions)
+        _showReactionBarUi(
+            messageReactions: widget.message.metadata!["reactions"])
       ],
     );
   }
@@ -416,7 +447,10 @@ class _MessageLinesState extends State<MessageLines> {
             children: [
               GestureDetector(
                 onLongPress: () => _showReactionsBar(
-                    widget.message.id!, widget.message.reactions, context),
+                    widget.message.id!,
+                    widget.message.metadata!['reactions'],
+                    context,
+                    widget.message.metadata!),
                 onTap: () => Navigator.of(context).pushNamed(
                     UrlViewScreen.routeName,
                     arguments: UrlViewArgs(
@@ -442,14 +476,16 @@ class _MessageLinesState extends State<MessageLines> {
           decoration: BoxDecoration(
               border: Border.all(
                   width: 1.0,
-                  color: Colors.amber), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
+                  color: Colors
+                      .amber), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
               borderRadius: BorderRadius.circular(7.0),
               image: DecorationImage(
                   fit: BoxFit.cover,
                   image: CachedNetworkImageProvider(
                       widget.message.thumbnailUrl!))),
         ),
-        _showReactionBarUi(messageReactions: widget.message.reactions)
+        _showReactionBarUi(
+            messageReactions: widget.message.metadata!["reactions"])
       ],
     );
   }
@@ -502,100 +538,106 @@ class _MessageLinesState extends State<MessageLines> {
     var messageType = (widget.message.text == firstMsgEncoded ||
         widget.message.text == welcomeMsgEncoded);
     return Padding(
-      padding:
-          const EdgeInsets.only(bottom: 20, left: 8.0, right: 8.0),
+      padding: const EdgeInsets.only(bottom: 20, left: 8.0, right: 8.0),
       child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: widget.message.metadata!.containsKey(Mode.announcement) ? Color.fromARGB(46, 255, 193, 7) : null
+        ),
         // color: Colors.white24,
         child: messageType
             ? _messageWelcomeWidget()
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // a row displaying imageurl of member and name
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      kingsCordAvtar(context),
-                      SizedBox(
-                        width: 5.0,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                widget.message.sender!.username,
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w900,
-                                    color: widget.message.sender!.colorPref ==
-                                            ""
-                                        ? Colors.red
-                                        : Color(hexcolor.hexcolorCode(
-                                            widget.message.sender!.colorPref))),
-                              ),
-                              SizedBox(width: 2),
-                              Text('${widget.message.date.timeAgo()}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .caption!
-                                      .copyWith(fontStyle: FontStyle.italic)),
-                            ],
-                          ),
-                          SizedBox(height: 2),
-                          widget.message.reply != null &&
-                                  widget.message.reply!.isNotEmpty
-                              ? Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 4.0, bottom: 5),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.white24,
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(2.0),
+            : Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2.0),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // a row displaying imageurl of member and name
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        kingsCordAvtar(context),
+                        SizedBox(
+                          width: 5.0,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  widget.message.sender!.username,
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w900,
+                                      color: widget.message.sender!.colorPref ==
+                                              ""
+                                          ? Colors.red
+                                          : Color(hexcolor.hexcolorCode(
+                                              widget.message.sender!.colorPref))),
+                                ),
+                                SizedBox(width: 2),
+                                Text('${widget.message.date.timeAgo()}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .caption!
+                                        .copyWith(fontStyle: FontStyle.italic)),
+                              ],
+                            ),
+                            SizedBox(height: 2),
+                            widget.message.reply != null &&
+                                    widget.message.reply!.isNotEmpty
+                                ? Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 4.0, bottom: 5),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.white24,
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
                                       child: Padding(
                                         padding: const EdgeInsets.all(2.0),
-                                        child: Text(
-                                          "reply to " +
-                                              widget.message.reply!
-                                                  .split(": ")
-                                                  .first
-                                                  .substring(188),
-                                          style: TextStyle(
-                                              fontStyle: FontStyle.italic,
-                                              color: Colors.amber,
-                                              fontSize: 15),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(2.0),
+                                          child: Text(
+                                            "reply to " +
+                                                widget.message.reply!
+                                                    .split(": ")
+                                                    .first
+                                                    .substring(188),
+                                            style: TextStyle(
+                                                fontStyle: FontStyle.italic,
+                                                color: Colors.amber,
+                                                fontSize: 15),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                )
-                              : SizedBox.shrink(),
-                          Container(
-                              constraints: BoxConstraints(
-                                maxWidth:
-                                    MediaQuery.of(context).size.width / 1.4,
-                              ),
-                              child:
-                              widget.message.giphyId != null 
-                              ? DisplayGif(giphyId: widget.message.giphyId!) 
-                              : widget.message.text != null
-                                  ? _buildText(context)
-                                  : widget.message.videoUrl != null &&
-                                          widget.message.thumbnailUrl != null
-                                      ? _buildVideo(context)
-                                      : _buildImage(context)),
-                        ],
-                      )
-                    ],
-                  ),
-                ],
-              ),
+                                  )
+                                : SizedBox.shrink(),
+                            Container(
+                                constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width / 1.4,
+                                ),
+                                child: widget.message.giphyId != null
+                                    ? DisplayGif(giphyId: widget.message.giphyId!)
+                                    : widget.message.text != null
+                                        ? _buildText(context)
+                                        : widget.message.videoUrl != null &&
+                                                widget.message.thumbnailUrl !=
+                                                    null
+                                            ? _buildVideo(context)
+                                            : _buildImage(context)),
+                          ],
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+            ),
       ),
     );
   }
@@ -679,7 +721,8 @@ class _MessageLinesState extends State<MessageLines> {
                     .caption!
                     .copyWith(fontStyle: FontStyle.italic)),
             SizedBox(height: 5),
-            Divider(color: Theme.of(context).colorScheme.inversePrimary, height: 7)
+            Divider(
+                color: Theme.of(context).colorScheme.inversePrimary, height: 7)
           ],
         ),
       );
@@ -737,7 +780,7 @@ class _MessageLinesState extends State<MessageLines> {
           ),
         ),
       );
-    } 
+    }
     return SizedBox.shrink();
   }
 }
