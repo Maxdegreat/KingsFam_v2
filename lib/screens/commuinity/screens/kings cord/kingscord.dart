@@ -394,7 +394,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                      begin: Alignment.topRight,
+                      begin: Alignment.centerRight,
                       end: Alignment.bottomCenter,
                       colors: [
                        // Theme.of(context).scaffoldBackgroundColor,
