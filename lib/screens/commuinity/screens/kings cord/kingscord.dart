@@ -252,25 +252,31 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     return Padding(
       padding: const EdgeInsets.all(7.0),
       child: Container(
+        
         width: double.infinity,
-        height: 50,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text("Must be a member to join ${widget.kingsCord.mode}"),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(CommunityHome.routeName,
-        arguments: CommunityHomeArgs(cm: widget.commuinity, cmB: null));
-              }, 
-              child: Text("Join", style: Theme.of(context).textTheme.bodyText1,),
-              style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
-            )
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text("Must be a member to join chat", style: Theme.of(context).textTheme.caption,),
+              Container(
+                width: MediaQuery.of(context).size.width/2,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(CommunityHome.routeName,
+          arguments: CommunityHomeArgs(cm: widget.commuinity, cmB: null));
+                  }, 
+                  child: Text("Join", style: Theme.of(context).textTheme.bodyText1,),
+                  style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
+                ),
+              )
+            ],
+          ),
         ),
         decoration: BoxDecoration(
-          color: Colors.grey[900],
+          color: Theme.of(context).colorScheme.onPrimary,
           borderRadius: BorderRadius.circular(7),
         ),     
       ),
@@ -388,10 +394,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                      begin: Alignment.bottomLeft,
-                      end: Alignment.centerRight,
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomCenter,
                       colors: [
-                        Theme.of(context).scaffoldBackgroundColor,
+                       // Theme.of(context).scaffoldBackgroundColor,
                         Theme.of(context).colorScheme.secondary,
                         Theme.of(context).colorScheme.onPrimary
                       ]),
@@ -606,6 +612,13 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
   
 buildBottomTF(KingscordState state, BuildContext context, String mode) {
+    bool canSeeTf = (
+      widget.kingsCord.metaData!.containsKey("writePermissions") 
+      && widget.kingsCord.metaData!["writePermissions"] == widget.role["roleName"] 
+      || widget.role["roleName"] == "Lead"
+      );
+      if (mode == Mode.welcome)
+        canSeeTf = false;
     final ctx = context.read<KingscordCubit>();
     return VisibilityDetector(
       key: ObjectKey(_messageController),
@@ -623,14 +636,26 @@ buildBottomTF(KingscordState state, BuildContext context, String mode) {
               child: Column(
                 children: [
                   if (mode == Mode.announcement) ... [
-                    if (widget.kingsCord.metaData!.containsKey("writePermissions") && widget.kingsCord.metaData!["writePermissions"] == widget.role["roleName"] || widget.role["roleName"] == "Lead")
-                    Padding(
-                      padding: const EdgeInsets.only(left: 9.0, bottom: 8),
-                      child: Align(alignment: Alignment.centerLeft, child: Text("Announcement mode", style: Theme.of(context).textTheme.caption!.copyWith(fontWeight: FontWeight.w700),)),
+                    if (canSeeTf)
+                    Container(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 9.0, bottom: 8),
+                        child: Align(alignment: Alignment.centerLeft, child: Text("Announcement mode", style: Theme.of(context).textTheme.caption!.copyWith(fontWeight: FontWeight.w700),)),
+                      ),
                     )
                     else 
-                      Text("do not have permission to share announcements", style: Theme.of(context).textTheme.caption)
+                      Container(
+                        width: double.infinity, child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Align(alignment: Alignment.center, child: Text("You do not have permission to chat announcements", style: Theme.of(context).textTheme.caption)),
+                      ))
                   ],
+                  if (!canSeeTf && Mode.welcome == mode) 
+                      Container(child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(child: Text("Welcomes", style: Theme.of(context).textTheme.caption)),
+                      )),
+                  if (canSeeTf || Mode.chat == mode && widget.userInfo["isMember"])
                   Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -644,7 +669,7 @@ buildBottomTF(KingscordState state, BuildContext context, String mode) {
                         Expanded(
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.secondary,
+                              color: Theme.of(context).colorScheme.onPrimary,
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: Align(
