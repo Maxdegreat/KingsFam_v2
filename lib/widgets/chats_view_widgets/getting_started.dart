@@ -28,31 +28,34 @@ class _GettingStartedState extends State<GettingStarted> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Center(
-            child: Align(
-                alignment: Alignment.center,
-                child: Text(
-                  "Find A Christian Community",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText1!
-                      .copyWith(fontSize: 30),
-                  textAlign: TextAlign.center,
-                )),
-          ),
-          SizedBox(height: 10),
-          Container(height: 400, child: carousel()),
-          gettingStartedBtn(),
-          _kfLogo()
-        ],
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Center(
+              child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Find A Christian Community",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1!
+                        .copyWith(fontSize: 30),
+                    textAlign: TextAlign.center,
+                  )),
+            ),
+            SizedBox(height: 10),
+            Container(
+                height: MediaQuery.of(context).size.height / 1.7,
+                child: carousel()),
+            gettingStartedBtn(),
+            _kfLogo()
+          ],
+        ),
       ),
     );
   }
-
 
   Widget carousel() {
     return CarouselSlider(
@@ -103,16 +106,19 @@ class gettingStartedBtn extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  shape: StadiumBorder(),
-                    primary: Colors.amber),
+                    shape: StadiumBorder(), primary: Colors.amber),
                 onPressed: () async {
                   final Church cm = await Church.fromId("ElApEUDmzedbQboXN6ZG");
-                  Navigator.of(context).pushNamed(CommuinityScreen.routeName, arguments: CommuinityScreenArgs(commuinity: cm, showDrawer: false));
+                  Navigator.of(context).pushNamed(CommuinityScreen.routeName,
+                      arguments: CommuinityScreenArgs(
+                          commuinity: cm, showDrawer: false));
                   // helpDialog(context);
                 },
                 child: Text("Getting Started",
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).colorScheme.secondary, fontSize: 20)))),
+                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontSize: 20)))),
       ),
     );
   }

@@ -325,6 +325,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               height: MediaQuery.of(context).size.height / 5,
               width: MediaQuery.of(context).size.width * .70,
               decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(7),
                 image: DecorationImage(
                     image: CachedNetworkImageProvider(displayImg),
                     fit: BoxFit.cover),

@@ -12,7 +12,6 @@ import 'package:kingsfam/screens/feed_main/feed.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/chats_view_widgets/getting_started.dart';
 import 'package:kingsfam/widgets/chats_view_widgets/chats_screen_widgets.dart';
-import 'package:rive/rive.dart';
 
 import '../../screens/chats/chats_widget/show_joined_cms.dart';
 
@@ -94,8 +93,8 @@ class ScreensForPageView {
       child: Container(
           height: 20,
           width: 20,
-          child: RiveAnimation.asset('assets/icons/add_icon.riv')),
-    );
+          child:Text("..."),
+    ));
   }
 
   GridView gridOfChats(ChatscreenState state, String userId) {

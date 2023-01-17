@@ -49,7 +49,7 @@ class DisplayMsg extends StatelessWidget {
         softWrap: true,
         text: TextSpan(
           text: this.s!.author!.username,
-          style: s.subtitle1!.copyWith(color: Colors.grey)!.copyWith(fontWeight: FontWeight.w400),
+          style: s.subtitle1!.copyWith(color: Colors.grey).copyWith(fontWeight: FontWeight.w400),
           children: <TextSpan>[
             TextSpan(text: " posted ", style: s.subtitle1!.copyWith(color: Colors.grey)!.copyWith(fontWeight: FontWeight.w300, fontStyle: FontStyle.italic)),
             TextSpan(text: this.s!.title!+"\n", style: s.subtitle1!.copyWith(color: Colors.grey)!.copyWith(fontWeight: FontWeight.w400)),
