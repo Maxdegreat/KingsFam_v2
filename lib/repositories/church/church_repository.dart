@@ -445,8 +445,14 @@ class ChurchRepository extends BaseChurchRepository {
         .add(kingsCord.toDoc());
   }
 
-  Future<bool> isInCmById({required String cmId, required String userId}) async {
-    DocumentSnapshot snap = await fire.collection(Paths.users).doc(userId).collection(Paths.church).doc(cmId).get();
+  Future<bool> isInCmById(
+      {required String cmId, required String userId}) async {
+    DocumentSnapshot snap = await fire
+        .collection(Paths.users)
+        .doc(userId)
+        .collection(Paths.church)
+        .doc(cmId)
+        .get();
     return snap.exists;
   }
 
@@ -664,8 +670,8 @@ class ChurchRepository extends BaseChurchRepository {
     log("baned the user");
   }
 
-  Future<void> leaveCommuinity({required Church commuinity, required String leavingUserId}) async {
-
+  Future<void> leaveCommuinity(
+      {required Church commuinity, required String leavingUserId}) async {
     UserPreferences.getLastVisitedCm().then((lastVisitedCm) {
       if (lastVisitedCm != null && lastVisitedCm == commuinity.id) {
         UserPreferences.clearLastVisitedCm();
@@ -697,9 +703,8 @@ class ChurchRepository extends BaseChurchRepository {
     } else {
       docRef.update({'size': commuinity.size! - 1});
     }
-
-    FirebaseMessaging.instance.unsubscribeFromTopic("/church/${commuinity.id}");
-
+    String topic = "church" + commuinity.id!;
+    FirebaseMessaging.instance.unsubscribeFromTopic(topic);
   }
 
   void inviteUserToCommuinity(
@@ -720,7 +725,8 @@ class ChurchRepository extends BaseChurchRepository {
         .add(noty.toDoc());
   }
 
-  Future<void> onJoinCommuinity({required Userr user, required Church commuinity}) async {
+  Future<void> onJoinCommuinity(
+      {required Userr user, required Church commuinity}) async {
     // run a transaction
 
     // check if member in both user -> id -> church lst of documents and communityMembers -> cmId -> members -> lst of members if so do nothing
@@ -767,22 +773,30 @@ class ChurchRepository extends BaseChurchRepository {
         docRef.update({'size': commuinity.size! + 1});
 
       // send welcome message
-      
+
       // get welcom kc
-      var path = fire.collection(Paths.church).doc(commuinity.id!).collection(Paths.kingsCord);
-      QuerySnapshot querySnap = await path.where("mode", isEqualTo: "welcome").get();
+      var path = fire
+          .collection(Paths.church)
+          .doc(commuinity.id!)
+          .collection(Paths.kingsCord);
+      QuerySnapshot querySnap =
+          await path.where("mode", isEqualTo: "welcome").get();
 
       // make welcome message
-      Map<String, dynamic> welcomeMsg = await Message.empty().copyWith(text: welcomeMsgEncoded).ToDoc(senderId: user.id);
+      Map<String, dynamic> welcomeMsg = await Message.empty()
+          .copyWith(text: welcomeMsgEncoded)
+          .ToDoc(senderId: user.id);
 
       // write welcome message
-      path.doc(querySnap.docs.first.id).collection(Paths.messages).add(welcomeMsg);
-      
+      path
+          .doc(querySnap.docs.first.id)
+          .collection(Paths.messages)
+          .add(welcomeMsg);
     });
-    
-    // subscribe to topic for anouncments
-    FirebaseMessaging.instance.subscribeToTopic("/church/${commuinity.id}");
 
+    // subscribe to topic for anouncments
+    String topic = "church" + commuinity.id!;
+    FirebaseMessaging.instance.subscribeToTopic(topic);
   }
 
   Future<Stream<bool>> streamIsCmMember(
@@ -856,11 +870,10 @@ class ChurchRepository extends BaseChurchRepository {
     Set<Church?> chsJoined = {};
     Set<String> chIdSeen = {};
     for (var ch in c) {
-      
       Church? church = await ch;
       if (church != null && !chIdSeen.contains(church.id)) {
-        bool isInCm = await isInCmById(cmId: church.id!, userId: uid) ;
-        if ( !isInCm ) continue;
+        bool isInCm = await isInCmById(cmId: church.id!, userId: uid);
+        if (!isInCm) continue;
 
         chsJoined.add(church);
         chIdSeen.add(church.id!);
