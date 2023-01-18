@@ -552,20 +552,24 @@ exports.onKingsCordMessageSent = functions.firestore
       // 'recentMessage' : recentMessage,
     });
     // send notif as topic if msg contains "anouncment" in metadata
-    if (snapshot.data().metadata["anouncment"] !== undefined) {
-      var snap = snapshot.data();
+    
+
+    
+    if (snapshot.data().metadata !== undefined) {
+      
+      var snapData = snapshot.data();
       var cmSnap = await cmRef.get();
       var cmData = cmSnap.data();
       var messageBody;
-      if (snap.text === undefined || snap.text === "")
+
+      if (snapData.text === undefined || snapData.text === "")
         messageBody = "shared something";
       else 
-        messageBody = snap.text;
-      const topicGroup = "/church/$cmId";
+        messageBody = snapData.text;
       const message = {
         notification: {
           title: "anouncment:" + cmData.name,
-          body: snap.username + ": " + messageBody,
+          body: snapData.username + ": " + messageBody,
         },
         data: {
           type: String("kc_type"),
@@ -578,8 +582,10 @@ exports.onKingsCordMessageSent = functions.firestore
         priority: "high",
         timeToLive: 60 * 60 * 24,
       };
-
-      admin.messaging().sendToTopic(topicGroup, message, options);
+   
+      admin.messaging().sendToTopic("church"+cmId, message).then((value) => {
+        functions.logger.log("sent the topicMessage", "/church/"+cmId)
+      }).catch((err) => {console.log(String(err), console.log("sent to: /church/" + cmId))});
     }
   });
 
