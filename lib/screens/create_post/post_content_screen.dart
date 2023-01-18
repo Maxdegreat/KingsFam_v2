@@ -138,7 +138,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
       },
       child: Row(
         children: [
-          Text("POST", style: TextStyle(color: canSubmit ? Colors.green : Colors.grey,)),
+          Text("Share Post", style: TextStyle(color: canSubmit ? Colors.green : Colors.grey,)),
           Icon(
             Icons.arrow_forward,
             color: canSubmit ? Colors.green : Colors.grey,
@@ -159,7 +159,8 @@ class _PostContentScreenState extends State<PostContentScreen> {
     log("curr user is: " + context.read<ProfileBloc>().state.userr.toString());
     return Scaffold(
         appBar: AppBar(
-          title: Text('Post'),
+          centerTitle: false,
+          title: Text('Add details', style: Theme.of(context).textTheme.bodyText1),
           actions: [submitButton()],
         ),
         body: GestureDetector(
@@ -191,6 +192,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Text(
                         "Add Your Post To A Community",
+                        style: Theme.of(context).textTheme.bodyText1,
                         textAlign: TextAlign.left,
                       ),
                     )),

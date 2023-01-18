@@ -2,9 +2,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
 import 'package:kingsfam/screens/create_post/post_content_screen.dart';
-import 'package:video_player/video_player.dart';
 import 'package:video_trimmer/video_trimmer.dart';
 
 

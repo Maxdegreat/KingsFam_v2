@@ -42,6 +42,8 @@ post_install do |installer|
     target.build_configurations.each do |config|
       if config.build_settings['WRAPPER_EXTENSION'] == 'bundle'
         config.build_settings['DEVELOPMENT_TEAM'] = 'U6422JZU3K'
+      if Gem::Version.new('8.0') > Gem::Version.new(config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'])
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
       # You can enable the permissions needed here. For example to enable camera
       # permission, just remove the `#` character in front so it looks like this:
       #
@@ -98,4 +100,5 @@ post_install do |installer|
     end 
     # End of the permission_handler configuration
   end
+end
 end

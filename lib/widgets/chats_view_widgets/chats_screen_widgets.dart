@@ -7,7 +7,6 @@ import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/widgets/widgets.dart';
-import 'package:rive/rive.dart';
 import 'package:kingsfam/extensions/extensions.dart';
 
 Future<dynamic> leaveCommuinity(
@@ -44,7 +43,7 @@ Widget KFStarAmination(BuildContext context) {
       Container(
           height: 400,
           width: 400,
-          child: RiveAnimation.asset('assets/crown/KFCrown.riv')),
+          child: Text("...")),
       Center(
           child: Expanded(
         child: ElevatedButton(
