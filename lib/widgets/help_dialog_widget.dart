@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
-import 'package:rive/rive.dart';
+
 
 import '../config/constants.dart';
 
@@ -80,7 +80,7 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
         Container(
             height: 35,
             width: 35,
-            child: RiveAnimation.asset('assets/icons/search_icon.riv')),
+            child:Icon(Icons.search)),
         SizedBox(height: 25),
         Container(
           child: Row(
@@ -106,7 +106,7 @@ List<Widget> _contents(int currIdx, int buildDotLen) {
         Container(
             height: 35,
             width: 35,
-            child: RiveAnimation.asset('assets/icons/add_icon.riv')),
+            child: Icon(Icons.add)),
         SizedBox(height: 25),
         Container(
           child: Row(

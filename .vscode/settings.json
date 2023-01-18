@@ -4,5 +4,6 @@
         "kcords",
         "Stmap",
         "Userr"
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

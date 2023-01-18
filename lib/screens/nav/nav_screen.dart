@@ -4,7 +4,6 @@ import 'package:iconsax/iconsax.dart';
 import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/nav/widgets/widgets.dart';
-import 'package:rive/rive.dart';
 
 class NavScreen extends StatelessWidget {
   static const String routeName = '/nav';

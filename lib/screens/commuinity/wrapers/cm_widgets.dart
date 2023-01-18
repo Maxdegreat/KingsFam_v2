@@ -562,7 +562,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
                   //   CircleAvatar(backgroundColor: Colors.amber, radius: 3)
                 ] else if (cord.mode == Mode.announcement) ... [
                    Icon(
-                    Icons.volume_up_outlined,
+                    Icons.announcement_outlined,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   SizedBox(width: 5),
