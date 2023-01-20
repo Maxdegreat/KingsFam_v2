@@ -1,19 +1,17 @@
-import 'dart:collection';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/config/constants.dart';
+import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/cubits/cubits.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
-import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/widgets/widgets.dart';
-import 'package:visibility_detector/visibility_detector.dart';
+
 
 class CommuinityFeedScreenArgs {
   final Church commuinity;
@@ -30,6 +28,7 @@ class CommuinityFeedScreen extends StatefulWidget {
         settings: const RouteSettings(name: routeName),
         builder: (context) => BlocProvider<FeedBloc>(
               create: (context) => FeedBloc(
+                buidCubit: context.read<BuidCubit>(),
                   postsRepository: context.read<PostsRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   likedPostCubit: context.read<LikedPostCubit>())

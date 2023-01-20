@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/cubits/cubits.dart';
+import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/models/post_model.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
 import 'package:kingsfam/screens/comment_ui/comment_screen.dart';
@@ -183,14 +185,49 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (widget.post.author.id != context.read<AuthBloc>().state.user!.uid) ... [
+               ListTile(
+                onTap: () {
+
+                // Navigator.of(context).pushNamed(ReviewContentScreen.routeName, arguments: ReviewContentScreenArgs());  
+                //     PostsRepository().reportPost(postId: widget.post.id!, cmId: widget.post.commuinity!.id!).then((value) {
+                //      snackBar(snackMessage: "Post will be reviewed, thank you for helping keep KingsFam safe", context: context);
+                //      Navigator.of(context).pop();
+
+                //   });
+                },
+                leading: Icon(Icons.report_gmailerrorred, color: Colors.red[400]),
+                title: Text("Report this post", style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.red[400]),),
+            ),
+            
+            SizedBox(height: 7),
+
             ListTile(
+              leading: Icon(Icons.block, color: Colors.red[400]),
+              title: Text("Block user", style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.red[400])),
               onTap: () {
-                PostsRepository().reportPost(postId: widget.post.id!, cmId: widget.post.commuinity!.id!);
-                Future.delayed(Duration(seconds: 10)).then((value) => snackBar(snackMessage: "Post will be reviewed", context: context));
+                // add userId to systemdb of blocked uids
+
+                UserPreferences.updateBlockedUIDS(uid: widget.post.author.id).then((value) {
+                snackBar(snackMessage: "KingsFam will hide content from this user.", context: context);
+                Navigator.of(context).pop();
+
+                }); 
+              
               },
-              leading: Icon(Icons.report_gmailerrorred, color: Colors.red[400]),
-              title: Text("Report this post", style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.red[400]),),
             )
+          ] else ... [
+            ListTile(
+              leading: Icon(Icons.delete, color: Colors.red[400]),
+              title: Text("Delete this post", style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.red[400])),
+              onTap: () {
+                context.read<PostsRepository>().deletePost(post: widget.post).then((value) {
+                  snackBar(snackMessage: "Your post has been removed", context: context, bgColor: Colors.greenAccent);
+                });
+              },
+            )
+          ],
+           
           ],
         );
       }

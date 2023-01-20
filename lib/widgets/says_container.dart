@@ -48,7 +48,7 @@ class _SaysContainerState extends State<SaysContainer> {
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Container(
         //height: MediaQuery.of(context).size.height / 4.5,
-        color: Theme.of(context).colorScheme.primary,
+        color: Theme.of(context).colorScheme.secondary,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(

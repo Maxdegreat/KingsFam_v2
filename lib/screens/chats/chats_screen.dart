@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/helpers/dynamic_links.dart';
 import 'package:kingsfam/helpers/firebase_notifs.dart';
 import 'package:kingsfam/helpers/kingscord_path.dart';
@@ -90,6 +91,7 @@ class _ChatsScreenState extends State<ChatsScreen>
     FirebaseDynamicLinkService.initDynamicLink(context);
     CurrentKingsCordRoomId();
     NotificationHelper.initalize(flutterLocalNotificationsPlugin);
+    context.read<BuidCubit>().init();
     //super.build(context);
   }
 

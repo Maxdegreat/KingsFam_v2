@@ -100,10 +100,6 @@ class _SaysRoomState extends State<SaysRoom> {
         builder: (context, state) {
           
           return Scaffold(
-            backgroundColor: Theme.of(context)
-                .colorScheme
-                .secondary, //Color(hc.hexcolorCode("#141829")),
-
             appBar: AppBar(
               // backgroundColor: Color(hc.hexcolorCode("#141829")),
               title: Text(widget.kcName,

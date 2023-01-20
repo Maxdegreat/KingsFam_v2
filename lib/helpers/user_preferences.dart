@@ -55,4 +55,40 @@ class UserPreferences {
       _preferences!.remove("lastVisitedCm");
     }
 
+
+    // blocking and reporting ugc
+    static Future<Set<String>> updateBlockedUIDS({required String uid}) async {
+      List<String>? uids = await _preferences!.getStringList("blockedUIDS");
+      bool isBlocked = false;
+      if (uids != null) {
+        for (var i in uids) {
+          if (uids.contains(uid)) {
+            isBlocked = true;
+          }
+        }
+
+         if (isBlocked)
+          uids.remove(uid);
+        else
+          uids.add(uid);
+
+      // update the local db 
+
+      _preferences!.setStringList("blockedUIDS", uids);
+
+      } else {
+        _preferences!.setStringList("blockedUIDS", [uid]);
+      }
+
+      // if true then user was removed from block list. so update the local SHOW CONTENT
+      return uids?.toSet() ?? {}; 
+    }
+
+    static Future<Set<String>> getBlockedUsers() async {
+      // get lst of blocked users and return if contains.
+      return await _preferences!.getStringList("blockedUIDS")?.toSet() ?? {};
+    }
+
+
+
 }

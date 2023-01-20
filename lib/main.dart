@@ -11,6 +11,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/blocs/search/search_bloc.dart';
 import 'package:kingsfam/blocs/simple_bloc_observer.dart';
 import 'package:kingsfam/config/custum_router.dart';
+import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/cubits/liked_says/liked_says_cubit.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
@@ -43,7 +44,6 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations(
@@ -69,7 +69,6 @@ class MyApp extends StatelessWidget {
       ],
       child: MultiBlocProvider(
         providers: [
-          
           BlocProvider<AuthBloc>(
             create: (context) =>
                 AuthBloc(authRepository: context.read<AuthRepository>()),
@@ -98,7 +97,8 @@ class MyApp extends StatelessWidget {
                 storageRepository: context.read<StorageRepository>(),
                 authBloc: context.read<AuthBloc>(),
                 kingsCordRepository: context.read<KingsCordRepository>(),
-                churchRepository: context.read<ChurchRepository>() // may need to report
+                churchRepository:
+                    context.read<ChurchRepository>() // may need to report
                 ),
           ),
           BlocProvider<LikedSaysCubit>(
@@ -115,11 +115,15 @@ class MyApp extends StatelessWidget {
           BlocProvider<BottomnavbarCubit>(
             create: (context) => BottomnavbarCubit(),
           ),
+          BlocProvider<BuidCubit>(
+            create: (context) => BuidCubit(),
+          ),
           BlocProvider<FeedBloc>(
             create: (context) => FeedBloc(
                 postsRepository: context.read<PostsRepository>(),
                 authBloc: context.read<AuthBloc>(),
-                likedPostCubit: context.read<LikedPostCubit>()),
+                likedPostCubit: context.read<LikedPostCubit>(),
+                buidCubit: context.read<BuidCubit>()),
           ),
           BlocProvider<CommuinityBloc>(
               create: (context) => CommuinityBloc(
@@ -137,9 +141,6 @@ class MyApp extends StatelessWidget {
                   likedPostCubit: context.read<LikedPostCubit>(),
                   churchRepository: context.read<ChurchRepository>())),
         ],
-
-        
-
         child: MaterialApp(
           //THEME DATA
           themeMode: ThemeMode.system,
