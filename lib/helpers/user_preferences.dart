@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -57,21 +59,27 @@ class UserPreferences {
 
 
     // blocking and reporting ugc
-    static Future<Set<String>> updateBlockedUIDS({required String uid}) async {
+    static Future<Set<String>> addToBlockedUIDS({required String uid}) async {
       List<String>? uids = await _preferences!.getStringList("blockedUIDS");
       bool isBlocked = false;
+      
+      log(uids.toString());
+      
       if (uids != null) {
-        for (var i in uids) {
-          if (uids.contains(uid)) {
-            isBlocked = true;
-          }
+
+        if (uids.contains(uid)) {
+          isBlocked = true;
         }
+        log("isBlocked: " + isBlocked.toString());
+        
 
          if (isBlocked)
           uids.remove(uid);
         else
           uids.add(uid);
 
+        log("uids: " + uids.toString());
+        
       // update the local db 
 
       _preferences!.setStringList("blockedUIDS", uids);

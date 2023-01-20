@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/cubits/cubits.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/models/post_model.dart';
@@ -208,11 +209,11 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
               onTap: () {
                 // add userId to systemdb of blocked uids
 
-                UserPreferences.updateBlockedUIDS(uid: widget.post.author.id).then((value) {
+                context.read<BuidCubit>().onBlockUser(widget.post.author.id);
+                
                 snackBar(snackMessage: "KingsFam will hide content from this user.", context: context);
                 Navigator.of(context).pop();
-
-                }); 
+                Navigator.of(context).pop();
               
               },
             )
@@ -224,6 +225,7 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
                 context.read<PostsRepository>().deletePost(post: widget.post).then((value) {
                   snackBar(snackMessage: "Your post has been removed", context: context, bgColor: Colors.greenAccent);
                 });
+                
               },
             )
           ],

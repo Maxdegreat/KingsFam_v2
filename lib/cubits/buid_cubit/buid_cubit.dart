@@ -18,8 +18,9 @@ class BuidCubit extends Cubit<BuidState> {
   }
 
   void onBlockUser(String uid) async {
-    UserPreferences.updateBlockedUIDS(uid: uid).then((value) {
+    UserPreferences.addToBlockedUIDS(uid: uid).then((value) {
       emit(state.copyWith(buids: value));
+      log("buids state after is " + state.buids.toString());
     });
   }
 }

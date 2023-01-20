@@ -10,7 +10,7 @@ class AdHelper {
     String prodNativeAdUnitIdAndroid = "ca-app-pub-5583578072631354/4772946038";
     String prodNativeAdUnitIdIos = "ca-app-pub-5583578072631354/8261954275";
 
-    if (MockFlag.ISMOCKTESTING) 
+    // if (MockFlag.ISMOCKTESTING) 
       return testNativeAdUnitId;
 
     if (Platform.isAndroid) {
@@ -27,7 +27,7 @@ class AdHelper {
     String prodAdUnitIdA = "ca-app-pub-5583578072631354/4427022170";
     String prodBannerAdIos = "ca-app-pub-5583578072631354/9875177985";
 
-    if (MockFlag.ISMOCKTESTING)
+    // if (MockFlag.ISMOCKTESTING)
       return testAdUnitId;
 
     if (Platform.isAndroid) {

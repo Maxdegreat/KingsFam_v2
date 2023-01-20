@@ -35,7 +35,8 @@ class CommuinityFeedScreen extends StatefulWidget {
                 ..add(FeedCommuinityFetchPosts(
                     passedPost: args.passedPost,
                     commuinityId: args.commuinity.id!,
-                    lastPostId: null)),
+                    lastPostId: null,
+                    context: context)),
               child: CommuinityFeedScreen(
                 commuinity: args.commuinity,
               ),

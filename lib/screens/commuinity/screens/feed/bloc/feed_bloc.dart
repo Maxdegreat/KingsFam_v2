@@ -71,7 +71,8 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
           posts.add(Post.empty.copyWith(id: posts.last!.id));
           // posts.insert( 2, Post.empty );
         }
-        postContainers = _makePostContainers(posts);
+        log("context in feed state is:  " + event.context.toString());
+        postContainers = _makePostContainers(posts, event.context!);
         _likedPostCubit.clearAllLikedPosts();
 
         final likedPostIds = await _postsRepository.getLikedPostIds(
@@ -82,12 +83,14 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
           postContainer: postContainers,
           status: FeedStatus.success,
           likedPostIds: likedPostIds,
+          currContext: event.context
         );
       } else {
         List<Post?> posts = MockPostData.getMockPosts2;
         // posts.add(Post.empty);
-        List<Widget?> postContainers = _makePostContainers(posts);
+        List<Widget?> postContainers = _makePostContainers(posts, event.context!);
         yield state.copyWith(
+          currContext: event.context,
             posts: posts,
             postContainer: postContainers,
             status: FeedStatus.success);
@@ -107,7 +110,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
             commuinityId: event.commuinityId, lastPostId: lastPostId);
         final updatedPosts = List<Post?>.from(state.posts)..addAll(posts);
         updatedPosts.add(Post.empty.copyWith(id: posts.last!.id));
-        final postContainers = _makePostContainers(updatedPosts);
+        final postContainers = _makePostContainers(updatedPosts, state.currContext!);
 
         final likedPostIds = await _postsRepository.getLikedPostIds(
             userId: _authBloc.state.user!.uid, posts: posts);
@@ -125,8 +128,9 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     } else {
       List<Post?> posts = MockPostData.getMockPosts4;
       // posts.add(Post.empty);
+    
 
-      List<Widget?> postContainers = _makePostContainers(posts);
+      List<Widget?> postContainers = _makePostContainers(posts, state.currContext!);
 
       yield state.copyWith(
           posts: posts,
@@ -135,26 +139,36 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     }
   }
 
-  List<Widget> _makePostContainers(List<Post?> ps) {
+  List<Widget> _makePostContainers(List<Post?> ps, BuildContext ctx) {
+    log("we are in method");
     List<Widget> lst = [];
+    var container = null;
+
+    log("abt to start for loop");
     for (Post? p in ps) {
-      var container = null;
+      if (p!.author == Userr.empty ) container = SizedBox.shrink();
+      
+      else {
+
+      log("not an ad widget");
       log("Buids " +_buidCubit.state.buids.toString());
-      if (_buidCubit.state.buids.contains(p!.author.id)) {
-        container = HideContent.postFullScreen(() {_buidCubit.onBlockUser(p.author.id);});
-      } else {
-        if (p.author != Userr.empty) {
+
+        if (!_buidCubit.state.buids.contains(p.author.id)) {
           if (p.imageUrl != null)
             container = ImgPost1_1(post: p);
           else if (p.videoUrl != null)
             container = PostFullVideoView16_9(post: p);
         } else {
-          container = SizedBox.shrink();
+          container = HideContent.postFullScreen(() {
+            _buidCubit.onBlockUser(p.author.id);
+            Navigator.of(ctx).pop();
+          });
         }
+      
+
       }
-
       // else -> container is already init as null
-
+      log("adding containrt");
       lst.add(container);
     }
     return lst;
