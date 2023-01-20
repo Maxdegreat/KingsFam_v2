@@ -141,7 +141,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       var container = null;
       log("Buids " +_buidCubit.state.buids.toString());
       if (_buidCubit.state.buids.contains(p!.author.id)) {
-        container = HideContent.postFullScreen();
+        container = HideContent.postFullScreen(() {_buidCubit.onBlockUser(p.author.id);});
       } else {
         if (p.author != Userr.empty) {
           if (p.imageUrl != null)

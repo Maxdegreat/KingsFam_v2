@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/helpers/clipboard.dart';
 import 'package:kingsfam/models/models.dart';
@@ -16,6 +17,7 @@ import 'package:kingsfam/extensions/extensions.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/giphy/giphy_widget.dart';
+import 'package:kingsfam/widgets/hide_content/hide_content_full_screen_post.dart';
 import 'package:kingsfam/widgets/link_preview_container.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -195,7 +197,8 @@ class _MessageLinesState extends State<MessageLines> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(width: 7),
-                      Row(
+                     if (context.read<AuthBloc>().state.user!.uid == widget.message.sender!.id) ... [
+                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -228,6 +231,43 @@ class _MessageLinesState extends State<MessageLines> {
                           ),
                         ],
                       ),
+                     ]
+                     else ... [
+                       Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.delete),
+                          SizedBox(width: 5),
+                          GestureDetector(
+                            onTap: () {
+                              if (widget.message.sender!.id ==
+                                  context.read<AuthBloc>().state.user!.uid) {
+                                FirebaseFirestore.instance
+                                    .collection(Paths.church)
+                                    .doc(this.widget.cm.id!)
+                                    .collection(Paths.kingsCord)
+                                    .doc(this.widget.kc.id!)
+                                    .collection(Paths.messages)
+                                    .doc(this.widget.message.id)
+                                    .delete();
+                                Navigator.of(context).pop();
+                              } else
+                                snackBar(
+                                    snackMessage:
+                                        "hmm, can't del a message that is not yours fam",
+                                    context: context,
+                                    bgColor: Colors.red[400]!);
+                            },
+                            child: Container(
+                              child: Text("Unsend",
+                                  style: Theme.of(context).textTheme.bodyText1),
+                            ),
+                          ),
+                        ],
+                      ),
+                     ],
+                     
                       SizedBox(width: 7),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -508,7 +548,13 @@ class _MessageLinesState extends State<MessageLines> {
 
     return BlocProvider.value(
       value: kcubit!,
-      child: Draggable<Widget>(
+      child: 
+
+      context.read<BuidCubit>().state.buids.contains(widget.message.sender!.id) 
+
+      ? HideContent.textContent(Theme.of(context).textTheme, () {context.read<BuidCubit>().onBlockUser(widget.message.sender!.id);})
+      
+      : Draggable<Widget>(
           onDraggableCanceled: ((velocity, offset) {
             if (offset.dx >= 100) {
               if (widget.message.sender!.token.isNotEmpty)
