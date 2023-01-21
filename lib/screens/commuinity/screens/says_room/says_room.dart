@@ -152,6 +152,7 @@ class _SaysRoomState extends State<SaysRoom> {
                                       log("fired");
                                     },
                                     child: SaysContainer(
+                                      cmId: widget.cm.id!,
                                         says: says,
                                         context: context,
                                         localLikesSays: context

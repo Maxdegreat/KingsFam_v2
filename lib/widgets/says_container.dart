@@ -1,14 +1,18 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:helpers/helpers.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/cubits/liked_says/liked_says_cubit.dart';
 import 'package:kingsfam/extensions/date_time_extension.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/models/says_model.dart';
+import 'package:kingsfam/screens/report_content_screen.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 class SaysContainer extends StatefulWidget {
@@ -17,11 +21,13 @@ class SaysContainer extends StatefulWidget {
   final double? height;
   final int? taps;
   final Set<String?> localLikesSays;
+  final String cmId;
   const SaysContainer(
       {Key? key,
       required this.says,
       required this.context,
       required this.localLikesSays,
+      required this.cmId,
       this.height,
       this.taps})
       : super(key: key);
@@ -54,12 +60,26 @@ class _SaysContainerState extends State<SaysContainer> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              header_says(title),
-              SizedBox(height: 20),
-              contentTxt_says(),
-              // Expanded(child: SizedBox.shrink()),
-              footer(),
+            children:
+
+             [
+              if (!context.read<BuidCubit>().state.buids.contains(widget.says.author!.id)) ... [
+                header_says(title),
+                 SizedBox(height: 20),
+                 contentTxt_says(),
+                  // Expanded(child: SizedBox.shrink()),
+                 footer(),
+              ] else ... [
+               Center(
+                child: ListTile(
+                  leading: Icon(Icons.remove_red_eye_sharp), 
+                  title: Text("unblock to view", style: Theme.of(context).textTheme.bodyText1,),
+                  onTap: () {context.read<BuidCubit>().onBlockUser(widget.says.author!.id); Navigator.of(context).pop();},
+                ),
+               ),
+               
+              ]
+              
             ],
           ),
         ),
@@ -115,12 +135,82 @@ class _SaysContainerState extends State<SaysContainer> {
                 ),
               ),
               SizedBox(height: 1),
-              title_says(context)
+              title_says(context),
+           
+
             ],
           ),
         ),
+                      IconButton(onPressed: () {
+                _showPostOptions();
+              }, icon: Icon(Icons.more_vert))
       ],
     );
+  }
+
+  _showPostOptions() {
+    return showModalBottomSheet(
+      context: context, 
+      builder: ((context) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (widget.says.author!.id != context.read<AuthBloc>().state.user!.uid) ... [
+               ListTile(
+                onTap: () {
+                Map<String, dynamic> info = {
+                  "userId" : widget.says.author!.id,
+                  "what" : "post",
+                  "continue": FirebaseFirestore.instance.collection(Paths.church).doc(widget.cmId).collection(Paths.kingsCord).doc(widget.says.kcId),                 
+                };
+                Navigator.of(context).pushNamed(ReportContentScreen.routeName, arguments: RepoetContentScreenArgs(info: info));
+                // Navigator.of(context).pushNamed(ReviewContentScreen.routeName, arguments: ReviewContentScreenArgs());  
+                //     PostsRepository().reportPost(postId: widget.post.id!, cmId: widget.post.commuinity!.id!).then((value) {
+                //      snackBar(snackMessage: "Post will be reviewed, thank you for helping keep KingsFam safe", context: context);
+                //      Navigator.of(context).pop();
+
+                //   });
+                },
+                leading: Icon(Icons.report_gmailerrorred, color: Colors.red[400]),
+                title: Text("Report this post", style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.red[400]),),
+            ),
+            
+            SizedBox(height: 7),
+
+            ListTile(
+              leading: Icon(Icons.block, color: Colors.red[400]),
+              title: Text("Block user", style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.red[400])),
+              onTap: () {
+                // add userId to systemdb of blocked uids
+
+                context.read<BuidCubit>().onBlockUser(widget.says.author!.id);
+                
+                snackBar(snackMessage: "KingsFam will hide content from this user.", context: context);
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              
+              },
+            )
+          ] 
+          // else ... [
+          //   ListTile(
+          //     leading: Icon(Icons.delete, color: Colors.red[400]),
+          //     title: Text("Delete this says", style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.red[400])),
+          //     onTap: () {
+          //       context.read<PostsRepository>().deletePost(post: widget.post).then((value) {
+          //         snackBar(snackMessage: "Your post has been removed", context: context, bgColor: Colors.greenAccent);
+          //       });
+                
+          //     },
+          //   )
+          // ],
+           
+          ],
+        );
+      }
+    ));
   }
 
   // creation of the footer
