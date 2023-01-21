@@ -1,10 +1,12 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/enums/bottom_nav_items.dart';
@@ -133,7 +135,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             if (widget.ownerId != context.read<AuthBloc>().state.user!.uid) ... [
                ListTile(
                 onTap: () {
-                  context.read<BuidCubit>().onBlockUser(widget.ownerId);
+                Map<String, dynamic> info = {
+                  "userId" : widget.ownerId,
+                  "what" : "post",
+                  "continue": FirebaseFirestore.instance.collection(Paths.users).doc(widget.ownerId),                 
+                };
+                  Navigator.of(context).pushNamed(ReportContentScreen.routeName, arguments: RepoetContentScreenArgs(info: info));
                 },
                 leading: Icon(Icons.report_gmailerrorred, color: Colors.red[400]),
                 title: Text("Report user", style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.red[400]),),

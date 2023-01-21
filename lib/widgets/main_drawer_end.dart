@@ -1,8 +1,13 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:kingsfam/config/constants.dart';
+import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/models/church_model.dart';
+import 'package:kingsfam/screens/commuinity/community_home/home.dart';
+import 'package:kingsfam/screens/report_content_screen.dart';
 
-Widget MainDrawerEnd(Widget memberBtn, Widget settingsBtn, BuildContext context) {
+Widget MainDrawerEnd(Widget memberBtn, Widget settingsBtn, BuildContext context, Church cm) {
   return SafeArea(
     child: Drawer(
       backgroundColor: Theme.of(context).drawerTheme.backgroundColor,
@@ -16,6 +21,25 @@ Widget MainDrawerEnd(Widget memberBtn, Widget settingsBtn, BuildContext context)
 
         settingsBtn,
         memberBtn,
+
+        ListTile(
+          leading: Icon(Icons.report),
+          title: Text("Report", style: Theme.of(context).textTheme.caption,),
+          onTap: () {
+                Map<String, dynamic> info = {
+                  "userId" : cm.id,
+                  "what" : "cm",
+                  "continue": FirebaseFirestore.instance.collection(Paths.posts).doc(cm.id),                 
+                };
+            Navigator.of(context).pushNamed(ReportContentScreen.routeName, arguments: RepoetContentScreenArgs(info: info));
+          },
+        ), 
+
+        ListTile(
+          leading: Icon(Icons.more_vert),
+          title: Text("more", style: Theme.of(context).textTheme.caption,),
+          onTap: () => Navigator.of(context).pushNamed(CommunityHome.routeName, arguments: CommunityHomeArgs(cm: cm, cmB: null)),
+        )
       ],
     ),
     ),

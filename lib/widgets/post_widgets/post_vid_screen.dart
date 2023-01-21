@@ -1,9 +1,11 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/cubits/cubits.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
@@ -12,6 +14,7 @@ import 'package:kingsfam/repositories/post/post_repository.dart';
 import 'package:kingsfam/screens/comment_ui/comment_screen.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
+import 'package:kingsfam/screens/report_content_screen.dart';
 import 'package:kingsfam/widgets/snackbar.dart';
 import 'package:kingsfam/widgets/videos/video_player.dart';
 import 'package:video_player/video_player.dart';
@@ -189,7 +192,12 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
             if (widget.post.author.id != context.read<AuthBloc>().state.user!.uid) ... [
                ListTile(
                 onTap: () {
-
+                Map<String, dynamic> info = {
+                  "userId" : widget.post.author.id,
+                  "what" : "post",
+                  "continue": FirebaseFirestore.instance.collection(Paths.posts).doc(widget.post.id),                 
+                };
+                Navigator.of(context).pushNamed(ReportContentScreen.routeName, arguments: RepoetContentScreenArgs(info: info));
                 // Navigator.of(context).pushNamed(ReviewContentScreen.routeName, arguments: ReviewContentScreenArgs());  
                 //     PostsRepository().reportPost(postId: widget.post.id!, cmId: widget.post.commuinity!.id!).then((value) {
                 //      snackBar(snackMessage: "Post will be reviewed, thank you for helping keep KingsFam safe", context: context);
