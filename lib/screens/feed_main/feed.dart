@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/cubits/cubits.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
@@ -28,6 +29,7 @@ class _FeedScreenWidgetState extends State<FeedScreenWidget>
     Size size = MediaQuery.of(context).size;
     return BlocProvider<FeedBloc>(
       create: (_) => FeedBloc(
+        buidCubit: context.read<BuidCubit>(),
         authBloc: context.read<AuthBloc>(),
         likedPostCubit: context.read<LikedPostCubit>(),
         postsRepository: context.read<PostsRepository>(),

@@ -101,7 +101,7 @@ class ChurchRepository extends BaseChurchRepository {
   Stream<List<Future<Church?>>> getCmsStream({required String currId}) {
     // this was members { "currId":userRef } or top level was a list
     // .where('members.$currId.userReference', isEqualTo: userRef)
-    int limit = MockFlag.ISMOCKTESTING ? 1 : 20;
+    int limit = MockFlag.ISMOCKTESTING ? 3 : 20;
     log("we are now in the getCmsStream");
     List<Future<Church?>> bucket = [];
     return FirebaseFirestore.instance
@@ -830,30 +830,30 @@ class ChurchRepository extends BaseChurchRepository {
   }
 
   void updateUserTimestampOnOpenCm(Church cm, String usrId) {
-    Map<String, dynamic> memsMap = {};
-    var memListFromCm = cm.members.keys.toList();
+    // Map<String, dynamic> memsMap = {};
+    // var memListFromCm = cm.members.keys.toList();
 
-    for (int i = 0; i < cm.members.keys.length; i++) {
-      if (memListFromCm[i].id == usrId) {
-        memsMap[memListFromCm[i].id] = {
-          'timestamp': Timestamp.now(),
-          'role': cm.members[memListFromCm[i]]['role'],
-          'userReference': FirebaseFirestore.instance
-              .collection(Paths.users)
-              .doc(memListFromCm[i].id),
-        };
-      }
-      if (memListFromCm[i].id != usrId) {
-        memsMap[memListFromCm[i].id] = {
-          'timestamp': cm.members[memListFromCm[i]]['timestamp'],
-          'role': cm.members[memListFromCm[i]]['role'],
-          'userReference': FirebaseFirestore.instance
-              .collection(Paths.users)
-              .doc(memListFromCm[i].id),
-        };
-      }
-    }
-    fb.doc(cm.id).update({'members': memsMap});
+    // for (int i = 0; i < cm.members.keys.length; i++) {
+    //   if (memListFromCm[i].id == usrId) {
+    //     memsMap[memListFromCm[i].id] = {
+    //       'timestamp': Timestamp.now(),
+    //       'role': cm.members[memListFromCm[i]]['role'],
+    //       'userReference': FirebaseFirestore.instance
+    //           .collection(Paths.users)
+    //           .doc(memListFromCm[i].id),
+    //     };
+    //   }
+    //   if (memListFromCm[i].id != usrId) {
+    //     memsMap[memListFromCm[i].id] = {
+    //       'timestamp': cm.members[memListFromCm[i]]['timestamp'],
+    //       'role': cm.members[memListFromCm[i]]['role'],
+    //       'userReference': FirebaseFirestore.instance
+    //           .collection(Paths.users)
+    //           .doc(memListFromCm[i].id),
+    //     };
+    //   }
+    // }
+    // fb.doc(cm.id).update({'members': memsMap});
   }
 
   void onBoostCm({required String cmId}) {
@@ -866,16 +866,37 @@ class ChurchRepository extends BaseChurchRepository {
 
   Future<Map<String, dynamic>> FutureChurchsAndMentioned(
       {required List<Future<Church?>> c, required String uid}) async {
+    log("listening...");
+    DateTime? localT;
+    bool readStatus = false;
+    DateTime? ts;
+
     final Map<String, bool> mentionedMap = {};
     Set<Church?> chsJoined = {};
     Set<String> chIdSeen = {};
     for (var ch in c) {
       Church? church = await ch;
+
+      // check timestamp on ch vs my last open time. with this I can then add a read status on the ch
+      List<String>? savedCmTs = await UserPreferences.getCmTimestamps();
+      if (savedCmTs != null) {
+        ts = DateTime.fromMicrosecondsSinceEpoch(
+            church!.recentMsgTime.microsecondsSinceEpoch);
+        for (int i = 0; i < savedCmTs.length; i++) {
+          if (savedCmTs[i].substring(0, 20) == church.id!) {
+            localT = DateTime.tryParse(savedCmTs[i].substring(21));
+            if (localT != null) {
+              readStatus = !localT.isBefore(ts) ? false : true;
+            }
+          }
+        }
+      }
+
       if (church != null && !chIdSeen.contains(church.id)) {
         bool isInCm = await isInCmById(cmId: church.id!, userId: uid);
         if (!isInCm) continue;
 
-        chsJoined.add(church);
+        chsJoined.add(church.copyWith(readStatus: readStatus));
         chIdSeen.add(church.id!);
         var hasSnap = await FirebaseFirestore.instance
             .collection(Paths.mention)

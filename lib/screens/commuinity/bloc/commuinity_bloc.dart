@@ -83,6 +83,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
         members: event.commuinity.members,
       );
 
+      // getting rid of this
       _churchRepository.updateUserTimestampOnOpenCm(
           cm, _authBloc.state.user!.uid);
 
@@ -147,7 +148,8 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
             add(CommunityLoadingCords(commuinity: cm));
           }
         } else {
-          UserPreferences.updateLastVisitedCm(cmId: event.commuinity.id!);
+          UserPreferences.updateCmTimestamp(cmId: event.commuinity.id!);
+          // UserPreferences.updateLastVisitedCm(cmId: event.commuinity.id!);
           // get the role of the user
           var cmUserInfoDoc = await FirebaseFirestore.instance
               .collection(Paths.communityMembers)
@@ -159,8 +161,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
             String? kfRoleName = cmUserInfoDoc.data()!["kfRole"] ?? null;
             // if user has a kfRole aka non custom do not attempt to look for rid
             if (kfRoleName != null) {
-              Map<String, dynamic>? role =
-                  CmActions.getKfRolePermissions(roleName: kfRoleName);
+              Map<String, dynamic>? role = CmActions.getKfRolePermissions(roleName: kfRoleName);
               emit(state.copyWith(role: role ?? {"member": []}));
             } else {
               Map<String, dynamic> role = await CmActions.getRidPermissions(

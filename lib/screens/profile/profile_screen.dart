@@ -1,10 +1,13 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/enums/bottom_nav_items.dart';
 import 'package:kingsfam/models/models.dart';
@@ -17,11 +20,9 @@ import 'package:kingsfam/screens/profile/widgets/prayer_chunck.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/prayer/prayer_snipit.dart';
 import 'package:kingsfam/widgets/widgets.dart';
-import 'package:video_player/video_player.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
-import '../../helpers/navigator_helper.dart';
-import '../../widgets/videos/asset_video.dart';
+
+
 import 'widgets/widgets.dart';
 
 class ProfileScreenArgs {
@@ -121,6 +122,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  _showOptions() {
+    return showModalBottomSheet(
+      context: context, 
+      builder: ((context) {
+        bool isBlocked = context.read<BuidCubit>().state.buids.contains(widget.ownerId);
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (widget.ownerId != context.read<AuthBloc>().state.user!.uid) ... [
+               ListTile(
+                onTap: () {
+                Map<String, dynamic> info = {
+                  "userId" : widget.ownerId,
+                  "what" : "post",
+                  "continue": FirebaseFirestore.instance.collection(Paths.users).doc(widget.ownerId),                 
+                };
+                  Navigator.of(context).pushNamed(ReportContentScreen.routeName, arguments: RepoetContentScreenArgs(info: info));
+                },
+                leading: Icon(Icons.report_gmailerrorred, color: Colors.red[400]),
+                title: Text("Report user", style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.red[400]),),
+            ),
+            
+            SizedBox(height: 7),
+
+            ListTile(
+              leading: Icon(Icons.block, color: Colors.red[400]),
+              title:
+                isBlocked ?
+                Text("Unblock user", style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.red[400]))
+               : Text("Block user", style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.red[400])),
+              onTap: () {
+                // add userId to systemdb of blocked uids
+
+                context.read<BuidCubit>().onBlockUser(widget.ownerId);
+                
+                isBlocked 
+                ? snackBar(snackMessage: "KingsFam will show content from this user if in same community.", context: context)
+                : snackBar(snackMessage: "KingsFam will hide content from this user.", context: context);
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              
+              },
+            )
+            ],
+          ]
+           
+        
+        );
+      }
+    ));
+  }
+
   //---------------------------------------------------------body widget extracted
   Widget _bodyBabbyyyy(ProfileState state) {
     switch (state.status) {
@@ -143,21 +198,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   actions: [
-                    // if (state.isCurrentUserr)
-                    //    GestureDetector(
-                    // onTap: () => NavHelper().navToSnackBar(context, state.userr.id),
-                    // child: VisibilityDetector(
-                    //   key: ObjectKey(_perkedVideoPlayerController),
-                    //   onVisibilityChanged: (vis) {
-                    //     vis.visibleFraction > 0
-                    //         ? _perkedVideoPlayerController.play()
-                    //         : _perkedVideoPlayerController.pause();
-                    //   },
-                    //   child: Container(
-                    //       child: AssetVideoPlayer(
-                    //     controller: _perkedVideoPlayerController,
-                    //   )),
-                    // )),
+                    if (!state.isCurrentUserr)
+                       GestureDetector(
+                    onTap: () {
+                      _showOptions();
+                    },
+                    child: Icon(Icons.more_vert)
+                    ),
                   ],
                   // expandedHeight: 200,
                 ),
@@ -166,6 +213,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        if ((widget.ownerId != context.read<AuthBloc>().state.user!.uid && context.read<BuidCubit>().state.buids.contains(widget.ownerId))) ... [
+                        ListTile(
+                          leading: Icon(Icons.remove_red_eye, color: Colors.redAccent,),
+                          title: Text("You blocked this user", style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.redAccent),),
+                          trailing: Icon(Icons.cancel_outlined, color: Colors.redAccent),
+                          
+                          onTap: () {
+                            context.read<BuidCubit>().onBlockUser(widget.ownerId);
+                              snackBar(snackMessage: "KingsFam will unblock this user", context: context);Navigator.of(context).pop();
+                          },
+                        ),
+                        ],
                         Stack(
                           children: [
                             Container(
@@ -246,6 +305,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         Theme.of(context).textTheme.caption)))
               ],
             ));
+            
     }
   }
 
@@ -344,4 +404,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
+   
 }

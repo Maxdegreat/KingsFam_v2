@@ -3,9 +3,11 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/widgets/comment_line.dart';
+import 'package:kingsfam/widgets/hide_content/hide_content_full_screen_post.dart';
 import 'bloc/comment_bloc.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
@@ -102,15 +104,19 @@ class _CommentScreenState extends State<CommentScreen> {
               return Center(child: Text("Be the first to comment", style: Theme.of(context).textTheme.caption,));
             } else {
               Comment? comment = state.comments[index];
-            return comment != null
-                ? Column(
+              if (comment == null) return Container();
+              if (context.read<BuidCubit>().state.buids.contains(comment.author.id)) {
+                return HideContent.textContent(Theme.of(context).textTheme, () {context.read<BuidCubit>().onBlockUser(comment.author.id);});
+              } else {
+                return Column(
                     children: [
                       CommentLines(comment: comment),
                       // _replyBtns(comment: comment, postId: widget.post.id!),
                       // _showReplys(state: state, comment: comment),
                     ],
-                  )
-                : Text("ops, something went wrong");
+                  );
+              }
+           
             }
           },
         ),

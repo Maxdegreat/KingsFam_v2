@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/config/paths.dart';
+import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/helpers/clipboard.dart';
 import 'package:kingsfam/models/models.dart';
@@ -16,6 +17,7 @@ import 'package:kingsfam/extensions/extensions.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/giphy/giphy_widget.dart';
+import 'package:kingsfam/widgets/hide_content/hide_content_full_screen_post.dart';
 import 'package:kingsfam/widgets/link_preview_container.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -123,6 +125,7 @@ class _MessageLinesState extends State<MessageLines> {
           return Padding(
             padding: const EdgeInsets.only(bottom: 8.0, left: 8, right: 8),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -187,73 +190,72 @@ class _MessageLinesState extends State<MessageLines> {
                   ],
                 ),
                 SizedBox(height: 7),
-                Padding(
-                  padding: EdgeInsets.only(
-                      left: MediaQuery.of(context).size.width / 7),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(width: 7),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(Icons.delete),
-                          SizedBox(width: 5),
-                          GestureDetector(
-                            onTap: () {
-                              if (widget.message.sender!.id ==
-                                  context.read<AuthBloc>().state.user!.uid) {
-                                FirebaseFirestore.instance
-                                    .collection(Paths.church)
-                                    .doc(this.widget.cm.id!)
-                                    .collection(Paths.kingsCord)
-                                    .doc(this.widget.kc.id!)
-                                    .collection(Paths.messages)
-                                    .doc(this.widget.message.id)
-                                    .delete();
-                                Navigator.of(context).pop();
-                              } else
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(width: 7),
+                                         ListTile(
+                      leading: Icon(Icons.copy),
+                      title: Text("copy"),
+                      onTap: () {
+                              if (widget.message.text != null) {
+                                copyTextToClip(widget.message.text!);
                                 snackBar(
-                                    snackMessage:
-                                        "hmm, can't del a message that is not yours fam",
-                                    context: context,
-                                    bgColor: Colors.red[400]!);
+                                    snackMessage: "copied", context: context);
+                              } else {
+                                snackBar(
+                                    snackMessage: "can not copy",
+                                    context: context);
+                              }
                             },
-                            child: Container(
-                              child: Text("Unsend",
-                                  style: Theme.of(context).textTheme.bodyText1),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: 7),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(Icons.copy),
-                          SizedBox(width: 5),
-                          GestureDetector(
-                              onTap: () {
-                                if (widget.message.text != null) {
-                                  copyTextToClip(widget.message.text!);
-                                  snackBar(
-                                      snackMessage: "copied", context: context);
-                                } else {
-                                  snackBar(
-                                      snackMessage: "can not copy",
-                                      context: context);
-                                }
-                              },
-                              child: Text("Copy",
-                                  style:
-                                      Theme.of(context).textTheme.bodyText1)),
-                        ],
-                      )
-                    ],
-                  ),
+                    ),
+                   if (context.read<AuthBloc>().state.user!.uid == widget.message.sender!.id) ... [
+                    ListTile(
+                      leading: Icon(Icons.delete),
+                      title: Text("Unsend", style: Theme.of(context).textTheme.bodyText1),
+                      onTap: () {
+                         
+                              FirebaseFirestore.instance
+                                  .collection(Paths.church)
+                                  .doc(this.widget.cm.id!)
+                                  .collection(Paths.kingsCord)
+                                  .doc(this.widget.kc.id!)
+                                  .collection(Paths.messages)
+                                  .doc(this.widget.message.id)
+                                  .delete();
+                              Navigator.of(context).pop();
+                      },
+                    ),
+
+                   ]
+
+                   else ... [
+                     ListTile(
+                      leading: Icon(Icons.report, color: Colors.redAccent,),
+                      title: Text("Report this message", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                      onTap: () {
+                         Map<String, dynamic> info = {
+                          "userId" : widget.message.sender!.id,
+                          "what" : "message",
+                          "continue": FirebaseFirestore.instance.collection(Paths.church).doc(widget.cm.id).collection(Paths.kingsCord).doc(widget.kc.id).collection(Paths.messages).doc(widget.message.id),                 
+                        };
+                        Navigator.of(context).pushNamed(ReportContentScreen.routeName, arguments: RepoetContentScreenArgs(info: info));
+                      }
+                    ),
+
+                    ListTile(
+                      leading: Icon(Icons.block, color: Colors.redAccent,),
+                      title: Text("block "+ widget.message.sender!.username, style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                      onTap: () {
+                          context.read<BuidCubit>().onBlockUser(widget.message.sender!.id);
+                          snackBar(snackMessage: widget.message.sender!.username + "is blocked", context: context);
+                         Navigator.of(context).pop();
+                         Navigator.of(context).pop();
+                      }
+                    ),
+                   ],
+                  ],
                 ),
               ],
             ),
@@ -508,7 +510,13 @@ class _MessageLinesState extends State<MessageLines> {
 
     return BlocProvider.value(
       value: kcubit!,
-      child: Draggable<Widget>(
+      child: 
+
+      context.read<BuidCubit>().state.buids.contains(widget.message.sender!.id) 
+
+      ? HideContent.textContent(Theme.of(context).textTheme, () {context.read<BuidCubit>().onBlockUser(widget.message.sender!.id); Navigator.of(context).pop();})
+      
+      : Draggable<Widget>(
           onDraggableCanceled: ((velocity, offset) {
             if (offset.dx >= 100) {
               if (widget.message.sender!.token.isNotEmpty)
@@ -578,7 +586,7 @@ class _MessageLinesState extends State<MessageLines> {
                                           : Color(hexcolor.hexcolorCode(
                                               widget.message.sender!.colorPref))),
                                 ),
-                                SizedBox(width: 2),
+                                SizedBox(width: 5),
                                 Text('${widget.message.date.timeAgo()}',
                                     style: Theme.of(context)
                                         .textTheme

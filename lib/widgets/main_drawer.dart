@@ -20,10 +20,8 @@ class MainDrawer extends StatefulWidget {
   State<MainDrawer> createState() => _MainDrawerState();
 }
 
-
 class _MainDrawerState extends State<MainDrawer> {
-
-late NativeAd _nativeAd;
+  late NativeAd _nativeAd;
   bool _isNativeAdLoaded = false;
   void _createNativeAd() {
     _nativeAd = NativeAd(
@@ -41,8 +39,6 @@ late NativeAd _nativeAd;
     _nativeAd.load();
   }
 
-
-
   @override
   void initState() {
     _createNativeAd();
@@ -57,8 +53,6 @@ late NativeAd _nativeAd;
 
 // Widget build is below -------------------------------------------------------------------------------------
 // Widget build is below -------------------------------------------------------------------------------------
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +69,7 @@ late NativeAd _nativeAd;
       return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
           child: ListTile(
-            contentPadding: EdgeInsets.only(left: 0),
+            contentPadding: const EdgeInsets.only(left: 0),
             leading:
                 ContainerWithURLImg(imgUrl: c.imageUrl, height: 70, width: 90),
             title: Text(c.name,
@@ -83,6 +77,11 @@ late NativeAd _nativeAd;
                     .textTheme
                     .bodyText1!
                     .copyWith(fontSize: 24, fontStyle: FontStyle.italic)),
+            trailing: c.readStatus!
+                ? CircleAvatar(
+                    radius: 5,
+                    backgroundColor: Theme.of(context).colorScheme.primary)
+                : SizedBox.shrink(),
             onTap: () {
               if (c != context.read<ChatscreenBloc>().state.selectedCh) {
                 context.read<ChatscreenBloc>()
@@ -117,7 +116,9 @@ late NativeAd _nativeAd;
           mainAxisSize: MainAxisSize.max,
           children: [
             _cmsList(context, drawerLst),
-            Divider(color: Theme.of(context).colorScheme.inversePrimary,),
+            Divider(
+              color: Theme.of(context).colorScheme.inversePrimary,
+            ),
             _createNewCm(),
             _showAd(),
           ],
@@ -128,11 +129,10 @@ late NativeAd _nativeAd;
 
   _createNewCm() {
     return Expanded(
-      flex: 2,
+        flex: 2,
         // height: 50, //MediaQuery.of(context).size.height * .3,
         child: ListTile(
-          onTap: () =>
-                        Navigator.of(context).pushNamed(BuildChurch.routeName),
+            onTap: () => Navigator.of(context).pushNamed(BuildChurch.routeName),
             leading: Icon(Iconsax.add_square4, size: 20),
             title: Text("Create new community",
                 style: Theme.of(context)
@@ -141,25 +141,23 @@ late NativeAd _nativeAd;
                     .copyWith(fontStyle: FontStyle.italic))));
   }
 
-
-_showAd () {
-  return _isNativeAdLoaded
-      ? Expanded(
-          //height: 50, // MediaQuery.of(context).size.height * .1,
-          flex: 2,
-           // width: MediaQuery.of(context).size.width / 2.2,
-          child: AdWidget(ad: _nativeAd),
-          // decoration: BoxDecoration(
-          //    color: Theme.of(context).colorScheme.primary,
-          //    borderRadius: BorderRadius.circular(10),
-          // ),
-        )
-      : SizedBox.shrink();
+  _showAd() {
+    return _isNativeAdLoaded
+        ? Expanded(
+            //height: 50, // MediaQuery.of(context).size.height * .1,
+            flex: 2,
+            // width: MediaQuery.of(context).size.width / 2.2,
+            child: AdWidget(ad: _nativeAd),
+            // decoration: BoxDecoration(
+            //    color: Theme.of(context).colorScheme.primary,
+            //    borderRadius: BorderRadius.circular(10),
+            // ),
+          )
+        : SizedBox.shrink();
   }
 
   Container _cmsList(BuildContext context, List<Widget> drawerLst) {
     return Container(
-        
         height: MediaQuery.of(context).size.height / 1.4,
         child: ListView(children: drawerLst));
   }

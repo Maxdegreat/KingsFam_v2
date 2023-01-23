@@ -100,8 +100,6 @@ class _SaysRoomState extends State<SaysRoom> {
         builder: (context, state) {
           
           return Scaffold(
- 
-
             appBar: AppBar(
               // backgroundColor: Color(hc.hexcolorCode("#141829")),
               title: Text(widget.kcName,
@@ -154,6 +152,7 @@ class _SaysRoomState extends State<SaysRoom> {
                                       log("fired");
                                     },
                                     child: SaysContainer(
+                                      cmId: widget.cm.id!,
                                         says: says,
                                         context: context,
                                         localLikesSays: context

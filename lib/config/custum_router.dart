@@ -219,9 +219,13 @@ class CustomRoute {
         args: settings.arguments as VcScreenArgs
     );
 
+    case ReportContentScreen.routeName:
+      return ReportContentScreen.route(args: settings.arguments as RepoetContentScreenArgs);
+
       default:
         return _errorRoute();
     }
+
   }
 
   static Route _errorRoute() {

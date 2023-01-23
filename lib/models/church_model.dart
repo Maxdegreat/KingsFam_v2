@@ -23,11 +23,12 @@ class Church extends Equatable {
   final Timestamp recentMsgTime;
   final int boosted; // 0 none 1 basic, 2 if I ever add more versions
   final String themePack;
+  final bool? readStatus;
   // 2 gen the constructor
   Church({
     required this.searchPram,
     this.id,
-    required this.cmPrivacy, 
+    required this.cmPrivacy,
     required this.name,
     required this.location,
     required this.imageUrl,
@@ -40,6 +41,7 @@ class Church extends Equatable {
     required this.boosted,
     required this.themePack,
     this.size,
+    this.readStatus,
   });
   // 3 make the props
   @override
@@ -48,7 +50,7 @@ class Church extends Equatable {
         searchPram,
         name,
         location,
-        cmPrivacy, 
+        cmPrivacy,
         hashTags,
         imageUrl,
         about,
@@ -59,6 +61,7 @@ class Church extends Equatable {
         boosted,
         themePack,
         size,
+        readStatus,
       ];
   //generate the copy with
   Church copyWith({
@@ -77,6 +80,7 @@ class Church extends Equatable {
     int? boosted,
     String? themePack,
     Map<String, List<dynamic>>? permissions,
+    bool? readStatus,
   }) {
     return Church(
       cmPrivacy: cmPrivacy ?? this.cmPrivacy,
@@ -94,12 +98,12 @@ class Church extends Equatable {
       boosted: boosted ?? this.boosted,
       themePack: themePack ?? this.themePack,
       permissions: permissions ?? this.permissions,
+      readStatus: readStatus ?? this.readStatus,
     );
   }
 
   //5 make the to doc
   Map<String, dynamic> toDoc() {
-    
     return {
       'cmPrivacy': cmPrivacy,
       'name': name,
@@ -107,7 +111,8 @@ class Church extends Equatable {
       'searchPram': searchPram,
       'about': about,
       'imageUrl': imageUrl,
-      'members': {}, // this is depreciated. now using a separate collection to hold roles and members 
+      'members':
+          {}, // this is depreciated. now using a separate collection to hold roles and members
       'events': events,
       'size': size,
       'boosted': boosted,
@@ -137,7 +142,7 @@ class Church extends Equatable {
     }
 
     return {
-      'cmPrivacy' : cmPrivacy,
+      'cmPrivacy': cmPrivacy,
       'name': name,
       'location': location,
       'searchPram': searchPram,
@@ -165,7 +170,6 @@ class Church extends Equatable {
   static Future<Church> fromDoc(DocumentSnapshot doc) async {
     final data = doc.data() as Map<String, dynamic>;
 
-
     String location = data["location"] ?? "Remote";
     location = location == "" ? "Remote" : location;
 
@@ -173,23 +177,33 @@ class Church extends Equatable {
       members: {},
       id: doc.id,
       size: data['size'] ?? 0, // ----------------------------------------------
-      searchPram: List<String>.from(data['searchPram'] ?? []), // ----------------                    
+      searchPram:
+          List<String>.from(data['searchPram'] ?? []), // ----------------
       hashTags: [],
-      name: data['name'] ?? 'name', //-------------------------------------------
-      location: location, // ------------------------------------------------------
-      about: data['about'] ?? '', // ------------------------------------------------
-      imageUrl: data['imageUrl'] ?? '', //------------------------------------------
-      recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0), //-------------------
-      boosted: data['boosted'] ?? 0, // --------------------------------------------
-      themePack: data['themePack'] ?? "none", // ---------------------------------
-      events: List<String>.from( data['events'] ?? [] ), // ----------------------
-      cmPrivacy: data['cmPrivacy'] ?? CmPrivacy.open, // ---------------------------
+      name:
+          data['name'] ?? 'name', //-------------------------------------------
+      location:
+          location, // ------------------------------------------------------
+      about: data['about'] ??
+          '', // ------------------------------------------------
+      imageUrl:
+          data['imageUrl'] ?? '', //------------------------------------------
+      recentMsgTime:
+          data['recentMsgTime'] ?? Timestamp(0, 0), //-------------------
+      boosted:
+          data['boosted'] ?? 0, // --------------------------------------------
+      themePack:
+          data['themePack'] ?? "none", // ---------------------------------
+      events: List<String>.from(data['events'] ?? []), // ----------------------
+      cmPrivacy:
+          data['cmPrivacy'] ?? CmPrivacy.open, // ---------------------------
+      readStatus: false,
     );
   }
 
-  
-    static Future<Church> fromId(String id) async {
-    DocumentSnapshot doc = await FirebaseFirestore.instance.collection(Paths.church).doc(id).get();
+  static Future<Church> fromId(String id) async {
+    DocumentSnapshot doc =
+        await FirebaseFirestore.instance.collection(Paths.church).doc(id).get();
     final data = doc.data() as Map<String, dynamic>;
 
     String location = data["location"] ?? "Remote";
@@ -199,21 +213,29 @@ class Church extends Equatable {
       members: {},
       id: doc.id,
       size: data['size'] ?? 0, // ----------------------------------------------
-      searchPram: List<String>.from(data['searchPram'] ?? []), // ----------------                    
+      searchPram:
+          List<String>.from(data['searchPram'] ?? []), // ----------------
       hashTags: [],
-      name: data['name'] ?? 'name', //-------------------------------------------
-      location: location, // ------------------------------------------------------
-      about: data['about'] ?? '', // ------------------------------------------------
-      imageUrl: data['imageUrl'] ?? '', //------------------------------------------
-      recentMsgTime: data['recentMsgTime'] ?? Timestamp(0, 0), //-------------------
-      boosted: data['boosted'] ?? 0, // --------------------------------------------
-      themePack: data['themePack'] ?? "none", // ---------------------------------
-      events: List<String>.from( data['events'] ?? [] ), // ----------------------
-      cmPrivacy: data['cmPrivacy'] ?? CmPrivacy.open, // ---------------------------
+      name:
+          data['name'] ?? 'name', //-------------------------------------------
+      location:
+          location, // ------------------------------------------------------
+      about: data['about'] ??
+          '', // ------------------------------------------------
+      imageUrl:
+          data['imageUrl'] ?? '', //------------------------------------------
+      recentMsgTime:
+          data['recentMsgTime'] ?? Timestamp(0, 0), //-------------------
+      boosted:
+          data['boosted'] ?? 0, // --------------------------------------------
+      themePack:
+          data['themePack'] ?? "none", // ---------------------------------
+      events: List<String>.from(data['events'] ?? []), // ----------------------
+      cmPrivacy:
+          data['cmPrivacy'] ?? CmPrivacy.open, // ---------------------------
+      readStatus: false,
     );
   }
-
-
 
   //7 church. empty
   static Church empty = Church(
@@ -230,23 +252,27 @@ class Church extends Equatable {
     hashTags: [],
     size: 0,
     themePack: 'none',
+    readStatus: false,
   );
 
-    static Church mock = Church(
-      id: "mockId",
-      permissions: {},
+  static Church mock = Church(
+    id: "mockId",
+    permissions: {},
     cmPrivacy: CmPrivacy.open,
     searchPram: [],
     name: "MockCm",
     location: "Local",
-    imageUrl: "https://github.com/amagalla1394/odin-recipe-git-test/blob/main/recipes/images/Steamed_Pork_Buns.jpg?raw=true",
+    imageUrl:
+        "https://github.com/amagalla1394/odin-recipe-git-test/blob/main/recipes/images/Steamed_Pork_Buns.jpg?raw=true",
     members: {},
     events: [],
-    about: 'A little about this cm is that this is a mock cm, did you know that??? or could you not tell',
+    about:
+        'A little about this cm is that this is a mock cm, did you know that??? or could you not tell',
     recentMsgTime: Timestamp(0, 0),
     boosted: 0,
     hashTags: [],
     size: 0,
     themePack: 'none',
+    readStatus: false,
   );
 }

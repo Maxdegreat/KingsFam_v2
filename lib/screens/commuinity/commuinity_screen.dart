@@ -215,6 +215,7 @@ class _CommuinityScreenState extends State<CommuinityScreen>
                   cm: widget.commuinity,
                   context: context),
               context,
+              widget.commuinity
             ),
               body: SafeArea(
               child: state.status == CommuintyStatus.armormed

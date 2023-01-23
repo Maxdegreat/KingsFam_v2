@@ -162,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     //push named route to login screen
                     Navigator.of(context).pushNamed(LoginFormScren.routeName);
                   },
-                  child: Text('Login In',
+                  child: Text('Login',
                       style: Theme.of(context).textTheme.bodyText1),
                   style:
                       TextButton.styleFrom(backgroundColor: Colors.amber[400])),

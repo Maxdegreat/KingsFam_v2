@@ -67,22 +67,21 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
   // This is the maping of commuinity to state
 
-  void updateSelectedCm( Church cm) {
+  void updateSelectedCm(Church cm) {
     emit(state.copyWith(selectedCh: cm));
   }
 
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
-
-      // update the user token. Ios has an issue of loosing tokens over time. 
+      // update the user token. Ios has an issue of loosing tokens over time.
       FirebaseMessaging.instance.getToken().then((token) {
         // log("token is: " + token.toString());
         _saveTokenToDatabase(token!).then((_) {
-          FirebaseMessaging.instance.onTokenRefresh.listen(_saveTokenToDatabase);
+          FirebaseMessaging.instance.onTokenRefresh
+              .listen(_saveTokenToDatabase);
           // log("saved the token: Done");
         });
       });
-      
 
       String? lastVisitedCmId = await UserPreferences.getLastVisitedCm();
       if (lastVisitedCmId != null) {
@@ -110,22 +109,29 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
           .getCmsStream(currId: currUserr.id)
           .listen((churchs) async {
         // var allChs = await Future.wait(churchs);
-        emit ( state.copyWith(chs: null, status: ChatStatus.loading ) );
+        // emit ( state.copyWith(chs: null, status: ChatStatus.loading ) );
 
-        Map<String, dynamic> chsAndMentionedMap =
-            await _churchRepository.FutureChurchsAndMentioned(
-                c: churchs, uid: _authBloc.state.user!.uid);
-        for (var i in chsAndMentionedMap["c"]) {
-         
-        }
-        if (chsAndMentionedMap["c"].isEmpty) {
-          emit(state.copyWith(selectedCh: null));
-          await getChsToJoinIfNeeded(false, chsToJoin);
-        }
-         else if (state.selectedCh == null)
-          emit( state.copyWith(selectedCh: chsAndMentionedMap["c"].first) );
-        emit( state.copyWith(chs: chsAndMentionedMap["c"], mentionedMap: chsAndMentionedMap["m"], status: ChatStatus.setState));
-        emit(state.copyWith(status: ChatStatus.sccuess));
+        _churchRepository.FutureChurchsAndMentioned(
+                c: churchs, uid: _authBloc.state.user!.uid)
+            .then((chs) {
+          log("......................................");
+          if (chs["c"].isEmpty) {
+            emit(state.copyWith(selectedCh: null));
+            getChsToJoinIfNeeded(false, chsToJoin);
+          } else if (state.selectedCh == null) {
+            emit(state.copyWith(selectedCh: chs["c"].first));
+          }
+
+          emit(state.copyWith(
+              chs: chs["c"],
+              mentionedMap: chs["m"],
+              status: ChatStatus.setState));
+          emit(state.copyWith(status: ChatStatus.sccuess));
+
+          for (var i in chs["c"]) {
+            // TODO
+          }
+        });
       });
 
       yield state.copyWith(status: ChatStatus.sccuess, currUserr: currUserr);
@@ -140,7 +146,6 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   }
 
   Future<void> getChsToJoinIfNeeded(bool isInCm, List<Church> chsToJoin) async {
-
     if (!isInCm && state.chsToJoin.isEmpty) {
       int limit = MockFlag.ISMOCKTESTING ? 1 : 15;
       chsToJoin = await _churchRepository.grabChurchs(limit: limit);
@@ -149,24 +154,20 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   }
 
   Future<void> removeCmFromJoinedCms({required String leftCmId}) async {
-    
     if (state.chs != null) {
-      
       for (var i in state.chs!) {
         if (i!.id == leftCmId) {
           state.chs!.remove(i);
           emit(state.copyWith(chs: state.chs));
           break;
-        } 
-      } 
-
+        }
+      }
     }
 
     if (state.selectedCh == null || state.selectedCh == leftCmId) {
-      
       if (state.chs!.length > 0)
         emit(state.copyWith(selectedCh: state.chs!.first));
-        emit(state.copyWith(chs: state.chs));
+      emit(state.copyWith(chs: state.chs));
     }
   }
 
@@ -181,7 +182,6 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   }
 
   void leftCm({required String id}) {
-   
     var lst = state.chs;
     for (var c in lst!) {
       if (c!.id == id) {
@@ -191,8 +191,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
     }
   }
 
-    
-    Future<void> _saveTokenToDatabase(String token) async {
+  Future<void> _saveTokenToDatabase(String token) async {
     String userId = _authBloc.state.user!.uid;
     await FirebaseFirestore.instance.collection('users').doc(userId).update({
       'token': [token] //FieldValue.arrayUnion([token])
