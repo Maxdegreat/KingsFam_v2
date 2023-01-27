@@ -49,7 +49,7 @@ class CustomRoute {
   }
 
   static Route onGenerateNestedRoute(RouteSettings settings) {
-    print('Nested Route: ${settings.name}');
+    log('Nested Route: ${settings.name}');
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
