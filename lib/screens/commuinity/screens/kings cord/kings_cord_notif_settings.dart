@@ -218,7 +218,7 @@ class _KingsCordNotifSettingsState extends State<KingsCordNotifSettings> {
                       primary: Color(hc.hexcolorCode("#141829")),
                       shape: StadiumBorder(),
                       elevation: 0),
-                  child: Text("Notify Me")),
+                  child: Text("Notify Me", style: Theme.of(context).textTheme.bodyText1)),
             ],
           ),
         ),
