@@ -76,7 +76,8 @@ exports.agoraTokenGenerator = functions.https.onRequest((req, res) => {
 exports.onNewJoinRequest = functions.firestore // --------------------------------------------------------- MUST LOOK AT
   .document("/requestToJoinCm/{cmId}/request/{requestingId}")
   .onCreate(async (_, context) => {
-    // ps. user will be updated on admission status via client
+    
+    
 
     // get the tokens from user,
     const userId = context.params.requestingId;
@@ -157,9 +158,58 @@ exports.onNewJoinRequest = functions.firestore // ------------------------------
     admin.messaging().sendToDevice(recievingTokens, message, options);
   });
 
-exports.onEditProfile = functions.firestore // --------------------------------------------------------- MUST LOOK AT
+exports.onEditProfile = functions.firestore // --------------------------------------------------------- TESTED ------------------------------------------------
   .document("/users/{userId}")
-  .onUpdate((change, context) => {
+  .onUpdate(async (change, context) => {
+
+    // IMPORTANT NOTE
+    // This function will be called when IOS and maybe android login / uninstall and reinstall. this is because of token changes
+    // in the user profile. tokens are important to app functionality due to subscriptions for fcm. because of this we will check
+    // for changes to tokens and act accordingly.
+
+    // TODO: make a token deactivation. 
+
+    const uid = context.params.userId;
+
+    if (change.after.data().token[0] !== change.before.data().token[0]) {
+      console.log("tokens are not the same")
+      // get all user cmIds
+      var userCm = admin.firestore().collection("users").doc(uid).collection("church");
+      var userCmSnap = await userCm.get();
+
+      // nav through all cms and sub to each kc and cm and role topics.
+      var topic;
+      for (var i = 0; i < userCmSnap.docs.length; i++) {
+        // sub to cm
+        topic = "church" + userCmSnap.docs[i].id;
+        // log("topic for cm is: ",  topic);
+        admin.messaging().subscribeToTopic(change.after.data().token[0], topic)
+        // go through cm and sub to topics accordingly
+        var kcSnap = await admin.firestore().collection("church").doc(userCmSnap.docs[i].id).collection("kingsCord").get();
+        for (var j = 0; j < kcSnap.docs.length; j++) {
+          topic = userCmSnap.docs[i].id + kcSnap.docs[j].id + "topic";
+          // log("topic for kc is: ", topic);
+          admin.messaging().subscribeToTopic(change.after.data().token[0], topic);
+        }
+        
+        // go to cmMem and get role. then sub to topic as needed
+        var userAsMember = await admin.firestore().collection("communityMembers").doc(userCmSnap.docs[i].id).collection("members").doc(uid).get();
+        var role = await userAsMember.data().kfRole;
+        var cmId = userCmSnap.docs[i].id;
+        if (role === "Lead" || role === "lead") {
+          topic = cmId + role;
+        } else if (role === "Admin" || role === "admin") {
+          topic = cmId + role;
+        } else if (role === "Mod" || role === "mod") {
+          topic = cmId + role;
+        }
+
+        // console.log("topic is: ", topic);
+        admin.messaging().subscribeToTopic(change.after.data().token[0], topic);
+      }
+      // done
+    }
+
     if (change.after.data().username === change.before.data().username) return;
     const userId = context.params.userId;
 
@@ -452,6 +502,52 @@ exports.onMentionedUserUpdate = functions.firestore
         admin.messaging().unsubscribeFromTopic(token[0], topic)
         // done
       });
+
+      exports.onRoleChanged = functions.firestore.document("/communityMembers/{cmId}/members/{memberId}") //---------------------------------------------------------- TEST NOW ------------------------------------------------
+        .onUpdate(async (change, context) => {
+          const cmId = context.params.cmId;
+          const uid = context.params.memberId;
+
+          // base case
+          var roleSnap = change.after.data();
+          var oldRole = change.before.data().kfRole;
+
+          if (roleSnap === oldRole) {
+            return 
+          }
+
+
+          // get value for new role
+          // var role = admin.firestore().collection("communityMembers").doc(cmId).collection("members").doc(uid);
+          // conditionally create appropriate topic or none if member
+          var topic;
+          if (roleSnap.kfRole === "Lead" || roleSnap.kfRole === "lead") {
+            topic = cmId + roleSnap.kfRole;
+          } else if (roleSnap.kfRole === "Admin" || roleSnap.kfRole === "admin") {
+            topic = cmId + roleSnap.kfRole;
+          } else if (roleSnap.kfRole === "Mod" || roleSnap.kfRole === "mod") {
+            topic = cmId + roleSnap.kfRole;
+          }
+
+
+          var user = admin.firestore().collection("users").doc(uid);
+          var userSnap = await user.get();
+
+
+          if (typeof topic !== 'undefined' || topic !== null) {
+            log("topic: " + topic);
+            var token = userSnap.get("token");
+            // conditionally subscribe or un sub to topic
+            admin.messaging().subscribeToTopic(token[0], topic);
+          }
+
+          // must unsub from old
+          topic = cmId + oldRole;
+          admin.messaging().unsubscribeFromTopic(token[0], topic);
+
+          // done
+
+        });
 
     exports.onDeleteKc = functions.firestore.document("/church/{cmId}/kingsCord/{kcId}")
     .onDelete( async (_, context) => {
