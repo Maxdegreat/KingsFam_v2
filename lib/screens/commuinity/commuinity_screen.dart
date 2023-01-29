@@ -39,7 +39,7 @@ import 'package:kingsfam/extensions/date_time_extension.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 
 import 'package:kingsfam/screens/screens.dart';
-import 'package:kingsfam/widgets/main_drawer.dart';
+import 'package:kingsfam/widgets/mainDrawer/main_drawer.dart';
 import 'package:kingsfam/widgets/main_drawer_end.dart';
 import 'package:kingsfam/widgets/show_alert_dialog.dart';
 import 'package:kingsfam/widgets/widgets.dart';
@@ -202,21 +202,21 @@ class _CommuinityScreenState extends State<CommuinityScreen>
         }
         return Scaffold(
             drawerEdgeDragWidth: MediaQuery.of(context).size.width / 1.7,
-            drawer: widget.showDrawer
-                ? MainDrawer()
-                : null,
-            endDrawer: MainDrawerEnd(
-              memberBtn(
-                  cmBloc: context.read<CommuinityBloc>(),
-                  cm: widget.commuinity,
-                  context: context),
-              settingsBtn(
-                  cmBloc: context.read<CommuinityBloc>(),
-                  cm: widget.commuinity,
-                  context: context),
-              context,
-              widget.commuinity
-            ),
+            // drawer: widget.showDrawer
+            //     ? MainDrawer()
+            //     : null,
+            // endDrawer: MainDrawerEnd(
+            //   memberBtn(
+            //       cmBloc: context.read<CommuinityBloc>(),
+            //       cm: widget.commuinity,
+            //       context: context),
+            //   settingsBtn(
+            //       cmBloc: context.read<CommuinityBloc>(),
+            //       cm: widget.commuinity,
+            //       context: context),
+            //   context,
+            //   widget.commuinity
+            // ),
               body: SafeArea(
               child: state.status == CommuintyStatus.armormed
                   ?

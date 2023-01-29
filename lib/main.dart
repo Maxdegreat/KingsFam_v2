@@ -73,6 +73,11 @@ class MyApp extends StatelessWidget {
             create: (context) =>
                 AuthBloc(authRepository: context.read<AuthRepository>()),
           ),
+           BlocProvider<LikedPostCubit>(
+            create: (context) => LikedPostCubit(
+                postsRepository: context.read<PostsRepository>(),
+                authBloc: context.read<AuthBloc>()),
+          ),
           BlocProvider<ChatscreenBloc>(
             create: (context) => ChatscreenBloc(
                 chatRepository: context.read<ChatRepository>(),
@@ -87,11 +92,7 @@ class MyApp extends StatelessWidget {
                   userrRepository: context.read<UserrRepository>(),
                   churchRepository: context.read<ChurchRepository>(),
                   authBloc: context.read<AuthBloc>())),
-          BlocProvider<LikedPostCubit>(
-            create: (context) => LikedPostCubit(
-                postsRepository: context.read<PostsRepository>(),
-                authBloc: context.read<AuthBloc>()),
-          ),
+         
           BlocProvider<KingscordCubit>(
             create: (context) => KingscordCubit(
                 storageRepository: context.read<StorageRepository>(),

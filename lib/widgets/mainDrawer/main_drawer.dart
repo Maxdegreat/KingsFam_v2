@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:kingsfam/config/constants.dart';
+import 'package:kingsfam/enums/bottom_nav_items.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
 import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/screens/build_church/build_church.dart';
@@ -14,7 +15,15 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MainDrawer extends StatefulWidget {
-  const MainDrawer({Key? key}) : super(key: key);
+  final Function(int) callBack;
+  final Map<BottomNavItem, Widget> items;
+  final BottomNavItem selectedItem;
+  const MainDrawer(
+      {Key? key,
+      required this.callBack,
+      required this.items,
+      required this.selectedItem})
+      : super(key: key);
 
   @override
   State<MainDrawer> createState() => _MainDrawerState();
@@ -51,76 +60,50 @@ class _MainDrawerState extends State<MainDrawer> {
     super.dispose();
   }
 
-// Widget build is below -------------------------------------------------------------------------------------
-// Widget build is below -------------------------------------------------------------------------------------
-
   @override
   Widget build(BuildContext context) {
-    Widget start = Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(
-          "Communities",
-          style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 25),
-        ));
-
-    List<Widget> drawerLst = context.read<ChatscreenBloc>().state.chs!.map((c) {
-      setState(() {});
-      if (c == null) return SizedBox.shrink();
-      return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
-          child: ListTile(
-            contentPadding: const EdgeInsets.only(left: 0),
-            leading:
-                ContainerWithURLImg(imgUrl: c.imageUrl, height: 70, width: 90),
-            title: Text(c.name,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyText1!
-                    .copyWith(fontSize: 24, fontStyle: FontStyle.italic)),
-            trailing: c.readStatus!
-                ? CircleAvatar(
-                    radius: 5,
-                    backgroundColor: Theme.of(context).colorScheme.primary)
-                : SizedBox.shrink(),
-            onTap: () {
-              if (c != context.read<ChatscreenBloc>().state.selectedCh) {
-                context.read<ChatscreenBloc>()
-                  ..add(ChatScreenUpdateSelectedCm(cm: c));
-                Navigator.of(context).pop();
-              }
-            },
-          ));
-    }).toList();
-
-    drawerLst.insert(0, start);
-
-    for (var c in context.read<ChatscreenBloc>().state.chs!) {
-      if (!context.read<ChatscreenBloc>().state.chs!.contains(c)) {
-        if (c != start) {
-          drawerLst.remove(c);
-          setState(() {});
-        }
-      }
-    }
+    
+    List<Widget> drawerLst = _getCms(); log("drawerList len: ${drawerLst.length}");
 
     return SafeArea(
       child: Drawer(
         backgroundColor: Theme.of(context).drawerTheme.backgroundColor,
-        width: MediaQuery.of(context).size.width - 45,
+        width: MediaQuery.of(context).size.width,
         // Add a ListView to the drawer. This ensures the user can scroll
         // through the options in the drawer if there isn't enough vertical
         // space to fit everything.
-        child: Column(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           children: [
-            _cmsList(context, drawerLst),
-            Divider(
-              color: Theme.of(context).colorScheme.inversePrimary,
+            SizedBox(
+              width: MediaQuery.of(context).size.width / 4.350,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  
+                 _cmsList(context, drawerLst),
+                  
+                  Container(
+                    height: MediaQuery.of(context).size.height / 2.50,
+                    child: NavigationRail(
+                      backgroundColor: Theme.of(context).drawerTheme.backgroundColor,
+                      onDestinationSelected: widget.callBack,
+                      selectedIndex: BottomNavItem.values.indexOf(widget.selectedItem),
+                      destinations: widget.items.values.map((e) => NavigationRailDestination(icon: e, label: Text(""),)).toList(),
+                    )
+                  )
+                ],
+              ),
             ),
-            _createNewCm(),
-            _showAd(),
+            VerticalDivider(
+              color: Theme.of(context).colorScheme.inversePrimary,
+              thickness: 0.50,
+            ),
+
           ],
         ),
       ),
@@ -158,8 +141,46 @@ class _MainDrawerState extends State<MainDrawer> {
 
   Container _cmsList(BuildContext context, List<Widget> drawerLst) {
     return Container(
-        height: MediaQuery.of(context).size.height / 1.4,
+        height: MediaQuery.of(context).size.height / 1.8,
         child: ListView(children: drawerLst));
+  }
+
+  List<Widget> _getCms() {
+    if (context.read<ChatscreenBloc>().state.chs == null ||
+        context.read<ChatscreenBloc>().state.chs!.isEmpty) {
+      return [];
+    } else {
+      return context.read<ChatscreenBloc>().state.chs!.map((c) {
+        log("in here");
+        setState(() {});
+        if (c == null) return SizedBox.shrink();
+        return Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+            child: ListTile(
+              contentPadding: const EdgeInsets.only(left: 0),
+              leading: ContainerWithURLImg(
+                  imgUrl: c.imageUrl, height: 70, width: 90),
+              title: Text(c.name,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1!
+                      .copyWith(fontSize: 24, fontStyle: FontStyle.italic)),
+              trailing: c.readStatus!
+                  ? CircleAvatar(
+                      radius: 5,
+                      backgroundColor: Theme.of(context).colorScheme.primary)
+                  : SizedBox.shrink(),
+              onTap: () {
+                if (c != context.read<ChatscreenBloc>().state.selectedCh) {
+                  context.read<ChatscreenBloc>()
+                    ..add(ChatScreenUpdateSelectedCm(cm: c));
+                  Navigator.of(context).pop();
+                }
+              },
+            ));
+      }).toList();
+    }
   }
 }
 

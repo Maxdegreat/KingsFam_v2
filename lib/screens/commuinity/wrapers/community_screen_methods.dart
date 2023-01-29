@@ -307,12 +307,12 @@ Widget settingsBtn(
                                   buildchurchCubit:
                                       context.read<BuildchurchCubit>()),
                             ),
-                            // ListTile(
-                            //   title: Text("Update Cm Privacy"),
-                            //   onTap: () => Navigator.of(context).pushNamed(
-                            //       UpdatePrivacyCm.routeName,
-                            //       arguments: UpdatePrivacyCmArgs(cm: cm)),
-                            // )
+                            ListTile(
+                              title: Text("Update Cm Privacy"),
+                              onTap: () => Navigator.of(context).pushNamed(
+                                  UpdatePrivacyCm.routeName,
+                                  arguments: UpdatePrivacyCmArgs(cm: cm)),
+                            )
                           ],
                         ),
                       );

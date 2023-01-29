@@ -1,9 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/nav/widgets/widgets.dart';
+import 'package:kingsfam/widgets/bottomNavItemContainer.dart';
+import 'package:kingsfam/widgets/mainDrawer/main_drawer.dart';
 
 class NavScreen extends StatelessWidget {
   static const String routeName = '/nav';
@@ -23,12 +27,14 @@ class NavScreen extends StatelessWidget {
     BottomNavItem.profile: GlobalKey<NavigatorState>(),
   };
 
-  final Map<BottomNavItem, Widget> items = const {
-    BottomNavItem.chats: Icon(Icons.home, size: 20,),
-    BottomNavItem.search: Icon(Icons.search, size: 20),
-    BottomNavItem.notifications: Icon(Icons.favorite_border, size: 20),
-    BottomNavItem.profile: Icon(Icons.account_circle, size: 20)
+  final Map<BottomNavItem, Widget> items =  {
+    BottomNavItem.chats: drawerIcon(Icon(Icons.home, size: 20,)),
+    BottomNavItem.search: drawerIcon(Icon(Icons.search, size: 20)),
+    BottomNavItem.notifications: drawerIcon(Icon(Icons.favorite_border, size: 20)),
+    BottomNavItem.profile: drawerIcon(Icon(Icons.account_circle, size: 20))
   };
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +43,17 @@ class NavScreen extends StatelessWidget {
       child: BlocBuilder<BottomnavbarCubit, BottomnavbarState>(
         builder: (context, state) { 
           return Scaffold(
+             appBar: AppBar(),
+            drawer: MainDrawer(
+              callBack: (index) {
+                log("index is : $index");
+                final selectedItem = BottomNavItem.values[index];
+                _selectBottomNavItem(context, selectedItem, selectedItem == state.selectedItem);
+                // context.read<BottomnavbarCubit>().showBottomNav(true);
+              },
+              items: items,
+              selectedItem: state.selectedItem,
+            ),
             body: Stack( // the body is a stack the stack of the bottom sheet
               children: items // this is a map, bottomnavitem to icon data
                   .map((item, _) => MapEntry( // this mapping every 
@@ -46,16 +63,16 @@ class NavScreen extends StatelessWidget {
                   .values
                   .toList(),
             ),
-            bottomNavigationBar: context.read<BottomnavbarCubit>().state.showBottomNav ? BottomNavBar(
+            // bottomNavigationBar: context.read<BottomnavbarCubit>().state.showBottomNav ? BottomNavBar(
               
-              onTap: (index) {
-                final selectedItem = BottomNavItem.values[index];
-                _selectBottomNavItem(context, selectedItem, selectedItem == state.selectedItem);
-                //context.read<BottomnavbarCubit>().showBottomNav(true);
-              },
-              items: items,
-              selectedItem: state.selectedItem,
-            ) : SizedBox.shrink(),
+            //   onTap: (index) {
+            //     final selectedItem = BottomNavItem.values[index];
+            //     _selectBottomNavItem(context, selectedItem, selectedItem == state.selectedItem);
+            //     //context.read<BottomnavbarCubit>().showBottomNav(true);
+            //   },
+            //   items: items,
+            //   selectedItem: state.selectedItem,
+            // ) : SizedBox.shrink(),
           );
         },
       ),
