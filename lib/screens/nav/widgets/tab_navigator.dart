@@ -55,17 +55,8 @@ class TabNavigator extends StatelessWidget {
   Widget _getScreen(BuildContext ctx, BottomNavItem item) {
     switch (item) {
       case BottomNavItem.chats:
-        return BlocProvider(
-          create: (_) => ChatscreenBloc(
-            userrRepository: ctx.read<UserrRepository>(),
-              churchRepository:  ctx.read<ChurchRepository>(),
-              postsRepository: ctx.read<PostsRepository>(),
-              likedPostCubit: ctx.read<LikedPostCubit>(),
-              authBloc: ctx.read<AuthBloc>(),
-              chatRepository: ctx.read<ChatRepository>())
-            ..add(LoadCms() /*LoadChats(chatId: ctx.read<AuthBloc>().state.user!.uid)*/ ),
-          child: ChatsScreen(),
-        );
+        return   ChatsScreen();
+     
 
       // removed the chain operator that ads the init user
       case BottomNavItem.search:

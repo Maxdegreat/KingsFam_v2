@@ -1,6 +1,6 @@
 
 
-part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
+part of 'package:kingsfam/widgets/mainDrawer/main_drawer.dart';
 
 Widget cmContainerImage(Church cm) {
   return Container(
@@ -658,50 +658,12 @@ Widget header({
   required CommuinityBloc cmBloc,
   required Church cm,
 }) {
-  return SliverAppBar(
-     backgroundColor: Colors.transparent,
-    expandedHeight: MediaQuery.of(context).size.height / 4.4,
-    flexibleSpace: FlexibleSpaceBar(
-      centerTitle: true,
-      title: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: Row(
-    mainAxisAlignment: MainAxisAlignment.start,
-    crossAxisAlignment: CrossAxisAlignment.center,
+  return  Row(
     children: [
-        cmContainerImage(cm),
+       cmContainerImage(cm),
         SizedBox(width: 7),
         cmTopColumn(cm, context),
     ],
-  ),
-      ),
-
-      background: Center(
-        child: Stack(
-          children: [
-            Container(
-                height: MediaQuery.of(context).size.height / 4.4,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: CachedNetworkImageProvider(cm.imageUrl),
-                      fit: BoxFit.cover),
-                )),
-            Container(
-                decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: <Color>[
-                  Colors.black38,
-                  Theme.of(context).scaffoldBackgroundColor,
-                ],
-                stops: [0.25, 1.0],
-                tileMode: TileMode.mirror,
-              ),
-            ))
-          ],
-        ),))
   );
 }
 // Widget makePost() {

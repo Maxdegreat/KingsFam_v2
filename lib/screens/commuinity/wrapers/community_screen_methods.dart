@@ -1,4 +1,4 @@
-part of 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
+part of 'package:kingsfam/widgets/mainDrawer/main_drawer.dart';
 
 // on Join A Community
 Widget joinBtn(

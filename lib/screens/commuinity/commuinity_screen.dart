@@ -53,8 +53,7 @@ import '../profile/bloc/profile_bloc.dart';
 import 'screens/kings cord/widgets/display_msg.dart';
 
 part 'wrapers/community_screen_wraper.dart';
-part 'wrapers/community_screen_methods.dart';
-part 'wrapers/cm_widgets.dart';
+
 
 class CommuinityScreenArgs {
   final Church commuinity;

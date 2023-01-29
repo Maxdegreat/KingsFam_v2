@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
                 likedPostCubit: context.read<LikedPostCubit>(),
                 postsRepository: context.read<PostsRepository>(),
                 churchRepository: context.read<ChurchRepository>(),
-                userrRepository: context.read<UserrRepository>()),
+                userrRepository: context.read<UserrRepository>())..add(LoadCms()),
           ),
           BlocProvider<SearchBloc>(
               create: (context) => SearchBloc(
