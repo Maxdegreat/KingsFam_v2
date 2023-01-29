@@ -80,7 +80,8 @@ class KingsCordRepository extends BaseKingsCordRepository {
     List<KingsCord> kingsCordL = [];
     List<KingsCord> vcL = [];
 
-    for (Future<KingsCord?> future in futures) {
+    try {
+      for (Future<KingsCord?> future in futures) {
       DateTime? tFromMsg;
       DateTime? localT;
       bool? readStatus;
@@ -88,6 +89,7 @@ class KingsCordRepository extends BaseKingsCordRepository {
       Says? recentS;
 
       await future.then((kc) async {
+        log("kc: " + kc.toString());
               if (kc != null) {
           
           if (kc.mode == "vc") {
@@ -170,6 +172,9 @@ class KingsCordRepository extends BaseKingsCordRepository {
 
       );;
 
+    }
+    } catch (e) {
+      log("error in kc repo futureWaitCord: $e");
     }
 
     // mentionedL.forEach((e) {

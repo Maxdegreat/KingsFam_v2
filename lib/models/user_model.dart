@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
@@ -154,6 +156,9 @@ class Userr extends Equatable {
   }
 
   factory Userr.fromDoc(DocumentSnapshot doc) {
+    if (doc.data() == null) {
+      return Userr.empty;
+    }
     final data = doc.data() as Map<String, dynamic>;
     return Userr(
       id: doc.id,
