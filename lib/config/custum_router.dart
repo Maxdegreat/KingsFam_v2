@@ -21,34 +21,32 @@ import 'package:kingsfam/screens/search/widgets/show_following.dart';
 class CustomRoute {
   static Route onGenerateRoute(RouteSettings settings) {
     log('Route: ${settings.name}');
-    switch (settings.name) {
-      case '/':
-        return MaterialPageRoute(
+
+    if (settings.name == '/') {
+      return MaterialPageRoute(
           settings: const RouteSettings(name: '/'),
           builder: (_) => Scaffold(),
         );
-
-      case SplashScreen.routeName:
-        return SplashScreen.route();
-
-      case LoginScreen.routeName:
-        return LoginScreen.route();
-
-      case NavScreen.routeName:
-        return NavScreen.route();
-
-      case SignupFormScreen.routeName:
-        return SignupFormScreen.route();
-
-      case LoginFormScren.routeName:
-        return LoginFormScren.route();
-
-      default:
-        return _errorRoute();
+    } else if (settings.name == SplashScreen.routeName) {
+       return SplashScreen.route();
+    } else if (settings.name == LoginScreen.routeName) {
+       return LoginScreen.route();
+    } else if (settings.name == NavScreen.routeName) {
+      return NavScreen.route();
+    } else if (settings.name == SignupFormScreen.routeName) {
+      return SignupFormScreen.route();
+    } else if (settings.name == LoginFormScren.routeName) {
+      return LoginFormScren.route();
+    } else {
+      return onGenerateNestedRoute(settings);
     }
+
+    }
+
+    
   }
 
-  static Route onGenerateNestedRoute(RouteSettings settings) {
+  Route onGenerateNestedRoute(RouteSettings settings) {
     log('Nested Route: ${settings.name}');
     switch (settings.name) {
       case '/':
@@ -107,9 +105,9 @@ class CustomRoute {
         return CommuinityFeedScreen.route(
             args: settings.arguments as CommuinityFeedScreenArgs);
 
-       case CommuinityScreen.routeName:
-         return CommuinityScreen.route(
-             args: settings.arguments as CommuinityScreenArgs);
+      //  case CommuinityScreen.routeName:
+      //    return CommuinityScreen.route(
+      //        args: settings.arguments as CommuinityScreenArgs);
 
       case FeedNewScreen.routeName:
         return FeedNewScreen.route(
@@ -228,7 +226,7 @@ class CustomRoute {
 
   }
 
-  static Route _errorRoute() {
+  Route _errorRoute() {
     return MaterialPageRoute(
       settings: const RouteSettings(name: '/error'),
       builder: (_) => Scaffold(
@@ -241,4 +239,4 @@ class CustomRoute {
       ),
     );
   }
-}
+

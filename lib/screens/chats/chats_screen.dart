@@ -15,7 +15,9 @@ import 'package:kingsfam/helpers/notification_helper.dart';
 //import 'package:firebase_messaging/firebase_messaging.dart';
 //import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
+import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
+import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 
 import 'package:kingsfam/widgets/widgets.dart';
 import '../../widgets/chats_view_widgets/getting_started.dart';
@@ -103,6 +105,7 @@ class _ChatsScreenState extends State<ChatsScreen>
   bool chatScreenStateUnReadChats = false;
 
 
+  var currentScreen ;
   @override
   Widget build(BuildContext context) {
     // final userId = context.read<AuthBloc>().state.user!.uid;
@@ -110,6 +113,10 @@ class _ChatsScreenState extends State<ChatsScreen>
         appBar: null,
         body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
             listener: (context, state) {
+
+          if (state.status == ChatStatus.setState) {
+            context.read<CommuinityBloc>()..add(CommunityInitalEvent(commuinity: state.selectedCh!));
+          }
 
           if (state.status == ChatStatus.setState) {
             log("we are updating the state of the chats screen ya dig");
@@ -120,10 +127,16 @@ class _ChatsScreenState extends State<ChatsScreen>
             ErrorDialog( content: 'chat_screen e-code: ${state.failure.message}');
           }
         }, builder: (context, state) {
-          var currentScreen ;
           if (state.selectedCh != null) {
-            //log("selectedCh: " + state.selectedCh.toString());
-            currentScreen =  CommuinityScreen(commuinity: state.selectedCh!, showDrawer: true);
+            context.read<CommuinityBloc>()..add(CommunityInitalEvent(commuinity: state.selectedCh!));
+            if ( context.read<CommuinityBloc>().state.kingCords.isNotEmpty) {
+              bool isMember = context.read<CommuinityBloc>().state.isMember ?? false;
+              currentScreen =  KingsCordScreen(commuinity: state.selectedCh!, kingsCord: context.read<CommuinityBloc>().state.kingCords[0]!, userInfo: {
+                "isMember": isMember,
+              }, usr: context.read<CommuinityBloc>().state.currUserr, role: context.read<CommuinityBloc>().state.role);
+            }
+            
+            // currentScreen =  CommuinityScreen(commuinity: state.selectedCh!, showDrawer: true);
           } 
 
           if (state.chs == null)
@@ -133,8 +146,10 @@ class _ChatsScreenState extends State<ChatsScreen>
                 bloc: context.read<ChatscreenBloc>(),
                 state: state,
             );
-            else 
+            else if (currentScreen != null) 
               return currentScreen;
+            else 
+              return Text("KingsFam..."); 
         }));
   }
 }

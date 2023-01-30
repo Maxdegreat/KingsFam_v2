@@ -176,6 +176,9 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
     try {
       // yield state.copyWith(selectedCh: event.cm);
       emit(state.copyWith(selectedCh: event.cm));
+      emit(state.copyWith(status: ChatStatus.setState));
+      emit(state.copyWith(status: ChatStatus.initial));
+
     } catch (e) {
       log("Failure in chatScreenBloc when attempting to update selected cm. error log is e: ${e.toString()}");
     }

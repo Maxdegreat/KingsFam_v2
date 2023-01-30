@@ -50,59 +50,54 @@ Widget nativeAdWidget(NativeAd ad, bool hasAdLoaded, BuildContext context) {
 // content preview: This holds the post
 Widget contentPreview(
     {required Post post, required BuildContext context, required Church cm}) {
-  return Padding(
-    padding: EdgeInsets.only(
-      right: 5,
-    ),
-    child: GestureDetector(
-      onTap: () => Navigator.of(context)
-          .pushNamed(CommuinityFeedScreen.routeName,
-              arguments: CommuinityFeedScreenArgs(commuinity: cm, passedPost: null))
-          .then((_) => context.read<BottomnavbarCubit>().showBottomNav(true)),
-      child: Container(
-        width: MediaQuery.of(context).size.width / 2.2,
-        decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary,
-            borderRadius: BorderRadius.circular(10)),
-        child: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: Row(
-            children: [
-              Container(
-                height: 50,
-                width: 50,
-                decoration: BoxDecoration(
-                  color: Color(hc.hexcolorCode("#141829")),
-                  borderRadius: BorderRadius.circular(10),
-                  image: post.imageUrl != null
-                      ? DecorationImage(
-                          image: CachedNetworkImageProvider(post.imageUrl!),
-                          fit: BoxFit.fitWidth)
-                      : post.thumbnailUrl != null
-                          ? DecorationImage(
-                              image: CachedNetworkImageProvider(
-                                  post.thumbnailUrl!),
-                              fit: BoxFit.fitWidth)
-                          : null,
-                ),
+  return GestureDetector(
+    onTap: () => Navigator.of(context)
+        .pushNamed(CommuinityFeedScreen.routeName,
+            arguments: CommuinityFeedScreenArgs(commuinity: cm, passedPost: null))
+        .then((_) => context.read<BottomnavbarCubit>().showBottomNav(true)),
+    child: Container(
+      width: MediaQuery.of(context).size.width / 2.2,
+      decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondary,
+          borderRadius: BorderRadius.circular(10)),
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Row(
+          children: [
+            Container(
+              height: 50,
+              width: 50,
+              decoration: BoxDecoration(
+                color: Color(hc.hexcolorCode("#141829")),
+                borderRadius: BorderRadius.circular(10),
+                image: post.imageUrl != null
+                    ? DecorationImage(
+                        image: CachedNetworkImageProvider(post.imageUrl!),
+                        fit: BoxFit.fitWidth)
+                    : post.thumbnailUrl != null
+                        ? DecorationImage(
+                            image: CachedNetworkImageProvider(
+                                post.thumbnailUrl!),
+                            fit: BoxFit.fitWidth)
+                        : null,
               ),
-              SizedBox(width: 5),
-              Flexible(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 5.0),
-                    child: Text(
-                      post.author.username,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.caption,
-                      maxLines: 1,
-                      overflow: TextOverflow.fade,
-                    ),
+            ),
+            SizedBox(width: 5),
+            Flexible(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 5.0),
+                  child: Text(
+                    post.author.username,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.caption,
+                    maxLines: 1,
+                    overflow: TextOverflow.fade,
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     ),

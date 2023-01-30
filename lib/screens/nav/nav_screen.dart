@@ -47,9 +47,9 @@ class NavScreen extends StatelessWidget {
              appBar: AppBar(),
             drawer: MainDrawer(
               callBack: (index) {
-                log("index is : $index");
                 final selectedItem = BottomNavItem.values[index];
                 _selectBottomNavItem(context, selectedItem, selectedItem == state.selectedItem);
+                Navigator.of(context).pop();
                 // context.read<BottomnavbarCubit>().showBottomNav(true);
               },
               items: items,

@@ -7,6 +7,7 @@ import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/church_display_column.dart';
 import 'package:kingsfam/widgets/show_asset_image.dart';
+import 'package:kingsfam/widgets/snackbar.dart';
 
 import '../help_dialog_widget.dart';
 
@@ -108,11 +109,12 @@ class gettingStartedBtn extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                     shape: StadiumBorder(), primary: Colors.amber),
                 onPressed: () async {
-                  final Church cm = await Church.fromId("ElApEUDmzedbQboXN6ZG");
-                  Navigator.of(context).pushNamed(CommuinityScreen.routeName,
-                      arguments: CommuinityScreenArgs(
-                          commuinity: cm, showDrawer: false));
-                  // helpDialog(context);
+                  snackBar(snackMessage: "TODO", context: context);
+                  // final Church cm = await Church.fromId("ElApEUDmzedbQboXN6ZG");
+                  // Navigator.of(context).pushNamed(CommuinityScreen.routeName,
+                  //     arguments: CommuinityScreenArgs(
+                  //         commuinity: cm, showDrawer: false));
+                  // // helpDialog(context);
                 },
                 child: Text("Getting Started",
                     textAlign: TextAlign.center,

@@ -100,7 +100,6 @@ class _MainDrawerState extends State<MainDrawer> {
   @override
   Widget build(BuildContext context) {
     List<Widget> drawerLst = _getCms();
-    log("drawerList len: ${drawerLst.length}");
 
     return SafeArea(
       child: Drawer(
@@ -122,7 +121,6 @@ class _MainDrawerState extends State<MainDrawer> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _cmsList(context, drawerLst),
-                  
                   Container(
                       height: MediaQuery.of(context).size.height / 2.50,
                       child: NavigationRail(
@@ -145,19 +143,68 @@ class _MainDrawerState extends State<MainDrawer> {
               color: Theme.of(context).colorScheme.inversePrimary,
               thickness: 0.50,
             ),
+            if (context.read<ChatscreenBloc>().state.selectedCh != null) ...[
+              BlocBuilder<CommuinityBloc, CommuinityState>(
+                builder: (context, state) {
+                  return Container(
+                    width: MediaQuery.of(context).size.width / 1.395,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        header(
+                            cm: context
+                                .read<ChatscreenBloc>()
+                                .state
+                                .selectedCh!,
+                            context: context,
+                            cmBloc: context.read<CommuinityBloc>()),
+                        SizedBox(height: 8),
+
+                        singlePostDisplay(
+                          cm: context
+                              .read<ChatscreenBloc>()
+                              .state
+                              .selectedCh!,
+                          context: context,
+                          cmBloc: context.read<CommuinityBloc>(),
+                          ad: null,
+                        ),
+
+                        // if (state.mentionedCords.length > 0) ... [
+                        //   showMentions(context, cm),
+                        //   SizedBox(height: 8),
+                        // ],
+
+                        showRooms(
+                            context,
+                            context
+                                .read<ChatscreenBloc>()
+                                .state
+                                .selectedCh!),
+
+                        SizedBox(height: 8),
+
+                        showVoice(
+                            context,
+                            context
+                                .read<ChatscreenBloc>()
+                                .state
+                                .selectedCh!),
+
+                        SizedBox(height: 8),
+                      ],
+                    ),
+                  );
+                },
+              )
+            ]
           ],
         ),
-
-        
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              
-            ],
-          )
-      
-      
       ),
     );
   }
@@ -213,15 +260,21 @@ class _MainDrawerState extends State<MainDrawer> {
                 if (c != context.read<ChatscreenBloc>().state.selectedCh) {
                   context.read<ChatscreenBloc>()
                     ..add(ChatScreenUpdateSelectedCm(cm: c));
+                  setState(() {});
                 }
               },
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(7),
-                  border: c == context.read<ChatscreenBloc>().state.selectedCh ? Border.all(color: Theme.of(context).colorScheme.primary, width: 2) : null
-                ),
+                    borderRadius: BorderRadius.circular(7),
+                    border: c == context.read<ChatscreenBloc>().state.selectedCh
+                        ? Border.all(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2)
+                        : null),
                 child: ContainerWithURLImg(
-                      imgUrl: c.imageUrl, height: MediaQuery.of(context).size.shortestSide / 5, width: MediaQuery.of(context).size.shortestSide / 5),
+                    imgUrl: c.imageUrl,
+                    height: MediaQuery.of(context).size.shortestSide / 5,
+                    width: MediaQuery.of(context).size.shortestSide / 5),
               ),
             ));
       }).toList();

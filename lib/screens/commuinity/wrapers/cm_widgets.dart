@@ -2,6 +2,12 @@
 
 part of 'package:kingsfam/widgets/mainDrawer/main_drawer.dart';
 
+Set<dynamic> cmPrivacySet = {
+  CommuintyStatus.armormed,
+  CommuintyStatus.shielded,
+  RequestStatus.pending
+};
+
 Widget cmContainerImage(Church cm) {
   return Container(
     height: 50,
@@ -13,92 +19,60 @@ Widget cmContainerImage(Church cm) {
   );
 }
 
-Widget cmTopColumn(Church cm, BuildContext context) {
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.start,
-    crossAxisAlignment: CrossAxisAlignment.start,
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Text(
-        cm.name,
-        style: Theme.of(context).brightness == ThemeMode.dark
-            ? Theme.of(context).textTheme.bodyText1
-            : Theme.of(context)
-                .textTheme
-                .bodyText1!
-                .copyWith(color: Colors.white),
-      ),
-      SizedBox(
-        height: 4,
-      ),
-      cmTopColumnHomeInvite(cm, () {}, context),
-    ],
-  );
-}
 
-Widget cmTopColumnHomeInvite(Church cm, VoidCallback k, BuildContext context) {
+Widget headerBtnsHomeInvite(Church cm, VoidCallback k, BuildContext context) {
   return Row(
-    mainAxisAlignment: MainAxisAlignment.start,
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
     crossAxisAlignment: CrossAxisAlignment.start,
-    mainAxisSize: MainAxisSize.min,
+    mainAxisSize: MainAxisSize.max,
     children: [
       Container(
-          height: 20,
-          // width: MediaQuery.of(context).size.width / 7,
+          height: 40,
+          width: MediaQuery.of(context).size.width / 4.5,
           child: ElevatedButton(
               style: ElevatedButton.styleFrom(
+                  shape: StadiumBorder(),
                   backgroundColor: Theme.of(context).colorScheme.secondary),
               onPressed: () => Navigator.of(context).pushNamed(
                   CommunityHome.routeName,
                   arguments: CommunityHomeArgs(
                       cm: cm, cmB: context.read<CommuinityBloc>())),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
+              child: iconName(Icon(
+                    Icons.home_filled,
+                    size: 12,
+                    color: Theme.of(context).colorScheme.primary,
+                  ), Text(
                     "Home",
                     style: Theme.of(context).textTheme.caption!.copyWith(
                         fontSize: 12,
                         color: Theme.of(context).colorScheme.primary),
-                  ),
-                  Icon(
-                    Icons.home_filled,
-                    size: 12,
-                    color: Theme.of(context).colorScheme.primary,
-                  )
-                ],
-              ))),
-      SizedBox(
-        width: 4,
-      ),
+                  ))
+              
+               )),
+
       Container(
-          height: 20,
-          width: MediaQuery.of(context).size.width / 8,
+          height: 40,
+          width: MediaQuery.of(context).size.width / 4.8,
           child: ElevatedButton(
               style: ElevatedButton.styleFrom(
+              shape: StadiumBorder(),
                   backgroundColor: Theme.of(context).colorScheme.secondary),
               onPressed: () async {
                 List<CameraDescription> cameras = await availableCameras();
                 Navigator.of(context).pushNamed(CameraScreen.routeName,
                     arguments: CameraScreenArgs(cameras: cameras));
               },
-              child: Center(
-                child: Icon(
-                  Icons.add,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 15,
-                ),
-              ))),
-      SizedBox(
-        width: 4,
-      ),
+              child: iconName(Icon(Icons.add,size: 12,
+                    color: Theme.of(context).colorScheme.primary,), Text("add", style: Theme.of(context).textTheme.caption!.copyWith(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.primary))))),
+
       Container(
-          height: 20,
-          width: MediaQuery.of(context).size.width / 8,
+          height: 40,
+          width: MediaQuery.of(context).size.width / 4.8,
           child: ElevatedButton(
               style: ElevatedButton.styleFrom(
+                shape: StadiumBorder(),
                   backgroundColor: Theme.of(context).colorScheme.secondary),
               onPressed: () async {
                 String generatedDeepLink =
@@ -106,47 +80,35 @@ Widget cmTopColumnHomeInvite(Church cm, VoidCallback k, BuildContext context) {
                         cm, true);
                 communityInvitePopUp(context, generatedDeepLink);
               },
-              child: Align(
-                alignment: Alignment.center,
-                child: Icon(
-                  Icons.share,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 15,
-                ),
-              )))
+              child: iconName(Icon(Icons.share,  size: 12,
+                    color: Theme.of(context).colorScheme.primary,), Text("share", style: Theme.of(context).textTheme.caption!.copyWith(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.primary)))
+              ))
     ],
   );
 }
 
-Widget postList({
+  Widget iconName(Icon i, Widget t) {
+    return  Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  t, i
+                ],
+              );
+  }
+
+Widget singlePostDisplay({
   required BuildContext context,
   required CommuinityBloc cmBloc,
   required Church cm,
   required Widget? ad,
 }) {
-  return Padding(
-    padding: const EdgeInsets.only(left: 8.0),
-    child: Container(
-      height: MediaQuery.of(context).size.height / 15,
-      width: double.infinity,
-      child: cmBloc.state.postDisplay.length > 0
-          ? ListView.builder(
-              itemCount: 2,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                Post? post = cmBloc.state.postDisplay[0];
-                if (post != null && index == 0) {
-                  return contentPreview(cm: cm, context: context, post: post);
-                } else {
-                  return ad != null ? ad : SizedBox.shrink();
-                }
-              })
-          : Center(
-              child: cmBloc.state.status == CommuintyStatus.loading
-                  ? Text("One Second ...")
-                  : SizedBox.shrink()),
-    ),
-  );
+  return cmBloc.state.postDisplay.isNotEmpty ?
+  contentPreview(cm: cm, context: context, post: cmBloc.state.postDisplay[0]!)
+  : Text(" + share to " + cm.name, style: Theme.of(context).textTheme.bodyText1);
 }
 
 Widget cmPostDisplay(Post? p, BuildContext context, Church cm) {
@@ -207,17 +169,14 @@ Widget showRooms(BuildContext context, Church cm) {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                "Chat Rooms", // ----------------------------------------------------------------- Rooms
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.outline,
-                  fontSize: 21,
-                  fontWeight: FontWeight.w800,
-                ),
-                overflow: TextOverflow.fade,
+            Text(
+              "Chat Rooms", // ----------------------------------------------------------------- Rooms
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.outline,
+                fontSize: 21,
+                fontWeight: FontWeight.w800,
               ),
+              overflow: TextOverflow.fade,
             ),
             collapseOrExpand(context.read<CommuinityBloc>(), 'cord'),
             CmPermHandler.canMakeRoom(context.read<CommuinityBloc>())
@@ -473,7 +432,7 @@ Widget showVoice(BuildContext context, Church cm) {
 
 Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
   return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
+    padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 0),
     child: Container(
       // height: MediaQuery.of(context).size.height / 9,
       width: MediaQuery.of(context).size.width / 1, // 1.05,
@@ -637,6 +596,7 @@ void onLongPressCord(BuildContext context, KingsCord cord, Church cm) {
 void NavtoKcFromRooms(
     BuildContext context, CommuinityState state, Church cm, KingsCord cord) {
   bool isMember = context.read<CommuinityBloc>().state.isMember ?? false;
+  
   Navigator.of(context)
       .pushNamed(KingsCordScreen.routeName,
           arguments: KingsCordArgs(
@@ -658,11 +618,13 @@ Widget header({
   required CommuinityBloc cmBloc,
   required Church cm,
 }) {
-  return  Row(
+  return  Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-       cmContainerImage(cm),
-        SizedBox(width: 7),
-        cmTopColumn(cm, context),
+      Text(cm.name, style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 30),),
+      SizedBox(height: 7),
+      headerBtnsHomeInvite(cm, () {}, context),
     ],
   );
 }

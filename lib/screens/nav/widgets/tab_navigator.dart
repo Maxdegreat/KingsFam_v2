@@ -44,7 +44,7 @@ class TabNavigator extends StatelessWidget {
           )
         ];
       },
-      onGenerateRoute: CustomRoute.onGenerateNestedRoute,
+      onGenerateRoute: CustomRoute.onGenerateRoute,
     );
   }
 
