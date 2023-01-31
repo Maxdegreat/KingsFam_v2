@@ -98,8 +98,7 @@ class MyApp extends StatelessWidget {
                 storageRepository: context.read<StorageRepository>(),
                 authBloc: context.read<AuthBloc>(),
                 kingsCordRepository: context.read<KingsCordRepository>(),
-                churchRepository:
-                    context.read<ChurchRepository>() // may need to report
+                churchRepository: context.read<ChurchRepository>() // may need to report
                 ),
           ),
           BlocProvider<LikedSaysCubit>(

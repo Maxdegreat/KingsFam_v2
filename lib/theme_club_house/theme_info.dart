@@ -15,18 +15,18 @@ class ThemeInfo {
       appBarTheme: AppBarTheme(
         toolbarHeight: 45,
         textTheme: TextTheme(bodyText1: TextStyle(color: Colors.black, fontSize: 18),),
-        color: Colors.white70,
-        elevation: 1,
+        color: Colors.grey[200],
+        elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
       ),
       //colorScheme: ColorScheme.light(),
       iconTheme: IconThemeData(color: Colors.black),
-      drawerTheme: DrawerThemeData(backgroundColor: Colors.white),
+      drawerTheme: DrawerThemeData(backgroundColor: Colors.grey[200],),
       scaffoldBackgroundColor: Colors.grey[200],
       colorScheme: ColorScheme.fromSwatch().copyWith(
         secondary: Colors.white,
         primary: Colors.amber,
-        onPrimary: Colors.grey,
+        onPrimary: Colors.white,
         inversePrimary: Colors.black,
         outline: Colors.grey[800]
         ),
@@ -70,8 +70,8 @@ class ThemeInfo {
         appBarTheme: AppBarTheme( 
           // thats it! but what looks better. the app bar or screen body?
           toolbarHeight: 45,
-          color: Colors.grey[900],// whats the hex val?
-          elevation: 1,
+          color: Color(hexcolor.hexcolorCode('#121212')),// whats the hex val?
+          elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
         ),
         iconTheme: IconThemeData(color: Colors.white),

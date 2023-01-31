@@ -8,6 +8,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:image_cropper/image_cropper.dart';
 
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/helpers/helpers.dart';
 import 'package:kingsfam/helpers/kingscord_path.dart';
@@ -16,11 +17,13 @@ import 'package:kingsfam/helpers/vid_helper.dart';
 
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kings_cord_room_settings.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
+import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:uuid/uuid.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -73,23 +76,13 @@ class KingsCordScreen extends StatefulWidget {
   static Route route(KingsCordArgs args) {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
-        builder: (context) => BlocProvider(
-              //may not have needed to; add a type
-              create: (context) => KingscordCubit(
-                  storageRepository: context.read<StorageRepository>(),
-                  authBloc: context.read<AuthBloc>(),
-                  kingsCordRepository: context.read<KingsCordRepository>(),
-                  churchRepository: context.read<
-                      ChurchRepository>() // may need to report to main reposityory collection
-                  ),
-              child: KingsCordScreen(
-                usr: args.usr,
-                role: args.role,
-                userInfo: args.userInfo,
-                commuinity: args.commuinity,
-                kingsCord: args.kingsCord,
-              ),
-            ));
+        builder: (context) => KingsCordScreen(
+          usr: args.usr,
+          role: args.role,
+          userInfo: args.userInfo,
+          commuinity: args.commuinity,
+          kingsCord: args.kingsCord,
+        ));
   }
 
   @override
@@ -283,6 +276,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     );
   }
 
+  String? recentkcid;
 //============================================================================
   @override
   void initState() {
@@ -301,6 +295,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             .then((_) => setState(() {}));
       }
     });
+    recentkcid = widget.kingsCord.id!;
     super.initState();
     // isUserUpToDate(context, context.read<AuthBloc>().state.user!.uid, widget.kingsCord.memberInfo);
   }
@@ -308,14 +303,15 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   bool initCubit = true;
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: Theme.of(context).iconTheme.color,
-            )),
+        leading: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: GestureDetector(onTap: () {
+             scaffoldKey.currentState!.openDrawer();
+          } , child: ContainerWithURLImg(imgUrl: context.read<ChatscreenBloc>().state.selectedCh!.imageUrl, height: 15, width: 15,)),
+        ),
         centerTitle: false,
         toolbarHeight: 50,
         title: Text(
@@ -358,23 +354,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         listener: (context, state) {},
         builder: (context, state) {
           currUsersName = widget.usr.username;
-          if (initCubit) {
-            if (widget.kingsCord.readStatus == null &&
-                widget.userInfo["isMember"]) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                snackBar(
-                    snackMessage: "Recieve notifications from room?",
-                    context: context,
-                    callBack: () {
-                      Navigator.of(context).pushNamed(
-                          KingsCordNotifSettings.routeName,
-                          arguments: KingsCordNotifSettings(
-                              cmId: widget.commuinity.id!,
-                              kcId: widget.kingsCord.id!));
-                    });
-              });
-            }
-
+          if (widget.kingsCord.id! != recentkcid || initCubit) {
+            // indicates a switch...
+            recentkcid = widget.kingsCord.id!;
+            initCubit = false;
             UserPreferences.updateKcTimeStamp(
                 cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!);
 
@@ -383,8 +366,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   kcId: widget.kingsCord.id!,
                   limit: 17,
                 );
-            initCubit = false;
           }
+
 
           return Stack(
             children: [

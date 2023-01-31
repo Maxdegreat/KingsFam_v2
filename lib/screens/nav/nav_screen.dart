@@ -3,12 +3,15 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
+import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/nav/widgets/widgets.dart';
 import 'package:kingsfam/widgets/drawer_icon_container.dart';
 import 'package:kingsfam/widgets/mainDrawer/main_drawer.dart';
+import 'package:kingsfam/widgets/main_drawer_end.dart';
 
 class NavScreen extends StatelessWidget {
   static const String routeName = '/nav';
@@ -37,6 +40,7 @@ class NavScreen extends StatelessWidget {
 
 
 
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -44,7 +48,9 @@ class NavScreen extends StatelessWidget {
       child: BlocBuilder<BottomnavbarCubit, BottomnavbarState>(
         builder: (context, state) { 
           return Scaffold(
-             appBar: AppBar(),
+            //  appBar: AppBar(),
+            key: scaffoldKey,
+           
             drawer: MainDrawer(
               callBack: (index) {
                 final selectedItem = BottomNavItem.values[index];

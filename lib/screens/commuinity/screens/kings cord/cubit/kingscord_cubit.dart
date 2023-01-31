@@ -109,6 +109,7 @@ class KingscordCubit extends Cubit<KingscordState> {
     // I need to load the all list and the recent list
     // then update the state with the users who are opt in
     emit(state.copyWith(status: KingsCordStatus.getInitmsgs));
+    emit(state.copyWith(msgs: [], recentMsgIdToTokenMap: {}));
     await getNotifLst(cmId: cmId, kcId: kcId);
 
     paginateMsg(cmId: cmId, kcId: kcId, limit: limit);
@@ -117,7 +118,6 @@ class KingscordCubit extends Cubit<KingscordState> {
   Future<void> paginateMsg({required String cmId, required String kcId, required int limit}) async {
     try {
 
-      log("called");
 
       if (state.msgs.isEmpty) {
             // this is a temp set to be used for copywith. copy x num most recent users

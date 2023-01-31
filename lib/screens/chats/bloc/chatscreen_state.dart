@@ -1,6 +1,6 @@
 part of 'chatscreen_bloc.dart';
 
-enum ChatStatus { initial, loading, sccuess, error, setState }
+enum ChatStatus { initial, loading, sccuess, error, setState, setStateKc }
 
 enum FeedStatus_chats { inital, loading, success, paginating, error }
 
@@ -10,6 +10,7 @@ class ChatscreenState extends Equatable {
   final Userr currUserr;
   final List<Church?>? chs;
   final Church? selectedCh;
+  final KingsCord? selectedKc;
   final Church pSelectedCh;
   final List<Church> chsToJoin;
   final Map<String, dynamic> mentionedMap;
@@ -31,6 +32,7 @@ class ChatscreenState extends Equatable {
     required this.currUserr,
     required this.chs,
     required this.selectedCh,
+    required this.selectedKc,
     required this.pSelectedCh,
     required this.chsToJoin,
     required this.inAChat,
@@ -55,6 +57,7 @@ class ChatscreenState extends Equatable {
       isToggle: true,
       mentionedMap: {},
       selectedCh: null,
+      selectedKc: null,
       pSelectedCh: Church.empty,
       currUserr: Userr.empty,
       status: ChatStatus.initial,
@@ -78,6 +81,7 @@ class ChatscreenState extends Equatable {
         chat,
         chs,
         selectedCh,
+        selectedKc,
         pSelectedCh,
         chsToJoin,
         inAChat,
@@ -94,6 +98,7 @@ class ChatscreenState extends Equatable {
     Userr? currUserr,
     List<Church?>? chs,
     Church? selectedCh,
+    KingsCord? selectedKc,
     Church? pSelectedCh,
     List<Church>? chsToJoin,
     ChatStatus? status,
@@ -109,6 +114,7 @@ class ChatscreenState extends Equatable {
       currUserr: currUserr ?? this.currUserr,
       chs: chs ?? this.chs,
       selectedCh: selectedCh ?? this.selectedCh,
+      selectedKc: selectedKc ?? this.selectedKc,
       pSelectedCh: pSelectedCh ?? this.pSelectedCh,
       chsToJoin: chsToJoin ?? this.chsToJoin,
       fstatus: fstatus ?? this.fstatus,

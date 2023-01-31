@@ -115,29 +115,27 @@ class _ChatsScreenState extends State<ChatsScreen>
             listener: (context, state) {
 
           if (state.status == ChatStatus.setState) {
-            context.read<CommuinityBloc>()..add(CommunityInitalEvent(commuinity: state.selectedCh!));
-          }
-
-          if (state.status == ChatStatus.setState) {
             log("we are updating the state of the chats screen ya dig");
             setState(() {});
+          if (state.selectedCh != null) {
+            context.read<CommuinityBloc>()..add(CommunityInitalEvent(commuinity: state.selectedCh!));
+          }
+        }
+
+        if (state.status == ChatStatus.setStateKc) {
+          if (state.selectedKc != null) {
+            currentScreen = KingsCordScreen(commuinity: state.selectedCh!, kingsCord: state.selectedKc!, userInfo: {"isMember":true}, usr: context.read<CommuinityBloc>().state.currUserr, role: context.read<CommuinityBloc>().state.role);
+          }
         }
 
           if (state.status == ChatStatus.error) {
             ErrorDialog( content: 'chat_screen e-code: ${state.failure.message}');
           }
+
+
         }, builder: (context, state) {
-          if (state.selectedCh != null) {
-            context.read<CommuinityBloc>()..add(CommunityInitalEvent(commuinity: state.selectedCh!));
-            if ( context.read<CommuinityBloc>().state.kingCords.isNotEmpty) {
-              bool isMember = context.read<CommuinityBloc>().state.isMember ?? false;
-              currentScreen =  KingsCordScreen(commuinity: state.selectedCh!, kingsCord: context.read<CommuinityBloc>().state.kingCords[0]!, userInfo: {
-                "isMember": isMember,
-              }, usr: context.read<CommuinityBloc>().state.currUserr, role: context.read<CommuinityBloc>().state.role);
-            }
-            
-            // currentScreen =  CommuinityScreen(commuinity: state.selectedCh!, showDrawer: true);
-          } 
+
+
 
           if (state.chs == null)
             return Center(child: Text("KingsFam", style: Theme.of(context).textTheme.bodyText1,));

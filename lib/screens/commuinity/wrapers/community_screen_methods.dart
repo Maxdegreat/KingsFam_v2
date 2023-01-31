@@ -43,46 +43,33 @@ Widget nativeAdWidget(NativeAd ad, bool hasAdLoaded, BuildContext context) {
           ),
         )
       : SizedBox.shrink();
-
-
 }
 
 // content preview: This holds the post
 Widget contentPreview(
     {required Post post, required BuildContext context, required Church cm}) {
+      String url = post.imageUrl != null ? post.imageUrl! : post.thumbnailUrl!;
   return GestureDetector(
     onTap: () => Navigator.of(context)
         .pushNamed(CommuinityFeedScreen.routeName,
-            arguments: CommuinityFeedScreenArgs(commuinity: cm, passedPost: null))
-        .then((_) => context.read<BottomnavbarCubit>().showBottomNav(true)),
+            arguments:
+                CommuinityFeedScreenArgs(commuinity: cm, passedPost: null))
+        ,
     child: Container(
-      width: MediaQuery.of(context).size.width / 2.2,
-      decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondary,
-          borderRadius: BorderRadius.circular(10)),
+      width: MediaQuery.of(context).size.width / 4,
+      // decoration: BoxDecoration(
+      //     color: Theme.of(context).colorScheme.secondary,
+      //     borderRadius: BorderRadius.circular(10)),
       child: Padding(
         padding: const EdgeInsets.all(5.0),
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              height: 50,
-              width: 50,
-              decoration: BoxDecoration(
-                color: Color(hc.hexcolorCode("#141829")),
-                borderRadius: BorderRadius.circular(10),
-                image: post.imageUrl != null
-                    ? DecorationImage(
-                        image: CachedNetworkImageProvider(post.imageUrl!),
-                        fit: BoxFit.fitWidth)
-                    : post.thumbnailUrl != null
-                        ? DecorationImage(
-                            image: CachedNetworkImageProvider(
-                                post.thumbnailUrl!),
-                            fit: BoxFit.fitWidth)
-                        : null,
-              ),
+            CircleAvatar(
+              radius: 25,
+              backgroundImage: CachedNetworkImageProvider(url),
             ),
-            SizedBox(width: 5),
+            SizedBox(height: 2),
             Flexible(
               child: Center(
                 child: Padding(
@@ -208,126 +195,75 @@ _delKcDialog({
               ),
             )));
 
-// This is for the settings button
-Widget memberBtn(
-    {required CommuinityBloc cmBloc,
-    required Church cm,
-    required BuildContext context,
-    required,
-    String? currRole}) {
-  return Padding(
-      padding: const EdgeInsets.all(10),
-      child: Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-        child: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: IconButton(
-            onPressed: () async {
-              // final usersInCommuiinity = await context.read<BuildchurchCubit>().commuinityParcticipatents(ids: widget.commuinity.memberIds);
-              Navigator.of(context).pushNamed(ParticipantsView.routeName,
-                  arguments: ParticipantsViewArgs(cmBloc: cmBloc, cm: cm));
-            },
-            icon: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Icon(Icons.people_alt_sharp),
-                SizedBox(width: 10),
-                Text("Members", style: Theme.of(context).textTheme.caption),
-              ],
-            ),
-          ),
-        ),
-      ));
-}
 
-Widget settingsBtn(
+
+dynamic showCmOptions(
     {required CommuinityBloc cmBloc,
     required Church cm,
     required BuildContext context}) {
-  return Padding(
-    padding: const EdgeInsets.all(10),
-    child: Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: IconButton(
-            onPressed: () {
-              if (context
-                      .read<CommuinityBloc>()
-                      .state
-                      .role["permissions"]
-                      .contains("*") ||
-                  context
-                      .read<CommuinityBloc>()
-                      .state
-                      .role["permissions"]
-                      .contains("#")) {
-                showModalBottomSheet(
+  return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text("View members", style: Theme.of(context).textTheme.bodyText1,
+                  overflow: TextOverflow.fade,),
+              onTap: () => Navigator.of(context).pushNamed(ParticipantsView.routeName,
+                  arguments: ParticipantsViewArgs(cmBloc: cmBloc, cm: cm)),
+            ),
+            if (context
+                    .read<CommuinityBloc>()
+                    .state
+                    .role["permissions"]
+                    .contains("*") ||
+                context
+                    .read<CommuinityBloc>()
+                    .state
+                    .role["permissions"]
+                    .contains("#")) ... [
+
+              ListTile(
+                  title: Text("Update the Community name",
+                      style: Theme.of(context).textTheme.bodyText1),
+                  onTap: () async => _updateCommuinityName(
+                      commuinity: cm,
+                      context: context,
+                      buildchurchCubit: context.read<BuildchurchCubit>())),
+              ListTile(
+                title: Text(
+                  "Update the about",
+                  style: Theme.of(context).textTheme.bodyText1,
+                  overflow: TextOverflow.fade,
+                ),
+                onTap: () async => _updateTheAbout(
+                    commuinity: cm,
+                    buildchurchCubit: context.read<BuildchurchCubit>(),
+                    context: context),
+              ),
+              ListTile(
+                title: Text("Update the community image",
+                    overflow: TextOverflow.fade,
+                    style: Theme.of(context).textTheme.bodyText1),
+                trailing: ProfileImage(radius: 25, pfpUrl: cm.imageUrl),
+                onTap: () => _updateCommuinityImage(
                     context: context,
-                    builder: (context) {
-                      return SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            //  update the cm name
-                            ListTile(
-                                title: Text("Update the Community name",
-                                    style:
-                                        Theme.of(context).textTheme.bodyText1),
-                                onTap: () async => _updateCommuinityName(
-                                    commuinity: cm,
-                                    context: context,
-                                    buildchurchCubit:
-                                        context.read<BuildchurchCubit>())),
-                            ListTile(
-                              title: Text(
-                                "Update The About",
-                                style: Theme.of(context).textTheme.bodyText1,
-                                overflow: TextOverflow.fade,
-                              ),
-                              onTap: () async => _updateTheAbout(
-                                  commuinity: cm,
-                                  buildchurchCubit:
-                                      context.read<BuildchurchCubit>(),
-                                  context: context),
-                            ),
-                            ListTile(
-                              title: Text("Update Community ImageUrl",
-                                  overflow: TextOverflow.fade,
-                                  style: Theme.of(context).textTheme.bodyText1),
-                              trailing:
-                                  ProfileImage(radius: 25, pfpUrl: cm.imageUrl),
-                              onTap: () => _updateCommuinityImage(
-                                  context: context,
-                                  commuinity: cm,
-                                  buildchurchCubit:
-                                      context.read<BuildchurchCubit>()),
-                            ),
-                            ListTile(
-                              title: Text("Update Cm Privacy"),
-                              onTap: () => Navigator.of(context).pushNamed(
-                                  UpdatePrivacyCm.routeName,
-                                  arguments: UpdatePrivacyCmArgs(cm: cm)),
-                            )
-                          ],
-                        ),
-                      );
-                    });
-              } else {
-                snackBar(
-                    snackMessage: "You must be admin to access the settings",
-                    context: context);
-              }
-            },
-            icon: Row(
-              children: [
-                Icon(Icons.settings),
-                SizedBox(width: 10),
-                Text("Settings", style: Theme.of(context).textTheme.caption),
-              ],
-            )),
-      ),
-    ),
-  );
+                    commuinity: cm,
+                    buildchurchCubit: context.read<BuildchurchCubit>()),
+              ),
+              ListTile(
+                title: Text("Update community privacy"),
+                onTap: () => Navigator.of(context).pushNamed(
+                    UpdatePrivacyCm.routeName,
+                    arguments: UpdatePrivacyCmArgs(cm: cm)),
+              )
+            ],
+          ],
+        );
+      });
 }
 
 // This is a method for inviting users to the Cm
@@ -533,9 +469,9 @@ Future<dynamic> _updateTheAbout(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: TextField(
                     decoration: InputDecoration(
-                                        fillColor: Theme.of(context).colorScheme.secondary,
-                  filled: true,
-                  focusColor: Theme.of(context).colorScheme.secondary,
+                        fillColor: Theme.of(context).colorScheme.secondary,
+                        filled: true,
+                        focusColor: Theme.of(context).colorScheme.secondary,
                         hintText: "Tell ${commuinity.name}'s story "),
                     onChanged: (value) => _txtController.text = value),
               ),
@@ -619,10 +555,10 @@ Future<dynamic> _updateCommuinityName({
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: TextField(
                       decoration: InputDecoration(
-                                          fillColor: Theme.of(context).colorScheme.secondary,
-                  filled: true,
-                  focusColor: Theme.of(context).colorScheme.secondary,
-                        hintText: "Enter a name"),
+                          fillColor: Theme.of(context).colorScheme.secondary,
+                          filled: true,
+                          focusColor: Theme.of(context).colorScheme.secondary,
+                          hintText: "Enter a name"),
                       onChanged: (value) => _txtController.text = value),
                 ),
                 SizedBox(height: 8.0),
@@ -745,7 +681,10 @@ communityInvitePopUp(BuildContext context, String deepLink) {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(primary: Colors.amber),
                   child: Text("Copy share link",
-                      style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.bold)),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1!
+                          .copyWith(fontWeight: FontWeight.bold)),
                   onPressed: () {
                     copyTextToClip(deepLink);
                     snackBar(

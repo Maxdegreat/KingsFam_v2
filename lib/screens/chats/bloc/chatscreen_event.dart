@@ -22,11 +22,17 @@ class LoadChats extends ChatscreenEvent {
 
 class LoadCms extends ChatscreenEvent {}
 
+
 class ChatScreenFetchPosts extends ChatscreenEvent {}
 
 class ChatScreenUpdateSelectedCm extends ChatscreenEvent {
   final Church cm;
   ChatScreenUpdateSelectedCm({required this.cm});
+}
+
+class ChatScreenUpdateSelectedKc extends ChatscreenEvent {
+  final KingsCord kc;
+  ChatScreenUpdateSelectedKc({required this.kc});
 }
 
 class ChatScreenPaginatePosts extends ChatscreenEvent {}

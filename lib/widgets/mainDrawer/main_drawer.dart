@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:iconsax/iconsax.dart';
@@ -11,6 +12,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/camera/bloc/camera_screen.dart';
 import 'package:kingsfam/config/constants.dart';
+import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/enums/bottom_nav_items.dart';
@@ -41,6 +43,7 @@ import 'package:kingsfam/screens/commuinity/screens/says_room/says_room.dart';
 import 'package:kingsfam/screens/commuinity/screens/vc/vc_screen.dart';
 import 'package:kingsfam/screens/commuinity/wrapers/participants_view.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
+import 'package:kingsfam/widgets/drawer_icon_container.dart';
 import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:bloc/bloc.dart';
@@ -117,13 +120,18 @@ class _MainDrawerState extends State<MainDrawer> {
               width: MediaQuery.of(context).size.width / 4.350,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _cmsList(context, drawerLst),
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pushNamed(BuildChurch.routeName),
+                    child: drawerIcon(Icon(Icons.add, color: Theme.of(context).colorScheme.secondary,))),
+                  // SizedBox(child: Divider(color: Theme.of(context).colorScheme.inversePrimary), width: 70,),
                   Container(
                       height: MediaQuery.of(context).size.height / 2.50,
                       child: NavigationRail(
+                        selectedIconTheme: IconThemeData(color: Theme.of(context).colorScheme.secondary),
                         backgroundColor:
                             Theme.of(context).drawerTheme.backgroundColor,
                         onDestinationSelected: widget.callBack,
@@ -141,7 +149,7 @@ class _MainDrawerState extends State<MainDrawer> {
             ),
             VerticalDivider(
               color: Theme.of(context).colorScheme.inversePrimary,
-              thickness: 0.50,
+              thickness: 0.30,
             ),
             if (context.read<ChatscreenBloc>().state.selectedCh != null) ...[
               BlocBuilder<CommuinityBloc, CommuinityState>(
@@ -163,17 +171,19 @@ class _MainDrawerState extends State<MainDrawer> {
                                 .selectedCh!,
                             context: context,
                             cmBloc: context.read<CommuinityBloc>()),
+
+
                         SizedBox(height: 8),
 
                         singlePostDisplay(
-                          cm: context
-                              .read<ChatscreenBloc>()
-                              .state
-                              .selectedCh!,
-                          context: context,
-                          cmBloc: context.read<CommuinityBloc>(),
-                          ad: null,
-                        ),
+                              cm: context
+                                  .read<ChatscreenBloc>()
+                                  .state
+                                  .selectedCh!,
+                              context: context,
+                              cmBloc: context.read<CommuinityBloc>(),
+                              ad: null,
+                            ),
 
                         // if (state.mentionedCords.length > 0) ... [
                         //   showMentions(context, cm),
@@ -240,7 +250,7 @@ class _MainDrawerState extends State<MainDrawer> {
 
   Container _cmsList(BuildContext context, List<Widget> drawerLst) {
     return Container(
-        height: MediaQuery.of(context).size.height / 1.8,
+        height: MediaQuery.of(context).size.height / 2.09,
         child: ListView(children: drawerLst));
   }
 
@@ -269,12 +279,12 @@ class _MainDrawerState extends State<MainDrawer> {
                     border: c == context.read<ChatscreenBloc>().state.selectedCh
                         ? Border.all(
                             color: Theme.of(context).colorScheme.primary,
-                            width: 2)
+                            width: 3)
                         : null),
                 child: ContainerWithURLImg(
                     imgUrl: c.imageUrl,
-                    height: MediaQuery.of(context).size.shortestSide / 5,
-                    width: MediaQuery.of(context).size.shortestSide / 5),
+                    height: MediaQuery.of(context).size.shortestSide / 6,
+                    width: MediaQuery.of(context).size.shortestSide / 6),
               ),
             ));
       }).toList();

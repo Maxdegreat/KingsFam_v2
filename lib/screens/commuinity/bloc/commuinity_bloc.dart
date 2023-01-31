@@ -519,7 +519,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     // seting the read status false for a given kc tracked by the KCid.
     for (KingsCord? kc in state.kingCords) {
       if (kc != null && kc.id! == kcId) {
-        log("we found the kc that we want to update its state");
         state.kingCords.remove(kc);
         state.kingCords.add(kc.copyWith(readStatus: false));
         emit(state.copyWith(status: CommuintyStatus.updated));

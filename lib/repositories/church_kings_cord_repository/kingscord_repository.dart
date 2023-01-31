@@ -37,6 +37,14 @@ class KingsCordRepository extends BaseKingsCordRepository {
         .add(says.toDoc());
   }
 
+  Future<KingsCord?> getKcFirstCm(String cmId) async {
+     var qs = await _firebaseFirestore
+        .collection(Paths.church)
+        .doc(cmId)
+        .collection(Paths.kingsCord).limit(1).get();
+      return await  KingsCord.fromDoc(qs.docs.first);
+  }
+
   //sneding a message
   @override
   Future<void> sendMsgTxt(
@@ -89,7 +97,7 @@ class KingsCordRepository extends BaseKingsCordRepository {
       Says? recentS;
 
       await future.then((kc) async {
-        log("kc: " + kc.toString());
+        // log("kc: " + kc.toString());
               if (kc != null) {
           
           if (kc.mode == "vc") {

@@ -14,6 +14,7 @@ import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 
 part 'chatscreen_event.dart';
 part 'chatscreen_state.dart';
@@ -62,6 +63,8 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
       yield* _mapLoadCmsToState();
     } else if (event is ChatScreenUpdateSelectedCm) {
       yield* _updateSelectedItem(event);
+    } else if (event is ChatScreenUpdateSelectedKc) {
+      yield* _updateSelectedItemKc(event);
     }
   }
 
@@ -127,10 +130,11 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
               mentionedMap: chs["m"],
               status: ChatStatus.setState));
           emit(state.copyWith(status: ChatStatus.sccuess));
-
-          for (var i in chs["c"]) {
-            // TODO
-          }
+          
+          KingsCordRepository().getKcFirstCm(state.selectedCh!.id!).then((kc) {
+            if (kc != null)
+              add(ChatScreenUpdateSelectedKc(kc: kc));
+          });
         });
       });
 
@@ -181,6 +185,17 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
     } catch (e) {
       log("Failure in chatScreenBloc when attempting to update selected cm. error log is e: ${e.toString()}");
+    }
+  }
+
+  Stream<ChatscreenState> _updateSelectedItemKc(ChatScreenUpdateSelectedKc event) async* {
+    try {
+      emit(state.copyWith(selectedKc: event.kc));
+      emit(state.copyWith(status: ChatStatus.setStateKc));
+      emit(state.copyWith(status: ChatStatus.initial));
+    } catch (e) {
+      log("Failure in chatScreenBloc when attempting to update selected kc. error log is e: ${e.toString()}");
+
     }
   }
 
