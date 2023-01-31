@@ -686,7 +686,7 @@ Widget header({
       Expanded(
           child: Text(
         cm.name,
-        maxLines: 2,
+        maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 30),
       )),
