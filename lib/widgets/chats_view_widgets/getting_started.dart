@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -109,14 +110,14 @@ class gettingStartedBtn extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                     shape: StadiumBorder(), primary: Colors.amber),
                 onPressed: () async {
-                  snackBar(snackMessage: "TODO", context: context);
+                  scaffoldKey.currentState!.openDrawer();
                   // final Church cm = await Church.fromId("ElApEUDmzedbQboXN6ZG");
                   // Navigator.of(context).pushNamed(CommuinityScreen.routeName,
                   //     arguments: CommuinityScreenArgs(
                   //         commuinity: cm, showDrawer: false));
                   // // helpDialog(context);
                 },
-                child: Text("Getting Started",
+                child: Text("Create your community",
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyText1!.copyWith(
                         color: Theme.of(context).colorScheme.secondary,

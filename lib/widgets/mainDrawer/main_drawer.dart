@@ -125,25 +125,30 @@ class _MainDrawerState extends State<MainDrawer> {
                 children: [
                   _cmsList(context, drawerLst),
                   GestureDetector(
-                    onTap: () => Navigator.of(context).pushNamed(BuildChurch.routeName),
-                    child: drawerIcon(Icon(Icons.add, color: Theme.of(context).colorScheme.secondary,))),
+                      onTap: () => Navigator.of(context)
+                          .pushNamed(BuildChurch.routeName),
+                      child: drawerIcon(Icon(
+                        Icons.add,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ))),
                   // SizedBox(child: Divider(color: Theme.of(context).colorScheme.inversePrimary), width: 70,),
-                  Container(
-                      height: MediaQuery.of(context).size.height / 2.50,
+                  Flexible(
+                      // height: MediaQuery.of(context).size.height / 4,
                       child: NavigationRail(
-                        selectedIconTheme: IconThemeData(color: Theme.of(context).colorScheme.secondary),
-                        backgroundColor:
-                            Theme.of(context).drawerTheme.backgroundColor,
-                        onDestinationSelected: widget.callBack,
-                        selectedIndex:
-                            BottomNavItem.values.indexOf(widget.selectedItem),
-                        destinations: widget.items.values
-                            .map((e) => NavigationRailDestination(
-                                  icon: e,
-                                  label: Text(""),
-                                ))
-                            .toList(),
-                      ))
+                    selectedIconTheme: IconThemeData(
+                        color: Theme.of(context).colorScheme.secondary),
+                    backgroundColor:
+                        Theme.of(context).drawerTheme.backgroundColor,
+                    onDestinationSelected: widget.callBack,
+                    selectedIndex:
+                        BottomNavItem.values.indexOf(widget.selectedItem),
+                    destinations: widget.items.values
+                        .map((e) => NavigationRailDestination(
+                              icon: e,
+                              label: Text(""),
+                            ))
+                        .toList(),
+                  ))
                 ],
               ),
             ),
@@ -157,7 +162,7 @@ class _MainDrawerState extends State<MainDrawer> {
                   return Container(
                     width: MediaQuery.of(context).size.width / 1.395,
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment:context.read<ChatscreenBloc>().state.selectedCh != null ? MainAxisAlignment.start : MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.max,
                       children: [
@@ -172,45 +177,57 @@ class _MainDrawerState extends State<MainDrawer> {
                             context: context,
                             cmBloc: context.read<CommuinityBloc>()),
 
-
                         SizedBox(height: 8),
 
                         singlePostDisplay(
-                              cm: context
-                                  .read<ChatscreenBloc>()
-                                  .state
-                                  .selectedCh!,
-                              context: context,
-                              cmBloc: context.read<CommuinityBloc>(),
-                              ad: null,
-                            ),
+                          cm: context.read<ChatscreenBloc>().state.selectedCh!,
+                          context: context,
+                          cmBloc: context.read<CommuinityBloc>(),
+                          ad: null,
+                        ),
 
                         // if (state.mentionedCords.length > 0) ... [
                         //   showMentions(context, cm),
                         //   SizedBox(height: 8),
                         // ],
 
-                        showRooms(
-                            context,
-                            context
-                                .read<ChatscreenBloc>()
-                                .state
-                                .selectedCh!),
+                        showRooms(context,
+                            context.read<ChatscreenBloc>().state.selectedCh!),
 
                         SizedBox(height: 8),
 
-                        showVoice(
-                            context,
-                            context
-                                .read<ChatscreenBloc>()
-                                .state
-                                .selectedCh!),
+                        showVoice(context,
+                            context.read<ChatscreenBloc>().state.selectedCh!),
 
                         SizedBox(height: 8),
                       ],
                     ),
                   );
                 },
+              )
+            ] else ...[
+              Align(
+                alignment: Alignment.centerRight,
+                child: GestureDetector(
+                  onTap: () =>
+                      Navigator.of(context).pushNamed(BuildChurch.routeName),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Text(
+                        "Create your community",
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                      const SizedBox(height: 10),
+                      drawerIcon(Icon(
+                        Icons.add,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ))
+                    ],
+                  ),
+                ),
               )
             ]
           ],
