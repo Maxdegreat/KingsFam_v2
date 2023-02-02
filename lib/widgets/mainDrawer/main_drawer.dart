@@ -33,23 +33,19 @@ import 'package:kingsfam/screens/build_church/cubit/buildchurch_cubit.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/actions.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
-import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/community_settings/update_privacy.dart';
 import 'package:kingsfam/screens/commuinity/screens/create_room/create_room.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/commuinity_feed.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/widgets/display_msg.dart';
-import 'package:kingsfam/screens/commuinity/screens/says_room/says_room.dart';
 import 'package:kingsfam/screens/commuinity/screens/vc/vc_screen.dart';
 import 'package:kingsfam/screens/commuinity/wrapers/participants_view.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/widgets/drawer_icon_container.dart';
 import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
 import 'package:kingsfam/widgets/widgets.dart';
-import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../screens/commuinity/screens/kings cord/kingscord.dart';
 
 part '../../screens/commuinity/wrapers/cm_widgets.dart';
 part '../../screens/commuinity/wrapers/community_screen_methods.dart';
@@ -177,13 +173,13 @@ class _MainDrawerState extends State<MainDrawer> {
                             context: context,
                             cmBloc: context.read<CommuinityBloc>()),
 
-                        SizedBox(height: 8),
-
+                        SizedBox(height: 8),  
+                       
                         singlePostDisplay(
                           cm: context.read<ChatscreenBloc>().state.selectedCh!,
                           context: context,
                           cmBloc: context.read<CommuinityBloc>(),
-                          ad: null,
+                          ad: _showAd(),
                         ),
 
                         // if (state.mentionedCords.length > 0) ... [
@@ -250,19 +246,21 @@ class _MainDrawerState extends State<MainDrawer> {
                     .copyWith(fontStyle: FontStyle.italic))));
   }
 
-  _showAd() {
+  Widget _showAd() {
     return _isNativeAdLoaded
-        ? Expanded(
-            //height: 50, // MediaQuery.of(context).size.height * .1,
-            flex: 2,
-            // width: MediaQuery.of(context).size.width / 2.2,
+        ? Container(
+          height: 70,
+          width: 140,
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
             child: AdWidget(ad: _nativeAd),
-            // decoration: BoxDecoration(
-            //    color: Theme.of(context).colorScheme.primary,
-            //    borderRadius: BorderRadius.circular(10),
-            // ),
-          )
-        : SizedBox.shrink();
+          ),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.secondary,
+            borderRadius: BorderRadius.circular(10),
+          ),
+        )
+        : Text("this is an ad", style: Theme.of(context).textTheme.bodyText1);
   }
 
   Container _cmsList(BuildContext context, List<Widget> drawerLst) {

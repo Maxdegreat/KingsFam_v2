@@ -15,6 +15,7 @@ class UserPreferences {
   // cmId_kcId_timestamp
   static const String _kcTimeStamp = "kcTs";
   static const String _cmTs = "cmTs";
+  static const String _hasAgreedToTermsOfService = "hasAgreedToTermsOfService";
 
   static Future updateCmTimestamp({required String cmId}) async {
     updateLastVisitedCm(cmId: cmId);
@@ -71,6 +72,14 @@ class UserPreferences {
     // info will be the cmId
     // lets get back where starting substring is equal to info.
     return _preferences!.getStringList(_kcTimeStamp + cmId) ?? null;
+  }
+
+  static bool getHasAggredToTermsOfService() {
+    return _preferences!.getBool(_hasAgreedToTermsOfService) ?? false;
+  }
+
+  static setAgreeToTermsOfService() {
+    _preferences!.setBool(_hasAgreedToTermsOfService, true);
   }
 
   static Future<void> updateLastVisitedCm({required String cmId}) async {

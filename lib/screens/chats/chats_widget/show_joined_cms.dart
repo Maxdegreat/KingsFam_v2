@@ -1,21 +1,13 @@
 import 'dart:developer';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
-import 'package:kingsfam/models/user_model.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
-import 'package:kingsfam/widgets/says_container.dart';
 
-import '../../../config/paths.dart';
-import '../../../models/church_model.dart';
-import '../../../widgets/chats_view_widgets/chats_screen_widgets.dart';
+
 import '../../../widgets/fancy_list_tile.dart';
-import '../../commuinity/commuinity_screen.dart';
 import '../bloc/chatscreen_bloc.dart';
 
 class showJoinedCms extends StatefulWidget {

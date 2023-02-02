@@ -4,4 +4,5 @@ class Mode {
   static const String says = "says";
   static const String vc = "vc";
   static const String welcome = "welcome";
+  static const String attendance = "attendance";
 }

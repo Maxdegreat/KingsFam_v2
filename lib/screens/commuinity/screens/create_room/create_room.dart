@@ -1,16 +1,13 @@
 import 'dart:developer';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/roles/role_types.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/widgets/widgets.dart';
-import 'package:date_time_picker/date_time_picker.dart';
 
 class CreateRoomArgs {
   final CommuinityBloc cmBloc;
@@ -133,11 +130,12 @@ class _CreateRoomState extends State<CreateRoom> {
                         _textField(context),
                         // child 2 will be the chat room type
                         _createRoomContainerDisplay(context, "chat", "Chat room",
-                            "A chat room allows for communication via text messages. You can share GIF's, images, videos, text, and react to messages"),
+                            "A chat room allows for communication via text messages. You can share GIF's, images, videos, text, and react to messages."),
                         // child 3 will be the says room type
                         _createRoomContainerDisplay(context, "says", "Says room",
-                            "A says room allows for users to share announcements or just say what is on their minds"),
+                            "A says room allows for users to share announcements or just say what is on their minds."),
                         // child 4 vc room
+                        // _createRoomContainerDisplay(context, "attendance", "Attendance room", "Lead, Admins and Mods can use this room to keep track of their fellowship attendance.")
                        // _createRoomContainerDisplay(context, "vc", 'VC', "A VC room stands for voice chat. This room also alloWs for video calls.")
                       ],
                     ),

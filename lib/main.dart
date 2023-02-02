@@ -22,6 +22,7 @@ import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
+import 'package:kingsfam/screens/commuinity/screens/says_room/bloc/says_bloc.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/theme_club_house/theme_info.dart';
@@ -73,7 +74,7 @@ class MyApp extends StatelessWidget {
             create: (context) =>
                 AuthBloc(authRepository: context.read<AuthRepository>()),
           ),
-           BlocProvider<LikedPostCubit>(
+          BlocProvider<LikedPostCubit>(
             create: (context) => LikedPostCubit(
                 postsRepository: context.read<PostsRepository>(),
                 authBloc: context.read<AuthBloc>()),
@@ -85,26 +86,33 @@ class MyApp extends StatelessWidget {
                 likedPostCubit: context.read<LikedPostCubit>(),
                 postsRepository: context.read<PostsRepository>(),
                 churchRepository: context.read<ChurchRepository>(),
-                userrRepository: context.read<UserrRepository>())..add(LoadCms()),
+                userrRepository: context.read<UserrRepository>())
+              ..add(LoadCms()),
           ),
           BlocProvider<SearchBloc>(
               create: (context) => SearchBloc(
                   userrRepository: context.read<UserrRepository>(),
                   churchRepository: context.read<ChurchRepository>(),
                   authBloc: context.read<AuthBloc>())),
-         
           BlocProvider<KingscordCubit>(
             create: (context) => KingscordCubit(
                 storageRepository: context.read<StorageRepository>(),
                 authBloc: context.read<AuthBloc>(),
                 kingsCordRepository: context.read<KingsCordRepository>(),
-                churchRepository: context.read<ChurchRepository>() // may need to report
+                churchRepository:
+                    context.read<ChurchRepository>() // may need to report
                 ),
           ),
           BlocProvider<LikedSaysCubit>(
               create: (context) => LikedSaysCubit(
                   saysRepository: context.read<SaysRepository>(),
                   authBloc: context.read<AuthBloc>())),
+          BlocProvider<SaysBloc>(
+              create: (context) => SaysBloc(
+                    saysRepository: context.read<SaysRepository>(),
+                    authBloc: context.read<AuthBloc>(),
+                    likedSaysCubit: context.read<LikedSaysCubit>(),
+                  )),
           BlocProvider<BuildchurchCubit>(
               // TODO                                        PLEASE NOTE THIS DOES NOT NEED TO BE A GLOBAL THING. NOTE IT IS USED IN CM SCREEN ON A GLOBAL SCOPE BUT IT CAN BE REFACTORED.
               create: (context) => BuildchurchCubit(

@@ -4,13 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:kingsfam/camera/bloc/camera_screen.dart';
 import 'package:kingsfam/helpers/vid_helper.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
-import 'package:kingsfam/screens/commuinity/screens/events/create_event.dart';
+
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
 import 'package:kingsfam/screens/commuinity/screens/says_room/says_view.dart';
 import 'package:kingsfam/screens/commuinity/screens/says_room/screens/create_says.dart';
-import 'package:kingsfam/screens/commuinity/wrapers/create_new_role.dart';
 import 'package:kingsfam/screens/commuinity/wrapers/role_permissions.dart';
 
 import 'package:kingsfam/screens/screens.dart';
@@ -151,11 +150,6 @@ class CustomRoute {
       case CreateRoom.routeName:
         return CreateRoom.route(args: settings.arguments as CreateRoomArgs);
 
-      case CreateEvent.routeName:
-        return CreateEvent.route(args: settings.arguments as CreateEventArgs);
-
-      case SaysRoom.routeName:
-        return SaysRoom.route(args: settings.arguments as SaysRoomArgs);
 
       case SaysView.routeName:
         return SaysView.route(args: settings.arguments as SaysViewArgs);
@@ -168,9 +162,6 @@ class CustomRoute {
 
       case CreateSays.routeName:
         return CreateSays.route(args: settings.arguments as CreateSaysArgs);
-
-      case EventView.routeName:
-        return EventView.route(args: settings.arguments as EventViewArgs);
 
       case UpdatePrivacyCm.routeName:
         return UpdatePrivacyCm.route(
@@ -188,8 +179,6 @@ class CustomRoute {
         return RolePermissions.route(
             args: settings.arguments as RolePermissionsArgs);
 
-      case CreateRole.routeName:
-        return CreateRole.route(args: settings.arguments as CreateRoleArgs);
 
       case KingsCordNotifSettings.routeName:
         return KingsCordNotifSettings.route(

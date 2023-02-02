@@ -116,18 +116,17 @@ Widget singlePostDisplay({
     child: Row(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: 2),
-              
-              CircleAvatar(
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                radius: 25,
-                child: IconButton(onPressed: () {}, icon: Icon(Icons.add)),
-              ),
-              SizedBox(height: 2),
+      children: [
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 2),
+            CircleAvatar(
+              backgroundColor: Theme.of(context).colorScheme.secondary,
+              radius: 25,
+              child: IconButton(onPressed: () {}, icon: Icon(Icons.add)),
+            ),
+            SizedBox(height: 2),
             Center(
               child: Padding(
                 padding: const EdgeInsets.only(right: 5.0),
@@ -140,15 +139,24 @@ Widget singlePostDisplay({
                 ),
               ),
             ),
-            ],
-          ),
-          SizedBox(width: 7,),
-          if (cmBloc.state.postDisplay.isNotEmpty)
-            contentPreview(cm: cm, context: context, post: cmBloc.state.postDisplay[0]!),
+          ],
+        ),
+        SizedBox(
+          width: 7,
+        ),
+        if (cmBloc.state.postDisplay.isNotEmpty) ...[
+          contentPreview(
+              cm: cm, context: context, post: cmBloc.state.postDisplay[0]!),
+          if (ad != null) ...[
+            SizedBox(
+              width: 7,
+            ),
+            ad,
+          ]
+        ]
       ],
     ),
   );
-     
 }
 
 Widget cmPostDisplay(Post? p, BuildContext context, Church cm) {
@@ -213,21 +221,21 @@ Widget showRooms(BuildContext context, Church cm) {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-            "Rooms", // ----------------------------------------------------------------- Rooms
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.outline,
-              fontSize: 21,
-              fontWeight: FontWeight.w800,
-            ),
-            overflow: TextOverflow.fade,
-          ),
-          //collapseOrExpand(context.read<CommuinityBloc>(), 'cord'),
-          CmPermHandler.canMakeRoom(context.read<CommuinityBloc>())
-              ? new_kingscord(
-                  cmBloc: context.read<CommuinityBloc>(),
-                  cm: cm,
-                  context: context)
-              : SizedBox.shrink(),
+                "Rooms", // ----------------------------------------------------------------- Rooms
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.outline,
+                  fontSize: 21,
+                  fontWeight: FontWeight.w800,
+                ),
+                overflow: TextOverflow.fade,
+              ),
+              //collapseOrExpand(context.read<CommuinityBloc>(), 'cord'),
+              CmPermHandler.canMakeRoom(context.read<CommuinityBloc>())
+                  ? new_kingscord(
+                      cmBloc: context.read<CommuinityBloc>(),
+                      cm: cm,
+                      context: context)
+                  : SizedBox.shrink(),
             ],
           ),
         ),
@@ -246,20 +254,7 @@ Widget showRooms(BuildContext context, Church cm) {
                           context: context);
                       return null;
                     }
-                    if (cord.mode == "chat") {
-                      NavtoKcFromRooms(context, state, cm, cord);
-                    } else if (cord.mode == "welcome") {
-                      NavtoKcFromRooms(context, state, cm, cord);
-                    } else if (cord.mode == "says") {
-                      Navigator.of(context).pushNamed(SaysRoom.routeName,
-                          arguments: SaysRoomArgs(
-                              currUsr: state.currUserr,
-                              cm: cm,
-                              kcName: cord.cordName,
-                              kcId: cord.id!));
-                    } else if (cord.mode == Mode.announcement) {
-                      NavtoKcFromRooms(context, state, cm, cord);
-                    }
+                     NavtoKcFromRooms(context, state, cm, cord);
                   },
                   onLongPress: () {
                     onLongPressCord(context, cord, cm);
@@ -323,16 +318,8 @@ Widget showMentions(BuildContext context, Church cm) {
                           .collection(cm.id!)
                           .doc(cord.id)
                           .delete();
-                    } else if (cord.mode == "welcome") {
+                    } else  {
                       NavtoKcFromRooms(context, state, cm, cord);
-                    } else {
-                      log("pushing to a says");
-                      Navigator.of(context).pushNamed(SaysRoom.routeName,
-                          arguments: SaysRoomArgs(
-                              currUsr: state.currUserr,
-                              cm: cm,
-                              kcName: cord.cordName,
-                              kcId: cord.id!));
                     }
                   },
                   onLongPress: () {
@@ -502,7 +489,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
               children: [
                 if (cord.mode == "chat") ...[
                   Icon(
-                    Icons.numbers,
+                    Icons.question_answer,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   SizedBox(width: 5),
@@ -581,6 +568,17 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
                     overflow: TextOverflow.fade,
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
+                ] else if (cord.mode == Mode.attendance) ...[
+                  Icon(
+                    Icons.group,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    cord.cordName,
+                    overflow: TextOverflow.fade,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
                 ]
               ],
             ),
@@ -621,6 +619,12 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
                 child: DisplayMsg(
                     m: cord.recentActivity!["chat"], s: null, amountInVc: null),
               )
+            ] else if (cord.mode == Mode.attendance) ...[
+              // Padding(
+              //   padding: const EdgeInsets.only(left: 20, top: 2),
+              //   child: DisplayMsg(
+              //       m: cord.recentActivity!["chat"], s: null, amountInVc: null),
+              // )
             ]
           ],
         ),

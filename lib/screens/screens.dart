@@ -31,7 +31,7 @@ export 'package:kingsfam/screens/commuinity/screens/says_room/says_room.dart';
 // switch to modle sheet when u get the chance
 export 'comment_ui/comment_screen.dart';
 export 'package:kingsfam/screens/commuinity/screens/create_room/create_room.dart';
-export 'package:kingsfam/screens/commuinity/screens/events/event_view.dart';
+
 export 'package:kingsfam/screens/commuinity/community_settings/update_privacy.dart';
 export 'package:kingsfam/screens/commuinity/community_settings/view_request.dart';
 export 'package:kingsfam/screens/commuinity/wrapers/participants_view.dart';

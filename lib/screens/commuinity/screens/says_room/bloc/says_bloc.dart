@@ -1,11 +1,10 @@
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:equatable/equatable.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/cubits/cubits.dart';
-import 'package:kingsfam/config/paths.dart';
+
 import 'package:kingsfam/cubits/liked_says/liked_says_cubit.dart';
 import 'package:kingsfam/models/failure_model.dart';
 import 'package:kingsfam/models/says_model.dart';

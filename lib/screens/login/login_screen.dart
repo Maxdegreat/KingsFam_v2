@@ -168,7 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextButton.styleFrom(backgroundColor: Colors.amber[400])),
             ),
             // ----------------------------------------------------------------------------------------------
-            Spacer()
+            Spacer(),
           ],
         )),
       ),
