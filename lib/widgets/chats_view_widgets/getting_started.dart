@@ -110,12 +110,7 @@ class gettingStartedBtn extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                     shape: StadiumBorder(), primary: Colors.amber),
                 onPressed: () async {
-                  scaffoldKey.currentState!.openDrawer();
-                  // final Church cm = await Church.fromId("ElApEUDmzedbQboXN6ZG");
-                  // Navigator.of(context).pushNamed(CommuinityScreen.routeName,
-                  //     arguments: CommuinityScreenArgs(
-                  //         commuinity: cm, showDrawer: false));
-                  // // helpDialog(context);
+                   Navigator.of(context).pushNamed(BuildChurch.routeName);
                 },
                 child: Text("Create your community",
                     textAlign: TextAlign.center,

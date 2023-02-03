@@ -32,10 +32,10 @@ class NavScreen extends StatelessWidget {
   };
 
   final Map<BottomNavItem, Widget> items =  {
-    BottomNavItem.chats: drawerIcon(Icon(Icons.home, size: 20,)),
-    BottomNavItem.search: drawerIcon(Icon(Icons.search, size: 20)),
-    BottomNavItem.notifications: drawerIcon(Icon(Icons.favorite_border, size: 20)),
-    BottomNavItem.profile: drawerIcon(Icon(Icons.account_circle, size: 20))
+    BottomNavItem.chats: Icon(Icons.home, size: 20,),
+    BottomNavItem.search: Icon(Icons.search, size: 20),
+    BottomNavItem.notifications: Icon(Icons.favorite_border, size: 20),
+    BottomNavItem.profile: Icon(Icons.account_circle, size: 20)
   };
 
 
@@ -70,16 +70,20 @@ class NavScreen extends StatelessWidget {
                   .values
                   .toList(),
             ),
-            // bottomNavigationBar: context.read<BottomnavbarCubit>().state.showBottomNav ? BottomNavBar(
+            bottomNavigationBar: context.read<BottomnavbarCubit>().state.showBottomNav ? BottomNavBar(
               
-            //   onTap: (index) {
-            //     final selectedItem = BottomNavItem.values[index];
-            //     _selectBottomNavItem(context, selectedItem, selectedItem == state.selectedItem);
-            //     //context.read<BottomnavbarCubit>().showBottomNav(true);
-            //   },
-            //   items: items,
-            //   selectedItem: state.selectedItem,
-            // ) : SizedBox.shrink(),
+              onTap: (index) {
+                final selectedItem = BottomNavItem.values[index];
+                if (index == 0 || BottomNavItem.values[index] == BottomNavItem.chats) {
+                  scaffoldKey.currentState!.openDrawer();
+                  _selectBottomNavItem(context, selectedItem, selectedItem == state.selectedItem);
+                } else 
+                  _selectBottomNavItem(context, selectedItem, selectedItem == state.selectedItem);
+                //context.read<BottomnavbarCubit>().showBottomNav(true);
+              },
+              items: items,
+              selectedItem: state.selectedItem,
+            ) : SizedBox.shrink(),
           );
         },
       ),

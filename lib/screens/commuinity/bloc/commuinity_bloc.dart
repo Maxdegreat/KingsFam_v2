@@ -167,6 +167,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
               Map<String, dynamic> role = await CmActions.getRidPermissions(
                   rid: cmUserInfoDoc.data()!["roleId"],
                   cmId: event.commuinity.id!);
+                 
               emit(state.copyWith(role: role));
             }
           }

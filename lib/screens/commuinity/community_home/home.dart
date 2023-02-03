@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/helpers/dynamic_links.dart';
 import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
@@ -65,6 +66,14 @@ class _CommunityHomemState extends State<CommunityHome> {
         : SafeArea(
             child: Scaffold(
                 appBar: AppBar(
+                  actions: [
+                    IconButton(onPressed: () async {
+                String generatedDeepLink =
+                    await FirebaseDynamicLinkService.createDynamicLink(
+                        widget.cm, true);
+                communityInvitePopUp(context, generatedDeepLink);
+              }, icon: Icon(Icons.share))
+                  ],
                   backgroundColor: Theme.of(context).colorScheme.secondary,
                   leading: IconButton(
                       onPressed: () => Navigator.of(context).pop(),

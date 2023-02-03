@@ -332,20 +332,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                           cmId: widget.commuinity.id!, kc: widget.kingsCord));
                 },
                 icon: Icon(Icons.more_horiz, color: Theme.of(context).iconTheme.color)),
-          ],
+          ]
 
-          IconButton(
-            onPressed: () {
-              // Nav to a settings room that will
-              // 1) allow only certian roles to enter the room. only an owner / admin can do this
-              // 2) allow someone to subscribe to get notifications
-              Navigator.of(context).pushNamed(KingsCordNotifSettings.routeName,
-                  arguments: KingsCordNotifSettingsArgs(
-                      cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!));
-            },
-            icon: Icon(Icons.notifications_on_outlined),
-            color: Theme.of(context).iconTheme.color,
-          )
+          
         ],
       ),
 

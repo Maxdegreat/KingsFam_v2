@@ -154,7 +154,7 @@ class _ChatsScreenState extends State<ChatsScreen>
           }
         }, builder: (context, state) {
           // check userpreferences. if no data for has aggred to terms of use show a alert dialog
-          if (!UserPreferences.getHasAggredToTermsOfService() && !hasAskedForAgrement) {
+          if (UserPreferences.getHasAggredToTermsOfService() && !hasAskedForAgrement) {
             hasAskedForAgrement = true;
             SchedulerBinding.instance.addPostFrameCallback((_) {
               Future.delayed(Duration(seconds: 2)).then((value) {
@@ -192,13 +192,16 @@ class _ChatsScreenState extends State<ChatsScreen>
                             Text("7. KingsFam Guidelines below: "),
                             SizedBox(height: 5),
                             Text(
-                                "7.1 KingsFam does not allow Deragourtory profile pictures, user posts, community posts"),
+                                "7.1 KingsFam does not allow Deragourtory user content (profile pictures, user posts, community posts) "),
                             SizedBox(height: 5),
                             Text(
-                                "7.2 KingsFam does not allow hate speach on person or group of persons"),
+                                "7.2 KingsFam does not allow hate speach on any person or group of persons"),
                             SizedBox(height: 5),
                             Text(
-                                "7.3 As a content provider for our services, it is your duty to ensure that you have the necessary permissions and licenses in accordance with the terms. You must also make sure that your content follows all applicable laws. Keep in mind that we cannot be held responsible for any issues related to your content or how others use it.")
+                              "7.3 KingsFam does not allow user content that displays or promtes sexual user content."
+                            ),
+                            Text(
+                                "7.4 As a content provider for our services, it is your duty to ensure that you have the necessary permissions and licenses in accordance with the terms. You must also make sure that your content follows all applicable laws. Keep in mind that we cannot be held responsible for any issues related to your content or how others use it.")
                           ],
                         ),
                       ),

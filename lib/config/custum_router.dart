@@ -179,11 +179,6 @@ class CustomRoute {
         return RolePermissions.route(
             args: settings.arguments as RolePermissionsArgs);
 
-
-      case KingsCordNotifSettings.routeName:
-        return KingsCordNotifSettings.route(
-            args: settings.arguments as KingsCordNotifSettingsArgs);
-
       case KingsCordRoomSettings.routeName:
         return KingsCordRoomSettings.route(a: settings.arguments as KingsCordRoomSettingsArgs);
 

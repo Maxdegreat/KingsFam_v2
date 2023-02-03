@@ -112,51 +112,39 @@ class _MainDrawerState extends State<MainDrawer> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 4.350,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _cmsList(context, drawerLst),
-                  GestureDetector(
-                      onTap: () => Navigator.of(context)
-                          .pushNamed(BuildChurch.routeName),
-                      child: drawerIcon(Icon(
-                        Icons.add,
-                        color: Theme.of(context).colorScheme.secondary,
-                      ))),
-                  // SizedBox(child: Divider(color: Theme.of(context).colorScheme.inversePrimary), width: 70,),
-                  Flexible(
-                      // height: MediaQuery.of(context).size.height / 4,
-                      child: NavigationRail(
-                    selectedIconTheme: IconThemeData(
-                        color: Theme.of(context).colorScheme.secondary),
-                    backgroundColor:
-                        Theme.of(context).drawerTheme.backgroundColor,
-                    onDestinationSelected: widget.callBack,
-                    selectedIndex:
-                        BottomNavItem.values.indexOf(widget.selectedItem),
-                    destinations: widget.items.values
-                        .map((e) => NavigationRailDestination(
-                              icon: e,
-                              label: Text(""),
-                            ))
-                        .toList(),
-                  ))
-                ],
+            // -------------------------------------------------------- child 1
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: Container(
+                color: Theme.of(context).colorScheme.secondary,
+                width: MediaQuery.of(context).size.width / 5.3,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    _cmsList(context, drawerLst),
+                   
+                    GestureDetector(
+                        onTap: () => Navigator.of(context)
+                            .pushNamed(BuildChurch.routeName),
+                        child: drawerIcon(Icon(
+                          Icons.add,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ))),
+
+                      const SizedBox(height: 20,)
+                   
+                  ],
+                ),
               ),
             ),
-            VerticalDivider(
-              color: Theme.of(context).colorScheme.inversePrimary,
-              thickness: 0.30,
-            ),
+            // ------------------------------------------------------------------------- child 2
             if (context.read<ChatscreenBloc>().state.selectedCh != null) ...[
               BlocBuilder<CommuinityBloc, CommuinityState>(
                 builder: (context, state) {
                   return Container(
-                    width: MediaQuery.of(context).size.width / 1.395,
+                    width: MediaQuery.of(context).size.width / 1.3,
                     child: Column(
                       mainAxisAlignment:context.read<ChatscreenBloc>().state.selectedCh != null ? MainAxisAlignment.start : MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,7 +167,7 @@ class _MainDrawerState extends State<MainDrawer> {
                           cm: context.read<ChatscreenBloc>().state.selectedCh!,
                           context: context,
                           cmBloc: context.read<CommuinityBloc>(),
-                          ad: _showAd(),
+                          ad: null,
                         ),
 
                         // if (state.mentionedCords.length > 0) ... [
@@ -189,6 +177,7 @@ class _MainDrawerState extends State<MainDrawer> {
 
                         showRooms(context,
                             context.read<ChatscreenBloc>().state.selectedCh!),
+                        _showAd(),
 
                         SizedBox(height: 8),
 
@@ -232,40 +221,29 @@ class _MainDrawerState extends State<MainDrawer> {
     );
   }
 
-  _createNewCm() {
-    return Expanded(
-        flex: 2,
-        // height: 50, //MediaQuery.of(context).size.height * .3,
-        child: ListTile(
-            onTap: () => Navigator.of(context).pushNamed(BuildChurch.routeName),
-            leading: Icon(Iconsax.add_square4, size: 20),
-            title: Text("Create new community",
-                style: Theme.of(context)
-                    .textTheme
-                    .caption!
-                    .copyWith(fontStyle: FontStyle.italic))));
-  }
 
   Widget _showAd() {
     return _isNativeAdLoaded
-        ? Container(
-          height: 70,
-          width: 140,
-          child: Padding(
-            padding: const EdgeInsets.all(5.0),
+        ? Padding(
+          padding: const EdgeInsets.only( top: 5,
+      bottom: 5,
+      right: 3,),
+          child: Container(
+            height: 59,
+            width: double.infinity,
             child: AdWidget(ad: _nativeAd),
-          ),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary,
-            borderRadius: BorderRadius.circular(10),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.secondary,
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         )
-        : Text("this is an ad", style: Theme.of(context).textTheme.bodyText1);
+        : const SizedBox.shrink();
   }
 
   Container _cmsList(BuildContext context, List<Widget> drawerLst) {
     return Container(
-        height: MediaQuery.of(context).size.height / 2.09,
+        height: MediaQuery.of(context).size.height / 1.2,
         child: ListView(children: drawerLst));
   }
 
@@ -298,8 +276,8 @@ class _MainDrawerState extends State<MainDrawer> {
                         : null),
                 child: ContainerWithURLImg(
                     imgUrl: c.imageUrl,
-                    height: MediaQuery.of(context).size.shortestSide / 6,
-                    width: MediaQuery.of(context).size.shortestSide / 6),
+                    height: MediaQuery.of(context).size.shortestSide / 8,
+                    width: MediaQuery.of(context).size.shortestSide / 8),
               ),
             ));
       }).toList();

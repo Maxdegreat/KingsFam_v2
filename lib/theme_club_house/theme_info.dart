@@ -24,7 +24,7 @@ class ThemeInfo {
       drawerTheme: DrawerThemeData(backgroundColor: Colors.white,),
       scaffoldBackgroundColor: Colors.white,
       colorScheme: ColorScheme.fromSwatch().copyWith(
-        secondary: Colors.yellow[50],
+        secondary: Colors.grey[200],
         primary: Colors.amber,
         onPrimary: Colors.white,
         inversePrimary: Colors.black,

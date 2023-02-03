@@ -210,10 +210,16 @@ dynamic showCmOptions(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              title: Text("View members", style: Theme.of(context).textTheme.bodyText1,
+              title: Text("View members, pending and baned", style: Theme.of(context).textTheme.bodyText1,
                   overflow: TextOverflow.fade,),
               onTap: () => Navigator.of(context).pushNamed(ParticipantsView.routeName,
                   arguments: ParticipantsViewArgs(cmBloc: cmBloc, cm: cm)),
+            ),
+             ListTile(
+              title: Text("View home and invite link", style: Theme.of(context).textTheme.bodyText1,
+                  overflow: TextOverflow.fade,),
+              onTap: () => Navigator.of(context).pushNamed(CommunityHome.routeName,
+                  arguments: CommunityHomeArgs(cm: cm, cmB: cmBloc)),
             ),
             if (context
                     .read<CommuinityBloc>()

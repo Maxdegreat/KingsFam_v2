@@ -45,6 +45,16 @@ class MessageLines extends StatefulWidget {
 
 class _MessageLinesState extends State<MessageLines> {
 
+  late String msgBodyForReply;
+
+  @override
+  void initState() {
+    super.initState();
+        msgBodyForReply = widget.message.text != null
+        ? widget.message.text!
+        : " Shared something";
+  }
+
   uploadReaction(String reaction, String msgId, Map<String, int> reactions, Map<String, dynamic> metadata) {
     int? incrementedReaction = reactions[reaction];
     if (incrementedReaction == null) {
@@ -195,9 +205,23 @@ class _MessageLinesState extends State<MessageLines> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(width: 7),
+                    ListTile(
+                      leading: Icon(Icons.reply),
+                      title: Text("Reply", style: Theme.of(context).textTheme.bodyText1),
+                      onTap: () {
+                    kcubit!.addReply(
+                    widget.message.sender!.token[0] +
+                        widget.message.id! +
+                        "[#-=]" +
+                        widget.message.sender!.username +
+                        ": " +
+                        msgBodyForReply,
+                    widget.message.sender!);
+                      },
+                    ),
                                          ListTile(
                       leading: Icon(Icons.copy),
-                      title: Text("copy"),
+                      title: Text("Copy", style: Theme.of(context).textTheme.bodyText1),
                       onTap: () {
                               if (widget.message.text != null) {
                                 copyTextToClip(widget.message.text!);
@@ -246,7 +270,7 @@ class _MessageLinesState extends State<MessageLines> {
 
                     ListTile(
                       leading: Icon(Icons.block, color: Colors.redAccent,),
-                      title: Text("block "+ widget.message.sender!.username, style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                      title: Text("Block "+ widget.message.sender!.username, style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
                       onTap: () {
                           context.read<BuidCubit>().onBlockUser(widget.message.sender!.id);
                           snackBar(snackMessage: widget.message.sender!.username + "is blocked", context: context);
@@ -307,13 +331,6 @@ class _MessageLinesState extends State<MessageLines> {
           onTap: () {
             launch(element);
           },
-          onLongPress: () {
-            _showReactionsBar(
-                widget.message.id!,
-                widget.message.metadata!.containsKey('reactions') ? widget.message.metadata!['reactions'] : {} ,
-                context,
-                widget.message.metadata!);
-          },
           child: Text(element,
               style: Theme.of(context)
                   .textTheme
@@ -337,11 +354,6 @@ class _MessageLinesState extends State<MessageLines> {
     if (links.isNotEmpty) {
       // the return of the build text when the links are not empty
       return GestureDetector(
-          onLongPress: () => _showReactionsBar(
-              widget.message.id!,
-              widget.message.metadata!['reactions'],
-              context,
-              widget.message.metadata!),
           onTap: () {
             if (links.length == 1) {
               launch(links[0]);
@@ -368,11 +380,6 @@ class _MessageLinesState extends State<MessageLines> {
     // the return of the text when there is no links involved
     RegExp regExp = RegExp(r'^@.+');
     return GestureDetector(
-      onLongPress: () => _showReactionsBar(
-          widget.message.id!,
-          widget.message.metadata!['reactions'],
-          context,
-          widget.message.metadata!),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -407,11 +414,6 @@ class _MessageLinesState extends State<MessageLines> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onLongPress: () => _showReactionsBar(
-              widget.message.id!,
-              widget.message.metadata!['reactions'],
-              context,
-              widget.message.metadata!),
           onTap: () => Navigator.of(context).pushNamed(UrlViewScreen.routeName,
               arguments: UrlViewArgs(
                   urlImg: widget.message.imageUrl!,
@@ -448,11 +450,6 @@ class _MessageLinesState extends State<MessageLines> {
             fit: StackFit.expand,
             children: [
               GestureDetector(
-                onLongPress: () => _showReactionsBar(
-                    widget.message.id!,
-                    widget.message.metadata!['reactions'],
-                    context,
-                    widget.message.metadata!),
                 onTap: () => Navigator.of(context).pushNamed(
                     UrlViewScreen.routeName,
                     arguments: UrlViewArgs(
@@ -492,6 +489,7 @@ class _MessageLinesState extends State<MessageLines> {
     );
   }
 
+
   bool isInit = false;
   KingscordCubit? kcubit;
   @override
@@ -504,9 +502,6 @@ class _MessageLinesState extends State<MessageLines> {
       }
     }
 
-    String msgBodyForReply = widget.message.text != null
-        ? widget.message.text!
-        : " Shared something";
 
     return BlocProvider.value(
       value: kcubit!,
@@ -516,29 +511,15 @@ class _MessageLinesState extends State<MessageLines> {
 
       ? HideContent.textContent(Theme.of(context).textTheme, () {context.read<BuidCubit>().onBlockUser(widget.message.sender!.id); Navigator.of(context).pop();})
       
-      : Draggable<Widget>(
-          onDraggableCanceled: ((velocity, offset) {
-            if (offset.dx >= 100) {
-              if (widget.message.sender!.token.isNotEmpty)
-                kcubit!.addReply(
-                    widget.message.sender!.token[0] +
-                        widget.message.id! +
-                        "[#-=]" +
-                        widget.message.sender!.username +
-                        ": " +
-                        msgBodyForReply,
-                    widget.message.sender!);
-            }
-          }),
-          axis: Axis.horizontal,
-          affinity: Axis.horizontal,
-          onDragEnd: (DragDownDetails) {},
-          feedback: messageLineChild(),
-          childWhenDragging: Text(
-              "Replying to " + widget.message.sender!.username,
-              style:
-                  TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
-          child: messageLineChild()),
+      : GestureDetector(
+          onLongPress: () {
+            _showReactionsBar(
+                widget.message.id!,
+                widget.message.metadata!.containsKey('reactions') ? widget.message.metadata!['reactions'] : {} ,
+                context,
+                widget.message.metadata!);
+          },
+        child: messageLineChild()),
     );
   }
 
@@ -579,7 +560,7 @@ class _MessageLinesState extends State<MessageLines> {
                                   widget.message.sender!.username,
                                   style: TextStyle(
                                       fontSize: 18,
-                                      fontWeight: FontWeight.w900,
+                                      fontWeight: FontWeight.w400,
                                       color: widget.message.sender!.colorPref ==
                                               ""
                                           ? Colors.red
@@ -602,7 +583,7 @@ class _MessageLinesState extends State<MessageLines> {
                                         top: 4.0, bottom: 5),
                                     child: Container(
                                       decoration: BoxDecoration(
-                                          color: Colors.white24,
+                                          color: Theme.of(context).colorScheme.secondary,
                                           borderRadius:
                                               BorderRadius.circular(10)),
                                       child: Padding(
@@ -617,7 +598,7 @@ class _MessageLinesState extends State<MessageLines> {
                                                     .substring(188),
                                             style: TextStyle(
                                                 fontStyle: FontStyle.italic,
-                                                color: Colors.amber,
+                                                color: Theme.of(context).colorScheme.primary,
                                                 fontSize: 15),
                                           ),
                                         ),
@@ -667,7 +648,7 @@ class _MessageLinesState extends State<MessageLines> {
             : kingsCordProfileIcon(),
         decoration: BoxDecoration(
             border: Border.all(
-                width: 2,
+                width: .7,
                 color: widget.message.sender!.colorPref == ""
                     ? Colors.red
                     : Color(hexcolor
