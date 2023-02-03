@@ -716,7 +716,7 @@ exports.onRecieveKcRoomNotif = functions.firestore
 
     var info = snapshot.data();
     functions.logger.log("info: ", info);
-
+    
     const message = {
       notification: {
         title: info.communityName,
