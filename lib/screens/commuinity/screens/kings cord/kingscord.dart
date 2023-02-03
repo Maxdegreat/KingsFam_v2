@@ -110,6 +110,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
   @override
   void dispose() {
+    log("!!!!!!!!!!!!!!!!!!!!!DISPOSING DISPOSING DISPOSING DISPOSING DISPOSING");
     CurrentKingsCordRoomId.updateRoomId(roomId: null);
     _messageController.dispose();
     UserPreferences.updateKcTimeStamp(
@@ -303,7 +304,15 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   bool initCubit = true;
   @override
   Widget build(BuildContext context) {
-    
+    if (scaffoldKey.currentState!.isDrawerOpen) {
+      CurrentKingsCordRoomId.updateRoomId(roomId: null);
+      log("visible bc of things... sikeee");
+    } else {
+      if (VisibilityInfo(key: ObjectKey(widget.kingsCord.id)).visibleFraction == 1) {
+        log("visible bc of things");
+        CurrentKingsCordRoomId.updateRoomId(roomId: widget.kingsCord.id);
+      }
+    }
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
@@ -593,11 +602,13 @@ buildBottomTF(KingscordState state, BuildContext context, String mode) {
         canSeeTf = false;
     final ctx = context.read<KingscordCubit>();
     return VisibilityDetector(
-      key: ObjectKey(_messageController),
+      key: Key(widget.kingsCord.id!),
       onVisibilityChanged: (vis) {
         if (vis.visibleFraction == 1) {
+          log("Creating........");
           CurrentKingsCordRoomId.updateRoomId(roomId: widget.kingsCord.id!);
         } else {
+          log("deling....");
           CurrentKingsCordRoomId.updateRoomId(roomId: null);
         } 
       },

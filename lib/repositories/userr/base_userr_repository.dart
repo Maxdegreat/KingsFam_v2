@@ -11,7 +11,7 @@ abstract class BaseUserrRepository {
   
   void followerUserr({required Userr userr, required String followersId});//followUserrId
   
-  void unFollowUserr({required String userrId, required String unFollowedUserr});
+  void unFollowUserr({required String userrId, required String unFollowingUser});
   
   Future<bool> isFollowing({required String userrId, required String otherUserId});
   //send friend request

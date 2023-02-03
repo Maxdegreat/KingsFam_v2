@@ -55,37 +55,31 @@ Widget contentPreview(
             arguments:
                 CommuinityFeedScreenArgs(commuinity: cm, passedPost: null))
         ,
-    child: Container(
+    child: SizedBox(
       width: MediaQuery.of(context).size.width / 4,
-      // decoration: BoxDecoration(
-      //     color: Theme.of(context).colorScheme.secondary,
-      //     borderRadius: BorderRadius.circular(10)),
-      child: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircleAvatar(
-              radius: 25,
-              backgroundImage: CachedNetworkImageProvider(url),
-            ),
-            SizedBox(height: 2),
-            Flexible(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 5.0),
-                  child: Text(
-                    post.author.username,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.caption,
-                    maxLines: 1,
-                    overflow: TextOverflow.fade,
-                  ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircleAvatar(
+            radius: 25,
+            backgroundImage: CachedNetworkImageProvider(url),
+          ),
+          SizedBox(height: 2),
+          Flexible(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 5.0),
+                child: Text(
+                  post.author.username,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.caption,
+                  maxLines: 1,
+                  overflow: TextOverflow.fade,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     ),
   );

@@ -34,10 +34,10 @@ class ShowFollowingList extends StatefulWidget {
       required this.bloc,
       required this.type})
       : super(key: key);
-  String currUsrId;
-  BuildContext ctxFromPf;
-  ProfileBloc bloc;
-  String type;
+  final String currUsrId;
+  final BuildContext ctxFromPf;
+  final ProfileBloc bloc;
+  final String type;
   static const String routeName = "/showFollowingList";
   static Route route(ShowFollowingListArgs args) {
     return MaterialPageRoute(
@@ -64,95 +64,68 @@ class _ShowFollowingListState extends State<ShowFollowingList> {
   late ScrollController _scrollController;
   String? lastStringId;
   Set<String> seen = Set();
+
   @override
   void initState() {
+    log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     super.initState();
-    _scrollController = ScrollController();
-    _scrollController.addListener(() {
-      if (_scrollController.position.atEdge) {
-        if (_scrollController.position.pixels != 0.0 &&
-            _scrollController.position.maxScrollExtent ==
-                _scrollController.position.pixels) {
-          if (widget.type == Paths.following) {
-            if (!seen.contains(
-                context.read<FollowCubit>().state.following.last.id)) {
-              if (context.read<FollowCubit>().state.following.length > 0) {
-                log("len g 0, checking");
-                context.read<FollowCubit>().getFollowing(
-                    userId: widget.currUsrId,
-                    lastStringId:
-                        context.read<FollowCubit>().state.following.last.id);
-              }
-            }
-          } else {
-            if (!seen.contains(context.read<FollowCubit>().state.followers.last.id)) {
-        if (context.read<FollowCubit>().state.followers.length > 0) {
-          context.read<FollowCubit>().getFollowing(userId: widget.currUsrId, lastStringId: context.read<FollowCubit>().state.followers.last.id);
-        }
-      }
-          }
-        }
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+
+    bool isListEmpty = true;
     if (widget.type == Paths.following) {
-      context
-        .read<FollowCubit>()
-        .getFollowing(userId: widget.currUsrId, lastStringId: null);
-    } else{
-      context
-        .read<FollowCubit>()
-        .getFollowers(userId: widget.currUsrId, lastStringId: null);
+      context.read<FollowCubit>().state.following.isNotEmpty ? isListEmpty = false : null;
+    } else {
+      context.read<FollowCubit>().state.followers.isNotEmpty ? isListEmpty = false : null;
+      
     }
     return Scaffold(
         appBar: AppBar(
-            title: Text(widget.bloc.state.userr.username + "\'s ${widget.type}")),
+            title: Text(widget.bloc.state.userr.username + "\'s ${widget.type}", style: Theme.of(context).textTheme.bodyText1,)),
         body: SafeArea(
             child: BlocConsumer<FollowCubit, FollowState>(
           listener: (context, state) {
-            // TODO: implement listener
+          
           },
           builder: (context, state) {
             return Container(
                 height: MediaQuery.of(widget.ctxFromPf).size.height,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height,
-                      child: ListView.builder(
-                          controller: _scrollController,
-                          itemCount: widget.type == Paths.following ? state.following.length : state.followers.length,
-                          itemBuilder: (BuildContext _, int index) {
-                            final Userr user = widget.type == Paths.following ? state.following[index] : state.followers[index];
-                            log("does seen contatin the last String id? ${seen.contains(lastStringId)}");
+                child: 
+                
+                isListEmpty ? 
 
-                            return Column(
-                              children: [
-                                ListTile(
-                                  leading: ProfileImage(
-                                      radius: 30, pfpUrl: user.profileImageUrl),
-                                  title: Text(user.username),
-                                  trailing:
-                                      Text('followers: ${user.followers}'),
-                                  onTap: () => Navigator.of(context).pushNamed(
-                                      ProfileScreen.routeName,
-                                      arguments:
-                                          ProfileScreenArgs(userId: user.id, initScreen: true)),
-                                ),
-                                SizedBox(height: 2),
-                                Divider(),
-                                SizedBox(height: 3),
-                              ],
-                            );
-                          }),
-                    ),
-                  ],
-                ));
+                Center(
+                  child: Text("umm, nothing to see right now", style: Theme.of(context).textTheme.bodyLarge),
+                )
+                :
+                ListView.builder(
+                    controller: _scrollController,
+                    itemCount: widget.type == Paths.following ? state.following.length : state.followers.length,
+                    itemBuilder: (BuildContext _, int index) {
+                      final Userr user = widget.type == Paths.following ? state.following[index] : state.followers[index];
+                      
+
+                      return Column(
+                        children: [
+                          ListTile(
+                            leading: ProfileImage(
+                                radius: 22, pfpUrl: user.profileImageUrl),
+                            title: Text(user.username),
+                            trailing:
+                                Text('followers: ${user.followers}'),
+                            onTap: () => Navigator.of(context).pushNamed(
+                                ProfileScreen.routeName,
+                                arguments:
+                                    ProfileScreenArgs(userId: user.id, initScreen: true)),
+                          ),
+                          
+                          Divider(),
+                          
+                        ],
+                      );
+                    }));
           },
         )));
   }

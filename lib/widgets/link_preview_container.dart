@@ -1,11 +1,6 @@
-import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:kingsfam/screens/snack_time/cm_theme_list.dart';
 import 'package:simple_link_preview/simple_link_preview.dart';
 
 class LinkPreviewContainer extends StatefulWidget {
@@ -105,8 +100,8 @@ class LinkPreviewContainerState extends State<LinkPreviewContainer> {
             ),
           )
         : Container(
-            height: 200,
-            width: MediaQuery.of(context).size.width/ 1.5,
+            height: ( MediaQuery.of(context).size.width/ 5 ) + 8,
+            width: MediaQuery.of(context).size.width/ 1.4,
             child: Center(child: Text("Loading...")),
             decoration: BoxDecoration(
               color: Color.fromARGB(110, 255, 193, 7),
@@ -115,12 +110,5 @@ class LinkPreviewContainerState extends State<LinkPreviewContainer> {
             ));
   }
 
-  BoxDecoration _decoration() {
-    return BoxDecoration(
-      borderRadius: BorderRadius.circular(7),
-      color: Color.fromARGB(22, 255, 193, 7),
-      border: Border(left: BorderSide(color: Colors.amber, width: 3)),
-      //borderRadius: BorderRadius.circular(7)
-    );
-  }
+
 }

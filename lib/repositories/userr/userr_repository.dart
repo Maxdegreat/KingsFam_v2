@@ -76,51 +76,51 @@ class UserrRepository extends BaseUserrRepository {
 
     _firebaseFirestore
         .collection(Paths.following)
-        .doc(userr.id)
-        .collection(Paths.userrFollowing)
         .doc(followersId)
+        .collection(Paths.userrFollowing)
+        .doc(userr.id)
         .set({});
 
     // populate the guy who got followed
     _firebaseFirestore
         .collection(Paths.followers)
-        .doc(followersId)
-        .collection(Paths.userFollowers)
         .doc(userr.id)
+        .collection(Paths.userFollowers)
+        .doc(followersId)
         .set({});
 
-    //handel notifications for a new follower
-    final NotificationKF noty = NotificationKF(
-      msg: userr.username + " started following you",
-      fromUser: Userr.empty.copyWith(id: userr.id, username: userr.username, profileImageUrl: userr.profileImageUrl ),
-      fromCm: null,
-      fromDm: null,
-      date:Timestamp.now(),
-    );
+    // //handel notifications for a new follower
+    // final NotificationKF noty = NotificationKF(
+    //   msg: userr.username + " started following you",
+    //   fromUser: Userr.empty.copyWith(id: userr.id, username: userr.username, profileImageUrl: userr.profileImageUrl ),
+    //   fromCm: null,
+    //   fromDm: null,
+    //   date:Timestamp.now(),
+    // );
 
-    _firebaseFirestore
-    .collection(Paths.noty)
-    .doc(followersId)
-    .collection(Paths.notifications)
-    .add(noty.toDoc());
+    // _firebaseFirestore
+    // .collection(Paths.noty)
+    // .doc(followersId)
+    // .collection(Paths.notifications)
+    // .add(noty.toDoc());
   }
 
   @override
   void unFollowUserr(
-      {required String userrId, required String unFollowedUserr}) {
+      {required String userrId, required String unFollowingUser}) {
     //reomove the dude that unfollowed from charli's following when charli is the user
     _firebaseFirestore
         .collection(Paths.following)
-        .doc(userrId)
+        .doc(unFollowingUser)
         .collection(Paths.userrFollowing)
-        .doc(unFollowedUserr)
+        .doc(userrId)
         .delete();
     //remove charli while charli is the curr user from the dudes followers
     _firebaseFirestore
         .collection(Paths.followers)
-        .doc(unFollowedUserr)
-        .collection(Paths.userFollowers)
         .doc(userrId)
+        .collection(Paths.userFollowers)
+        .doc(unFollowingUser)
         .delete();
   }
 
@@ -172,7 +172,7 @@ class UserrRepository extends BaseUserrRepository {
     Future<List<Userr>> followingList({required String currUserId, required String? lastStringId}) async {
       List<Userr> bucket = [];
       if (lastStringId == null) {
-        final userSnap = await _firebaseFirestore.collection(Paths.following).doc(currUserId).collection(Paths.userrFollowing).limit(10).get();
+        final userSnap = await _firebaseFirestore.collection(Paths.following).doc(currUserId).collection(Paths.userrFollowing).limit(15).get();
         for (var v in  userSnap.docs) {
          if (v.exists) {
            Userr user = await getUserrWithId(userrId: v.id);
@@ -181,7 +181,7 @@ class UserrRepository extends BaseUserrRepository {
         }
       } else {
         var startAfterUserDoc = await _firebaseFirestore.collection(Paths.users).doc(lastStringId).get();
-        final userSnap = await _firebaseFirestore.collection(Paths.following).doc(currUserId).collection(Paths.userrFollowing).startAfterDocument(startAfterUserDoc).limit(10).get();
+        final userSnap = await _firebaseFirestore.collection(Paths.following).doc(currUserId).collection(Paths.userrFollowing).startAfterDocument(startAfterUserDoc).limit(15).get();
         for (var v in  userSnap.docs) {
          if (v.exists) {
            Userr user = await getUserrWithId(userrId: v.id);

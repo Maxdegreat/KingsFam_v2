@@ -755,7 +755,7 @@ class _CameraScreenState extends State<CameraScreen>
                     }
                   },
                   child: Text(
-                    "Share",
+                    "Post",
                     style: Theme.of(context)
                         .textTheme
                         .bodyText1!

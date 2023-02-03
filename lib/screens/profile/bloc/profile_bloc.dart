@@ -125,19 +125,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           limit: 2, 
           lastPostDoc: lastPostDoc
         );
-        //
-        // // _postStreamSubscription?.cancel();
-        //  // _postStreamSubscription = _postsRepository
-        //     .getUserPosts(
-        //         userId: event.userId, limit: 2, lastPostDoc: lastPostDoc)
-        //     .listen((posts) async {
-        //   List<Post?> allPost = [];
-        //   for (var p in posts) {
-        //     var post = await p;
-        //     if (post!.id == lastPostId)
-        //       continue;
-        //     else
-        //       allPost.add(post);
           
           add(ProfileUpdatePost(post: lst));
    
@@ -227,7 +214,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   Stream<ProfileState> _mapProfileFollowUserToState() async* {
     try {
       _userrRepository.followerUserr(
-          userr: state.userr, followersId: state.userr.id);
+          userr: state.userr, followersId: _authBloc.state.user!.uid);
       final updatedUserr = state.userr.copyWith(followers: state.userr.followers + 1);
       yield state.copyWith(userr: updatedUserr, isFollowing: true);
     } catch (error) {
@@ -240,7 +227,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   Stream<ProfileState> _mapProfileUnfollowUserrToState() async* {
     try {
       _userrRepository.unFollowUserr(
-          userrId: _authBloc.state.user!.uid, unFollowedUserr: state.userr.id);
+          userrId: state.userr.id, unFollowingUser: _authBloc.state.user!.uid);
       final updatedUserr =
           state.userr.copyWith(followers: state.userr.followers + -1);
       yield state.copyWith(userr: updatedUserr, isFollowing: false);

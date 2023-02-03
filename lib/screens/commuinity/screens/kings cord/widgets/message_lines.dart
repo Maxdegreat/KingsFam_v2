@@ -303,6 +303,7 @@ class _MessageLinesState extends State<MessageLines> {
   _buildText(BuildContext context) {
     if (widget.message.metadata!['reactions'] == {}) {
       widget.message.metadata!['reactions']![''] = 0;
+      log(widget.message.metadata!['reactions']);
     }
 
     List<String> links = [];
@@ -320,13 +321,11 @@ class _MessageLinesState extends State<MessageLines> {
         textWithLinksForColumn.add(Text(tempString,
             style: Theme.of(context)
                 .textTheme
-                .bodyText1!
-                .copyWith(fontWeight: FontWeight.w300)));
+                .bodyText1!.copyWith(fontWeight: FontWeight.w500, fontSize: 15)));
         tempString = "";
         // add the element to the links so that the code knows visually there is a link in a show link preview
         links.add(element);
-        // make a textbutton so that indivdual links can be taped on
-
+        // make a blue link text so that indivdual links can be taped on
         Widget l = GestureDetector(
           onTap: () {
             launch(element);
@@ -335,7 +334,7 @@ class _MessageLinesState extends State<MessageLines> {
               style: Theme.of(context)
                   .textTheme
                   .bodyText1!
-                  .merge(TextStyle(color: Colors.blue))),
+                  .copyWith(fontWeight: FontWeight.w500, fontSize: 15, color: Colors.blue)),
         );
         // add the links to the list below so that the code can later use these txtbuttons w/ links as child
         textWithLinksForColumn.add(l);
@@ -364,7 +363,7 @@ class _MessageLinesState extends State<MessageLines> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              LinkPreviewContainer(link: links.last),
+              LinkPreviewContainer(link: links.first),
               // if a link was sent only without any text
               // widget.message.text!.trim().length != links[0].trim().length ? Text(widget.message.text!) : Text("#weblink")
               Column(

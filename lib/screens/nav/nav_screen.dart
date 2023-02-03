@@ -1,17 +1,11 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/enums/enums.dart';
-import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
-import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/nav/widgets/widgets.dart';
-import 'package:kingsfam/widgets/drawer_icon_container.dart';
 import 'package:kingsfam/widgets/mainDrawer/main_drawer.dart';
-import 'package:kingsfam/widgets/main_drawer_end.dart';
 
 class NavScreen extends StatelessWidget {
   static const String routeName = '/nav';
@@ -32,7 +26,7 @@ class NavScreen extends StatelessWidget {
   };
 
   final Map<BottomNavItem, Widget> items =  {
-    BottomNavItem.chats: Icon(Icons.home, size: 20,),
+    BottomNavItem.chats: Icon(Icons.question_answer, size: 20,),
     BottomNavItem.search: Icon(Icons.search, size: 20),
     BottomNavItem.notifications: Icon(Icons.favorite_border, size: 20),
     BottomNavItem.profile: Icon(Icons.account_circle, size: 20)

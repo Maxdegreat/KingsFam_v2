@@ -33,29 +33,32 @@ Widget singlePostDisplay({
   required Widget? ad,
 }) {
   List<Widget> items = [];
-  items.insert(0, Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(height: 2),
-            GestureDetector(
-              onTap: () {
-                availableCameras().then((cameras) {
-                  Navigator.of(context).pushNamed(CameraScreen.routeName,
-                      arguments: CameraScreenArgs(cameras: cameras));
-                });
-              },
-              child: CircleAvatar(
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                radius: 25,
-                child: IconButton(onPressed: () {}, icon: Icon(Icons.add)),
+  items.insert(0, SizedBox(
+    width: MediaQuery.of(context).size.width / 4,
+    child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 2),
+              GestureDetector(
+                onTap: () {
+                  availableCameras().then((cameras) {
+                    Navigator.of(context).pushNamed(CameraScreen.routeName,
+                        arguments: CameraScreenArgs(cameras: cameras));
+                  });
+                },
+                child: CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  radius: 25,
+                  child: IconButton(onPressed: () {}, icon: Icon(Icons.add)),
+                ),
               ),
-            ),
             SizedBox(height: 2),
-            Center(
+          Flexible(
+            child: Center(
               child: Padding(
                 padding: const EdgeInsets.only(right: 5.0),
                 child: Text(
-                  'Share',
+                 'Share',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.caption,
                   maxLines: 1,
@@ -63,17 +66,21 @@ Widget singlePostDisplay({
                 ),
               ),
             ),
-          ],
-        ));
-  return ListView.builder(
-    itemCount: cmBloc.state.postDisplay.length + 1,
-    itemBuilder: (context, index) {
-      Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        
-    },
+          ),
+            ],
+          ),
+  ));
+  for (var w in cmBloc.state.postDisplay) {
+    items.add(contentPreview(post: w!, context: context, cm: cm));
+  }
+  return Container(
+    height: 80,
+    width: MediaQuery.of(context).size.width / 1.2,
+    child: ListView(
+      scrollDirection: Axis.horizontal,
+      addAutomaticKeepAlives: true,
+      children: items,   
+    ),
   );
 }
 
@@ -610,7 +617,7 @@ Widget header({
         cm.name,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 30),
+        style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 23),
       )),
 
       GestureDetector(
@@ -619,9 +626,13 @@ Widget header({
             showCmOptions(cmBloc: cmBloc, cm: cm, context: context);
           });
         },
-        child: CircleAvatar(
-          backgroundColor: Theme.of(context).colorScheme.secondary,
-          radius: 18,
+        child: Container(
+          height: 32,
+          width: 32,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.secondary,
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: Icon(Icons.more_horiz,
               color: Theme.of(context).colorScheme.primary),
         ),
@@ -630,33 +641,3 @@ Widget header({
     ],
   );
 }
-// Widget makePost() {
-//    Container(
-//                                 height: MediaQuery.of(context).size.height / 27,
-//                                 width: MediaQuery.of(context).size.width /
-//                                     (2.3 * 2.25),
-//                                 decoration: BoxDecoration(
-//                                   borderRadius: BorderRadius.circular(7),
-//                                 ),
-//                                 child: ElevatedButton(
-//                                   style: ElevatedButton.styleFrom(
-//                                       primary: Theme.of(context)
-//                                           .colorScheme
-//                                           .primary),
-//                                   onPressed: () async {
-//                                     List<CameraDescription> _cameras =
-//                                         <CameraDescription>[];
-//                                     _cameras = await availableCameras();
-//                                     Navigator.of(context).pushNamed(
-//                                         CameraScreen.routeName,
-//                                         arguments: CameraScreenArgs(
-//                                             cameras: _cameras));
-//                                     // createMediaPopUpSheet(context: context),
-//                                   },
-//                                   child: Icon(
-//                                     Icons.add,
-//                                     color: Theme.of(context).iconTheme.color,
-//                                   ),
-//                                 ),
-//                               ),
-// }
