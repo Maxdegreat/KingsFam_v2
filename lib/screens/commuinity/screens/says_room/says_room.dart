@@ -82,8 +82,7 @@ class _SaysRoomState extends State<SaysRoom> {
                         // we will refresh the says screen to maybe get any new posteds says.
                       });
                     },
-                    child: Text("Create Says",
-                        style: Theme.of(context).textTheme.bodyText1))
+                    child: Text("Create Forum", style: Theme.of(context).textTheme.bodyText1))
               ],
             ),
             body: BlocConsumer<SaysBloc, SaysState>(

@@ -1,12 +1,12 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/helpers/dynamic_links.dart';
@@ -19,7 +19,6 @@ import 'package:kingsfam/helpers/user_preferences.dart';
 //import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
-import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/says_room/says_room.dart';
 
@@ -85,8 +84,10 @@ class _ChatsScreenState extends State<ChatsScreen>
       // do not show a notif if alredy in that room.
       if (CurrentKingsCordRoomId.currentKingsCordRoomId !=
           remoteMessage.data['kcId']) {
-        NotificationHelper.showNotification(remoteMessage);
-        // notifSnackBar(remoteMessage: remoteMessage, context: context);
+        // NotificationHelper.showNotification(remoteMessage).then((value) {
+        //   handleMessage(remoteMessage, context);
+        // });
+        notifSnackBar(remoteMessage: remoteMessage, context: context);
       }
     });
   }
@@ -109,6 +110,7 @@ class _ChatsScreenState extends State<ChatsScreen>
 
   bool chatScreenStateUnReadChats = false;
   bool hasAskedForAgrement = false;
+  bool initOpenDrawer = false;
 
   var currentScreen;
   @override
@@ -126,6 +128,7 @@ class _ChatsScreenState extends State<ChatsScreen>
                 ..add(CommunityInitalEvent(commuinity: state.selectedCh!));
             }
           }
+
 
           if (state.status == ChatStatus.setStateKc) {
             if (state.selectedKc != null) {
@@ -149,13 +152,19 @@ class _ChatsScreenState extends State<ChatsScreen>
             }
           }
 
+          if (!initOpenDrawer && currentScreen != null){
+            scaffoldKey.currentState!.openDrawer();
+            initOpenDrawer = true;
+          }
+
+
           if (state.status == ChatStatus.error) {
             ErrorDialog(
                 content: 'chat_screen e-code: ${state.failure.message}');
           }
         }, builder: (context, state) {
           // check userpreferences. if no data for has aggred to terms of use show a alert dialog
-          if (UserPreferences.getHasAggredToTermsOfService() && !hasAskedForAgrement) {
+          if (UserPreferences.getHasAggredToTermsOfService() && hasAskedForAgrement) {
             hasAskedForAgrement = true;
             SchedulerBinding.instance.addPostFrameCallback((_) {
               Future.delayed(Duration(seconds: 2)).then((value) {
@@ -235,7 +244,7 @@ class _ChatsScreenState extends State<ChatsScreen>
           else if (currentScreen != null)
             return currentScreen;
           else {
-            return Text("KingsFam...");
+            return Center(child: Text("Opps... sorry something went wrong. KingsFam will handle this error soon.", textAlign: TextAlign.center,));
           }
         }));
   }

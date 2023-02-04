@@ -315,20 +315,29 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     }
     return Scaffold(
       appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: GestureDetector(onTap: () {
-             scaffoldKey.currentState!.openDrawer();
-          } , child: ContainerWithURLImg(imgUrl: context.read<ChatscreenBloc>().state.selectedCh!.imageUrl, height: 15, width: 15,)),
-        ),
+        
         centerTitle: false,
         toolbarHeight: 50,
-        title: Text(
-          widget.kingsCord.cordName.length > 15
-              ? '${widget.kingsCord.cordName.substring(0, 15)}'
-              : '# ${widget.kingsCord.cordName}',
-          overflow: TextOverflow.fade,
-          style: Theme.of(context).textTheme.bodyText1,
+        title: GestureDetector(
+          onTap: () {
+             scaffoldKey.currentState!.openDrawer();
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              ContainerWithURLImg(imgUrl: context.read<ChatscreenBloc>().state.selectedCh!.imageUrl, height: 35, width: 35,),
+              SizedBox(width: 8),
+              Text(
+                widget.kingsCord.cordName.length > 15
+                    ? '${widget.kingsCord.cordName.substring(0, 15)}'
+                    : '${widget.kingsCord.cordName}',
+                overflow: TextOverflow.fade,
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+            ],
+          ),
         ),
         actions: [
 

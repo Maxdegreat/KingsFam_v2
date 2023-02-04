@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
-import 'package:kingsfam/helpers/navigator_helper.dart';
-import 'package:kingsfam/models/user_model.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
-import 'package:kingsfam/screens/profile/profile_screen.dart';
-import 'package:kingsfam/widgets/profile_image.dart';
+import 'package:kingsfam/screens/profile/widgets/show_follows.dart';
 
 class ProfileStats extends StatelessWidget {
   final int posts;
@@ -49,36 +45,13 @@ class ProfileStats extends StatelessWidget {
   }
 
   GestureDetector followingInfoBtn(context) => GestureDetector(onTap:(){
-   NavHelper().navToShowFollowing(context, profileBloc.state.userr.id, profileBloc, ctxFromPf, Paths.following);
+    Navigator.of(context).pushNamed(ShowFollowsScreen.routeName, arguments: ShowFollowsArgs(u: profileBloc.state.userr, path: Paths.following));
   }, child: Text("$following Following", style: Theme.of(context).textTheme.caption));
 
   GestureDetector followersInfoBtn(context) => GestureDetector(onTap:(){
-   NavHelper().navToShowFollowing(context, profileBloc.state.userr.id, profileBloc, ctxFromPf, Paths.followers);
+   Navigator.of(context).pushNamed(ShowFollowsScreen.routeName, arguments: ShowFollowsArgs(u: profileBloc.state.userr, path: Paths.followers));
   },child: Text("$followers Followers", style: Theme.of(context).textTheme.caption));
 
 
 }
 
-class _stats extends StatelessWidget {
-  final int count;
-  final String label;
-  const _stats({
-    Key? key,
-    required this.count,
-    required this.label,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(count.toString(),
-            style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-                color: Colors.white)),
-        Text(label, style: TextStyle(color: Colors.white))
-      ],
-    );
-  }
-}

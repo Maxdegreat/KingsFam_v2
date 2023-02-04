@@ -132,8 +132,8 @@ class _CreateRoomState extends State<CreateRoom> {
                         _createRoomContainerDisplay(context, "chat", "Chat room",
                             "A chat room allows for communication via text messages. You can share GIF's, images, videos, text, and react to messages."),
                         // child 3 will be the says room type
-                        _createRoomContainerDisplay(context, "says", "Says room",
-                            "A says room allows for users to share announcements or just say what is on their minds."),
+                        _createRoomContainerDisplay(context, "says", "Forum room",
+                            "A Form room allows for your fam to share information or just say what is on their minds."),
                         // child 4 vc room
                         // _createRoomContainerDisplay(context, "attendance", "Attendance room", "Lead, Admins and Mods can use this room to keep track of their fellowship attendance.")
                        // _createRoomContainerDisplay(context, "vc", 'VC', "A VC room stands for voice chat. This room also alloWs for video calls.")

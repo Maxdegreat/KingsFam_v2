@@ -133,7 +133,6 @@ class NotificationHelper {
         remoteMessage.notification!.title, 
         remoteMessage.notification!.body, 
         notificationDetails,
-        payload: 'item x'
       );
   }
 

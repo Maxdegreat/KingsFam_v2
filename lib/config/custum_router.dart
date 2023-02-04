@@ -11,10 +11,10 @@ import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
 import 'package:kingsfam/screens/commuinity/screens/says_room/says_view.dart';
 import 'package:kingsfam/screens/commuinity/screens/says_room/screens/create_says.dart';
 import 'package:kingsfam/screens/commuinity/wrapers/role_permissions.dart';
+import 'package:kingsfam/screens/profile/widgets/show_follows.dart';
 
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/screens/search/more_cm_screen.dart';
-import 'package:kingsfam/screens/search/widgets/show_following.dart';
 
 
 class CustomRoute {
@@ -139,9 +139,9 @@ class CustomRoute {
       case MoreCm.routeName:
         return MoreCm.route(settings.arguments as MoreCmArgs);
 
-      case ShowFollowingList.routeName:
-        return ShowFollowingList.route(
-            settings.arguments as ShowFollowingListArgs);
+      case ShowFollowsScreen.routeName:
+        return ShowFollowsScreen.route(args:
+            settings.arguments as ShowFollowsArgs);
 
       case PostContentScreen.routeName:
         return PostContentScreen.route(

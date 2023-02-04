@@ -636,8 +636,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
         if (x.exists) {
           Userr u = await UserrRepository().getUserrWithId(userrId: x.id);
           String? roleName = x.data()["kfRole"];
-          log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ROLEnAME = " +
-              roleName.toString());
+     
           bucket.add([u, roleName]);
         }
       }
@@ -653,8 +652,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
         if (x.exists) {
           Userr u = await UserrRepository().getUserrWithId(userrId: x.id);
           String? roleName = x.data()["kfRole"];
-          log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ROLEnAME = " +
-              roleName.toString());
+
           bucket.add([u, roleName]);
         }
       }

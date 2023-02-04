@@ -39,18 +39,16 @@ Widget singlePostDisplay({
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(height: 2),
-              GestureDetector(
-                onTap: () {
-                  availableCameras().then((cameras) {
-                    Navigator.of(context).pushNamed(CameraScreen.routeName,
-                        arguments: CameraScreenArgs(cameras: cameras));
-                  });
-                },
-                child: CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.secondary,
-                  radius: 25,
-                  child: IconButton(onPressed: () {}, icon: Icon(Icons.add)),
-                ),
+              CircleAvatar(
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                radius: 25,
+                child: IconButton(onPressed: () {
+                  log("going to cam screen");
+                availableCameras().then((cameras) {
+                  Navigator.of(context).pushNamed(CameraScreen.routeName,
+                      arguments: CameraScreenArgs(cameras: cameras));
+                });
+                }, icon: Icon(Icons.add)),
               ),
             SizedBox(height: 2),
           Flexible(
@@ -431,7 +429,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
                     CircleAvatar(backgroundColor: Colors.amber, radius: 3)
                 ] else if (cord.mode == "says") ...[
                   Icon(
-                    Icons.auto_awesome_motion_rounded,
+                    Iconsax.document,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   SizedBox(width: 3),
@@ -565,11 +563,8 @@ void onLongPressCord(BuildContext context, KingsCord cord, Church cm) {
         bgColor: Colors.red[400],
         context: context);
   } else {
-    if (cord.mode == "welcome")
-      snackBar(
-          snackMessage: "Must have welcome room at this moment",
-          context: context);
-    else if (CmPermHandler.canMakeRoom(context.read<CommuinityBloc>()))
+    
+    if (CmPermHandler.canMakeRoom(context.read<CommuinityBloc>()))
       _delKcDialog(context: context, cord: cord, commuinity: cm);
     else
       snackBar(

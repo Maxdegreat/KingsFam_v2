@@ -557,14 +557,8 @@ class _MessageLinesState extends State<MessageLines> {
                               children: [
                                 Text(
                                   widget.message.sender!.username,
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                      color: widget.message.sender!.colorPref ==
-                                              ""
-                                          ? Colors.red
-                                          : Color(hexcolor.hexcolorCode(
-                                              widget.message.sender!.colorPref))),
+                                  style: Theme.of(context).textTheme.caption!.copyWith(fontSize: 18,
+                                      fontWeight: FontWeight.w400)
                                 ),
                                 SizedBox(width: 5),
                                 Text('${widget.message.date.timeAgo()}',

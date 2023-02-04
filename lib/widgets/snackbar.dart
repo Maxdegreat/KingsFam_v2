@@ -11,7 +11,7 @@ notifSnackBar({
   required BuildContext context,
 }) {
   return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    backgroundColor: Theme.of(context).colorScheme.secondary,
+    backgroundColor: Theme.of(context).colorScheme.inversePrimary,
     duration: Duration(seconds: 4),
     behavior: SnackBarBehavior.floating,
     margin: EdgeInsets.only(
@@ -30,7 +30,7 @@ notifSnackBar({
         padding: const EdgeInsets.all(8.0),
         child: Text(
           remoteMessage.notification!.title!,
-          style: Theme.of(context).textTheme.bodyText1,
+          style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).colorScheme.onPrimary),
         ),
       ),
     ),
