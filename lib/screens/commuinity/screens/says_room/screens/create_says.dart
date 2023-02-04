@@ -77,13 +77,11 @@ class _CreateSaysState extends State<CreateSays> {
           child: Container(
             height: 30,
             width: double.infinity,
-            child: TextField(
-              cursorColor: Theme.of(context).colorScheme.inversePrimary,
+            child: TextField(textAlign: TextAlign.left,
+            
               controller: _controllerT,
-              decoration: InputDecoration(
+              decoration: InputDecoration(alignLabelWithHint: true,
                 border: InputBorder.none,
-                fillColor: Theme.of(context).colorScheme.secondary,
-                filled: true,
                 focusColor: Theme.of(context).colorScheme.secondary,
                 hintStyle: Theme.of(context).textTheme.caption,
                 hintText: "Add a title",
@@ -106,20 +104,21 @@ class _CreateSaysState extends State<CreateSays> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              KingsCordUserDisplay(),
-              SizedBox(height: 5),
+              // KingsCordUserDisplay(),
+              // SizedBox(height: 5),
               Expanded(
                 child: TextField(
                   keyboardType: TextInputType.multiline,
                   minLines: null,
                   maxLines: 150,
-                  cursorColor: Theme.of(context).colorScheme.inversePrimary,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(fillColor: Theme.of(context).colorScheme.secondary,
+                  autocorrect: true,
+                  decoration: InputDecoration(
+                    // fillColor: Theme.of(context).colorScheme.secondary,
                   // filled: true,
                   // focusColor: Theme.of(context).colorScheme.secondary,
                       border: InputBorder.none,
-                      hintStyle: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 23, fontWeight: FontWeight.bold, color: Colors.grey),
+                      hintStyle: Theme.of(context).textTheme.caption!.copyWith(fontSize: 17),
                       hintText: "Share Your Thoughts"),
                   controller: _controller,
                   onSubmitted: (String value) async {
@@ -164,7 +163,7 @@ class _CreateSaysState extends State<CreateSays> {
               : _controllerT.value.text;
 
           if (title != null) {
-            if (_controllerT.value.text.length > 25) {
+            if (_controllerT.value.text.length > 35) {
               snackBar(
                   snackMessage: "Make sure your title is 25 or less chars",
                   context: context,

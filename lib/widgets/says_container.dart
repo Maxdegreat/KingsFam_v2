@@ -124,7 +124,7 @@ class _SaysContainerState extends State<SaysContainer> {
 
   Widget header_says(TextStyle title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
