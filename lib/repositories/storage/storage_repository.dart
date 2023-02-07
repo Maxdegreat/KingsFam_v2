@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:kingsfam/models/post_model.dart';
 
 import 'package:kingsfam/repositories/storage/base_storage_repository.dart';
 import 'package:uuid/uuid.dart';
@@ -124,5 +125,14 @@ class StorageRepository extends BaseStorageRepository {
     final downloadUrl = await _uploadImage(
         image: imageFile, ref: 'images/kings_cord/kingsCordImage_$imageId.jpg');
     return downloadUrl;
+  }
+
+  void deletePost({required Post p}) {
+    if (p.videoUrl != null) {
+      // then we del path in vids and thumbnail.
+      
+    } else {
+      // we del path in img
+    }
   }
 }

@@ -46,7 +46,7 @@ Widget singlePostDisplay({
                   log("going to cam screen");
                 availableCameras().then((cameras) {
                   Navigator.of(context).pushNamed(CameraScreen.routeName,
-                      arguments: CameraScreenArgs(cameras: cameras));
+                      arguments: CameraScreenArgs(cameras: cameras, cmId: cm.id!));
                 });
                 }, icon: Icon(Icons.add)),
               ),

@@ -114,7 +114,6 @@ class MyApp extends StatelessWidget {
                     likedSaysCubit: context.read<LikedSaysCubit>(),
                   )),
           BlocProvider<BuildchurchCubit>(
-              // TODO                                        PLEASE NOTE THIS DOES NOT NEED TO BE A GLOBAL THING. NOTE IT IS USED IN CM SCREEN ON A GLOBAL SCOPE BUT IT CAN BE REFACTORED.
               create: (context) => BuildchurchCubit(
                   churchRepository: context.read<ChurchRepository>(),
                   storageRepository: context.read<StorageRepository>(),

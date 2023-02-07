@@ -12,7 +12,7 @@ notifSnackBar({
 }) {
   return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-    duration: Duration(seconds: 4),
+    duration: Duration(seconds: 5),
     behavior: SnackBarBehavior.floating,
     margin: EdgeInsets.only(
       bottom: 30,
@@ -44,7 +44,7 @@ snackBar(
     VoidCallback? callBack = null}) {
   return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     backgroundColor: bgColor,
-    duration: Duration(seconds: 4),
+    duration: Duration(seconds: 5),
     behavior: SnackBarBehavior.floating,
     margin: EdgeInsets.only(
       bottom: 30,

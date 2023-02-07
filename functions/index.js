@@ -19,14 +19,12 @@ const app = express();
 
 // exports.onCreateKc = onCreateKc.onCreateKc;
 
-
 const nocache = (req, resp, next) => {
   resp.header("Cache-Control", "private, no-cache, no-store, must-revalidate");
   resp.header("Pragma", "no-cache");
   resp.header("Expires", "0");
   next();
 };
-
 
 const generateAccessToken = (req, res) => {
   // set res header
@@ -72,13 +70,9 @@ exports.agoraTokenGenerator = functions.https.onRequest((req, res) => {
   res.send(generateAccessToken(req, res));
 });
 
-
 exports.onNewJoinRequest = functions.firestore // --------------------------------------------------------- MUST LOOK AT
   .document("/requestToJoinCm/{cmId}/request/{requestingId}")
   .onCreate(async (_, context) => {
-    
-    
-
     // get the tokens from user,
     const userId = context.params.requestingId;
     const userrRef = admin.firestore().collection("users").doc(userId);
@@ -158,23 +152,26 @@ exports.onNewJoinRequest = functions.firestore // ------------------------------
     admin.messaging().sendToDevice(recievingTokens, message, options);
   });
 
-exports.onEditProfile = functions.firestore // --------------------------------------------------------- TESTED ------------------------------------------------
+(exports.onEditProfile = functions.firestore // --------------------------------------------------------- TESTED ------------------------------------------------
   .document("/users/{userId}")
   .onUpdate(async (change, context) => {
-
     // IMPORTANT NOTE
     // This function will be called when IOS and maybe android login / uninstall and reinstall. this is because of token changes
     // in the user profile. tokens are important to app functionality due to subscriptions for fcm. because of this we will check
     // for changes to tokens and act accordingly.
 
-    // TODO: make a token deactivation. 
+    // TODO: make a token deactivation.
 
     const uid = context.params.userId;
 
     if (change.after.data().token[0] !== change.before.data().token[0]) {
-      console.log("tokens are not the same")
+      console.log("tokens are not the same");
       // get all user cmIds
-      var userCm = admin.firestore().collection("users").doc(uid).collection("church");
+      var userCm = admin
+        .firestore()
+        .collection("users")
+        .doc(uid)
+        .collection("church");
       var userCmSnap = await userCm.get();
 
       // nav through all cms and sub to each kc and cm and role topics.
@@ -183,17 +180,30 @@ exports.onEditProfile = functions.firestore // ---------------------------------
         // sub to cm
         topic = "church" + userCmSnap.docs[i].id;
         // log("topic for cm is: ",  topic);
-        admin.messaging().subscribeToTopic(change.after.data().token[0], topic)
+        admin.messaging().subscribeToTopic(change.after.data().token[0], topic);
         // go through cm and sub to topics accordingly
-        var kcSnap = await admin.firestore().collection("church").doc(userCmSnap.docs[i].id).collection("kingsCord").get();
+        var kcSnap = await admin
+          .firestore()
+          .collection("church")
+          .doc(userCmSnap.docs[i].id)
+          .collection("kingsCord")
+          .get();
         for (var j = 0; j < kcSnap.docs.length; j++) {
           topic = userCmSnap.docs[i].id + kcSnap.docs[j].id + "topic";
           // log("topic for kc is: ", topic);
-          admin.messaging().subscribeToTopic(change.after.data().token[0], topic);
+          admin
+            .messaging()
+            .subscribeToTopic(change.after.data().token[0], topic);
         }
-        
+
         // go to cmMem and get role. then sub to topic as needed
-        var userAsMember = await admin.firestore().collection("communityMembers").doc(userCmSnap.docs[i].id).collection("members").doc(uid).get();
+        var userAsMember = await admin
+          .firestore()
+          .collection("communityMembers")
+          .doc(userCmSnap.docs[i].id)
+          .collection("members")
+          .doc(uid)
+          .get();
         var role = await userAsMember.data().kfRole;
         var cmId = userCmSnap.docs[i].id;
         if (role === "Lead" || role === "lead") {
@@ -239,11 +249,10 @@ exports.onEditProfile = functions.firestore // ---------------------------------
         userNameCaseList: change.after.data().usernameSearchCase,
       });
     });
-  }),
+  })),
   //WORKING PROD FUNCTIONS
 
-
-  exports.onFollowUserr = functions.firestore // --------------------------------------------------------- MUST LOOK AT
+  (exports.onFollowUserr = functions.firestore // --------------------------------------------------------- MUST LOOK AT
     .document("/followers/{userrId}/userFollowers/{followerId}")
     //when a new doc is created at this path it will fire
     .onCreate(async (_, context) => {
@@ -274,9 +283,7 @@ exports.onEditProfile = functions.firestore // ---------------------------------
       } else {
         userrRef.update({ following: 1 });
       }
-
-
-    });
+    }));
 
 //================================================================================
 exports.unFollowUser = functions.firestore // --------------------------------------------------------- MUST LOOK AT
@@ -304,7 +311,6 @@ exports.unFollowUser = functions.firestore // ----------------------------------
     } else {
       userRef.update({ following: 0 });
     }
-
   });
 //_========================================================================================
 exports.onCreatePost = functions.firestore
@@ -312,58 +318,77 @@ exports.onCreatePost = functions.firestore
   .onCreate(async (snapshot, context) => {
     const postId = context.params.postsId;
 
-    //get author id.
-    const authorRef = snapshot.get("author");
-    //const authorRef = snapshot.after.get('author');//curr error is can not read get... im done ill pick up tomorrow
-    const authorId = authorRef.path.split("/")[1];
+    functions.logger.log("the post: ", snapshot.data());
+    // get cmId of the post
+    const cmId = snapshot.data().commuinity.path.split("/")[1];
+    functions.logger.log("the community id is: ", cmId);
+    functions.logger.log("the community is: ", snapshot.data().commuinity);
 
-    //add new post to the feed of all the followers of author
-    const userFollowersRef = admin
-      .firestore()
-      .collection("followers")
-      .doc(authorId)
-      .collection("userFollowers");
-    const userFollowerSnapshot = await userFollowersRef.get();
-    userFollowerSnapshot.forEach(async (doc) => {
-      // doc.id is the user followilng's id
-      admin
-        .firestore()
-        .collection("feeds")
-        .doc(doc.id)
-        .collection("userFeed")
-        .doc(postId)
-        .set(snapshot.data());
-    });
-  });
-//======================================================================================================
-exports.onUpdatePost = functions.firestore
-  .document("/posts/{postId}")
-  .onUpdate(async (snapshot, context) => {
-    const postId = context.params.postId;
+    // check timestamp of last post in cm
+    const cmRef = admin.firestore().collection("church").doc(cmId);
+    const postRef = admin.firestore().collection("posts");
+    postRef
+      .where("commuinity", "==", snapshot.data().commuinity)
+      .orderBy("date", "desc")
+      .limit(2)
+      .get()
+      .then(async (snap) => {
+        functions.logger.log("this is num of posts found: ", snap.docs.length);
+        // if timestamp is 10 minuets apart send notif to the cm topic
+        if (snap.docs.length >= 2) {
+          log("more than 2");
+          var post1 = snap.docs[0].data();
+          var post2 = snap.docs[1].data();
 
-    // Get author id.
-    const authorRef = snapshot.after.get("author");
-    const authorId = authorRef.path.split("/")[1];
+          const tenMinutes = 10 * 60 * 1000; // 10 minutes in milliseconds
+          const difference = Math.abs(
+            post1.date.toMillis() - post2.date.toMillis()
+          );
 
-    // Update post data in each follower's feed.
-    const updatedPostData = snapshot.after.data();
-    const userFollowersRef = admin
-      .firestore()
-      .collection("followers")
-      .doc(authorId)
-      .collection("userFollowers");
-    const userFollowersSnapshot = await userFollowersRef.get();
-    userFollowersSnapshot.forEach(async (doc) => {
-      const postRef = admin
-        .firestore()
-        .collection("feeds")
-        .doc(doc.id)
-        .collection("userFeed");
-      const postDoc = await postRef.doc(postId).get();
-      if (postDoc.exists) {
-        postDoc.ref.update(updatedPostData);
-      }
-    });
+          if (difference >= tenMinutes) {
+   
+            var title = "new post in " + snapshot.data().name;
+            const message = {
+              notification: {
+                title: title,
+                body: "See what the fam is sharing!",
+              },
+              data: {
+                postId: snap.docs[0].id,
+                type: "cmPost",
+                cmId: cmId,
+              },
+            };
+
+            var topic = "church" + cmId;
+            admin.messaging().sendToTopic(topic, message);
+          }
+          log("do nothing, not longer than 10 minuets");
+        } else {
+          console.log("found none");
+          var post1 = snapshot.data();
+
+
+          var title = "new post in " + snapshot.data().name;
+          const message = {
+            notification: {
+              title: title,
+              body: "See what the fam is sharing!",
+            },
+            data: {
+              postId: snapshot.id,
+              type: "cmPost",
+              cmId: cmId,
+            },
+          };
+
+          var topic = "church" + cmId;
+          admin.messaging().sendToTopic(topic, message);
+        }
+        console.log("what how did we get here?");
+      });
+
+    console.log("found no matching cm to notify users subed to topic w/");
   });
 
 // IN A LOCAL ENV
@@ -439,174 +464,204 @@ exports.onMentionedUserUpdate = functions.firestore
     admin.messaging().sendToDevice(snap.token, message, options);
   });
 
+exports.onJoinCm = functions.firestore
+  .document("/communityMembers/{cmId}/members/{memberId}")
+  .onCreate(async (snapshot, context) => {
+    const uid = context.params.memberId;
+    const cmId = context.params.cmId;
 
-    exports.onJoinCm = functions.firestore.document("/communityMembers/{cmId}/members/{memberId}") 
-      .onCreate(async (snapshot, context) => {
-        const uid = context.params.memberId;
-        const cmId = context.params.cmId;
+    // check if exist at user church path. if not add
+    var userCm = admin
+      .firestore()
+      .collection("users")
+      .doc(uid)
+      .collection("church")
+      .doc(cmId);
+    var userCmSnap = await userCm.get();
+    if (!userCmSnap.exists) {
+      admin
+        .firestore()
+        .collection("users")
+        .doc(uid)
+        .collection("church")
+        .doc(cmId)
+        .set({});
+    }
+    // get all kcIds
+    var kcRef = admin
+      .firestore()
+      .collection("church")
+      .doc(cmId)
+      .collection("kingsCord");
+    var kcSnaps = await kcRef.get();
+    var kcDocs = kcSnaps.docs;
+    // get user token
+    var userRef = admin.firestore().collection("users").doc(uid);
+    var userSnapshot = await userRef.get();
+    var token = userSnapshot.get("token");
 
-        // check if exist at user church path. if not add
-          var userCm = admin.firestore().collection("users").doc(uid).collection("church").doc(cmId);
-          var userCmSnap = await userCm.get();
-          if (!userCmSnap.exists) {
-            admin.firestore().collection("users").doc(uid).collection("church").doc(cmId).set({});
-          }
-        // get all kcIds
-        var kcRef = admin.firestore().collection("church").doc(cmId).collection("kingsCord");
-        var kcSnaps = await kcRef.get();
-        var kcDocs = kcSnaps.docs;
-        // get user token
-        var userRef = admin.firestore().collection("users").doc(uid);
-        var userSnapshot = await userRef.get();
-        var token = userSnapshot.get("token");
+    // sub user from topic (cmId + kcId + "topic")
+    for (var i = 0; i < kcDocs.length; i++) {
+      var topic = cmId + kcDocs[i].id + "topic";
+      admin.messaging().subscribeToTopic(token[0], topic);
+    }
 
-        // sub user from topic (cmId + kcId + "topic")
-        for (var i = 0; i < kcDocs.length; i++) {
-          var topic = cmId + kcDocs[i].id + "topic";
-          admin.messaging().subscribeToTopic(token[0], topic);
-        }
+    var topic = "chuch" + cmId;
+    admin.messaging().subscribeToTopic(token[0], topic);
 
-        var topic = "chuch" + cmId;
-        admin.messaging().subscribeToTopic(token[0], topic)
+    // done
+  });
 
-        // done
-      })
+exports.onLeaveCm = functions.firestore
+  .document("/communityMembers/{cmId}/members/{memberId}")
+  .onDelete(async (snapshot, context) => {
+    const uid = context.params.memberId;
+    const cmId = context.params.cmId;
+    // nav to user home and remove cmId from user / church
+    await admin
+      .firestore()
+      .collection("users")
+      .doc(uid)
+      .collection("church")
+      .doc(cmId)
+      .delete();
 
-    exports.onLeaveCm = functions.firestore.document("/communityMembers/{cmId}/members/{memberId}")
-      .onDelete(async (snapshot, context) => {
-        const uid = context.params.memberId;
-        const cmId = context.params.cmId;
-        // nav to user home and remove cmId from user / church
-        await admin.firestore().collection("users").doc(uid).collection("church").doc(cmId).delete();
-        
-        // var userRef = admin.firestore().collection("users").doc(uid);
-        // var userSnapshot = await userRef.get();
+    // var userRef = admin.firestore().collection("users").doc(uid);
+    // var userSnapshot = await userRef.get();
 
-        // itr through all kcId's in path of cmId and save kcIds
-        var kcRef = admin.firestore().collection("church").doc(cmId).collection("kingsCord");
-        var kcSnaps = await kcRef.get();
-        var kcDocs = kcSnaps.docs;
+    // itr through all kcId's in path of cmId and save kcIds
+    var kcRef = admin
+      .firestore()
+      .collection("church")
+      .doc(cmId)
+      .collection("kingsCord");
+    var kcSnaps = await kcRef.get();
+    var kcDocs = kcSnaps.docs;
 
-        // get user token
-        var userRef = admin.firestore().collection("users").doc(uid);
-        var userSnapshot = await userRef.get();
-        var token = userSnapshot.get("token");
+    // get user token
+    var userRef = admin.firestore().collection("users").doc(uid);
+    var userSnapshot = await userRef.get();
+    var token = userSnapshot.get("token");
 
-        // unsub user from topic (cmId + kcId + "topic")
-        for (var i = 0; i < kcDocs.length; i++) {
-          var topic = cmId + kcDocs[i].id + "topic";
-          admin.messaging().unsubscribeFromTopic(token[0], topic);
-        }
+    // unsub user from topic (cmId + kcId + "topic")
+    for (var i = 0; i < kcDocs.length; i++) {
+      var topic = cmId + kcDocs[i].id + "topic";
+      admin.messaging().unsubscribeFromTopic(token[0], topic);
+    }
 
-        var topic = "chuch" + cmId;
-        admin.messaging().unsubscribeFromTopic(token[0], topic)
-        // done
-      });
+    var topic = "chuch" + cmId;
+    admin.messaging().unsubscribeFromTopic(token[0], topic);
+    // done
+  });
 
-      exports.onRoleChanged = functions.firestore.document("/communityMembers/{cmId}/members/{memberId}") //---------------------------------------------------------- TEST NOW ------------------------------------------------
-        .onUpdate(async (change, context) => {
-          const cmId = context.params.cmId;
-          const uid = context.params.memberId;
+exports.onRoleChanged = functions.firestore
+  .document("/communityMembers/{cmId}/members/{memberId}") //---------------------------------------------------------- TEST NOW ------------------------------------------------
+  .onUpdate(async (change, context) => {
+    const cmId = context.params.cmId;
+    const uid = context.params.memberId;
 
-          // base case
-          var roleSnap = change.after.data();
-          var oldRole = change.before.data().kfRole;
+    // base case
+    var roleSnap = change.after.data();
+    var oldRole = change.before.data().kfRole;
 
-          if (roleSnap === oldRole) {
-            return 
-          }
+    if (roleSnap === oldRole) {
+      return;
+    }
 
+    // get value for new role
+    // var role = admin.firestore().collection("communityMembers").doc(cmId).collection("members").doc(uid);
+    // conditionally create appropriate topic or none if member
+    var topic;
+    if (roleSnap.kfRole === "Lead" || roleSnap.kfRole === "lead") {
+      topic = cmId + roleSnap.kfRole;
+    } else if (roleSnap.kfRole === "Admin" || roleSnap.kfRole === "admin") {
+      topic = cmId + roleSnap.kfRole;
+    } else if (roleSnap.kfRole === "Mod" || roleSnap.kfRole === "mod") {
+      topic = cmId + roleSnap.kfRole;
+    }
 
-          // get value for new role
-          // var role = admin.firestore().collection("communityMembers").doc(cmId).collection("members").doc(uid);
-          // conditionally create appropriate topic or none if member
-          var topic;
-          if (roleSnap.kfRole === "Lead" || roleSnap.kfRole === "lead") {
-            topic = cmId + roleSnap.kfRole;
-          } else if (roleSnap.kfRole === "Admin" || roleSnap.kfRole === "admin") {
-            topic = cmId + roleSnap.kfRole;
-          } else if (roleSnap.kfRole === "Mod" || roleSnap.kfRole === "mod") {
-            topic = cmId + roleSnap.kfRole;
-          }
+    var user = admin.firestore().collection("users").doc(uid);
+    var userSnap = await user.get();
 
+    if (typeof topic !== "undefined" || topic !== null) {
+      log("topic: " + topic);
+      var token = userSnap.get("token");
+      // conditionally subscribe or un sub to topic
+      admin.messaging().subscribeToTopic(token[0], topic);
+    }
 
-          var user = admin.firestore().collection("users").doc(uid);
-          var userSnap = await user.get();
+    // must unsub from old
+    topic = cmId + oldRole;
+    admin.messaging().unsubscribeFromTopic(token[0], topic);
 
+    // done
+  });
 
-          if (typeof topic !== 'undefined' || topic !== null) {
-            log("topic: " + topic);
-            var token = userSnap.get("token");
-            // conditionally subscribe or un sub to topic
-            admin.messaging().subscribeToTopic(token[0], topic);
-          }
+exports.onDeleteKc = functions.firestore
+  .document("/church/{cmId}/kingsCord/{kcId}")
+  .onDelete(async (_, context) => {
+    const cmId = context.params.cmId;
+    const kcId = context.params.kcId;
+    // itr through all members in kc and collect tokens
+    var cmMem = admin
+      .firestore()
+      .collection("communityMembers")
+      .doc(cmId)
+      .collection("members");
+    var cmMemSnap = await cmMem.get();
+    var cmMemDocs = cmMemSnap.docs;
 
-          // must unsub from old
-          topic = cmId + oldRole;
-          admin.messaging().unsubscribeFromTopic(token[0], topic);
+    // check if have correct documents
+    var docIds = cmMemDocs.map((doc) => doc.id);
 
-          // done
+    // now let us grab user tokens
+    var tokens = [];
+    for (var i = 0; i < docIds.length; i++) {
+      var user = admin.firestore().collection("users").doc(docIds[i]);
+      var userSnap = await user.get();
+      var userTokens = await userSnap.get("token");
+      tokens.push(userTokens[0]);
+    }
 
-        });
+    // unsub all member app instance tokens
+    var topic = cmId + kcId + "topic";
+    admin.messaging().unsubscribeFromTopic(tokens, topic);
+    // done.
+  });
 
-    exports.onDeleteKc = functions.firestore.document("/church/{cmId}/kingsCord/{kcId}")
-    .onDelete( async (_, context) => {
-        const cmId = context.params.cmId;
-        const kcId = context.params.kcId;
-        // itr through all members in kc and collect tokens
-        var cmMem = admin.firestore().collection("communityMembers").doc(cmId).collection("members");
-        var cmMemSnap = await cmMem.get();
-        var cmMemDocs = cmMemSnap.docs;
+exports.onCreateKc = functions.firestore
+  .document("/church/{cmId}/kingsCord/{kcId}")
+  .onCreate(async (_, context) => {
+    const cmId = context.params.cmId;
+    const kcId = context.params.kcId;
+    // itr through all members
+    var cmMem = admin
+      .firestore()
+      .collection("communityMembers")
+      .doc(cmId)
+      .collection("members");
+    var cmMemSnap = await cmMem.get();
+    var cmMemDocs = cmMemSnap.docs;
 
-        // check if have correct documents
-        var docIds = cmMemDocs.map(doc => doc.id);       
+    // check if have correct documents
+    functions.logger.log("document 1 id: ", cmMemDocs[0].id);
+    var docIds = cmMemDocs.map((doc) => doc.id);
+    functions.logger.log("document ids: ", docIds);
 
-        // now let us grab user tokens
-        var tokens = [];
-        for (var i = 0; i < docIds.length; i++) {
-          var user = admin.firestore().collection("users").doc(docIds[i]);
-          var userSnap = await user.get();
-          var userTokens = await userSnap.get("token");
-          tokens.push(userTokens[0]);
-        }
-
-
-        // unsub all member app instance tokens
-        var topic = cmId+kcId+"topic";
-        admin.messaging().unsubscribeFromTopic(tokens, topic)
-        // done.
-    });
-
-
-exports.onCreateKc = functions.firestore.document("/church/{cmId}/kingsCord/{kcId}")
-    .onCreate( async (_, context) => {
-      const cmId = context.params.cmId;
-      const kcId = context.params.kcId;
-        // itr through all members
-        var cmMem = admin.firestore().collection("communityMembers").doc(cmId).collection("members");
-        var cmMemSnap = await cmMem.get();
-        var cmMemDocs = cmMemSnap.docs;
-
-        // check if have correct documents
-        functions.logger.log("document 1 id: ", cmMemDocs[0].id);
-        var docIds = cmMemDocs.map(doc => doc.id);
-        functions.logger.log("document ids: ", docIds);
-
-        // now let us grab user tokens
-        var tokens = [];
-        for (var i = 0; i < docIds.length; i++) {
-          var user = admin.firestore().collection("users").doc(docIds[i]);
-          var userSnap = await user.get();
-          var userTokens = await userSnap.get("token");
-          tokens.push(userTokens[0]);
-        }
+    // now let us grab user tokens
+    var tokens = [];
+    for (var i = 0; i < docIds.length; i++) {
+      var user = admin.firestore().collection("users").doc(docIds[i]);
+      var userSnap = await user.get();
+      var userTokens = await userSnap.get("token");
+      tokens.push(userTokens[0]);
+    }
 
     // subscribe all members
-    var topic = cmId+kcId+"topic";
-    admin.messaging().subscribeToTopic(tokens, topic)
+    var topic = cmId + kcId + "topic";
+    admin.messaging().subscribeToTopic(tokens, topic);
     // done
-    });
-
+  });
 
 exports.onKingsCordMessageSent = functions.firestore
   .document("/church/{churchId}/kingsCord/{kingsCordId}/messages/{messageId}")
@@ -643,13 +698,14 @@ exports.onKingsCordMessageSent = functions.firestore
       // 'recentMessage' : recentMessage,
     });
     // send notif as topic if msg contains "anouncment" in metadata
-    
 
-    
-    functions.logger.log("this is the complete snapshot: ", snapshot.data())
+    functions.logger.log("this is the complete snapshot: ", snapshot.data());
     if (snapshot.data().metadata.announcement !== undefined) {
-      functions.logger.log("The contents of metedata checking if announcements is not null: ", snapshot.data().metadata.announcement)
-      
+      functions.logger.log(
+        "The contents of metedata checking if announcements is not null: ",
+        snapshot.data().metadata.announcement
+      );
+
       var snapData = snapshot.data();
       var cmSnap = await cmRef.get();
       var cmData = cmSnap.data();
@@ -657,8 +713,7 @@ exports.onKingsCordMessageSent = functions.firestore
 
       if (snapData.text === undefined || snapData.text === "")
         messageBody = "shared something";
-      else 
-        messageBody = snapData.text;
+      else messageBody = snapData.text;
       const message = {
         notification: {
           title: "anouncment:" + cmData.name,
@@ -675,12 +730,17 @@ exports.onKingsCordMessageSent = functions.firestore
         priority: "high",
         timeToLive: 60 * 60 * 24,
       };
-      admin.messaging().sendToTopic("church"+cmId, message).then((value) => {
-        functions.logger.log("sent the topicMessage", "/church/"+cmId)
-      }).catch((err) => {console.log(String(err), console.log("sent to: /church/" + cmId))});
+      admin
+        .messaging()
+        .sendToTopic("church" + cmId, message)
+        .then((value) => {
+          functions.logger.log("sent the topicMessage", "/church/" + cmId);
+        })
+        .catch((err) => {
+          console.log(String(err), console.log("sent to: /church/" + cmId));
+        });
     }
   });
-
 
 // _________________________________________HELPERS__________________________________________
 async function deleteQueryBatch(db, query, resolve) {
@@ -716,7 +776,7 @@ exports.onRecieveKcRoomNotif = functions.firestore
 
     var info = snapshot.data();
     functions.logger.log("info: ", info);
-    
+
     const message = {
       notification: {
         title: info.communityName,
@@ -737,5 +797,3 @@ exports.onRecieveKcRoomNotif = functions.firestore
     var topic = cmId + kcId + "topic";
     admin.messaging().sendToTopic(topic, message, options);
   });
-
-

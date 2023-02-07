@@ -186,8 +186,8 @@ class _SaysViewState extends State<SaysView> {
         child: Text(
           s.contentTxt,
           overflow: TextOverflow.ellipsis,
-          maxLines: 100,
-          style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 17),
+          maxLines: 200,
+          style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 17, fontWeight: FontWeight.w300),
         ),
       ),
     );

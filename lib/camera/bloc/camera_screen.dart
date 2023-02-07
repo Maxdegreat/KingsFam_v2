@@ -16,14 +16,16 @@ import 'package:video_player/video_player.dart';
 
 class CameraScreenArgs {
   final List<CameraDescription> cameras;
-  CameraScreenArgs({required this.cameras});
+  final String? cmId;
+  CameraScreenArgs({required this.cameras, this.cmId});
 }
 
 class CameraScreen extends StatefulWidget {
   final List<CameraDescription> cameras;
+  final String? cmId;
   static const String routeName = "/camera_screen";
 
-  const CameraScreen({Key? key, required this.cameras}) : super(key: key);
+  const CameraScreen({Key? key, required this.cameras, this.cmId}) : super(key: key);
 
   static Route route({required CameraScreenArgs args}) {
     return MaterialPageRoute(
@@ -171,8 +173,7 @@ class _CameraScreenState extends State<CameraScreen>
         title: Text('Share whats going on',
             style: Theme.of(context)
                 .textTheme
-                .bodyText1!
-                .copyWith(color: Colors.white)),
+                .bodyText1),
       ),
       body: Column(
         children: <Widget>[
@@ -462,7 +463,6 @@ class _CameraScreenState extends State<CameraScreen>
                     onLongPress: () {
                       if (controller != null) {
                         controller!.setExposurePoint(null);
-                        showInSnackBar('Resetting exposure point');
                       }
                     },
                     child: const Text('AUTO'),
@@ -549,7 +549,6 @@ class _CameraScreenState extends State<CameraScreen>
                       if (controller != null) {
                         controller!.setFocusPoint(null);
                       }
-                      showInSnackBar('Resetting focus point');
                     },
                     child: const Text('AUTO'),
                   ),
@@ -615,30 +614,7 @@ class _CameraScreenState extends State<CameraScreen>
                   .copyWith(color: Colors.white))
         ]
 
-        // IconButton(
-        //   icon: cameraController != null &&
-        //           cameraController.value.isRecordingPaused
-        //       ? const Icon(Icons.play_arrow)
-        //       : const Icon(Icons.pause),
-        //   color: Colors.blue,
-        //   onPressed: cameraController != null &&
-        //           cameraController.value.isInitialized &&
-        //           cameraController.value.isRecordingVideo
-        //       ? (cameraController.value.isRecordingPaused)
-        //           ? onResumeButtonPressed
-        //           : onPauseButtonPressed
-        //       : null,
-        // ),
 
-        // IconButton(
-        //   icon: const Icon(Icons.pause_presentation),
-        //   color:
-        //       cameraController != null && cameraController.value.isPreviewPaused
-        //           ? Colors.red
-        //           : Colors.blue,
-        //   onPressed:
-        //       cameraController == null ? null : onPausePreviewButtonPressed,
-        // ),
       ],
     );
   }
@@ -656,7 +632,6 @@ class _CameraScreenState extends State<CameraScreen>
 
     if (widget.cameras.isEmpty) {
       SchedulerBinding.instance.addPostFrameCallback((_) async {
-        showInSnackBar('No camera found.');
       });
       return const Text('None');
     } else {
@@ -744,14 +719,14 @@ class _CameraScreenState extends State<CameraScreen>
                       Navigator.of(context).pushNamed(
                           PostContentScreen.routeName,
                           arguments: PostContentArgs(
-                              content: File(imageFile!.path), type: "image"));
+                              content: File(imageFile!.path), type: "image", cmId: widget.cmId));
                     } else if (videoFile != null) {
                       await _pauseVideoPlayer();
                       log("pushing video file. file is " + videoFile!.path);
                       Navigator.of(context).pushNamed(
                           PostContentScreen.routeName,
                           arguments: PostContentArgs(
-                              content: File(videoFile!.path), type: "video"));
+                              content: File(videoFile!.path), type: "video", cmId: widget.cmId));
                     }
                   },
                   child: Text(
@@ -815,10 +790,7 @@ class _CameraScreenState extends State<CameraScreen>
 
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
-  void showInSnackBar(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
-  }
+
 
   void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {
     if (controller == null) {
@@ -862,8 +834,7 @@ class _CameraScreenState extends State<CameraScreen>
         setState(() {});
       }
       if (cameraController.value.hasError) {
-        showInSnackBar(
-            'Camera error ${cameraController.value.errorDescription}');
+
       }
     });
 
@@ -889,31 +860,31 @@ class _CameraScreenState extends State<CameraScreen>
       ]);
     } on CameraException catch (e) {
       switch (e.code) {
-        case 'CameraAccessDenied':
-          showInSnackBar('You have denied camera access.');
-          break;
-        case 'CameraAccessDeniedWithoutPrompt':
-          // iOS only
-          showInSnackBar('Please go to Settings app to enable camera access.');
-          break;
-        case 'CameraAccessRestricted':
-          // iOS only
-          showInSnackBar('Camera access is restricted.');
-          break;
-        case 'AudioAccessDenied':
-          showInSnackBar('You have denied audio access.');
-          break;
-        case 'AudioAccessDeniedWithoutPrompt':
-          // iOS only
-          showInSnackBar('Please go to Settings app to enable audio access.');
-          break;
-        case 'AudioAccessRestricted':
-          // iOS only
-          showInSnackBar('Audio access is restricted.');
-          break;
-        default:
-          _showCameraException(e);
-          break;
+        // case 'CameraAccessDenied':
+        //   showInSnackBar('You have denied camera access.');
+        //   break;
+        // case 'CameraAccessDeniedWithoutPrompt':
+        //   // iOS only
+        //   showInSnackBar('Please go to Settings app to enable camera access.');
+        //   break;
+        // case 'CameraAccessRestricted':
+        //   // iOS only
+        //   showInSnackBar('Camera access is restricted.');
+        //   break;
+        // case 'AudioAccessDenied':
+        //   showInSnackBar('You have denied audio access.');
+        //   break;
+        // case 'AudioAccessDeniedWithoutPrompt':
+        //   // iOS only
+        //   showInSnackBar('Please go to Settings app to enable audio access.');
+        //   break;
+        // case 'AudioAccessRestricted':
+        //   // iOS only
+        //   showInSnackBar('Audio access is restricted.');
+        //   break;
+        // default:
+        //   _showCameraException(e);
+        //   break;
       }
     }
 
@@ -983,11 +954,10 @@ class _CameraScreenState extends State<CameraScreen>
         final CameraController cameraController = controller!;
         if (cameraController.value.isCaptureOrientationLocked) {
           await cameraController.unlockCaptureOrientation();
-          showInSnackBar('Capture orientation unlocked');
+          
         } else {
           await cameraController.lockCaptureOrientation();
-          showInSnackBar(
-              'Capture orientation locked to ${cameraController.value.lockedCaptureOrientation.toString().split('.').last}');
+
         }
       }
     } on CameraException catch (e) {
@@ -1009,7 +979,7 @@ class _CameraScreenState extends State<CameraScreen>
       if (mounted) {
         setState(() {});
       }
-      showInSnackBar('Exposure mode set to ${mode.toString().split('.').last}');
+    
     });
   }
 
@@ -1018,7 +988,7 @@ class _CameraScreenState extends State<CameraScreen>
       if (mounted) {
         setState(() {});
       }
-      showInSnackBar('Focus mode set to ${mode.toString().split('.').last}');
+      
     });
   }
 
@@ -1067,7 +1037,7 @@ class _CameraScreenState extends State<CameraScreen>
     final CameraController? cameraController = controller;
 
     if (cameraController == null || !cameraController.value.isInitialized) {
-      showInSnackBar('Error: select a camera first.');
+      
       return;
     }
 
@@ -1087,7 +1057,7 @@ class _CameraScreenState extends State<CameraScreen>
       if (mounted) {
         setState(() {});
       }
-      showInSnackBar('Video recording paused');
+ 
     });
   }
 
@@ -1096,7 +1066,6 @@ class _CameraScreenState extends State<CameraScreen>
       if (mounted) {
         setState(() {});
       }
-      showInSnackBar('Video recording resumed');
     });
   }
 
@@ -1104,7 +1073,6 @@ class _CameraScreenState extends State<CameraScreen>
     final CameraController? cameraController = controller;
 
     if (cameraController == null || !cameraController.value.isInitialized) {
-      showInSnackBar('Error: select a camera first.');
       return;
     }
 
@@ -1266,7 +1234,6 @@ class _CameraScreenState extends State<CameraScreen>
   Future<XFile?> takePicture() async {
     final CameraController? cameraController = controller;
     if (cameraController == null || !cameraController.value.isInitialized) {
-      showInSnackBar('Error: select a camera first.');
       return null;
     }
 
@@ -1286,6 +1253,5 @@ class _CameraScreenState extends State<CameraScreen>
 
   void _showCameraException(CameraException e) {
     _logError(e.code, e.description);
-    showInSnackBar('Error: ${e.code}\n${e.description}');
   }
 }

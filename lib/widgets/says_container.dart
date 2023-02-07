@@ -39,16 +39,8 @@ class SaysContainer extends StatefulWidget {
 class _SaysContainerState extends State<SaysContainer> {
   @override
   Widget build(BuildContext context) {
-    TextStyle title = TextStyle(
-      fontSize: 15,
-      color: Color(hc.hexcolorCode(widget.says.author!.colorPref)),
-      fontWeight: FontWeight.bold,
-    );
 
-    TextStyle title2 = TextStyle(
-      fontSize: 18,
-      fontWeight: FontWeight.bold,
-    );
+
 
     return Padding(
       padding: const EdgeInsets.all(8),
@@ -57,14 +49,33 @@ class _SaysContainerState extends State<SaysContainer> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children:
         [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Theme.of(context).colorScheme.secondary
-            ),
-            width: double.infinity,
-            height: MediaQuery.of(context).size.shortestSide / 2.5,
-            child: _saysPreview(),
+          Stack(
+            children: 
+              [Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Theme.of(context).colorScheme.secondary
+                ),
+                width: double.infinity,
+                height: MediaQuery.of(context).size.shortestSide / 2.5,
+                child: _saysPreview(),
+              ),
+              Positioned.fill(
+                  child: Container(
+                height: MediaQuery.of(context).size.height,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Theme.of(context).colorScheme.secondary,
+                      ]),
+                ),
+              )),
+            ],
           ),
           SizedBox(height: 7),
           Container(
@@ -74,18 +85,21 @@ class _SaysContainerState extends State<SaysContainer> {
               borderRadius: BorderRadius.circular(10),
               color: Theme.of(context).colorScheme.secondary
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                title_says(context),
-                header_says(title),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                  child: Text(widget.says.date.timeAgo(),
-            style: Theme.of(context).textTheme.caption),
-                )
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  title_says(context),
+                  SizedBox(height: 2),
+                  header_says(),
+                  SizedBox(height: 2),
+                  Text(widget.says.date.timeAgo(),
+              style: Theme.of(context).textTheme.caption)
+                ],
+              ),
             )
           )
         ],
@@ -96,17 +110,15 @@ class _SaysContainerState extends State<SaysContainer> {
   _saysPreview() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Text(widget.says.contentTxt),
+      child: Text(widget.says.contentTxt, style: Theme.of(context).textTheme.bodyText1),
     );
   }
 
   Widget title_says(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
-      child: Text(widget.says.title!,
-      overflow: TextOverflow.fade,
-          style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 17)),
-    );
+    return Text(widget.says.title!,
+    overflow: TextOverflow.fade,
+    maxLines: 1,
+        style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 17));
   }
 
   Widget contentTxt_says() {
@@ -122,31 +134,28 @@ class _SaysContainerState extends State<SaysContainer> {
     );
   }
 
-  Widget header_says(TextStyle title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          ProfileImage(
-              radius: 12,
-              pfpUrl: widget.says.author!.profileImageUrl == null ||
-                      widget.says.author!.profileImageUrl.isEmpty
-                  ? "https://firebasestorage.googleapis.com/v0/b/kingsfam-9b1f8.appspot.com/o/images%2Fchurches%2FchurchAvatar_eb0c7061-a124-41b4-b948-60dcb0dffc49.jpg?alt=media&token=7e2fc437-9448-48bd-95bc-78e977fbcad8"
-                  : widget.says.author!.profileImageUrl),
-          SizedBox(width: 8),
-          Text(
-            widget.says.author!.username,
-            style: Theme.of(context).textTheme.caption!.copyWith(color: Theme.of(context).colorScheme.inversePrimary),
-            overflow: TextOverflow.fade,
-            maxLines: 1,
-          ),
-                        IconButton(onPressed: () {
-                  _showPostOptions();
-                }, icon: Icon(Icons.more_horiz))
-        ],
-      ),
+  Widget header_says() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        ProfileImage(
+            radius: 12,
+            pfpUrl: widget.says.author!.profileImageUrl == null ||
+                    widget.says.author!.profileImageUrl.isEmpty
+                ? "https://firebasestorage.googleapis.com/v0/b/kingsfam-9b1f8.appspot.com/o/images%2Fchurches%2FchurchAvatar_eb0c7061-a124-41b4-b948-60dcb0dffc49.jpg?alt=media&token=7e2fc437-9448-48bd-95bc-78e977fbcad8"
+                : widget.says.author!.profileImageUrl),
+        SizedBox(width: 8),
+        Text(
+          widget.says.author!.username,
+          style: Theme.of(context).textTheme.caption!.copyWith(color: Theme.of(context).colorScheme.inversePrimary),
+          overflow: TextOverflow.fade,
+          maxLines: 1,
+        ),
+                      IconButton(onPressed: () {
+                _showPostOptions();
+              }, icon: Icon(Icons.more_horiz))
+      ],
     );
   }
 

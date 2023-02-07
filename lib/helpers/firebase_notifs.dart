@@ -8,6 +8,7 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/enums/bottom_nav_items.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
+import 'package:kingsfam/screens/commuinity/screens/feed/commuinity_feed.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 
 Future<void> handleMessage(RemoteMessage message, BuildContext context) async {
@@ -49,5 +50,25 @@ Future<void> handleMessage(RemoteMessage message, BuildContext context) async {
         return;
       }
       return;
-    } 
+    } else if (message.data['type'] == 'cmPost') {
+      // get the cm of which post is from
+      String cmId = message.data['cmId'];
+      var snap = await FirebaseFirestore.instance
+          .collection(Paths.church)
+          .doc(cmId)
+          .get();
+      
+      if (snap.exists) {
+        Church.fromDoc(snap).then((cm) {
+        // nav to cm
+        context.read<ChatscreenBloc>()..add(ChatScreenUpdateSelectedCm(cm: cm));
+        context.read<BottomnavbarCubit>().updateSelectedItem(BottomNavItem.chats);
+        // open posts
+        Navigator.of(context).pushNamed(CommuinityFeedScreen.routeName, arguments: CommuinityFeedScreenArgs(commuinity: cm));
+        });
+      }
+
+
+
+    }
   }

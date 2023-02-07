@@ -17,7 +17,7 @@ class SaysRepository {
       int? limit}) async {
     try {
       QuerySnapshot saySnap;
-      if (limit == null) limit = 7;
+      if (limit == null) limit = 30;
       if (lastPostId == null) {
         saySnap = await _firebaseFirestore
             .collection(Paths.church)
@@ -49,6 +49,13 @@ class SaysRepository {
         .collection(Paths.says)
         .add(says.toDoc());
   }
+
+  void deleteSays({required Says s, required String cmId, required String kcId}) =>  _firebaseFirestore
+        .collection(Paths.church)
+        .doc(cmId)
+        .collection(Paths.kingsCord)
+        .doc(kcId)
+        .collection(Paths.says).doc(s.id).delete();
 
 
   Future<bool> onLikeSays({required String uid, required String cmId, required String kcId, required String sayId, required int currLikes}) async {

@@ -143,49 +143,52 @@ class _MainDrawerState extends State<MainDrawer> {
             if (context.read<ChatscreenBloc>().state.selectedCh != null) ...[
               BlocBuilder<CommuinityBloc, CommuinityState>(
                 builder: (context, state) {
-                  return Container(
-                    width: MediaQuery.of(context).size.width / 1.3,
-                    child: Column(
-                      mainAxisAlignment:context.read<ChatscreenBloc>().state.selectedCh != null ? MainAxisAlignment.start : MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        header(
-                            cm: context
-                                .read<ChatscreenBloc>()
-                                .state
-                                .selectedCh!,
+                  return RefreshIndicator(
+                    onRefresh: () async => context.read<CommuinityBloc>()..add(CommunityInitalEvent(commuinity: context.read<ChatscreenBloc>().state.selectedCh!)),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width / 1.3,
+                      child: Column(
+                        mainAxisAlignment:context.read<ChatscreenBloc>().state.selectedCh != null ? MainAxisAlignment.start : MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          header(
+                              cm: context
+                                  .read<ChatscreenBloc>()
+                                  .state
+                                  .selectedCh!,
+                              context: context,
+                              cmBloc: context.read<CommuinityBloc>()),
+                  
+                          SizedBox(height: 8),  
+                         
+                          singlePostDisplay(
+                            cm: context.read<ChatscreenBloc>().state.selectedCh!,
                             context: context,
-                            cmBloc: context.read<CommuinityBloc>()),
-
-                        SizedBox(height: 8),  
-                       
-                        singlePostDisplay(
-                          cm: context.read<ChatscreenBloc>().state.selectedCh!,
-                          context: context,
-                          cmBloc: context.read<CommuinityBloc>(),
-                          ad: null,
-                        ),
-
-                        // if (state.mentionedCords.length > 0) ... [
-                        //   showMentions(context, cm),
-                        //   SizedBox(height: 8),
-                        // ],
-
-                        showRooms(context,
-                            context.read<ChatscreenBloc>().state.selectedCh!),
-                        _showAd(),
-
-                        SizedBox(height: 8),
-
-                        showVoice(context,
-                            context.read<ChatscreenBloc>().state.selectedCh!),
-
-                        SizedBox(height: 8),
-                      ],
+                            cmBloc: context.read<CommuinityBloc>(),
+                            ad: null,
+                          ),
+                  
+                          // if (state.mentionedCords.length > 0) ... [
+                          //   showMentions(context, cm),
+                          //   SizedBox(height: 8),
+                          // ],
+                  
+                          showRooms(context,
+                              context.read<ChatscreenBloc>().state.selectedCh!),
+                          _showAd(),
+                  
+                          SizedBox(height: 8),
+                  
+                          showVoice(context,
+                              context.read<ChatscreenBloc>().state.selectedCh!),
+                  
+                          SizedBox(height: 8),
+                        ],
+                      ),
                     ),
                   );
                 },

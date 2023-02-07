@@ -32,14 +32,17 @@ import '../nav/cubit/bottomnavbar_cubit.dart';
 class PostContentArgs {
   final File content;
   final String type;
-  PostContentArgs({required this.content, required this.type});
+  final String? cmId;
+  PostContentArgs({required this.content, required this.type, this.cmId});
 }
 
 class PostContentScreen extends StatefulWidget {
-  const PostContentScreen({Key? key, required this.content, required this.type})
+  const PostContentScreen(
+      {Key? key, required this.content, required this.type, this.cmId})
       : super(key: key);
   final File content;
   final String type;
+  final String? cmId;
   @override
   State<PostContentScreen> createState() => _PostContentScreenState();
 
@@ -80,6 +83,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
     txtCtrlC = TextEditingController();
     scrollCtrl = ScrollController();
     scrollCtrl.addListener(listenToScrolling);
+    cmIdPostingTo = widget.cmId;
 
     super.initState();
   }
@@ -134,11 +138,15 @@ class _PostContentScreenState extends State<PostContentScreen> {
         if (submitting != true && canSubmit) {
           snackBar(snackMessage: "Posting", context: context);
           submit();
-        };
+        }
+        ;
       },
       child: Row(
         children: [
-          Text("Share Post", style: TextStyle(color: canSubmit ? Colors.green : Colors.grey,)),
+          Text("Share Post",
+              style: TextStyle(
+                color: canSubmit ? Colors.green : Colors.grey,
+              )),
           Icon(
             Icons.arrow_forward,
             color: canSubmit ? Colors.green : Colors.grey,
@@ -160,7 +168,8 @@ class _PostContentScreenState extends State<PostContentScreen> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: false,
-          title: Text('Add details', style: Theme.of(context).textTheme.bodyText1),
+          title:
+              Text('Add details', style: Theme.of(context).textTheme.bodyText1),
           actions: [submitButton()],
         ),
         body: GestureDetector(
@@ -197,9 +206,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
                       ),
                     )),
                 cmLisView(),
-                SizedBox(
-                  height: 10,
-                ),
+                
               ],
             ),
           ),
@@ -211,9 +218,9 @@ class _PostContentScreenState extends State<PostContentScreen> {
       padding: const EdgeInsets.all(8.0),
       child: TextField(
         decoration: InputDecoration(
-                            fillColor: Theme.of(context).colorScheme.secondary,
-                  filled: true,
-                  focusColor: Theme.of(context).colorScheme.secondary,
+          fillColor: Theme.of(context).colorScheme.secondary,
+          filled: true,
+          focusColor: Theme.of(context).colorScheme.secondary,
           border: OutlineInputBorder(),
           labelText: s == "c" ? 'Caption???' : "ex: #meme #sermon #God",
         ),
@@ -309,21 +316,19 @@ class _PostContentScreenState extends State<PostContentScreen> {
             return chBox(ch);
           },
         ),
-      ),
-    );
+    ));
   }
 
   Widget chBox(Church ch) {
-    
     return Padding(
       padding: EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 0),
       child: Column(
         children: [
           GestureDetector(
             onTap: () {
-              if (cmIdPostingTo == null) 
+              if (cmIdPostingTo == null)
                 canSubmit = true;
-              else 
+              else
                 canSubmit = false;
 
               if (!submitting) {
@@ -336,13 +341,13 @@ class _PostContentScreenState extends State<PostContentScreen> {
               setState(() {});
             },
             child: Container(
-              height: 115,
-              width: 130,
+              height: MediaQuery.of(context).size.shortestSide / 2.3,
+              width:  MediaQuery.of(context).size.shortestSide / 2.3,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(7.0),
                   border: (cmIdPostingTo != null && ch.id == cmIdPostingTo)
-                    ? Border.all(color: Colors.green, width: 3)
-                    : null,
+                      ? Border.all(color: Colors.green, width: 3)
+                      : null,
                   image: DecorationImage(
                       image: CachedNetworkImageProvider(ch.imageUrl),
                       fit: BoxFit.cover)),
@@ -369,8 +374,9 @@ class _PostContentScreenState extends State<PostContentScreen> {
     if (submitting == true) return;
     submitting = true;
     setState(() {});
-    
-    final author = await UserrRepository().getUserrWithId(userrId: context.read<AuthBloc>().state.user!.uid);
+
+    final author = await UserrRepository()
+        .getUserrWithId(userrId: context.read<AuthBloc>().state.user!.uid);
     if (author.id == Userr.empty.id) {
       Navigator.of(context).pop();
     }
@@ -410,9 +416,9 @@ class _PostContentScreenState extends State<PostContentScreen> {
       snackBar(
           snackMessage: "working on your post fam",
           context: context,
-          bgColor: Colors.green);
+          bgColor: Colors.greenAccent);
       Navigator.popUntil(
-          context, ModalRoute.withName(Navigator.defaultRouteName));
+          context, ModalRoute.withName(NavScreen.routeName));
       log("----------->posted<---------------- from post_content_screen.dart");
     } else if (vidF != null) {
       final thumbnail = await VideoThumbnail.thumbnailFile(

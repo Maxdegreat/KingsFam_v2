@@ -129,7 +129,6 @@ class _ChatsScreenState extends State<ChatsScreen>
             }
           }
 
-
           if (state.status == ChatStatus.setStateKc) {
             if (state.selectedKc != null) {
               if (state.selectedKc!.mode == Mode.chat ||
@@ -157,14 +156,14 @@ class _ChatsScreenState extends State<ChatsScreen>
             initOpenDrawer = true;
           }
 
-
           if (state.status == ChatStatus.error) {
             ErrorDialog(
                 content: 'chat_screen e-code: ${state.failure.message}');
           }
         }, builder: (context, state) {
           // check userpreferences. if no data for has aggred to terms of use show a alert dialog
-          if (UserPreferences.getHasAggredToTermsOfService() && hasAskedForAgrement) {
+          if (!UserPreferences.getHasAggredToTermsOfService() &&
+              !hasAskedForAgrement) {
             hasAskedForAgrement = true;
             SchedulerBinding.instance.addPostFrameCallback((_) {
               Future.delayed(Duration(seconds: 2)).then((value) {
@@ -179,37 +178,37 @@ class _ChatsScreenState extends State<ChatsScreen>
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                                "Pleas read terms of use below and accept to continue."),
+                                "Please read the terms of use below and accept to continue."),
                             SizedBox(height: 10),
                             Text(
-                                "1. Who is kingsFam: KingsFam is a christian social commuinication platform. KingsFam provides a unique way for churchs, fellowships and ministrys to connect with one another through an online platform."),
+                                "1. Who is KingsFam: KingsFam is a Christian social communication platform. KingsFam provides a unique way for churches, fellowships, and ministries to connect with one another through an online platform."),
                             SizedBox(height: 5),
                             Text(
-                                "2. What to expect from KingsFam: KingsFam is still new so many features are on the way this being said updates will be rolling out monthly. KingsFam is open to all user feedback, see complaints hotline community to leave feedback."),
+                                "2. What to expect from KingsFam: KingsFam is still new, so many features are on the way. This being said, updates will be rolling out monthly. KingsFam is open to all user feedback. See the complaints hotline community to leave feedback."),
                             SizedBox(height: 5),
                             Text(
-                                "3. Account Deletion: At any time you can delete your account and KingsFam will remove your data from the apps database. KingsFam Does NOT sell or track user data."),
+                                "3. Account Deletion: At any time, you can delete your account and KingsFam will remove your data from the app's database. KingsFam does NOT sell or track user data."),
                             SizedBox(height: 5),
                             Text(
-                                "4. Community Leads: If you start a community You are responsible for keeping your community safe. Upon your Community being reported it will be reviewed and and if found breaking guidelines it will be removed."),
+                                "4. Community Leads: If you start a community, you are responsible for keeping it safe. Upon your community being reported, it will be reviewed and, if found breaking guidelines, it will be removed."),
                             SizedBox(height: 5),
                             Text(
-                                "5. User Generated Content: Simular to the statment above, if you create any user generated content and it has been reported or is found to break KingsFams guidelines below it will be removed."),
+                                "5. User-Generated Content: Similar to the statement above, if you create any user-generated content and it has been reported or is found to break KingsFam's guidelines below, it will be removed."),
                             SizedBox(height: 5),
                             Text(
-                                "6. Account Removal: if you are regoginized to keep breaking guidelines your account will be removed."),
+                                "6. Account Removal: If you are recognized as constantly breaking guidelines, your account will be removed."),
                             SizedBox(height: 5),
-                            Text("7. KingsFam Guidelines below: "),
-                            SizedBox(height: 5),
-                            Text(
-                                "7.1 KingsFam does not allow Deragourtory user content (profile pictures, user posts, community posts) "),
+                            Text("7. KingsFam Guidelines Below: "),
                             SizedBox(height: 5),
                             Text(
-                                "7.2 KingsFam does not allow hate speach on any person or group of persons"),
+                                "7.1 KingsFam does not allow derogatory user content (profile pictures, user posts, community posts, any text such as comments, messages ect) "),
                             SizedBox(height: 5),
                             Text(
-                              "7.3 KingsFam does not allow user content that displays or promtes sexual user content."
-                            ),
+                                "7.2 KingsFam does not allow hate speech about any person or group of persons"),
+                            SizedBox(height: 5),
+                            Text(
+                                "7.3 KingsFam does not allow user content that displays or promotes sexual user content."),
+                            SizedBox(height: 5),
                             Text(
                                 "7.4 As a content provider for our services, it is your duty to ensure that you have the necessary permissions and licenses in accordance with the terms. You must also make sure that your content follows all applicable laws. Keep in mind that we cannot be held responsible for any issues related to your content or how others use it.")
                           ],
@@ -219,6 +218,7 @@ class _ChatsScreenState extends State<ChatsScreen>
                         TextButton(
                           child: Text('Agree'),
                           onPressed: () {
+                            UserPreferences.setAgreeToTermsOfService(); 
                             Navigator.of(context).pop();
                           },
                         ),
@@ -244,7 +244,11 @@ class _ChatsScreenState extends State<ChatsScreen>
           else if (currentScreen != null)
             return currentScreen;
           else {
-            return Center(child: Text("Opps... sorry something went wrong. KingsFam will handle this error soon.", textAlign: TextAlign.center,));
+            return Center(
+                child: Text(
+              "Opps... sorry something went wrong. KingsFam will handle this error soon.",
+              textAlign: TextAlign.center,
+            ));
           }
         }));
   }

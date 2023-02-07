@@ -34,6 +34,15 @@ class SaysBloc extends Bloc<SaysEvent, SaysState> {
     }
   }
 
+  void deleteSays({required Says s, required String cmId}) {
+    _saysRepository.deleteSays(s: s, kcId: s.kcId!, cmId: cmId);
+    var lst = state.says;
+    lst.remove(s);
+    // ignore: invalid_use_of_visible_for_testing_member
+    emit(state.copyWith(says:lst));
+  }
+    
+
   Stream<SaysState> _mapSaysFetchSaysToState(SaysFetchSays event) async* {
     yield state.copyWith(status: SaysStatus.loading, says: []);
     try {

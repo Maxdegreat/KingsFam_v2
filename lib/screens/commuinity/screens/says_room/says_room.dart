@@ -106,6 +106,24 @@ class _SaysRoomState extends State<SaysRoom> {
                             children: [
                               // SizedBox(height: 4),
                               GestureDetector(
+                                onLongPress: () {
+                                  if (context.read<AuthBloc>().state.user!.uid == says.author!.id) {
+                                    showModalBottomSheet(context: context, builder: (context) {
+                                     return Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          ListTile(
+                                            leading: Icon(Icons.delete),
+                                            title: Text("Delete", style: Theme.of(context).textTheme.bodyText1,),
+                                            onTap: () => context.read<SaysBloc>().deleteSays(s: says, cmId: widget.cm.id!),
+                                          )
+                                        ],
+                                      );
+                                    });
+                                  }
+                                },
                                   onTap: () {
                                     Navigator.of(context).pushNamed(
                                         SaysView.routeName,
