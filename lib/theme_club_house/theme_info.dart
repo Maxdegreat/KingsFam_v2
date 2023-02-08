@@ -13,6 +13,7 @@ class ThemeInfo {
       brightness: Brightness.light,
       primaryColor: Colors.purple,
       appBarTheme: AppBarTheme(
+        centerTitle: false,
         toolbarHeight: 45,
         textTheme: TextTheme(bodyText1: TextStyle(color: Colors.black, fontSize: 18),),
         color: Colors.white,
@@ -68,6 +69,7 @@ class ThemeInfo {
         brightness: Brightness.dark,
         primaryColor: Colors.purple,
         appBarTheme: AppBarTheme( 
+          centerTitle: false,
           // thats it! but what looks better. the app bar or screen body?
           toolbarHeight: 45,
           color: Color(hexcolor.hexcolorCode('#121212')),// whats the hex val?

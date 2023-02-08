@@ -4,14 +4,13 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/camera/bloc/camera_screen.dart';
-import 'package:kingsfam/config/constants.dart';
+
 import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/config/paths.dart';
@@ -19,7 +18,6 @@ import 'package:kingsfam/enums/bottom_nav_items.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
 import 'package:kingsfam/helpers/clipboard.dart';
 import 'package:kingsfam/helpers/cm_perm_handler.dart';
-import 'package:kingsfam/helpers/dynamic_links.dart';
 import 'package:kingsfam/helpers/image_helper.dart';
 import 'package:kingsfam/models/church_kingscord_model.dart';
 import 'package:kingsfam/models/church_model.dart';
@@ -128,12 +126,15 @@ class _MainDrawerState extends State<MainDrawer> {
                     GestureDetector(
                         onTap: () => Navigator.of(context)
                             .pushNamed(BuildChurch.routeName),
-                        child: drawerIcon(Icon(
-                          Icons.add,
-                          color: Theme.of(context).colorScheme.secondary,
-                        ))),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: drawerIcon(Icon(
+                            Icons.add,
+                            color: Theme.of(context).colorScheme.secondary,
+                          )),
+                        )),
 
-                      const SizedBox(height: 20,)
+                      // const SizedBox(height: 20,)
                    
                   ],
                 ),
@@ -246,7 +247,7 @@ class _MainDrawerState extends State<MainDrawer> {
 
   Container _cmsList(BuildContext context, List<Widget> drawerLst) {
     return Container(
-        height: MediaQuery.of(context).size.height / 1.2,
+        height: MediaQuery.of(context).size.height / 1.4,
         child: ListView(children: drawerLst));
   }
 
