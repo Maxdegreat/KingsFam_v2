@@ -127,12 +127,14 @@ class StorageRepository extends BaseStorageRepository {
     return downloadUrl;
   }
 
-  void deletePost({required Post p}) {
+  Future<void> deletePost({required Post p}) async {
     if (p.videoUrl != null) {
       // then we del path in vids and thumbnail.
-      
+      await _firebaseStorage.refFromURL(p.videoUrl!).delete();
+      await _firebaseStorage.refFromURL(p.thumbnailUrl!).delete();
     } else {
       // we del path in img
+       await _firebaseStorage.refFromURL(p.imageUrl!).delete();
     }
   }
 }

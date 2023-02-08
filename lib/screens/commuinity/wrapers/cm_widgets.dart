@@ -43,7 +43,6 @@ Widget singlePostDisplay({
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 radius: 25,
                 child: IconButton(onPressed: () {
-                  log("going to cam screen");
                 availableCameras().then((cameras) {
                   Navigator.of(context).pushNamed(CameraScreen.routeName,
                       arguments: CameraScreenArgs(cameras: cameras, cmId: cm.id!));

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/cubits/liked_says/liked_says_cubit.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/models/says_model.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
@@ -38,6 +39,8 @@ class _SaysRoomState extends State<SaysRoom> {
     context
         .read<SaysBloc>()
         .add(SaysFetchSays(cmId: widget.cm.id!, kcId: widget.kcId));
+    UserPreferences.updateLastVisitedKc(widget.kcId);
+
     super.initState();
   }
 

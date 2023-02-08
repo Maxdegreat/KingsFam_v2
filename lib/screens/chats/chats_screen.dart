@@ -151,10 +151,10 @@ class _ChatsScreenState extends State<ChatsScreen>
             }
           }
 
-          if (!initOpenDrawer && currentScreen != null){
-            scaffoldKey.currentState!.openDrawer();
-            initOpenDrawer = true;
-          }
+          // if (!initOpenDrawer && currentScreen != null){
+          //   scaffoldKey.currentState!.openDrawer();
+          //   initOpenDrawer = true;
+          // }
 
           if (state.status == ChatStatus.error) {
             ErrorDialog(

@@ -52,6 +52,7 @@ class PostContentScreen extends StatefulWidget {
         builder: (context) => PostContentScreen(
           content: args.content,
           type: args.type,
+          cmId: args.cmId,
         ),
       );
 }
@@ -84,6 +85,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
     scrollCtrl = ScrollController();
     scrollCtrl.addListener(listenToScrolling);
     cmIdPostingTo = widget.cmId;
+    if (cmIdPostingTo != null) canSubmit = true;
 
     super.initState();
   }
@@ -303,20 +305,23 @@ class _PostContentScreenState extends State<PostContentScreen> {
     // Get curr id
     // grab 15 cms curr id is a part of
     // if scroll ctrl hits bottom then grab next 15
-    return Padding(
-      padding: EdgeInsets.only(top: 15, left: 10, right: 10, bottom: 5),
-      child: Container(
-        height: 220,
-        width: double.infinity,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
+    return Container(
+      height: MediaQuery.of(context).size.shortestSide,
+      child: Padding(
+        padding: EdgeInsets.only(top: 15, left: 10, right: 10, bottom: 5),
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 20,
+            crossAxisSpacing: 40,
+          ),
           itemCount: chs.length,
-          itemBuilder: (context, index) {
+          itemBuilder: (BuildContext context, int index) {
             Church ch = chs[index];
             return chBox(ch);
           },
-        ),
-    ));
+        )),
+    );
   }
 
   Widget chBox(Church ch) {
@@ -341,8 +346,8 @@ class _PostContentScreenState extends State<PostContentScreen> {
               setState(() {});
             },
             child: Container(
-              height: MediaQuery.of(context).size.shortestSide / 2.3,
-              width:  MediaQuery.of(context).size.shortestSide / 2.3,
+              height: MediaQuery.of(context).size.shortestSide / 2.7,
+              width:  MediaQuery.of(context).size.shortestSide / 2.7,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(7.0),
                   border: (cmIdPostingTo != null && ch.id == cmIdPostingTo)

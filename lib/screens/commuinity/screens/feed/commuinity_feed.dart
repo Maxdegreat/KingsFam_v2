@@ -117,7 +117,7 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
               title: Text(
                 "${widget.commuinity.name}\'s Content",
                 overflow: TextOverflow.fade,
-                style: Theme.of(context).textTheme.bodyText1,
+                style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.white),
               ),
             ),
             body: state.posts.length > 0

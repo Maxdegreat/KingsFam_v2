@@ -6,6 +6,7 @@ import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/models/models.dart';
 
 import 'package:kingsfam/repositories/post/base_post_repository.dart';
+import 'package:kingsfam/repositories/repositories.dart';
 
 class PostsRepository extends BasePostsRepository {
   final FirebaseFirestore _firebaseFirestore;
@@ -26,6 +27,8 @@ class PostsRepository extends BasePostsRepository {
   }
 
   Future<void> deletePost({required Post post}) async {
+    // go to storage and delete the post base on ref
+    StorageRepository().deletePost(p: post);
     _firebaseFirestore.collection(Paths.posts).doc(post.id).delete();
     print("deleated");
   }

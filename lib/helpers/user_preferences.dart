@@ -16,6 +16,7 @@ class UserPreferences {
   static const String _kcTimeStamp = "kcTs";
   static const String _cmTs = "cmTs";
   static const String _hasAgreedToTermsOfService = "hasAgreedToTermsOfService";
+  static const String _lastVisitiedKc = "lastVisitiedKc";
 
   static Future updateCmTimestamp({required String cmId}) async {
     updateLastVisitedCm(cmId: cmId);
@@ -45,6 +46,12 @@ class UserPreferences {
     return _preferences!.getStringList(_cmTs) ?? null;
   }
 
+  // update Last visited kc
+  static updateLastVisitedKc(String kcId) =>  _preferences!.setString(_lastVisitiedKc, kcId);
+  
+
+  static Future<String?> getLastVisitedKc() async => await _preferences!.getString(_lastVisitiedKc);
+
   static Future updateKcTimeStamp(
       {required String cmId, required String kcId}) async {
     List<String>? kts = await _preferences!.getStringList(_kcTimeStamp + cmId);
@@ -66,6 +73,7 @@ class UserPreferences {
       _preferences!.setStringList(_kcTimeStamp + cmId,
           [kcId + "_" + Timestamp.now().toDate().toIso8601String()]);
     }
+    updateLastVisitedKc(kcId);
   }
 
   static Future<List<String>?> getKcTimeStamps(String cmId) async {

@@ -102,8 +102,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
       // ignore: unused_local_variable
       List<Church> chsToJoin = [];
 
-      bool isInCm = await _churchRepository.isInCm(
-          _authBloc.state.user!.uid, _authBloc.state.user!.uid);
+      bool isInCm = await _churchRepository.isInCm(_authBloc.state.user!.uid);
 
       await getChsToJoinIfNeeded(isInCm, chsToJoin);
 
@@ -131,9 +130,20 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
               status: ChatStatus.setState));
           emit(state.copyWith(status: ChatStatus.sccuess));
           
-          KingsCordRepository().getKcFirstCm(state.selectedCh!.id!).then((kc) {
-            if (kc != null)
-              add(ChatScreenUpdateSelectedKc(kc: kc));
+          UserPreferences.getLastVisitedKc().then((lastVisitedKc) {
+            if (lastVisitedKc == null) {
+              KingsCordRepository().getKcFirstCm(state.selectedCh!.id!).then((kc) {
+              if (kc != null)
+                add(ChatScreenUpdateSelectedKc(kc: kc));
+              });
+            } else {
+              if (state.selectedCh != null) {
+                KingsCordRepository().getKcWithId(lastVisitedKc, state.selectedCh!.id!).then((kc) {
+                  if (kc != null)
+                    add(ChatScreenUpdateSelectedKc(kc: kc));
+                });
+              }
+            }
           });
         });
       });

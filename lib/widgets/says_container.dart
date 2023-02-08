@@ -78,6 +78,7 @@ class _SaysContainerState extends State<SaysContainer> {
             ],
           ),
           SizedBox(height: 7),
+          
           Container(
             width: double.infinity,
             // height: MediaQuery.of(context).size.shortestSide / 3,
@@ -93,9 +94,7 @@ class _SaysContainerState extends State<SaysContainer> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   title_says(context),
-                  SizedBox(height: 2),
                   header_says(),
-                  SizedBox(height: 2),
                   Text(widget.says.date.timeAgo(),
               style: Theme.of(context).textTheme.caption)
                 ],
@@ -199,7 +198,6 @@ class _SaysContainerState extends State<SaysContainer> {
                 context.read<BuidCubit>().onBlockUser(widget.says.author!.id);
                 
                 snackBar(snackMessage: "KingsFam will hide content from this user.", context: context);
-                Navigator.of(context).pop();
                 Navigator.of(context).pop();
               
               },

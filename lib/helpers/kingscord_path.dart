@@ -8,6 +8,8 @@ class CurrentKingsCordRoomId {
   // when user joins room pass kcId as var
   // when user leaves room pass null
   static void updateRoomId({required String? roomId}) {
+    // call userpref and update the kcId
+    
     log("we are updating the room id");
     currentKingsCordRoomId = roomId;
   }

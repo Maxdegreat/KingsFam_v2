@@ -45,6 +45,14 @@ class KingsCordRepository extends BaseKingsCordRepository {
       return await  KingsCord.fromDoc(qs.docs.first);
   }
 
+  Future<KingsCord?> getKcWithId(String kcId, String cmId) async {
+    // go to path
+    // get the kc w/ id
+    DocumentSnapshot snap = await _firebaseFirestore.collection(Paths.church).doc(cmId)
+      .collection(Paths.kingsCord).doc(kcId).get();
+    return await KingsCord.fromDoc(snap);
+  }
+
   //sneding a message
   @override
   Future<void> sendMsgTxt(

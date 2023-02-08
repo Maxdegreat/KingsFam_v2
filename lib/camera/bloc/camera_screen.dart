@@ -31,7 +31,7 @@ class CameraScreen extends StatefulWidget {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
         builder: (context) {
-          return CameraScreen(cameras: args.cameras);
+          return CameraScreen(cameras: args.cameras, cmId: args.cmId,);
         });
   }
 

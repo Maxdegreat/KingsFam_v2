@@ -163,7 +163,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ? snackBar(snackMessage: "KingsFam will show content from this user if in same community.", context: context)
                 : snackBar(snackMessage: "KingsFam will hide content from this user.", context: context);
                 Navigator.of(context).pop();
-                Navigator.of(context).pop();
               
               },
             )

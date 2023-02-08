@@ -221,7 +221,6 @@ class _MyWidgetState extends State<PostFullVideoView16_9> {
                 
                 snackBar(snackMessage: "KingsFam will hide content from this user.", context: context);
                 Navigator.of(context).pop();
-                Navigator.of(context).pop();
               
               },
             )

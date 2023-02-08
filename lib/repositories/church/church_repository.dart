@@ -456,7 +456,7 @@ class ChurchRepository extends BaseChurchRepository {
     return snap.exists;
   }
 
-  Future<bool> isInCm(String currId, String userId) async {
+  Future<bool> isInCm(String userId) async {
     // .where('members.$currId.userReference', isEqualTo: userRef)
 
     final cmSnap = await FirebaseFirestore.instance

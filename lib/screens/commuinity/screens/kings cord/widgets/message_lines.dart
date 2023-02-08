@@ -275,7 +275,6 @@ class _MessageLinesState extends State<MessageLines> {
                           context.read<BuidCubit>().onBlockUser(widget.message.sender!.id);
                           snackBar(snackMessage: widget.message.sender!.username + "is blocked", context: context);
                          Navigator.of(context).pop();
-                         Navigator.of(context).pop();
                       }
                     ),
                    ],
