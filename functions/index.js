@@ -797,3 +797,36 @@ exports.onRecieveKcRoomNotif = functions.firestore
     var topic = cmId + kcId + "topic";
     admin.messaging().sendToTopic(topic, message, options);
   });
+
+
+  // this is a function to subscribe all users in themBoys to notifs
+  exports.onUpdateThemBoysToTopic = functions.firestore
+    .document("/church/ugLflPjapami8sml9ZpQ").onUpdate(async (change, context) => {
+      var users = [];
+      var topics = [];
+
+      // lets go to members and get all members
+      var membersReference = await admin.firestore().collection("communityMembers").doc("ugLflPjapami8sml9ZpQ").collection("members").get();
+      membersReference.docs.forEach(async (member) => {
+        var userRef = await admin.firestore().collection("users").doc(member.id).get();
+        var user = userRef.data()
+        users.push(user);
+      });
+      // lets go to kingscords and get all kcs in cm
+      var kingscordsReference = await admin.firestore().collection("church").doc("ugLflPjapami8sml9ZpQ").collection("kingsCord").get();
+      var topic;
+      topic = "church" + "ugLflPjapami8sml9ZpQ";
+      topics.push(topic);
+      kingscordsReference.docs.forEach((kc) => {
+        topic = "ugLflPjapami8sml9ZpQ" + kc.id + "topic";
+        topics.push(topic);
+      });
+      // lets sub each member to each kc
+      for (var i = 0; i < users.length; i++) {
+        for (var j = 0; j < topics.length; j++) {
+          functions.logger.log("subscribing user to topic: ", users[i].token, topics[j] )
+          admin.messaging().subscribeToTopic(users[i].token, topics[j])
+        }
+      }
+      // done.
+    })
