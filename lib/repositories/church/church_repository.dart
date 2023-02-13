@@ -374,7 +374,7 @@ class ChurchRepository extends BaseChurchRepository {
 
   Stream<List<Future<KingsCord?>>> getCommuinityCordsStream(
       {required Church commuinity, required int limit}) {
-    log(" in the get cm we are loading the cm cords to a stream");
+
     return FirebaseFirestore.instance
         .collection(Paths.church)
         .doc(commuinity.id)
@@ -916,6 +916,14 @@ class ChurchRepository extends BaseChurchRepository {
     rMap["c"] = chsJoined.toList();
     rMap["m"] = mentionedMap;
     return rMap;
+  }
+
+  createBadge(String communityId, String badgeName) {
+    log("the cmId is " + communityId.toString());
+    FirebaseFirestore.instance.collection(Paths.church).doc(communityId).update({
+      "badges": FieldValue.arrayUnion([badgeName])
+  });
+    
   }
 
   // Future<List<Userr>> searchForUsersInCommuinity(

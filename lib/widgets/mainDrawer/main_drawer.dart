@@ -96,6 +96,11 @@ class _MainDrawerState extends State<MainDrawer> {
 
   @override
   Widget build(BuildContext context) {
+
+    log("FROM EXPLORER THE main drawer IS");
+  log(context.read<CommuinityBloc>().state.badges.toString());
+
+    
     List<Widget> drawerLst = _getCms();
 
     return SafeArea(

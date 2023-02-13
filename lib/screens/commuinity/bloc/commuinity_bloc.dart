@@ -69,15 +69,24 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   Stream<CommuinityState> _mapCommunityInitalEventToState(
       CommunityInitalEvent event) async* {
-    emit(state.copyWith( status: CommuintyStatus.loading, kingCords: [], mentionedCords: []));
+    emit(state.copyWith(
+        status: CommuintyStatus.loading, kingCords: [], mentionedCords: []));
     try {
-
-      
+      // grab badges
+      if (event.commuinity.badges != null &&
+          event.commuinity.badges!.isNotEmpty) {
+        log("we have cm badgses");
+        log(event.commuinity.badges.toString());
+        emit(state.copyWith(badges: event.commuinity.badges));
+      } else {
+        log("the cm badges are: ");
+        log(event.commuinity.badges.toString());
+      }
 
       String uid = _authBloc.state.user!.uid;
       Userr currUserr = await _userrRepository.getUserrWithId(userrId: uid);
       emit(state.copyWith(currUserr: currUserr));
-      
+
       Church cm = Church.empty.copyWith(
         id: event.commuinity.id,
         members: event.commuinity.members,
@@ -101,19 +110,16 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       _streamSubscriptionIsMember = ism.listen((isMemStream) async {
         isMem = isMemStream; // I took off an await incase mem is now broken
         if (!isMem) {
-
           // read privacy to see if cm is private or not
           DocumentSnapshot privacySnap = await FirebaseFirestore.instance
               .collection(Paths.cmPrivacy)
               .doc(event.commuinity.id)
               .get();
           if (privacySnap.exists) {
-
             Map<String, dynamic> data =
                 privacySnap.data() as Map<String, dynamic>;
-            
+
             String? cmPrivacy = data['privacy'] ?? null;
-            
 
             // check to see if there is any pending request to join
             DocumentSnapshot requestSnap = await FirebaseFirestore.instance
@@ -124,18 +130,17 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
                 .get();
 
             if (requestSnap.exists) {
-
               if (cmPrivacy == CmPrivacy.armored) {
                 // pending bc request exits alredy
-                emitWhenCmIsArmored(isMem, CommuintyStatus.armormed, RequestStatus.pending);
-              } 
+                emitWhenCmIsArmored(
+                    isMem, CommuintyStatus.armormed, RequestStatus.pending);
+              }
             } else {
               // allow users to request if it is required
               if (cmPrivacy == CmPrivacy.armored) {
-
-                emitWhenCmIsArmored( isMem, CommuintyStatus.armormed, RequestStatus.none);
+                emitWhenCmIsArmored(
+                    isMem, CommuintyStatus.armormed, RequestStatus.none);
               } else {
-                
                 // open cm
                 emitWhenCmIsOpen(isMem, [], [], CommuintyStatus.loaded);
                 add(CommunityLoadingCords(commuinity: event.commuinity));
@@ -161,13 +166,14 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
             String? kfRoleName = cmUserInfoDoc.data()!["kfRole"] ?? null;
             // if user has a kfRole aka non custom do not attempt to look for rid
             if (kfRoleName != null) {
-              Map<String, dynamic>? role = CmActions.getKfRolePermissions(roleName: kfRoleName);
+              Map<String, dynamic>? role =
+                  CmActions.getKfRolePermissions(roleName: kfRoleName);
               emit(state.copyWith(role: role ?? {"member": []}));
             } else {
               Map<String, dynamic> role = await CmActions.getRidPermissions(
                   rid: cmUserInfoDoc.data()!["roleId"],
                   cmId: event.commuinity.id!);
-                 
+
               emit(state.copyWith(role: role));
             }
           }
@@ -204,28 +210,32 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       // stream subscription for community cords
       _streamSubscriptionKingsCord?.cancel();
       _streamSubscriptionKingsCord = _churchRepository
-          .getCommuinityCordsStream(commuinity: event.commuinity, limit: MockFlag.ISMOCKTESTING ? 10 : 50)
+          .getCommuinityCordsStream(
+              commuinity: event.commuinity,
+              limit: MockFlag.ISMOCKTESTING ? 10 : 50)
           .listen((kcords) async {
-            // if (MockFlag.ISMOCKTESTING) return;
+        // if (MockFlag.ISMOCKTESTING) return;
         // final allCords = await Future.wait(kcords);
-        
-            await KingsCordRepository().futureWaitCord(
-                kcords, event.commuinity.id!, _authBloc.state.user!.uid).then((kingsCords) {
-              // The updated status in the emit is used in cm screen listener. if status is updated we setstate. thats it.
-              emit(state.copyWith(
-                kingCords: kingsCords["kinscord"],
-                vc: kingsCords["vc"],
-                mentionedCords: kingsCords["mentioned"],
-                status: CommuintyStatus.updated));
-              emit(state.copyWith(status: CommuintyStatus.inital));
-            });
+
+        await KingsCordRepository()
+            .futureWaitCord(
+                kcords, event.commuinity.id!, _authBloc.state.user!.uid)
+            .then((kingsCords) {
+          // The updated status in the emit is used in cm screen listener. if status is updated we setstate. thats it.
+          emit(state.copyWith(
+              kingCords: kingsCords["kinscord"],
+              vc: kingsCords["vc"],
+              mentionedCords: kingsCords["mentioned"],
+              status: CommuintyStatus.updated));
+          emit(state.copyWith(status: CommuintyStatus.inital));
+        });
 
         // add(CommunityLoadingEvents(cm: event.commuinity));
-      
       });
       add(CommunityLoadingPosts(cm: event.commuinity));
     } catch (e) {
-      emit(state.copyWith( failure: Failure(message: failed, code: e.toString())));
+      emit(state.copyWith(
+          failure: Failure(message: failed, code: e.toString())));
     }
   }
 
@@ -275,9 +285,9 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       CommunityLoadingPosts event) async* {
     try {
       List<Post?> posts = [];
-      if (!MockFlag.ISMOCKTESTING) 
+      if (!MockFlag.ISMOCKTESTING)
         posts = await _churchRepository.getCommuinityPosts(cm: event.cm);
-      else 
+      else
         posts = MockPostData.getMockPosts2;
       emit(state.copyWith(postDisplay: posts, status: CommuintyStatus.loaded));
     } catch (e) {
@@ -527,8 +537,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     }
   }
 
-
-
   setMentionedToFalse({required String kcId}) {
     // also will update the read status
     for (KingsCord? kc in state.mentionedCords) {
@@ -540,44 +548,9 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     }
   }
 
-  // Future<bool> checkIsBan({required String uid, required String cmId}) async {
-  //   bool isBan = await _churchRepository.isBaned(usrId: uid, cmId: cmId);
-  //   emit(state.copyWith(isBaned: isBan));
-  // }
-
-  // void updateReadStatusOnKc({required String id, required bool isMentioned}) {
-  //   // we need to update the read status on the mentionedCords.
-  //   // rmv from the mentionedCords lst and insert in cords lst.
-  //   if (isMentioned) {
-  //     for (int i = 0; i < state.mentionedCords.length; i ++) {
-
-  //     KingsCord? kcFromStateM = state.mentionedCords[i];
-
-  //     if (kcFromStateM != null && kcFromStateM.id == id) {
-  //       state.mentionedCords.remove(kcFromStateM);
-  //       kcFromStateM.copyWith(readStatus: false);
-  //       state.kingCords.insert(0, kcFromStateM);
-  //       emit(state.copyWith(kingCords: state.kingCords));
-  //     }
-  //   }
-
-  //   } else {
-  //   // we need to update the read status on the Cords.
-  //   for (int i = 0; i < state.kingCords.length; i ++) {
-
-  //     KingsCord? kcFromState = state.kingCords[i];
-
-  //     if (kcFromState != null && kcFromState.id == id) {
-  //       state.kingCords.remove(kcFromState);
-  //       kcFromState.copyWith(readStatus: false);
-  //       state.kingCords.insert(0, kcFromState);
-  //       emit(state.copyWith(kingCords: state.kingCords));
-  //     }
-  //   }
-
-  //   }
-  // }
-
-  // KINGSCORD METHODS
-
+  void addBadge(String badge) {
+    var b = state.badges;
+    b.add(badge);
+    emit(state.copyWith(badges: b));
+  }
 }

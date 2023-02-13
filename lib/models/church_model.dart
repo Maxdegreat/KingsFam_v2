@@ -24,6 +24,7 @@ class Church extends Equatable {
   final int boosted; // 0 none 1 basic, 2 if I ever add more versions
   final String themePack;
   final bool? readStatus;
+  final List<String>? badges;
   // 2 gen the constructor
   Church({
     required this.searchPram,
@@ -40,6 +41,7 @@ class Church extends Equatable {
     required this.recentMsgTime,
     required this.boosted,
     required this.themePack,
+    this.badges,
     this.size,
     this.readStatus,
   });
@@ -61,6 +63,7 @@ class Church extends Equatable {
         boosted,
         themePack,
         size,
+        badges,
         readStatus,
       ];
   //generate the copy with
@@ -80,6 +83,7 @@ class Church extends Equatable {
     int? boosted,
     String? themePack,
     Map<String, List<dynamic>>? permissions,
+    List<String>? badges,
     bool? readStatus,
   }) {
     return Church(
@@ -99,6 +103,7 @@ class Church extends Equatable {
       themePack: themePack ?? this.themePack,
       permissions: permissions ?? this.permissions,
       readStatus: readStatus ?? this.readStatus,
+      badges: badges ?? this.badges
     );
   }
 
@@ -118,6 +123,7 @@ class Church extends Equatable {
       'boosted': boosted,
       'themePack': themePack,
       'recentMsgTime': Timestamp.now(),
+      'badges': badges
     };
   }
 
@@ -198,6 +204,7 @@ class Church extends Equatable {
       cmPrivacy:
           data['cmPrivacy'] ?? CmPrivacy.open, // ---------------------------
       readStatus: false,
+      badges: List<String>.from(data['badges'] ?? []),
     );
   }
 
@@ -234,6 +241,7 @@ class Church extends Equatable {
       cmPrivacy:
           data['cmPrivacy'] ?? CmPrivacy.open, // ---------------------------
       readStatus: false,
+      badges: List<String>.from(data['badges'] ?? []),
     );
   }
 

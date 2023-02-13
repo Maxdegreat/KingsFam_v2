@@ -121,7 +121,6 @@ class _ChatsScreenState extends State<ChatsScreen>
         body: BlocConsumer<ChatscreenBloc, ChatscreenState>(
             listener: (context, state) {
           if (state.status == ChatStatus.setState) {
-            log("we are updating the state of the chats screen ya dig");
             setState(() {});
             if (state.selectedCh != null) {
               context.read<CommuinityBloc>()

@@ -16,7 +16,6 @@ export 'chat_room/chat_room.dart';
 export 'chat_room_settings/chat_room_settings.dart';
 export 'build_church/build_church.dart';
 export 'create_comuinity/create_channel.dart';
-export 'commuinity/commuinity_screen.dart';
 export 'profile/profile_post_view.dart';
 export 'package:kingsfam/screens/commuinity/screens/feed/commuinity_feed.dart';
 export 'package:kingsfam/screens/commuinity/screens/update_cm_theme_pack.dart';

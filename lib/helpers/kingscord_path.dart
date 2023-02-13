@@ -10,7 +10,6 @@ class CurrentKingsCordRoomId {
   static void updateRoomId({required String? roomId}) {
     // call userpref and update the kcId
     
-    log("we are updating the room id");
     currentKingsCordRoomId = roomId;
   }
 }
