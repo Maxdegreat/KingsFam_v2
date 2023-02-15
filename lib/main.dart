@@ -34,11 +34,23 @@ import 'screens/screens.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // lets keep the splash till app is one initializing
-  MobileAds.instance.initialize();
-  await Firebase.initializeApp();
-
+  if (!kIsWeb) {
+    MobileAds.instance.initialize();
+    Bloc.observer = SimpleBlocObserver();
+  }
   EquatableConfig.stringify = kDebugMode;
-  Bloc.observer = SimpleBlocObserver();
+
+  await Firebase.initializeApp(
+      options: !kIsWeb
+          ? null
+          : FirebaseOptions(
+              apiKey: "AIzaSyCXVic9bfTfwv77hjChsGvCTeg6rvVlMkE",
+              appId: "1:628805532994:web:7a5aa12ebebdc26aca1cdb",
+              messagingSenderId: "628805532994",
+              projectId: "kingsfam-9b1f8",
+              storageBucket: "kingsfam-9b1f8.appspot.com",
+            ));
+
   await UserPreferences.init();
   await dotenv.load(fileName: ".env");
   runApp(MyApp());
@@ -150,7 +162,7 @@ class MyApp extends StatelessWidget {
         ],
         child: MaterialApp(
           //THEME DATA
-          themeMode: ThemeMode.system,
+          themeMode: kIsWeb ? ThemeMode.light : ThemeMode.system,
           theme: ThemeInfo().themeClubHouseLight(),
           darkTheme: ThemeInfo().themeClubHouseDark(),
           debugShowCheckedModeBanner: false,

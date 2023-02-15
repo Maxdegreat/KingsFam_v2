@@ -96,6 +96,7 @@ class LoginFormScren extends StatelessWidget {
                 Align(
                   alignment: Alignment.topLeft,
                   child: Container(
+                    width: MediaQuery.of(context).size.width > 700 ? 400 : double.infinity,
                     margin: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Column(children: [
                       SizedBox(height: 20.0),

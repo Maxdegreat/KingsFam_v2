@@ -7,6 +7,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/mock_flag.dart';
 import 'package:kingsfam/config/paths.dart';
@@ -76,7 +77,9 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
-      // update the user token. Ios has an issue of loosing tokens over time.
+      
+      if (!kIsWeb) {
+             // update the user token. Ios has an issue of loosing tokens over time.
       FirebaseMessaging.instance.getToken().then((token) {
         // log("token is: " + token.toString());
         _saveTokenToDatabase(token!).then((_) {
@@ -85,6 +88,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
           // log("saved the token: Done");
         });
       });
+      }
 
       String? lastVisitedCmId = await UserPreferences.getLastVisitedCm();
       if (lastVisitedCmId != null) {

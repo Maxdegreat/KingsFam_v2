@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:iconsax/iconsax.dart';
@@ -64,10 +65,11 @@ class MainDrawer extends StatefulWidget {
 }
 
 class _MainDrawerState extends State<MainDrawer> {
-  late NativeAd _nativeAd;
+  late NativeAd? _nativeAd;
   bool _isNativeAdLoaded = false;
   void _createNativeAd() {
-    _nativeAd = NativeAd(
+    if (!kIsWeb) {
+          _nativeAd = NativeAd(
         adUnitId: AdHelper.nativeAdUnitId,
         factoryId: "listTile",
         listener: NativeAdListener(onAdLoaded: (_) {
@@ -79,8 +81,9 @@ class _MainDrawerState extends State<MainDrawer> {
           log("chatsScreen ad error: ${error.toString()}");
         }),
         request: const AdRequest());
-    _nativeAd.load();
+    _nativeAd!.load();
   }
+    }
 
   @override
   void initState() {
@@ -90,21 +93,17 @@ class _MainDrawerState extends State<MainDrawer> {
 
   @override
   void dispose() {
-    _nativeAd.dispose();
+    _nativeAd?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
-    log("FROM EXPLORER THE main drawer IS");
-  log(context.read<CommuinityBloc>().state.badges.toString());
-
-    
     List<Widget> drawerLst = _getCms();
 
     return SafeArea(
       child: Drawer(
+        key: UniqueKey(),
         backgroundColor: Theme.of(context).drawerTheme.backgroundColor,
         width: MediaQuery.of(context).size.width,
         // Add a ListView to the drawer. This ensures the user can scroll
@@ -232,7 +231,7 @@ class _MainDrawerState extends State<MainDrawer> {
 
 
   Widget _showAd() {
-    return _isNativeAdLoaded
+    return _isNativeAdLoaded && !kIsWeb
         ? Padding(
           padding: const EdgeInsets.only( top: 5,
       bottom: 5,
@@ -240,7 +239,7 @@ class _MainDrawerState extends State<MainDrawer> {
           child: Container(
             height: 59,
             width: double.infinity,
-            child: AdWidget(ad: _nativeAd),
+            child: AdWidget(ad: _nativeAd!),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.secondary,
               borderRadius: BorderRadius.circular(10),

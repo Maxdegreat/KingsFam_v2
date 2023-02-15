@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kingsfam/repositories/auth/auth_repository.dart';
@@ -56,53 +57,52 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         backgroundColor: Color(hexColor.hexcolorCode("#20263d")),
         body: SafeArea(
-            child: Column(
-          children: [
-            Spacer(),
-            Align(
-                alignment: Alignment.center,
-                child: Column(
-                  children: [
-                    Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 35.0),
-                        child: Column(
-                          children: [
-                            Text('Welcome To ',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline2!
-                                    .copyWith(color: Colors.white)),
-                            Text('KING\'S FAM',
-                                style: Theme.of(context).textTheme.headline3)
-                          ],
-                        )),
-                    SizedBox(height: 20),
-                    Container(
-                      height: 250,
-                      width: 250,
-                      child: VisibilityDetector(
-                          key: ObjectKey(vc),
-                          onVisibilityChanged: (vis) {
-                            vis.visibleFraction > 0 ? vc.play() : vc.pause();
-                          },
-                          child: AssetVideoPlayer(
-                              controller: vc, height: 200, width: 250)),
-                    )
-                  ],
-                )),
-            SizedBox(height: 17),
-            Center(
-                child: Text(
-              "Christian Communities For This Generation!",
-              style: Theme.of(context)
-                  .textTheme
-                  .caption!
-                  .copyWith(color: Colors.white, fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center,
-            )),
+            child: Column(children: [
+          Spacer(),
+          Align(
+              alignment: Alignment.center,
+              child: Column(
+                children: [
+                  Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 35.0),
+                      child: Column(
+                        children: [
+                          Text('Welcome To ',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline2!
+                                  .copyWith(color: Colors.white)),
+                          Text('KING\'S FAM',
+                              style: Theme.of(context).textTheme.headline3)
+                        ],
+                      )),
+                  SizedBox(height: 20),
+                  Container(
+                    height: 250,
+                    width: 250,
+                    child: VisibilityDetector(
+                        key: ObjectKey(vc),
+                        onVisibilityChanged: (vis) {
+                          vis.visibleFraction > 0 ? vc.play() : vc.pause();
+                        },
+                        child: AssetVideoPlayer(
+                            controller: vc, height: 200, width: 250)),
+                  )
+                ],
+              )),
+          SizedBox(height: 17),
+          Center(
+              child: Text(
+            "Christian Communities For This Generation!",
+            style: Theme.of(context)
+                .textTheme
+                .caption!
+                .copyWith(color: Colors.white, fontWeight: FontWeight.w500),
+            textAlign: TextAlign.center,
+          )),
             SizedBox(height: 15),
             Container(
-              width: size.width / 1.2,
+               width: size.width > 700 ? 400: size.width / 1.2,
               child: TextButton.icon(
                 onPressed: () =>
                     context.read<AuthRepository>().signInWithGoogle(),
@@ -111,18 +111,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: Colors.amber[400],
                 ),
                 label: Text('Continue With Google',
-                    style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                        fontWeight: FontWeight.w700, color: Colors.black)),
+                    style: Theme.of(context).textTheme.bodyText2!.copyWith(color: Colors.black)),
                 style: TextButton.styleFrom(backgroundColor: Colors.white),
               ),
             ),
-            // ------------------------------------------------------ manuel sign in methods
             SizedBox(height: 10),
+          if (!kIsWeb) ...[
+            // ------------------------------------------------------ manuel sign in methods
             Platform.isIOS
                 ? Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: Container(
-                        width: size.width / 1.2,
+                         width: size.width > 700 ? 400: size.width / 1.2,
                         child: TextButton.icon(
                           onPressed: () => context
                               .read<AuthRepository>()
@@ -143,21 +143,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         )),
                   )
                 : SizedBox.shrink(),
-            //  Container(
-            //    width: size.width / 1.2,
-            //    child: TextButton(
-            //        onPressed: () {
-            //          //push route to sign up screen
-            //          Navigator.of(context).pushNamed(SignupFormScreen.routeName);
-            //        },
-            //        child: Text('Sign Up',
-            //            style: Theme.of(context).textTheme.bodyText1),
-            //        style: TextButton.styleFrom(backgroundColor: Colors.amber[400])),
-            //  ),
-            //  SizedBox(height: 20.0),
+
+          ],
             Container(
-              width: size.width / 1.2,
-              child: TextButton(
+              width: size.width > 700 ? 400: size.width / 1.2,
+              child: TextButton(                                                                                  
                   onPressed: () {
                     //push named route to login screen
                     Navigator.of(context).pushNamed(LoginFormScren.routeName);
@@ -167,10 +157,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   style:
                       TextButton.styleFrom(backgroundColor: Colors.amber[400])),
             ),
-            // ----------------------------------------------------------------------------------------------
             Spacer(),
-          ],
-        )),
+        ])),
       ),
     );
   }
