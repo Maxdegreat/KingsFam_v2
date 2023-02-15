@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/blocs/search/search_bloc.dart';
-import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/enums/bottom_nav_items.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/helpers/navigator_helper.dart';
@@ -12,10 +10,8 @@ import 'package:kingsfam/models/models.dart';
 
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/add_users/add_users.dart';
-import 'package:kingsfam/screens/commuinity/commuinity_screen.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
-import 'package:kingsfam/screens/nav/widgets/bottom_nav_bar.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
 
 import 'package:kingsfam/widgets/widgets.dart';

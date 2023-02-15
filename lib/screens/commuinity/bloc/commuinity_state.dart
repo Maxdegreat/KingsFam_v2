@@ -1,10 +1,22 @@
 part of 'commuinity_bloc.dart';
 
 // if not a member then the cm will show armormed or shielded.
-// this is because we want to show only a limited amount of info to 
+// this is because we want to show only a limited amount of info to
 // certian users based on the cm settings
-enum CommuintyStatus { inital, loading, loaded, error, armormed, shielded, updated}
-enum RequestStatus { none, pending, }
+enum CommuintyStatus {
+  inital,
+  loading,
+  loaded,
+  error,
+  armormed,
+  shielded,
+  updated
+}
+
+enum RequestStatus {
+  none,
+  pending,
+}
 
 class CommuinityState extends Equatable {
   final bool? isMember;
@@ -25,6 +37,7 @@ class CommuinityState extends Equatable {
   final Map<String, dynamic> role;
   final String cmId;
   final List<KingsCord?> vc;
+  final List<String> badges;
 
   const CommuinityState({
     required this.isMember,
@@ -45,6 +58,7 @@ class CommuinityState extends Equatable {
     required this.role,
     required this.cmId,
     required this.vc,
+    required this.badges,
   });
 
   @override
@@ -67,31 +81,33 @@ class CommuinityState extends Equatable {
         role,
         cmId,
         vc,
+        badges,
       ];
 
   factory CommuinityState.inital() {
     return CommuinityState(
       role: {
-        "roleName" : "Member", // default can be string Member or null
-        "permissions" : ["0"] // string 0 means basic role
+        "roleName": "Member", // default can be string Member or null
+        "permissions": ["0"] // string 0 means basic role
       },
-        currUserr: Userr.empty,
-        mentionedCords: [],
-        collapseCordColumn: false,
-        collapseVvrColumn: false,
-        events: [],
-        isMember: null,
-        postDisplay: [],
-        kingCords: [],
-        status: CommuintyStatus.inital,
-        failure: Failure(),
-        themePack: 'none',
-        boosted: 0,
-        isBaned: false,
-        banedUsers: [],
-        cmId: "",
-        requestStatus: RequestStatus.none,
-        vc: [],
+      currUserr: Userr.empty,
+      mentionedCords: [],
+      collapseCordColumn: false,
+      collapseVvrColumn: false,
+      events: [],
+      isMember: null,
+      postDisplay: [],
+      kingCords: [],
+      status: CommuintyStatus.inital,
+      failure: Failure(),
+      themePack: 'none',
+      boosted: 0,
+      isBaned: false,
+      banedUsers: [],
+      cmId: "",
+      requestStatus: RequestStatus.none,
+      vc: [],
+      badges: []
     );
   }
   CommuinityState copyWith({
@@ -113,26 +129,28 @@ class CommuinityState extends Equatable {
     RequestStatus? requestStatus,
     String? cmId,
     List<KingsCord?>? vc,
+    List<String>? badges,
   }) {
     return CommuinityState(
       role: role ?? this.role,
-        events: events ?? this.events,
-        isMember: isMember ?? this.isMember,
-        postDisplay: postDisplay ?? this.postDisplay,
-        kingCords: kingCords ?? this.kingCords,
-        failure: failure ?? this.failure,
-        status: status ?? this.status,
-        mentionedCords: mentionedCords ?? this.mentionedCords,
-        collapseCordColumn: collapseCordColumn ?? this.collapseCordColumn,
-        collapseVvrColumn: collapseVvrColumn ?? this.collapseVvrColumn,
-        currUserr: currUserr ?? this.currUserr,
-        themePack: themePack ?? this.themePack,
-        boosted: boosted ?? this.boosted,
-        isBaned: isBaned ?? this.isBaned,
-        banedUsers: banedUsers ?? this.banedUsers,
-        requestStatus: requestStatus ?? this.requestStatus,
-        cmId: cmId ?? this.cmId,
-        vc: vc ?? this.vc,
+      events: events ?? this.events,
+      isMember: isMember ?? this.isMember,
+      postDisplay: postDisplay ?? this.postDisplay,
+      kingCords: kingCords ?? this.kingCords,
+      failure: failure ?? this.failure,
+      status: status ?? this.status,
+      mentionedCords: mentionedCords ?? this.mentionedCords,
+      collapseCordColumn: collapseCordColumn ?? this.collapseCordColumn,
+      collapseVvrColumn: collapseVvrColumn ?? this.collapseVvrColumn,
+      currUserr: currUserr ?? this.currUserr,
+      themePack: themePack ?? this.themePack,
+      boosted: boosted ?? this.boosted,
+      isBaned: isBaned ?? this.isBaned,
+      banedUsers: banedUsers ?? this.banedUsers,
+      requestStatus: requestStatus ?? this.requestStatus,
+      cmId: cmId ?? this.cmId,
+      vc: vc ?? this.vc,
+      badges: badges ?? this.badges,
     );
   }
 }

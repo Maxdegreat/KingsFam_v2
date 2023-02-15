@@ -617,7 +617,6 @@ buildBottomTF(KingscordState state, BuildContext context, String mode) {
           log("Creating........");
           CurrentKingsCordRoomId.updateRoomId(roomId: widget.kingsCord.id!);
         } else {
-          log("deling....");
           CurrentKingsCordRoomId.updateRoomId(roomId: null);
         } 
       },

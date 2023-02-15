@@ -13,7 +13,6 @@ import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
 import 'package:kingsfam/widgets/snackbar.dart';
 
 import '../../../config/constants.dart';
-import '../commuinity_screen.dart';
 
 class CommunityHomeArgs {
   final Church cm;
