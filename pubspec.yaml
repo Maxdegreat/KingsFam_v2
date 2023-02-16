@@ -1,7 +1,7 @@
 name: kingsfam
 description: Christian communities.
 
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 version: 1.2.0+40
 
@@ -9,44 +9,43 @@ environment:
   sdk: ">=2.17.5 <3.0.0"
 
 # dependency_overrides:
-  # firebase_messaging_platform_interface: 3.1.6
-  # firebase_crashlytics_platform_interface: 3.1.13
-  # cloud_firestore_platform_interface: 5.4.13
-  # firebase_auth_platform_interface: 6.1.11
-  # firebase_storage_platform_interface: 4.0.14
-  # cloud_functions_platform_interface: 5.0.21
-  # firebase_analytics_platform_interface: 3.0.5
-  # firebase_remote_config_platform_interface: 1.0.5
-  # firebase_dynamic_links_platform_interface: 0.2.0+5
-  # firebase_performance_platform_interface: 0.1.0+5
-  # firebase_app_installations: ^0.2.1+8
+# firebase_messaging_platform_interface: 3.1.6
+# firebase_crashlytics_platform_interface: 3.1.13
+# cloud_firestore_platform_interface: 5.4.13
+# firebase_auth_platform_interface: 6.1.11
+# firebase_storage_platform_interface: 4.0.14
+# cloud_functions_platform_interface: 5.0.21
+# firebase_analytics_platform_interface: 3.0.5
+# firebase_remote_config_platform_interface: 1.0.5
+# firebase_dynamic_links_platform_interface: 0.2.0+5
+# firebase_performance_platform_interface: 0.1.0+5
+# firebase_app_installations: ^0.2.1+8
 
 dependencies:
   flutter:
     sdk: flutter
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  
+
   date_time_picker: ^2.1.0
-  
+
   enum_to_string: ^2.0.1
 
   flutter_bloc: ^7.1.0
   equatable: ^2.0.3
 
   cloud_firestore: ^4.3.1
-  firebase_auth: ^4.2.6
-  
+  firebase_auth: ^4.2.6 # was 4.0.0
+
   google_sign_in: ^5.4.4
   sign_in_with_apple: ^4.3.0
   crypto: ^3.0.1
-  
+
   firebase_core: ^2.4.1
   firebase_messaging: ^14.2.1
-  firebase_storage: ^11.0.10 #firebase_storage: ^9.0.0
+  firebase_storage: ^11.0.11 #firebase_storage: ^11.0.10
 
   provider: ^6.0.5
   uuid: ^3.0.4
@@ -54,7 +53,7 @@ dependencies:
   flutter_image_compress: ^1.0.0
   image_picker: ^0.8.1+3
   cached_network_image: ^3.0.0
-  
+
   # file_picker: ^4.1.4
   # image_editor_plus: ^0.1.5 this thing litterly causes my app to crash
   image_cropper: ^1.4.1
@@ -65,12 +64,11 @@ dependencies:
   font_awesome_flutter: ^10.1.0
   flare_flutter: ^3.0.2
 
-  
   timeago: ^3.1.0
   intl: ^0.17.0
 
-  permission_handler: ^10.0.0 
-  
+  permission_handler: ^10.0.0
+
   # ---------------------------------------------- camera: #0.8.1+2
   scrollable_positioned_list: ^0.3.5
   video_thumbnail: ^0.5.0
@@ -81,7 +79,7 @@ dependencies:
   rename:
   get: ^4.6.1
   google_fonts: ^3.0.1
-  
+
   streaming_shared_preferences: ^2.0.0
   json_annotation: ^4.6.0
   visibility_detector: ^0.3.3
@@ -97,12 +95,8 @@ dependencies:
   giphy_get: ^2.0.2
   flutter_dotenv: ^5.0.2
   video_trimmer: ^2.0.1
-  
-  #agora_rtc_engine: ^6.1.0
-  
-  
-  
 
+  #agora_rtc_engine: ^6.1.0
 
 dev_dependencies:
   flutter_test:
@@ -114,7 +108,7 @@ dev_dependencies:
 # flutter pub get
 # flutter pub run flutter_native_splash:create
 # flutter clean && flutter pub get && flutter pub run flutter_native_splash:create
-flutter_native_splash: 
+flutter_native_splash:
   color: "#FFFFFF"
   image: assets/KINGSFAM_LOGO_black_bg.png
 
@@ -122,7 +116,6 @@ flutter_native_splash:
     image: assets/KINGSFAM_LOGO_black_bg.png
     color: "#101010"
     icon_background_color: "#FFFFFF"
-
 
 flutter_icons:
   android: true
@@ -134,7 +127,6 @@ flutter_icons:
 
 # The following section is specific to Flutter.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

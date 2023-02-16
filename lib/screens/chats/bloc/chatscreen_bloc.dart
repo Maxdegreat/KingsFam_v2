@@ -91,7 +91,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
       }
 
       String? lastVisitedCmId = await UserPreferences.getLastVisitedCm();
-      if (lastVisitedCmId != null) {
+      if (lastVisitedCmId != null && !kIsWeb) {
         bool isInCm_ = await _churchRepository.isInCmById(
             cmId: lastVisitedCmId, userId: _authBloc.state.user!.uid);
         if (isInCm_) {
@@ -109,7 +109,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
       bool isInCm = await _churchRepository.isInCm(_authBloc.state.user!.uid);
 
       await getChsToJoinIfNeeded(isInCm, chsToJoin);
-
+      log("no chs to join: ");
       _churchStreamSubscription?.cancel();
       _churchStreamSubscription = _churchRepository
           .getCmsStream(currId: currUserr.id)

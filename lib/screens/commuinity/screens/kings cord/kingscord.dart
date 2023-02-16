@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:giphy_get/giphy_get.dart';
@@ -320,6 +321,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         toolbarHeight: 50,
         title: GestureDetector(
           onTap: () {
+            if (!kIsWeb)
              scaffoldKey.currentState!.openDrawer();
           },
           child: Row(

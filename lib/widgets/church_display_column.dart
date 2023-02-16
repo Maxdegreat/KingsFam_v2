@@ -9,8 +9,8 @@ Widget search_Church_container(
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Container(
-      // height: MediaQuery.of(context).size.height / 5,
-      width: MediaQuery.of(context).size.width * .70,
+      height: MediaQuery.of(context).size.width > 400 ? 400 : null,
+      width: MediaQuery.of(context).size.width > 400 ? 400 : MediaQuery.of(context).size.width * .70,
       child: Padding(
         padding:
             const EdgeInsets.only(top: 8.0, bottom: 12.0, left: 12, right: 12),
@@ -20,8 +20,8 @@ Widget search_Church_container(
           mainAxisSize: MainAxisSize.max,
           children: [
             Container(
-                height: MediaQuery.of(context).size.height / 10,
-                width: MediaQuery.of(context).size.width / 3,
+                height: MediaQuery.of(context).size.width > 400 ? 200 : MediaQuery.of(context).size.height / 10,
+                width: MediaQuery.of(context).size.width > 400 ? 200 : MediaQuery.of(context).size.height / 3,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(7),
                   image: DecorationImage(

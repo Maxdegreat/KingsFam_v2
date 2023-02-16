@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_link_preview/simple_link_preview.dart';
@@ -23,6 +25,7 @@ class LinkPreviewContainerState extends State<LinkPreviewContainer> {
   _getPreview() {
     // await Future.delayed(Duration(seconds: 1));
     SimpleLinkPreview.getPreview(widget.link).then((link) {
+      log("aye yoooooooooooooooooooooooooooooooooo");
       _preview = link;
       setState(() {});
     });
@@ -41,7 +44,7 @@ class LinkPreviewContainerState extends State<LinkPreviewContainer> {
     }
     return _preview != null
         ? Container(
-            width:  MediaQuery.of(context).size.width/ 1.4,
+            width:  MediaQuery.of(context).size.width > 400 ? MediaQuery.of(context).size.width / 5.9 : MediaQuery.of(context).size.width / 1.4,
             decoration: BoxDecoration(
               color: Color.fromARGB(110, 255, 193, 7),
               borderRadius: BorderRadius.circular(4),
@@ -63,7 +66,9 @@ class LinkPreviewContainerState extends State<LinkPreviewContainer> {
                           child: Text(_title,
                               overflow: TextOverflow.ellipsis,
                               maxLines: _description!=null||(_description!=null&&_description.length<5) ? 2 : null,
-                              style: Theme.of(context).textTheme.caption!.copyWith(color: Colors.white, fontSize: 15)),
+                              style: Theme.of(context).textTheme.caption!.copyWith(color: Colors.white, fontSize: 15)
+                            
+                            ),
                         ),
                       ],
                         
@@ -85,8 +90,8 @@ class LinkPreviewContainerState extends State<LinkPreviewContainer> {
                           ? Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Container(
-                                height: MediaQuery.of(context).size.width/ 5,
-                                width: MediaQuery.of(context).size.width/ 5,
+                                height: MediaQuery.of(context).size.width > 400 ? 100 : MediaQuery.of(context).size.width / 5,
+                                width: MediaQuery.of(context).size.width > 400 ? 100 : MediaQuery.of(context).size.width / 5,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(7.0),
                                     image: DecorationImage( fit: BoxFit.cover,
@@ -101,7 +106,7 @@ class LinkPreviewContainerState extends State<LinkPreviewContainer> {
           )
         : Container(
             height: ( MediaQuery.of(context).size.width/ 5 ) + 8,
-            width: MediaQuery.of(context).size.width/ 1.4,
+            width:  MediaQuery.of(context).size.width > 400 ? MediaQuery.of(context).size.width / 5.9 : MediaQuery.of(context).size.width / 1.4,
             child: Center(child: Text("Loading...")),
             decoration: BoxDecoration(
               color: Color.fromARGB(110, 255, 193, 7),

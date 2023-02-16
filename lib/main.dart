@@ -162,7 +162,7 @@ class MyApp extends StatelessWidget {
         ],
         child: MaterialApp(
           //THEME DATA
-          themeMode: kIsWeb ? ThemeMode.light : ThemeMode.system,
+          themeMode: ThemeMode.system,
           theme: ThemeInfo().themeClubHouseLight(),
           darkTheme: ThemeInfo().themeClubHouseDark(),
           debugShowCheckedModeBanner: false,

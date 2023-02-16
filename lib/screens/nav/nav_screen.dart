@@ -1,4 +1,4 @@
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/config/global_keys.dart';
@@ -25,59 +25,99 @@ class NavScreen extends StatelessWidget {
     BottomNavItem.profile: GlobalKey<NavigatorState>(),
   };
 
-  final Map<BottomNavItem, Widget> items =  {
-    BottomNavItem.chats: Icon(Icons.question_answer, size: 20,),
+  final Map<BottomNavItem, Widget> items = {
+    BottomNavItem.chats: Icon(
+      Icons.question_answer,
+      size: 20,
+    ),
     BottomNavItem.search: Icon(Icons.search, size: 20),
     BottomNavItem.notifications: Icon(Icons.favorite_border, size: 20),
     BottomNavItem.profile: Icon(Icons.account_circle, size: 20)
   };
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false, // sets the ability to pop this stack to false
+      onWillPop: () async =>
+          false, // sets the ability to pop this stack to false
       child: BlocBuilder<BottomnavbarCubit, BottomnavbarState>(
-        builder: (context, state) { 
+        builder: (context, state) {
           return Scaffold(
             //  appBar: AppBar(),
             key: scaffoldKey,
-           
-            drawer: MainDrawer(
-              callBack: (index) {
-                final selectedItem = BottomNavItem.values[index];
-                _selectBottomNavItem(context, selectedItem, selectedItem == state.selectedItem);
-                Navigator.of(context).pop();
-                // context.read<BottomnavbarCubit>().showBottomNav(true);
-              },
-              items: items,
-              selectedItem: state.selectedItem,
-            ),
-            body: Stack( // the body is a stack the stack of the bottom sheet
+
+            drawer: MainDrawer(),
+            body: Stack(
+              // the body is a stack the stack of the bottom sheet
               children: items // this is a map, bottomnavitem to icon data
-                  .map((item, _) => MapEntry( // this mapping every 
+                  .map((item, _) => MapEntry(
+                        // this mapping every
                         item,
-                        _buildOffStageNavigator(item, item == state.selectedItem,),
+                        _buildOffStageNavigator(
+                          item,
+                          item == state.selectedItem,
+                        ),
                       ))
                   .values
                   .toList(),
             ),
-            bottomNavigationBar: context.read<BottomnavbarCubit>().state.showBottomNav ? BottomNavBar(
-              
-              onTap: (index) {
-                final selectedItem = BottomNavItem.values[index];
-                if (index == 0 || BottomNavItem.values[index] == BottomNavItem.chats) {
-                  scaffoldKey.currentState!.openDrawer();
-                  _selectBottomNavItem(context, selectedItem, selectedItem == state.selectedItem);
-                } else 
-                  _selectBottomNavItem(context, selectedItem, selectedItem == state.selectedItem);
-                //context.read<BottomnavbarCubit>().showBottomNav(true);
-              },
-              items: items,
-              selectedItem: state.selectedItem,
-            ) : SizedBox.shrink(),
+
+            floatingActionButton: kIsWeb ? Container(
+              height: 300, width: 80,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+
+              child: NavigationRail(
+                unselectedIconTheme: Theme.of(context).iconTheme,        
+                backgroundColor: Colors.transparent,
+                        destinations: items.entries
+                            .map(
+                              (entry) => NavigationRailDestination(
+                                icon: entry.value,
+                                label: SizedBox.shrink(),
+                              ),
+                            )
+                            .toList(),
+                        selectedIndex: BottomNavItem.values.indexOf(state.selectedItem),
+                        onDestinationSelected: (index) {
+                           final selectedItem = BottomNavItem.values[index];
+                            if (index == 0 ||
+                                BottomNavItem.values[index] ==
+                                    BottomNavItem.chats) {
+                              if (!kIsWeb) scaffoldKey.currentState!.openDrawer();
+                              _selectBottomNavItem(context, selectedItem,
+                                  selectedItem == state.selectedItem);
+                            } else
+                              _selectBottomNavItem(context, selectedItem,
+                                  selectedItem == state.selectedItem);
+                            //context.read<BottomnavbarCubit>().showBottomNav(true);
+                        },  
+                      ),
+            ) : null,
+
+            bottomNavigationBar: !kIsWeb
+                ? context.read<BottomnavbarCubit>().state.showBottomNav
+                    ? BottomNavBar(
+                        onTap: (index) {
+                          final selectedItem = BottomNavItem.values[index];
+                          if (index == 0 ||
+                              BottomNavItem.values[index] ==
+                                  BottomNavItem.chats) {
+                            if (!kIsWeb) scaffoldKey.currentState!.openDrawer();
+                            _selectBottomNavItem(context, selectedItem,
+                                selectedItem == state.selectedItem);
+                          } else
+                            _selectBottomNavItem(context, selectedItem,
+                                selectedItem == state.selectedItem);
+                          //context.read<BottomnavbarCubit>().showBottomNav(true);
+                        },
+                        items: items,
+                        selectedItem: state.selectedItem,
+                      )
+                    : SizedBox.shrink()
+                : null,
           );
         },
       ),

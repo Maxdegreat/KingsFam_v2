@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,6 +22,7 @@ import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/says_room/says_room.dart';
+import 'package:kingsfam/widgets/mainDrawer/main_drawer.dart';
 
 import 'package:kingsfam/widgets/widgets.dart';
 import '../../widgets/chats_view_widgets/getting_started.dart';
@@ -130,6 +132,7 @@ class _ChatsScreenState extends State<ChatsScreen>
 
           if (state.status == ChatStatus.setStateKc) {
             if (state.selectedKc != null) {
+              log("selectedKc is not null");
               if (state.selectedKc!.mode == Mode.chat ||
                   state.selectedKc!.mode == Mode.welcome) {
                 currentScreen = KingsCordScreen(
@@ -162,7 +165,7 @@ class _ChatsScreenState extends State<ChatsScreen>
         }, builder: (context, state) {
           // check userpreferences. if no data for has aggred to terms of use show a alert dialog
           if (!UserPreferences.getHasAggredToTermsOfService() &&
-              !hasAskedForAgrement) {
+              !hasAskedForAgrement && !kIsWeb) {
             hasAskedForAgrement = true;
             SchedulerBinding.instance.addPostFrameCallback((_) {
               Future.delayed(Duration(seconds: 2)).then((value) {
@@ -174,6 +177,8 @@ class _ChatsScreenState extends State<ChatsScreen>
                       title: Text('Terms of Agreement'),
                       content: SingleChildScrollView(
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
@@ -241,7 +246,17 @@ class _ChatsScreenState extends State<ChatsScreen>
               state: state,
             );
           else if (currentScreen != null)
-            return currentScreen;
+            return kIsWeb?  
+             Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (kIsWeb)
+                  MainDrawer(),
+                SizedBox(width: 7),
+                Expanded(child: currentScreen   ),
+              ],
+            ) : currentScreen;
           else {
             return Center(
                 child: Text(

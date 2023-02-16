@@ -34,7 +34,7 @@ Widget singlePostDisplay({
 }) {
   List<Widget> items = [];
   items.insert(0, SizedBox(
-    width: MediaQuery.of(context).size.width / 4,
+    width: kIsWeb ? MediaQuery.of(context).size.width / 7 : MediaQuery.of(context).size.width / 4,
     child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -72,7 +72,7 @@ Widget singlePostDisplay({
   }
   return Container(
     height: 80,
-    width: MediaQuery.of(context).size.width / 1.2,
+    width: kIsWeb ? MediaQuery.of(context).size.width / 3.2 :MediaQuery.of(context).size.width / 1.2,
     child: ListView(
       scrollDirection: Axis.horizontal,
       addAutomaticKeepAlives: true,
@@ -392,7 +392,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
     ),
     child: Container(
       // height: MediaQuery.of(context).size.height / 9,
-      width: MediaQuery.of(context).size.width / 1, // 1.05,
+      width: kIsWeb ?  MediaQuery.of(context).size.width / 6 :  MediaQuery.of(context).size.width / 1, // 1.05,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         color: Theme.of(context).colorScheme.secondary,
@@ -579,7 +579,7 @@ void NavtoKcFromRooms(
   context.read<ChatscreenBloc>()..add(ChatScreenUpdateSelectedKc(kc: cord));
   context.read<CommuinityBloc>().setReadStatusFalse(kcId: cord.id!);
   context.read<CommuinityBloc>().setMentionedToFalse(kcId: cord.id!);
-  scaffoldKey.currentState!.closeDrawer();
+  // scaffoldKey.currentState!.closeDrawer();
   // Navigator.of(context)
   //     .pushNamed(KingsCordScreen.routeName,
   //         arguments: KingsCordArgs(

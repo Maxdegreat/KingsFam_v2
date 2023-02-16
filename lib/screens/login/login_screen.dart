@@ -26,25 +26,16 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  late VideoPlayerController vc;
+
   @override
   void initState() {
-    vc = VideoPlayerController.asset(
-        'assets/animations/kingsfam_logo_animted.mp4',
-        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
-      ..addListener(() => setState(() {}))
-      ..setLooping(
-          true) // -------------------------------- SET PERKED LOOPING TO TRUE
-      ..initialize().then((_) {
-        vc.play();
-        vc.setVolume(0);
-      });
+
     super.initState();
   }
 
   @override
   void dispose() {
-    vc.dispose();
+
     super.dispose();
   }
 
@@ -57,52 +48,44 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         backgroundColor: Color(hexColor.hexcolorCode("#20263d")),
         body: SafeArea(
-            child: Column(children: [
-          Spacer(),
-          Align(
-              alignment: Alignment.center,
-              child: Column(
-                children: [
-                  Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 35.0),
-                      child: Column(
-                        children: [
-                          Text('Welcome To ',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline2!
-                                  .copyWith(color: Colors.white)),
-                          Text('KING\'S FAM',
-                              style: Theme.of(context).textTheme.headline3)
-                        ],
-                      )),
-                  SizedBox(height: 20),
-                  Container(
-                    height: 250,
-                    width: 250,
-                    child: VisibilityDetector(
-                        key: ObjectKey(vc),
-                        onVisibilityChanged: (vis) {
-                          vis.visibleFraction > 0 ? vc.play() : vc.pause();
-                        },
-                        child: AssetVideoPlayer(
-                            controller: vc, height: 200, width: 250)),
-                  )
-                ],
-              )),
-          SizedBox(height: 17),
-          Center(
-              child: Text(
-            "Christian Communities For This Generation!",
-            style: Theme.of(context)
-                .textTheme
-                .caption!
-                .copyWith(color: Colors.white, fontWeight: FontWeight.w500),
-            textAlign: TextAlign.center,
-          )),
+            child: Column(
+          children: [
+            Spacer(),
+            Align(
+                alignment: Alignment.center,
+                child: Column(
+                  children: [
+                    Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 35.0),
+                        child: Column(
+                          children: [
+                            Text('Welcome To ',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline2!
+                                    .copyWith(color: Colors.white)),
+                            Text('KING\'S FAM',
+                                style: Theme.of(context).textTheme.headline3)
+                          ],
+                        )),
+                    SizedBox(height: 20),
+                   
+                  ],
+                )),
+            SizedBox(height: 17),
+            Center(
+                child: Text(
+              "Christian Communities For This Generation!",
+              style: Theme.of(context)
+                  .textTheme
+                  .caption!
+                  .copyWith(color: Colors.white, fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
+            )),
             SizedBox(height: 15),
-            Container(
-               width: size.width > 700 ? 400: size.width / 1.2,
+          
+             Container(
+              width: size.width / 1.2,
               child: TextButton.icon(
                 onPressed: () =>
                     context.read<AuthRepository>().signInWithGoogle(),
@@ -143,8 +126,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         )),
                   )
                 : SizedBox.shrink(),
-
-          ],
+             Container(
+               width: size.width / 1.2,
+               child: TextButton(
+                   onPressed: () {
+                     //push route to sign up screen
+                     Navigator.of(context).pushNamed(SignupFormScreen.routeName);
+                   },
+                   child: Text('Sign Up',
+                       style: Theme.of(context).textTheme.bodyText1),
+                   style: TextButton.styleFrom(backgroundColor: Colors.amber[400])),
+             ),
+             SizedBox(height: 20.0),
+           ],
             Container(
               width: size.width > 700 ? 400: size.width / 1.2,
               child: TextButton(                                                                                  

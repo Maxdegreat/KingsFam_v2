@@ -18,7 +18,6 @@ class ThemeInfo {
         textTheme: TextTheme(bodyText1: TextStyle(color: Colors.black, fontSize: 18),),
         color: Colors.white,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
       ),
       //colorScheme: ColorScheme.light(),
       iconTheme: IconThemeData(color: Colors.black),
@@ -74,7 +73,6 @@ class ThemeInfo {
           toolbarHeight: 45,
           color: Color(hexcolor.hexcolorCode('#121212')),// whats the hex val?
           elevation: 0,
-        iconTheme: IconThemeData(color: Colors.white),
         ),
         iconTheme: IconThemeData(color: Colors.white),
         drawerTheme: DrawerThemeData(backgroundColor: Color(hexcolor.hexcolorCode('#121212'))),

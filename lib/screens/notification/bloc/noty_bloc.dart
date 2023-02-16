@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/notification/noty_repository.dart';
@@ -19,7 +20,8 @@ class NotyBloc extends Bloc<NotyEvent, NotyState> {
     required NotificationRepository notificationRepository,
     required AuthBloc authBloc,
   }) : _notificationRepository = notificationRepository, _authBloc = authBloc, super(NotyState.initial()) {
-    try {
+    if (!kIsWeb) {
+      try {
       _notificationSubscription?.cancel();
     _notificationSubscription = _notificationRepository
     .getUserNotifications(userId: _authBloc.state.user!.uid)
@@ -29,6 +31,7 @@ class NotyBloc extends Bloc<NotyEvent, NotyState> {
     } catch (e) {
       print("The error when in noty stream sub is $e");
        emit(state.copyWith(status: NotyStatus.error));
+    }
     }
   }
 
