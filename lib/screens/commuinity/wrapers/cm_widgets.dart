@@ -34,7 +34,7 @@ Widget singlePostDisplay({
 }) {
   List<Widget> items = [];
   items.insert(0, SizedBox(
-    width: kIsWeb ? MediaQuery.of(context).size.width / 7 : MediaQuery.of(context).size.width / 4,
+    width: kIsWeb ? MediaQuery.of(context).size.width / 12 : MediaQuery.of(context).size.width / 4,
     child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -579,7 +579,7 @@ void NavtoKcFromRooms(
   context.read<ChatscreenBloc>()..add(ChatScreenUpdateSelectedKc(kc: cord));
   context.read<CommuinityBloc>().setReadStatusFalse(kcId: cord.id!);
   context.read<CommuinityBloc>().setMentionedToFalse(kcId: cord.id!);
-  // scaffoldKey.currentState!.closeDrawer();
+  scaffoldKey.currentState!.closeDrawer();
   // Navigator.of(context)
   //     .pushNamed(KingsCordScreen.routeName,
   //         arguments: KingsCordArgs(

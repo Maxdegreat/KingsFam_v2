@@ -7,9 +7,9 @@ import 'package:kingsfam/repositories/auth/auth_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/screens/snack_time/cm_theme_list.dart';
-import 'package:kingsfam/widgets/videos/asset_video.dart';
-import 'package:video_player/video_player.dart';
-import 'package:visibility_detector/visibility_detector.dart';
+// import 'package:kingsfam/widgets/videos/asset_video.dart';
+// import 'package:video_player/video_player.dart';
+// import 'package:visibility_detector/visibility_detector.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = '/login';
@@ -85,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: 15),
           
              Container(
-              width: size.width / 1.2,
+              width: size.width > 700 ? size.width / 7: size.width / 1.2,
               child: TextButton.icon(
                 onPressed: () =>
                     context.read<AuthRepository>().signInWithGoogle(),
@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ? Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: Container(
-                         width: size.width > 700 ? 400: size.width / 1.2,
+                         width: size.width > 700 ? size.width / 7: size.width / 1.2,
                         child: TextButton.icon(
                           onPressed: () => context
                               .read<AuthRepository>()
@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
              SizedBox(height: 20.0),
            ],
             Container(
-              width: size.width > 700 ? 400: size.width / 1.2,
+              width: size.width > 700 ? size.width / 7: size.width / 1.2,
               child: TextButton(                                                                                  
                   onPressed: () {
                     //push named route to login screen

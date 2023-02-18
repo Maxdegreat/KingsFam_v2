@@ -633,8 +633,8 @@ class _MessageLinesState extends State<MessageLines> {
           arguments: ProfileScreenArgs(
               initScreen: true, userId: widget.message.sender!.id)),
       child: Container(
-        height: size.width > 400 ? 45 : size.height / 18.5,
-        width: size.width > 400 ? 45 : size.width / 8,
+        height: size.width > 400 ? 35 : size.height / 18.5,
+        width: size.width > 400 ? 35 : size.width / 8,
         child: widget.message.sender!.profileImageUrl != "null"
             ? kingsCordProfileImg()
             : kingsCordProfileIcon(),

@@ -404,6 +404,7 @@ class ChurchRepository extends BaseChurchRepository {
     required String currUserId,
     required String mode,
     required String? rolesAllowed,
+    Map<String, dynamic>? metaData,
   }) async {
     try {
       CollectionReference pathToKc = FirebaseFirestore.instance
@@ -416,6 +417,7 @@ class ChurchRepository extends BaseChurchRepository {
         cordName: cordName,
         mode: mode,
         rolesAllowed: rolesAllowed,
+        metaData: metaData
         //subscribedIds: [],
       );
 
@@ -924,6 +926,13 @@ class ChurchRepository extends BaseChurchRepository {
       "badges": FieldValue.arrayUnion([badgeName])
   });
     
+  }
+
+  deleteBadge(String communityId, String badgeName) {
+    FirebaseFirestore.instance.collection(Paths.church).doc(communityId).update({
+      "badges": FieldValue.arrayRemove([badgeName])
+  }).then((value) => log("done"));
+  log("finished printing the badge output");
   }
 
   // Future<List<Userr>> searchForUsersInCommuinity(

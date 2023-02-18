@@ -548,9 +548,17 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     }
   }
 
+
   void addBadge(String badge) {
     var b = state.badges;
     b.add(badge);
     emit(state.copyWith(badges: b));
   }
+
+  void deleteBadge(String badge) {
+    state.badges.remove(badge);
+    emit(state.copyWith(badges: state.badges));
+    log(state.badges.toString());
+  }
+
 }

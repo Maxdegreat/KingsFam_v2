@@ -113,10 +113,17 @@ class _ChatsScreenState extends State<ChatsScreen>
   bool chatScreenStateUnReadChats = false;
   bool hasAskedForAgrement = false;
   bool initOpenDrawer = false;
+  bool hasInitCm = false;
 
   var currentScreen;
   @override
   Widget build(BuildContext context) {
+
+    if (!hasInitCm) {
+      context.read<ChatscreenBloc>()..add(LoadCms());
+      hasInitCm = true;
+    }
+
     // final userId = context.read<AuthBloc>().state.user!.uid;
     return Scaffold(
         appBar: null,

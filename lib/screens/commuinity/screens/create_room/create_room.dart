@@ -45,17 +45,20 @@ class _CreateRoomState extends State<CreateRoom> {
   String selectedMode = "";
   String _newBadgeName = "";
   String rollesAllowed = Roles.Member;
-  Set roles = {};
-  Set badges = {};
+  Set roles = {"All Members"};
+  Set badges = {"Member"};
 
   // ---------------- state ------------------
 
   @override
   void initState() {
     log("from the create room the badges len is: ");
-    
+
     _txtController = TextEditingController();
     _pageController = PageController();
+
+    context.read<CommuinityBloc>().addBadge("Member");
+
     super.initState();
   }
 
@@ -115,13 +118,6 @@ class _CreateRoomState extends State<CreateRoom> {
                         _pageController.nextPage(
                             duration: Duration(milliseconds: 500),
                             curve: Curves.ease);
-                        // await ChurchRepository().newKingsCord2(
-                        //     currUserId: context.read<AuthBloc>().state.user!.uid,
-                        //     ch: widget.cm,
-                        //     cordName: _txtController.value.text,
-                        //     mode: selectedMode,
-                        //     rolesAllowed: null);
-                        // Navigator.of(context).pop();
                       }
                     },
                     child: Padding(
@@ -131,7 +127,26 @@ class _CreateRoomState extends State<CreateRoom> {
                     ))
               ] else ...[
                 TextButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      if (badges.isEmpty || roles.isEmpty) {
+                        snackBar(snackMessage: "Hey, you cant leave the roles and / or badges empty :)", context: context, bgColor: Colors.redAccent);
+                        return ;
+                      }
+                      await ChurchRepository().newKingsCord2(
+                          currUserId: context.read<AuthBloc>().state.user!.uid,
+                          ch: widget.cm,
+                          cordName: _txtController.value.text,
+                          mode: selectedMode,
+                          rolesAllowed: null,
+                          metaData: badges.isNotEmpty || roles.isNotEmpty
+                              ? {
+                                  "badges": badges.toList(),
+                                  "roles": roles.toList(),
+                                }
+                              : null);
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                    },
                     child: Text(
                       "Done",
                       style: Theme.of(context).textTheme.bodyText1,
@@ -143,9 +158,7 @@ class _CreateRoomState extends State<CreateRoom> {
         body: BlocProvider.value(
           value: widget.cmBloc,
           child: BlocConsumer<CommuinityBloc, CommuinityState>(
-            listener: (context, state) {
-              // TODO: implement listener
-            },
+            listener: (context, state) {},
             builder: (context, state) {
               return GestureDetector(
                   onTap: () => FocusScope.of(context).unfocus(),
@@ -319,9 +332,24 @@ class _CreateRoomState extends State<CreateRoom> {
                   borderRadius: BorderRadius.circular(7)),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  text,
-                  style: Theme.of(context).textTheme.caption,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      text,
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          log("pressed del");
+                          ChurchRepository().deleteBadge(widget.cm.id!, text);
+                          context.read<CommuinityBloc>().deleteBadge(text);
+                          _newBadgeName = "";
+                          setState(() {});
+                        },
+                        icon: Icon(Icons.delete))
+                  ],
                 ),
               )),
         ),

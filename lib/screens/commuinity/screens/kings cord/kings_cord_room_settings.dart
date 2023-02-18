@@ -8,25 +8,27 @@ import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/notification_helper.dart';
 import 'package:kingsfam/models/church_kingscord_model.dart';
+import 'package:kingsfam/models/church_model.dart';
+import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/widgets/snackbar.dart';
 
 class KingsCordRoomSettingsArgs {
-  final String cmId;
+  final Church cm;
   final KingsCord kc;
-  const KingsCordRoomSettingsArgs({required this.cmId, required this.kc});
+  const KingsCordRoomSettingsArgs({required this.cm, required this.kc});
 }
 
 class KingsCordRoomSettings extends StatefulWidget {
-  final String cmId;
+  final Church cm;
   final KingsCord kc;
-  KingsCordRoomSettings({Key? key, required this.cmId, required this.kc})
+  KingsCordRoomSettings({Key? key, required this.cm, required this.kc})
       : super(key: key);
   static const String routeName = "/KingsCordRoomSettings";
   static Route route({required KingsCordRoomSettingsArgs a}) {
     return MaterialPageRoute(
       settings: const RouteSettings(name: routeName),
       builder: (context) {
-        return KingsCordRoomSettings(cmId: a.cmId, kc: a.kc);
+        return KingsCordRoomSettings(cm: a.cm, kc: a.kc);
       },
     );
   }
@@ -37,25 +39,30 @@ class KingsCordRoomSettings extends StatefulWidget {
 
 class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
   String? kcName;
-  bool switchValue = false;
   String roleWithWritePermissions = "Member";
+
+  bool hasAddedMemberBadge = false;
+
+  Set roles = {};
+  Set badges = {};
+
   @override
   void initState() {
     kcName = widget.kc.cordName;
+    roles = widget.kc.metaData?["roles"].toSet();
+    badges = widget.kc.metaData?["badges"].toSet();
+    log("badges: $badges");
 
-    if (widget.kc.metaData != null &&
-        widget.kc.metaData!.containsKey("writePermissions"))
-      roleWithWritePermissions = widget.kc.metaData!["writePermissions"];
-
-    if (widget.kc.mode == Mode.announcement)
-      switchValue = true;
-    else
-      switchValue = false;
     super.initState();
   }
 
+  
+                
+
+
   @override
   Widget build(BuildContext context) {
+
     ThemeData theme = Theme.of(context);
     return GestureDetector(
        onTap: () => FocusScope.of(context).unfocus(),
@@ -95,16 +102,27 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
                       height: 7,
                     ),
                     // who can write based on role
-                    _writeAccess(theme),
+                    Text("Below shows the roles of people who are allowed to add to this room (type, share links, images gifs ect...)", style: Theme.of(context).textTheme.caption),
                     SizedBox(
-                      height: 3,
+                      height: 7,
                     ),
-              
-                    _showRoomWritePermissions(theme),
-                    SizedBox(height: 7),
-              
-                    // update to anouncment room or back to chat room (if anouncment only admin and up can type)
-                    _switchToAnouncmentRoom(theme),
+                    _rowOfRoles(),
+                     Text("Below shows the badges for this room. If someone has a badge similir to this room then they will be able to see this room. (Admin and Leads can see all rooms)", style: Theme.of(context).textTheme.caption),
+                    SizedBox(
+                      height: 7,
+                    ),
+                            Expanded(
+          child: widget.kc.metaData!["badges"].badges!=null?ListView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: widget.cm.badges?.length,
+            itemBuilder: (context, index) {
+              return _textForBadge(
+                  widget.cm.badges![index]);
+            },
+          ):SizedBox.shrink(),
+        ),
+
+                    
                     SizedBox(
                       height: 7,
                     ),
@@ -129,18 +147,17 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
                 context: context,
                 bgColor: Colors.red);
           } else {
-            Map<String, dynamic> temp = {};
-            if (widget.kc.metaData != null && widget.kc.metaData!.containsKey("writePermissions")) {
-              widget.kc.metaData!["writePermissions"] = roleWithWritePermissions;
-              temp = widget.kc.metaData!;
+            if (roles.isNotEmpty) {
+              widget.kc.metaData?["roles"] = roles.toList();
             }
-            else  
-              temp["writePermissions"] = roleWithWritePermissions;
+            if (badges.isNotEmpty) {
+              widget.kc.metaData?["badges"] = roles.toList();
+            }
+              
             // direct api call
-            FirebaseFirestore.instance.collection(Paths.church).doc(widget.cmId).collection(Paths.kingsCord).doc(widget.kc.id).update({
+            FirebaseFirestore.instance.collection(Paths.church).doc(widget.cm.id).collection(Paths.kingsCord).doc(widget.kc.id).update({
               "cordName" : kcName,
-              "mode": switchValue ? Mode.announcement : Mode.chat,
-              "metaData": temp
+              "metaData":  widget.kc.metaData
             });
             snackBar(snackMessage: "Saving", context: context, bgColor: Colors.green);
             Navigator.of(context).pop();
@@ -168,62 +185,88 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
     );
   }
 
-  Widget _writeAccess(ThemeData theme) {
-    return ListTile(
-      leading: Icon(Icons.shield),
-      title: Text(
-        "Room permissions",
-        style: theme.textTheme.caption,
-      ),
-      // trailing: Icon(Icons.arrow_forward_ios),
-    );
-  }
-
-  Widget _showRoomWritePermissions(ThemeData theme) {
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+   Widget _rowOfRoles() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // child 1 is lead
-          _listTileForWritePermissions("Lead", theme),
-          _listTileForWritePermissions("Admin", theme),
-          _listTileForWritePermissions("Mod", theme),
-          _listTileForWritePermissions("Member", theme)
+          _textForRR("All Members"),
+          _textForRR("Mods, Admins and Leads"),
+          _textForRR("Lead and Admins"),
         ],
       ),
     );
   }
 
-  Widget _listTileForWritePermissions(String role, ThemeData t) => ListTile(
-            leading: Text(role, style: t.textTheme.bodyText1),
-            onTap: () {
-              setState(() {roleWithWritePermissions = role;});
-            },
-            trailing: Checkbox(
-              checkColor: Theme.of(context).colorScheme.onPrimary,
-              fillColor: MaterialStateProperty.all(Colors.amber),
-              value: roleWithWritePermissions == role,
-              onChanged: (bool? value) {
-                setState(() {roleWithWritePermissions = role;  });
-              },
-            ));
+  _textForRR(String text) => Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: GestureDetector(
+          onTap: () {
+            if (roles.isNotEmpty) {
+              roles.clear();
+              roles.add(text);
+            } else {
+              roles.add(text);
+            }
+            setState(() {});
+          },
+          child: Container(
+              decoration: BoxDecoration(
+                  border: roles.contains(text)
+                      ? Border.all(color: Colors.greenAccent, width: .7)
+                      : null,
+                  color: Theme.of(context).colorScheme.secondary,
+                  borderRadius: BorderRadius.circular(7)),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  text,
+                  style: Theme.of(context).textTheme.caption,
+                ),
+              )),
+        ),
+      );
 
-  Widget _switchToAnouncmentRoom(ThemeData theme) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text("Anouncment Room ", style: theme.textTheme.caption),
-        Switch(
-            activeColor: Theme.of(context).colorScheme.primary,
-            value: switchValue,
-            onChanged: (newVal) {
-              setState(() {
-                switchValue = newVal;
-              });
-            })
-      ],
-    );
-  }
+  _textForBadge(String text) => Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: GestureDetector(
+          onTap: () {
+            if (badges.contains(text)) {
+              badges.remove(text);
+            } else {
+              badges.add(text);
+            }
+            setState(() {});
+          },
+          child: Container(
+              decoration: BoxDecoration(
+                  border: badges.contains(text)
+                      ? Border.all(color: Colors.greenAccent, width: .7)
+                      : null,
+                  color: Theme.of(context).colorScheme.secondary,
+                  borderRadius: BorderRadius.circular(7)),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      text,
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+
+                    // IconButton(onPressed: () {
+                    //   log("pressed del");
+                    // ChurchRepository().deleteBadge(widget.cm.id!, text);
+                    // // context.read<CommuinityBloc>().deleteBadge(text);
+                    // setState(() {});
+                    // }, icon: Icon(Icons.delete))
+                  ],
+                ),
+              )),
+        ),
+      );
 }

@@ -349,7 +349,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   Navigator.of(context).pushNamed(
                       KingsCordRoomSettings.routeName,
                       arguments: KingsCordRoomSettingsArgs(
-                          cmId: widget.commuinity.id!, kc: widget.kingsCord));
+                          cm: widget.commuinity, kc: widget.kingsCord
+                        ));
                 },
                 icon: Icon(Icons.more_horiz, color: Theme.of(context).iconTheme.color)),
           ]
@@ -623,6 +624,7 @@ buildBottomTF(KingscordState state, BuildContext context, String mode) {
         } 
       },
       child: Container(
+          width: MediaQuery.of(context).size.width > 700 ? MediaQuery.of(context).size.width / 5: null,
           // margin: EdgeInsets.symmetric(horizontal: 5.0),
           child: Padding(
               padding: const EdgeInsets.all(8.0),

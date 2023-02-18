@@ -29,13 +29,17 @@ class LoginFormScren extends StatelessWidget {
  // String? _password;
 
   _loginForm(BuildContext context) {
-    return Form(
-      key: _loginFormKey,
-      child: Column(
-        children: [
-          _buildEmailTF(context),
-          _buildPasswordTF(context),
-        ],
+    Size size = MediaQuery.of(context).size;
+    return Container(
+      width: size.width > 700 ? size.width / 7: size.width / 1.2,
+      child: Form(
+        key: _loginFormKey,
+        child: Column(
+          children: [
+            _buildEmailTF(context),
+            _buildPasswordTF(context),
+          ],
+        ),
       ),
     );
   }
@@ -93,31 +97,22 @@ class LoginFormScren extends StatelessWidget {
               onTap: () => FocusScope.of(context).unfocus(),
               child: Center(
                   child: Column(children: [
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width > 700 ? 400 : double.infinity,
-                    margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Column(children: [
-                      SizedBox(height: 20.0),
-                      Text('Hebrews 13:2',
-                          style: Theme.of(context).textTheme.headline2),
-                    ]),
-                  ),
-                ),
+                //  SizedBox(height: 20.0),
+                //     Text('Hebrews 13:2',
+                //         style: Theme.of(context).textTheme.headline2),
                 SizedBox(height: 20.0),
                 _loginForm(context),
                 SizedBox(height: 40),
                 Center(
                   child: Container(
-                    width: size.width * .7,
+                    width: size.width > 700 ? size.width / 7: size.width / 1.2,
                     child: TextButton(
                         onPressed: () => _submitForm(
                             context, state.status == LoginStatus.submitting),
                         child: Text('Continue',
                             style: Theme.of(context).textTheme.bodyText1),
                         style: TextButton.styleFrom(
-                            backgroundColor: Colors.red[400])),
+                            backgroundColor: Theme.of(context).colorScheme.primary)),
                   ),
                 )
               ])),

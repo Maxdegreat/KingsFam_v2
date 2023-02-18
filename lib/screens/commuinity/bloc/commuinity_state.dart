@@ -107,7 +107,7 @@ class CommuinityState extends Equatable {
       cmId: "",
       requestStatus: RequestStatus.none,
       vc: [],
-      badges: []
+      badges: ["members"]
     );
   }
   CommuinityState copyWith({
