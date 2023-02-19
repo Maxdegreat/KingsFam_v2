@@ -85,34 +85,7 @@ Widget contentPreview(
   );
 }
 
-// collapsed or expand. this is a btn used to expand cms or collapse cms
-collapseOrExpand(CommuinityBloc cmBloc, String type) {
-  if (type == "cord") {
-    return IconButton(
-        onPressed: () => cmBloc.onCollapsedCord(),
-        icon: !cmBloc.state.collapseCordColumn
-            ? Icon(
-                Icons.keyboard_arrow_up_outlined,
-                size: 35,
-              )
-            : Icon(
-                Icons.expand_more_outlined,
-                size: 35,
-              ));
-  } else {
-    return IconButton(
-        onPressed: () => cmBloc.onCollapsedVvrColumn(),
-        icon: !cmBloc.state.collapseVvrColumn
-            ? Icon(
-                Icons.keyboard_arrow_up_outlined,
-                size: 35,
-              )
-            : Icon(
-                Icons.expand_more_outlined,
-                size: 35,
-              ));
-  }
-}
+
 
 // used to make a new kingscord or event
 Widget new_kingscord(
@@ -124,9 +97,9 @@ Widget new_kingscord(
   // * (CREATOR) IS ALLOWED
   // cmActions.Actions actions = cmActions.Actions();
 
-  if (cmBloc.state.role["permissions"].contains("*") ||
-      cmBloc.state.role["permissions"].contains("#") ||
-      cmBloc.state.role["permissions"].contains(CmActions.makeRoom)) {
+  if (cmBloc.state.role["kfRole"] == "Lead" ||
+      cmBloc.state.role["kfRole"] == "Admin" ||
+      cmBloc.state.role["kfRole"] == "Mod") {
     return GestureDetector(
         onTap: () {
           Navigator.of(context).pushNamed(CreateRoom.routeName,
@@ -218,13 +191,11 @@ dynamic showCmOptions(
             if (context
                     .read<CommuinityBloc>()
                     .state
-                    .role["permissions"]
-                    .contains("*") ||
+                    .role["kfRoles"] == "Lead" ||
                 context
                     .read<CommuinityBloc>()
                     .state
-                    .role["permissions"]
-                    .contains("#")) ... [
+                    .role["kfRole"] == "Admin") ... [
 
               ListTile(
                   title: Text("Update the Community name",

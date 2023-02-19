@@ -330,8 +330,7 @@ class _CommunityHomemState extends State<CommunityHome> {
                         if (!context
                             .read<CommuinityBloc>()
                             .state
-                            .role["permissions"]
-                            .contains("*")) {
+                            .role["kfRole"] == "Lead") {
                           context
                               .read<CommuinityBloc>()
                               .onLeaveCommuinity(commuinity: cm)

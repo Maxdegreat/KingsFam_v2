@@ -160,7 +160,7 @@ class _UpdateCmThemePackState extends State<UpdateCmThemePack> {
                   context: context,
                   bgColor: Colors.red[400]);
             } else {
-              widget.cmBloc.setTheme(cmId: widget.cmId, theme: svgPath);
+              // widget.cmBloc.setTheme(cmId: widget.cmId, theme: svgPath);
               snackBar(snackMessage: "Nice, check out the Community page home now!", context: context, bgColor: Colors.green);
             }
           },

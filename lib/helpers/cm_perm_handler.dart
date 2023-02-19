@@ -9,56 +9,36 @@ import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 class CmPermHandler {
   // permission for owners
   static bool isOwner(CommuinityBloc cmBloc) {
-    return cmBloc.state.role["permissions"].contains("*");
+    return cmBloc.state.role["kfRole"] == "Lead";
   }
 
   // permission for admins
   static bool isAdmin(CommuinityBloc cmBloc) {
-    return cmBloc.state.role["permissions"].contains("*") ||
-        cmBloc.state.role["permissions"].contains("#");
+    return cmBloc.state.role["kfRole"] == "Lead" ||
+        cmBloc.state.role["kfRole"] == "Admin";
   }
 // -----------------------------------------------
   // permission for creating a room
   static bool canMakeRoom(CommuinityBloc cmBloc) {
-    return cmBloc.state.role["permissions"].contains("*") ||
-        cmBloc.state.role["permissions"].contains("#") ||
-        cmBloc.state.role["permissions"].contains(CmActions.makeRoom);
+    return cmBloc.state.role["kfRole"] == "Lead" ||
+        cmBloc.state.role["kfRole"] == "Admin" || cmBloc.state.role["kfRole"] == "Mod";
   }
 
   // permission for del a room (same as creating room)
 
   // permission for kicking / baning a user
-  static bool canRemoveMember({required CommuinityBloc? cmBloc, required String? givenRole}) {
-    if (givenRole != null) {
-      return roleNameToPerm[givenRole].contains("*") || roleNameToPerm[givenRole].contains("#") || roleNameToPerm[givenRole].contains("mod");
-    } else if (cmBloc != null) {
-      var p = cmBloc.state.role["permissions"];
-      return p.contains("*") || p.contains("#") || p.contains('mod');
-    } else {
-      return false;
-    }
-
-  }
-
-  // psemission for updating the cm privacy
-  static bool canUpdatePrivacy({required CommuinityBloc? cmBloc, required String? givenRole}) {
-    if (givenRole != null) {
-      return roleNameToPerm[givenRole].contains("*") || roleNameToPerm[givenRole].contains("#") || roleNameToPerm[givenRole].contains("mod");
-    } else if (cmBloc != null) {
-      var p = cmBloc.state.role["permissions"];
-      return p.contains("*") || p.contains("#") || p.contains('mod');
+  static bool canRemoveMember({required CommuinityBloc? cmBloc}) {
+    if (cmBloc!.state.role["kfRole"] == "Lead" || cmBloc.state.role["kfRole"] == "Mod" || cmBloc.state.role["kfRole"] == "Admin") {
+      return true;
     } else {
       return false;
     }
   }
 
   // permission for updating roles (can not change the owners role)
-  static bool canUpdateRole({required CommuinityBloc? cmBloc, required String? givenRole}) {
-    if (givenRole != null) {
-      return roleNameToPerm[givenRole].contains("*") || roleNameToPerm[givenRole].contains("#");
-    } else if (cmBloc != null) {
-      var p = cmBloc.state.role["permissions"];
-      return p.contains("*") || p.contains("#");
+  static bool canUpdateRole({required CommuinityBloc? cmBloc,}) {
+      if (cmBloc!.state.role["kfRole"] == "Lead" || cmBloc.state.role["kfRole"] == "Mod" || cmBloc.state.role["kfRole"] == "Admin") {
+      return true;
     } else {
       return false;
     }

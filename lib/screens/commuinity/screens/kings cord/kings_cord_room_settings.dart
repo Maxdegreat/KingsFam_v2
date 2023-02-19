@@ -112,7 +112,7 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
                       height: 7,
                     ),
                             Expanded(
-          child: widget.kc.metaData!["badges"].badges!=null?ListView.builder(
+          child: widget.kc.metaData!["badges"]!=null?ListView.builder(
             scrollDirection: Axis.vertical,
             itemCount: widget.cm.badges?.length,
             itemBuilder: (context, index) {

@@ -2,17 +2,13 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/cm_perm_handler.dart';
 import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/models/role_modal.dart';
 import 'package:kingsfam/repositories/userr/userr_repository.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
-import 'package:kingsfam/screens/commuinity/wrapers/role_permissions.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
 import 'package:kingsfam/widgets/snackbar.dart';
@@ -64,7 +60,6 @@ class _ParticipantsViewState extends State<ParticipantsView>
   DocumentSnapshot? lastSeenDocSnap;
   late TabController tabctrl;
 
-  List<Role> roles = Role.preBuiltRoles; // [];
   // _____________________________________ a
 
   @override
@@ -129,15 +124,11 @@ class _ParticipantsViewState extends State<ParticipantsView>
                               },
                               child: Text(
                                 "Load more",
-                                style: Theme.of(context).textTheme.bodyText2,
+                                style: Theme.of(context).textTheme.bodyText1,
                               )),
                         ),
                       ),
-                      Container(
-                        height: CmPermHandler.canRemoveMember(
-                                cmBloc: widget.cmBloc, givenRole: null)
-                            ? MediaQuery.of(context).size.height / 1.92
-                            : MediaQuery.of(context).size.height / 1.70,
+                      Expanded(
                         child: ListView.builder(
                             itemCount: users.length,
                             itemBuilder: (context, index) {
@@ -213,7 +204,8 @@ class _ParticipantsViewState extends State<ParticipantsView>
                                                                     ProfileScreen
                                                                         .routeName,
                                                                     arguments: ProfileScreenArgs(
-                                                                      initScreen: true,
+                                                                        initScreen:
+                                                                            true,
                                                                         userId:
                                                                             user[0].id));
                                                               },
@@ -270,6 +262,40 @@ class _ParticipantsViewState extends State<ParticipantsView>
                                                               ),
                                                             ),
 
+                                                            GestureDetector(
+                                                              onTap: () {
+                                                                if (CmPermHandler
+                                                                    .isAdmin(widget
+                                                                        .cmBloc)) {
+                                                                  // Admins and up have the ability to update roles
+                                                                  _showUpdateBadgesBottomSheet(
+                                                                          context,
+                                                                          user)
+                                                                      .then((value) =>
+                                                                          Navigator.of(context)
+                                                                              .pop());
+                                                                } else {
+                                                                  snackBar(
+                                                                      snackMessage:
+                                                                          "You do not have the right permissions.",
+                                                                      context:
+                                                                          context);
+                                                                }
+                                                              },
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        8.0),
+                                                                child: Text(
+                                                                    "Badges",
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .caption),
+                                                              ),
+                                                            ),
+
                                                             // kick name,
                                                             Padding(
                                                               padding:
@@ -293,8 +319,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
                                                                             context);
 
                                                                   if (CmPermHandler.canRemoveMember(
-                                                                      givenRole:
-                                                                          null,
+                                                                     
                                                                       cmBloc: widget
                                                                           .cmBloc)) {
                                                                     widget
@@ -366,8 +391,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
                                                                   if (CmPermHandler.canRemoveMember(
                                                                       cmBloc: widget
                                                                           .cmBloc,
-                                                                      givenRole:
-                                                                          null)) {
+                                                                      )) {
                                                                     widget.cmBloc.ban(
                                                                         cm: widget
                                                                             .cm,
@@ -435,62 +459,62 @@ class _ParticipantsViewState extends State<ParticipantsView>
                 // child 1 --------------------------------------------------
 
                 // child 2 -----------------------------------------------------
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // ElevatedButton(onPressed: () {
+                // Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: Column(
+                //     mainAxisAlignment: MainAxisAlignment.start,
+                //     crossAxisAlignment: CrossAxisAlignment.start,
+                //     children: [
+                //       // ElevatedButton(onPressed: () {
 
-                      //   Navigator.of(context).pushNamed(CreateRole.routeName, arguments: CreateRoleArgs(cmId: widget.cm.id!));
-                      // }, child: Text("Create role", style: Theme.of(context).textTheme.bodyText1,)),
+                //       //   Navigator.of(context).pushNamed(CreateRole.routeName, arguments: CreateRoleArgs(cmId: widget.cm.id!));
+                //       // }, child: Text("Create role", style: Theme.of(context).textTheme.bodyText1,)),
 
-                      SizedBox(height: 7),
-                      Text("roles - " + roles.length.toString(),
-                          style: Theme.of(context).textTheme.caption),
-                      SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 5),
-                        child: Container(
-                          height: MediaQuery.of(context).size.height / 1.8,
-                          child: ListView.builder(
-                              itemCount: roles.length,
-                              itemBuilder: (context, index) {
-                                Role role = roles[index];
-                                return Card(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        ListTile(
-                                          leading: Text(role.roleName,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .caption),
-                                          onTap: () {
-                                            // have a new screen that shows the role permissions
-                                            Navigator.of(context).pushNamed(
-                                                RolePermissions.routeName,
-                                                arguments: RolePermissionsArgs(
-                                                    role: role,
-                                                    cmId: widget.cm.id!));
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              }),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
+                //       SizedBox(height: 7),
+                //       Text("roles - " + roles.length.toString(),
+                //           style: Theme.of(context).textTheme.caption),
+                //       SizedBox(height: 10),
+                //       Padding(
+                //         padding: const EdgeInsets.symmetric(vertical: 5),
+                //         child: Container(
+                //           height: MediaQuery.of(context).size.height / 1.8,
+                //           child: ListView.builder(
+                //               itemCount: roles.length,
+                //               itemBuilder: (context, index) {
+                //                 Role role = roles[index];
+                //                 return Card(
+                //                   child: Padding(
+                //                     padding: const EdgeInsets.all(2.0),
+                //                     child: Column(
+                //                       mainAxisAlignment:
+                //                           MainAxisAlignment.start,
+                //                       crossAxisAlignment:
+                //                           CrossAxisAlignment.start,
+                //                       children: [
+                //                         ListTile(
+                //                           leading: Text(role.roleName,
+                //                               style: Theme.of(context)
+                //                                   .textTheme
+                //                                   .caption),
+                //                           onTap: () {
+                //                             // have a new screen that shows the role permissions
+                //                             Navigator.of(context).pushNamed(
+                //                                 RolePermissions.routeName,
+                //                                 arguments: RolePermissionsArgs(
+                //                                     role: role,
+                //                                     cmId: widget.cm.id!));
+                //                           },
+                //                         ),
+                //                       ],
+                //                     ),
+                //                   ),
+                //                 );
+                //               }),
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // )
               ]),
             ),
           ],
@@ -565,7 +589,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
   }
 
   Widget pendingAndBandRow(cmBloc) {
-    return CmPermHandler.canRemoveMember(cmBloc: cmBloc, givenRole: null)
+    return CmPermHandler.canRemoveMember(cmBloc: cmBloc)
         ? Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -580,10 +604,10 @@ class _ParticipantsViewState extends State<ParticipantsView>
                   },
                   child: Text(
                     "Pending Joins",
-                    style: Theme.of(context).textTheme.bodyText2,
+                    style: Theme.of(context).textTheme.bodyText1,
                   ),
                   style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).colorScheme.secondary,
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
                       shape: StadiumBorder()),
                 ),
                 ElevatedButton(
@@ -594,9 +618,9 @@ class _ParticipantsViewState extends State<ParticipantsView>
                             cmBloc: context.read<CommuinityBloc>()));
                   },
                   child: Text("Baned Users",
-                      style: Theme.of(context).textTheme.bodyText2),
+                      style: Theme.of(context).textTheme.bodyText1),
                   style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).colorScheme.secondary,
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
                       shape: StadiumBorder()),
                 )
               ],
@@ -614,7 +638,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
     for (var j in x) {
       if (j[1] == "Lead") {
         users.insert(0, j);
-      } else 
+      } else
         users.add(j);
     }
     setState(() {});
@@ -636,8 +660,9 @@ class _ParticipantsViewState extends State<ParticipantsView>
         if (x.exists) {
           Userr u = await UserrRepository().getUserrWithId(userrId: x.id);
           String? roleName = x.data()["kfRole"];
-     
-          bucket.add([u, roleName]);
+          List<String> badges = x.data()["kfBadges"] ?? ["member"];
+
+          bucket.add([u, roleName, badges]);
         }
       }
     } else {
@@ -652,8 +677,9 @@ class _ParticipantsViewState extends State<ParticipantsView>
         if (x.exists) {
           Userr u = await UserrRepository().getUserrWithId(userrId: x.id);
           String? roleName = x.data()["kfRole"];
+          List<String> badges = x.data()["kfBadges"] ?? ["member"];
 
-          bucket.add([u, roleName]);
+          bucket.add([u, roleName, badges]);
         }
       }
     }
@@ -678,133 +704,79 @@ class _ParticipantsViewState extends State<ParticipantsView>
     // }
   }
 
-  void getRoles() async {
-    QuerySnapshot rolesSanp = await FirebaseFirestore.instance
-        .collection(Paths.communityMembers)
-        .doc(widget.cm.id)
-        .collection(Paths.communityRoles)
-        .limit(10)
-        .get();
-    // get roles fromDoc
-    for (var r in rolesSanp.docs) {
-      Role role = Role.fromDoc(r);
-      roles.add(role);
-    }
-    setState(() {});
+
+  dynamic _showUpdateBadgesBottomSheet(BuildContext context, dynamic user) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+      ),
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.only(top: 10.0),
+              height: 4.0,
+              width: 40.0,
+              decoration: BoxDecoration(
+                color: Colors.grey[400],
+                borderRadius: BorderRadius.circular(2.0),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    "Update Badges",
+                    style: Theme.of(context).textTheme.bodyText1,
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 16.0),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: widget.cm.badges != null
+                          ? widget.cm.badges!.length
+                          : 0,
+                      itemBuilder: (BuildContext context, int index) {
+                        String badge = widget.cm.badges![index];
+                        return _badgeSelect(badge, user[2], user[0].id);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  // admin options below
-
-  // Future<dynamic> _adminsOptions({
-  //     required Userr participatant,
-  //     required String role}) {
-  //   return showModalBottomSheet(
-  //       context: context,
-  //       builder: (context) {
-  //         if (role == Roles.Admin || role == Roles.Owner) {
-  //           return changRolePopUp(context, participatant, cm);
-  //         } else {
-  //           return Text(
-  //             "${participatant.username} is alredy an Admin",
-  //           );
-  //         }
-  //       });
-  // }
-
-  // // extension of the moreoptions
-  // Column changRolePopUp(
-  //     BuildContext context, Userr participatant, Church cm) {
-  //   return Column(
-  //     mainAxisSize: MainAxisSize.min,
-  //     children: [
-  //       Center(
-  //         child: Text("Options: " + participatant.username),
-  //       ),
-  //       TextButton(
-  //           onPressed: () {
-  //             context.read<BuildchurchCubit>().changeRole(
-  //                 user: participatant,
-  //                 commuinityId: cm.id!,
-  //                 role: Roles.Admin);
-  //             Navigator.of(context).pop();
-  //           },
-  //           child: FittedBox(
-  //               child: Text(
-  //             "Promote ${participatant.username} to an admin",
-  //             overflow: TextOverflow.ellipsis,
-  //             style: Theme.of(context).textTheme.bodyText1,
-  //           ))),
-  //       TextButton(
-  //           onPressed: () {
-  //             context.read<BuildchurchCubit>().changeRole(
-  //                 user: participatant,
-  //                 commuinityId: cm.id!,
-  //                 role: Roles.Elder);
-  //             Navigator.of(context).pop();
-  //           },
-  //           child: FittedBox(
-  //               child: Text(
-  //             "Make ${participatant.username} an Elder",
-  //             overflow: TextOverflow.ellipsis,
-  //             style: Theme.of(context).textTheme.bodyText1,
-  //           ))),
-  //       TextButton(
-  //           onPressed: () {
-  //             context.read<BuildchurchCubit>().changeRole(
-  //                 user: participatant,
-  //                 commuinityId: cm.id!,
-  //                 role: Roles.Member);
-  //             Navigator.of(context).pop();
-
-  //           },
-  //           child: FittedBox(
-  //               child: Text(
-  //             "Make ${participatant.username} a Member",
-  //             overflow: TextOverflow.ellipsis,
-  //             style: Theme.of(context).textTheme.bodyText1,
-  //           ))),
-  //       TextButton(
-  //           onPressed: () {
-  //             try {
-  //               context.read<ChurchRepository>().leaveCommuinity(
-  //                   commuinity: cm, leavingUserId: participatant.id);
-  //               Navigator.of(context).pop();
-  //             } catch (e) {
-  //               log("err: " + e.toString());
-  //             }
-
-  //             Navigator.of(context).pop();
-  //           },
-  //           child: FittedBox(
-  //               child: Text(
-  //                   "Remove ${participatant.username} from ${cm.name}",
-  //                   overflow: TextOverflow.ellipsis,
-  //                   style: Theme.of(context).textTheme.bodyText1))),
-  //       TextButton(
-  //           onPressed: () {
-  //             if (cm.members[participatant]['role'] == Roles.Owner) {
-  //               snackBar(
-  //                   snackMessage: "You can not ban the ommunity owner",
-  //                   context: context,
-  //                   bgColor: Colors.red);
-  //               return;
-  //             }
-  //             context.read<ChurchRepository>().banFromCommunity(
-  //                 community: cm, baningUserId: participatant.id);
-  //             Navigator.of(context).pop();
-  //             snackBar(
-  //                 snackMessage:
-  //                     "Update will show onReload, user can no longer join",
-  //                 context: context);
-  //           },
-  //           child: FittedBox(
-  //               child: Text(
-  //             "ban ${participatant.username}",
-  //             overflow: TextOverflow.ellipsis,
-  //             style: Theme.of(context).textTheme.bodyText1,
-  //           )))
-  //     ],
-  //   );
-  // }
-
+  Widget _badgeSelect(String badge, List<String> userBadges, String userId) {
+    return GestureDetector(
+      onTap: () {
+        if (userBadges.contains(badge)) {
+          userBadges.remove(badge);
+          widget.cmBloc.rmvUserBadge(userId, badge, widget.cm.id!);
+        } else {
+          userBadges.add(badge);
+          widget.cmBloc.addUserBadge(userId, badge, widget.cm.id!);
+        }
+        setState(() {});
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 8.0),
+        decoration: BoxDecoration(
+          border: Border.all(color: userBadges.contains(badge) ? Colors.greenAccent : Colors.transparent)
+        ),
+        child: Text(
+          badge,
+          style: Theme.of(context).textTheme.caption,
+        ),
+      ),
+    );
+  }
 }

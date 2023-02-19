@@ -10,7 +10,6 @@ import 'package:kingsfam/screens/commuinity/screens/roles/roles_screen.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
 import 'package:kingsfam/screens/commuinity/screens/says_room/says_view.dart';
 import 'package:kingsfam/screens/commuinity/screens/says_room/screens/create_says.dart';
-import 'package:kingsfam/screens/commuinity/wrapers/role_permissions.dart';
 import 'package:kingsfam/screens/profile/widgets/show_follows.dart';
 
 import 'package:kingsfam/screens/screens.dart';
@@ -175,9 +174,6 @@ class CustomRoute {
         return ParticipantsView.route(
             args: settings.arguments as ParticipantsViewArgs);
 
-      case RolePermissions.routeName:
-        return RolePermissions.route(
-            args: settings.arguments as RolePermissionsArgs);
 
       case KingsCordRoomSettings.routeName:
         return KingsCordRoomSettings.route(a: settings.arguments as KingsCordRoomSettingsArgs);

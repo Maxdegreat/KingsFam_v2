@@ -20,137 +20,114 @@ enum RequestStatus {
 
 class CommuinityState extends Equatable {
   final bool? isMember;
-  final bool collapseCordColumn;
-  final bool collapseVvrColumn;
   final List<Post?> postDisplay;
-  final List<Event?> events;
-  final List<KingsCord?> kingCords;
+  final List<KingsCord?> pinedRooms;
+  final List<KingsCord?> yourRooms;
+  final List<KingsCord?> otherRooms;
   final CommuintyStatus status;
   final Failure failure;
-  final List<KingsCord?> mentionedCords;
   final Userr currUserr;
-  final String themePack;
   final int boosted;
   final bool isBaned;
   final List<Userr> banedUsers;
   final RequestStatus requestStatus;
   final Map<String, dynamic> role;
   final String cmId;
-  final List<KingsCord?> vc;
   final List<String> badges;
 
   const CommuinityState({
     required this.isMember,
-    required this.collapseCordColumn,
-    required this.collapseVvrColumn,
     required this.postDisplay,
-    required this.kingCords,
+    required this.pinedRooms,
+    required this.yourRooms,
+    required this.otherRooms,
     required this.status,
     required this.failure,
-    required this.events,
-    required this.mentionedCords,
     required this.currUserr,
-    required this.themePack,
     required this.boosted,
     required this.isBaned,
     required this.banedUsers,
     required this.requestStatus,
     required this.role,
     required this.cmId,
-    required this.vc,
     required this.badges,
   });
 
   @override
   List<Object?> get props => [
-        currUserr,
-        mentionedCords,
-        collapseCordColumn,
-        collapseVvrColumn,
-        events,
-        kingCords,
-        postDisplay,
-        isMember,
-        status,
-        failure,
-        themePack,
-        boosted,
-        isBaned,
-        banedUsers,
-        requestStatus,
-        role,
-        cmId,
-        vc,
-        badges,
+    isMember,
+    postDisplay,
+    pinedRooms,
+    yourRooms,
+    otherRooms,
+    status,
+    failure,
+    currUserr,
+    boosted,
+    isBaned,
+    banedUsers,
+    requestStatus,
+    role,
+    cmId,
+    badges,
       ];
 
   factory CommuinityState.inital() {
     return CommuinityState(
-      role: {
-        "roleName": "Member", // default can be string Member or null
-        "permissions": ["0"] // string 0 means basic role
+      role: { // MIGRATE NAME LATER TO CMMEMBERINFO
+        "kfRole": "Member", // default can be string Member or null
+        "badges" : ["member"],
       },
       currUserr: Userr.empty,
-      mentionedCords: [],
-      collapseCordColumn: false,
-      collapseVvrColumn: false,
-      events: [],
+      otherRooms: [],
+      pinedRooms: [],
+      yourRooms: [],
       isMember: null,
       postDisplay: [],
-      kingCords: [],
       status: CommuintyStatus.inital,
       failure: Failure(),
-      themePack: 'none',
       boosted: 0,
       isBaned: false,
       banedUsers: [],
       cmId: "",
       requestStatus: RequestStatus.none,
-      vc: [],
       badges: ["members"]
     );
   }
   CommuinityState copyWith({
-    Map<String, dynamic>? role,
-    bool? isMember,
-    List<Post?>? postDisplay,
-    List<KingsCord?>? kingCords,
-    CommuintyStatus? status,
-    Failure? failure,
-    List<KingsCord?>? mentionedCords,
-    List<Event?>? events,
-    bool? collapseCordColumn,
-    bool? collapseVvrColumn,
-    Userr? currUserr,
-    String? themePack,
-    int? boosted,
-    bool? isBaned,
-    List<Userr>? banedUsers,
-    RequestStatus? requestStatus,
-    String? cmId,
-    List<KingsCord?>? vc,
-    List<String>? badges,
+  bool? isMember,
+  List<Post?>? postDisplay,
+  List<KingsCord?>? pinedRooms,
+  List<KingsCord?>? yourRooms,
+  List<KingsCord?>? otherRooms,
+  CommuintyStatus? status,
+  Failure? failure,
+  Userr? currUserr,
+  int? boosted,
+  bool? isBaned,
+  List<Userr>? banedUsers,
+  RequestStatus? requestStatus,
+  Map<String, dynamic>? role,
+  String? cmId,
+  List<String>? badges,
   }) {
     return CommuinityState(
       role: role ?? this.role,
-      events: events ?? this.events,
-      isMember: isMember ?? this.isMember,
-      postDisplay: postDisplay ?? this.postDisplay,
-      kingCords: kingCords ?? this.kingCords,
-      failure: failure ?? this.failure,
-      status: status ?? this.status,
-      mentionedCords: mentionedCords ?? this.mentionedCords,
-      collapseCordColumn: collapseCordColumn ?? this.collapseCordColumn,
-      collapseVvrColumn: collapseVvrColumn ?? this.collapseVvrColumn,
-      currUserr: currUserr ?? this.currUserr,
-      themePack: themePack ?? this.themePack,
-      boosted: boosted ?? this.boosted,
-      isBaned: isBaned ?? this.isBaned,
-      banedUsers: banedUsers ?? this.banedUsers,
-      requestStatus: requestStatus ?? this.requestStatus,
-      cmId: cmId ?? this.cmId,
-      vc: vc ?? this.vc,
       badges: badges ?? this.badges,
+      banedUsers: banedUsers ?? this.banedUsers,
+      boosted: boosted ?? this.boosted,
+      cmId: cmId ?? this.cmId,
+      currUserr: currUserr ?? this.currUserr,
+      failure: failure ?? this.failure,
+      isBaned: isBaned ?? this.isBaned,
+      isMember: isMember ?? this.isMember,
+      otherRooms: otherRooms ?? this.otherRooms,
+      pinedRooms: pinedRooms ?? this.pinedRooms,
+      postDisplay: postDisplay ?? this.postDisplay,
+      requestStatus: requestStatus ?? this.requestStatus,
+      status: status ?? this.status,
+      yourRooms: yourRooms ?? this.yourRooms,
+
     );
   }
 }

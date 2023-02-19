@@ -935,6 +935,23 @@ class ChurchRepository extends BaseChurchRepository {
   log("finished printing the badge output");
   }
 
+  void addMemberBadge(String userId, String userBadge,String cmId) {
+    try {
+      FirebaseFirestore.instance.collection(Paths.communityMembers).doc(cmId).collection(Paths.members).doc(userId).update({"kfBadges" : FieldValue.arrayUnion([userBadge])});
+    } catch (e) {
+      FirebaseFirestore.instance.collection(Paths.communityMembers).doc(cmId).collection(Paths.members).doc(userId).set({"kfBadges" : [userBadge]});
+      log("failed addMemverBadge error msg: ${e}");
+    }
+  }
+
+    void rmvMemberBadge(String userId, String userBadge,String cmId) {
+    try {
+      FirebaseFirestore.instance.collection(Paths.communityMembers).doc(cmId).collection(Paths.members).doc(userId).update({"kfBadges" : FieldValue.arrayRemove([userBadge])});
+    } catch (e) {
+      log("failed rmvMemverBadge error msg: ${e}");
+    }
+  }
+
   // Future<List<Userr>> searchForUsersInCommuinity(
   //     {required String query, required String doc}) async {
   //   final churchSnap = await FirebaseFirestore.instance

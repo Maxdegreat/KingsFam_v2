@@ -38,18 +38,24 @@ class KingsCordRepository extends BaseKingsCordRepository {
   }
 
   Future<KingsCord?> getKcFirstCm(String cmId) async {
-     var qs = await _firebaseFirestore
+    var qs = await _firebaseFirestore
         .collection(Paths.church)
         .doc(cmId)
-        .collection(Paths.kingsCord).limit(1).get();
-      return await  KingsCord.fromDoc(qs.docs.first);
+        .collection(Paths.kingsCord)
+        .limit(1)
+        .get();
+    return await KingsCord.fromDoc(qs.docs.first);
   }
 
   Future<KingsCord?> getKcWithId(String kcId, String cmId) async {
     // go to path
     // get the kc w/ id
-    DocumentSnapshot snap = await _firebaseFirestore.collection(Paths.church).doc(cmId)
-      .collection(Paths.kingsCord).doc(kcId).get();
+    DocumentSnapshot snap = await _firebaseFirestore
+        .collection(Paths.church)
+        .doc(cmId)
+        .collection(Paths.kingsCord)
+        .doc(kcId)
+        .get();
     return await KingsCord.fromDoc(snap);
   }
 
@@ -69,16 +75,22 @@ class KingsCordRepository extends BaseKingsCordRepository {
         .add(message.ToDoc(senderId: senderId));
   }
 
-  Future<void> onSendGiphyMessage({required String giphyId, required String cmId, required String kcId, required Message msg, required String senderId}) async {
+  Future<void> onSendGiphyMessage(
+      {required String giphyId,
+      required String cmId,
+      required String kcId,
+      required Message msg,
+      required String senderId}) async {
     try {
       log("starting");
       _firebaseFirestore
-      .collection(Paths.church)
-      .doc(cmId)
-      .collection(Paths.kingsCord)
-      .doc(kcId)
-      .collection(Paths.messages)
-      .add(msg.ToDoc(senderId: senderId)).then((value) => log(value.toString()));
+          .collection(Paths.church)
+          .doc(cmId)
+          .collection(Paths.kingsCord)
+          .doc(kcId)
+          .collection(Paths.messages)
+          .add(msg.ToDoc(senderId: senderId))
+          .then((value) => log(value.toString()));
       log("done");
     } catch (e) {
       log("error in kingsCordRepo");
@@ -87,124 +99,125 @@ class KingsCordRepository extends BaseKingsCordRepository {
   }
 
   Future<Map<String, List<KingsCord?>>> futureWaitCord(
-      List<Future<KingsCord?>> futures, String cmId, String uid) async {
-    String mentioned = "mentioned";
-    String kingsCord = "kinscord";
-    String vc = "vc";
-
-    List<KingsCord> mentionedL = [];
-    List<KingsCord> kingsCordL = [];
-    List<KingsCord> vcL = [];
+      List<Future<KingsCord?>> futures,
+      String cmId,
+      String uid,
+      List<String> badges) async {
+    List<KingsCord> pinedRooms = [];
+    List<KingsCord> yourRooms = [];
+    List<KingsCord> otherRooms = [];
 
     try {
       for (Future<KingsCord?> future in futures) {
-      DateTime? tFromMsg;
-      DateTime? localT;
-      bool? readStatus;
-      Message? recentM;
-      Says? recentS;
+        DateTime? tFromMsg;
+        DateTime? localT;
+        bool? readStatus;
+        Message? recentM;
+        Says? recentS;
 
-      await future.then((kc) async {
-        // log("kc: " + kc.toString());
-              if (kc != null) {
-          
-          if (kc.mode == "vc") {
+        await future.then((kc) async {
+          if (kc != null) {
+            log(kc.metaData!.toString());
+            // if (kc.metaData == null)
+            //   kc = kc.copyWith(metaData: {"inCall": 0});
+            // else if (kc.metaData!["inCall"] != null)
+            //   kc;
+            // else
+            //   kc = kc.copyWith(metaData: {"inCall": 0 });
 
-            if (kc.metaData == null) 
-              kc = kc.copyWith(metaData: {"inCall": 0});
-            else if (kc.metaData!["inCall"] != null)
-              kc;
-            else 
-              kc = kc.copyWith(metaData: {"inCall": 0 });
-            
-            vcL.add(kc);
-          } else {
-          QuerySnapshot qs = await FirebaseFirestore.instance
-              .collection(Paths.church)
-              .doc(cmId)
-              .collection(Paths.kingsCord)
-              .doc(kc.id!)
-              .collection(Paths.messages)
-              .orderBy('date', descending: true)
-              .limit(1)
-              .get();
+            // vcL.add(kc);
 
-          if (qs.docs.isNotEmpty) {
-            Message m = await Message.fromDoc(qs.docs[0]);
-            recentM = m;
-            
-            List<String>? savedKcTimeStmap = await UserPreferences.getKcTimeStamps(cmId);
-            DocumentReference userRef = FirebaseFirestore.instance.collection(Paths.users).doc(uid);
-            if (savedKcTimeStmap != null && m.sender != userRef) {
-              tFromMsg = DateTime.fromMicrosecondsSinceEpoch(
-                  m.date.microsecondsSinceEpoch);
-              for (int i = 0; i < savedKcTimeStmap.length; i++) {
-                if (savedKcTimeStmap[i].substring(0, 20) == kc.id!) {
-                  localT = DateTime.tryParse(savedKcTimeStmap[i].substring(21));
-                  if (localT != null) {
-                    readStatus = !localT!.isBefore(tFromMsg!) ? false : true;
-                  }
-                }
-              }
-            } else  readStatus = false;
-            
-          } else {
-            // if empty it could be a says
-            QuerySnapshot qs = await FirebaseFirestore.instance
+            QuerySnapshot msgQs = await FirebaseFirestore.instance
                 .collection(Paths.church)
                 .doc(cmId)
                 .collection(Paths.kingsCord)
                 .doc(kc.id!)
-                .collection(Paths.says)
+                .collection(Paths.messages)
                 .orderBy('date', descending: true)
                 .limit(1)
                 .get();
-            if (qs.docs.isNotEmpty) {
-              Says s = await Says.fromDoc(qs.docs.first);
-              recentS = s;
-              // we do not currently save kc time stamps
+
+            if (msgQs.docs.isNotEmpty) {
+              Message m = await Message.fromDoc(msgQs.docs[0]);
+              recentM = m;
+
+              List<String>? savedKcTimeStmap =
+                  await UserPreferences.getKcTimeStamps(cmId);
+              DocumentReference userRef =
+                  FirebaseFirestore.instance.collection(Paths.users).doc(uid);
+              if (savedKcTimeStmap != null && m.sender != userRef) {
+                tFromMsg = DateTime.fromMicrosecondsSinceEpoch(
+                    m.date.microsecondsSinceEpoch);
+                for (int i = 0; i < savedKcTimeStmap.length; i++) {
+                  if (savedKcTimeStmap[i].substring(0, 20) == kc.id!) {
+                    localT =
+                        DateTime.tryParse(savedKcTimeStmap[i].substring(21));
+                    if (localT != null) {
+                      readStatus = !localT!.isBefore(tFromMsg!) ? false : true;
+                    }
+                  }
+                }
+              } else
+                readStatus = false;
+            } else {
+              // if empty it could be a says
+              QuerySnapshot qs = await FirebaseFirestore.instance
+                  .collection(Paths.church)
+                  .doc(cmId)
+                  .collection(Paths.kingsCord)
+                  .doc(kc.id!)
+                  .collection(Paths.says)
+                  .orderBy('date', descending: true)
+                  .limit(1)
+                  .get();
+              if (qs.docs.isNotEmpty) {
+                Says s = await Says.fromDoc(qs.docs.first);
+                recentS = s;
+                // we do not currently save kc time stamps
+              }
+            }
+
+            // var docRef = await FirebaseFirestore.instance
+            //     .collection(Paths.mention)
+            //     .doc(uid)
+            //     .collection(cmId)
+            //     .doc(kc.id);
+
+            bool addedKc = false;
+            if (kc.metaData != null && kc.metaData!["badges"] != null) {
+              for (var kcBadge in kc.metaData!["badges"]) {
+                if (badges.contains(kcBadge)) {
+                  addedKc = true;
+                  yourRooms.add(kc.copyWith(
+                      readStatus: readStatus,
+                      recentActivity: {"chat": recentM, "says": recentS}));
+                  
+                }
+              }
+              if (!addedKc) {
+                otherRooms.add(kc.copyWith(
+                    readStatus: readStatus,
+                    recentActivity: {"chat": recentM, "says": recentS}));
+              }
+            } else {
+              
+                otherRooms.add(kc.copyWith(
+                    readStatus: readStatus,
+                    recentActivity: {"chat": recentM, "says": recentS}));
+              
             }
           }
-        
-        var docRef = await FirebaseFirestore.instance
-            .collection(Paths.mention)
-            .doc(uid)
-            .collection(cmId)
-            .doc(kc.id);
-
-        DocumentSnapshot docSnap = await docRef.get();
-
-        if (docSnap.exists) {
-          mentionedL.add(kc.copyWith(
-              readStatus: readStatus,
-              recentActivity: {"chat": recentM, "says": recentS}));
-        } else {
-          kingsCordL.add(kc.copyWith(
-              readStatus: readStatus,
-              recentActivity: {"chat": recentM, "says": recentS}));
-        }
-      }}
-              }
-
-      );;
-
-    }
+        });
+        ;
+      }
     } catch (e) {
       log("error in kc repo futureWaitCord: $e");
     }
 
-    // mentionedL.forEach((e) {
-    //   log("ml: " + e.recentActivity.toString() + "/n");
-    // });
-
-    // kingsCordL.forEach((e) {
-    //   log("kl: " + e.recentActivity.toString() + "/n");
-    // });
-    
     Map<String, List<KingsCord>> map = {};
-    map[mentioned] = mentionedL;
-    map[kingsCord] = kingsCordL;
-    map[vc] = vcL;
+    map["pinedRooms"] = pinedRooms;
+    map["yourRooms"] = yourRooms;
+    map["otherRooms"] = otherRooms;
     return map;
   }
 }

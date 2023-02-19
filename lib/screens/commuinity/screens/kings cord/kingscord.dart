@@ -617,7 +617,6 @@ buildBottomTF(KingscordState state, BuildContext context, String mode) {
       key: Key(widget.kingsCord.id!),
       onVisibilityChanged: (vis) {
         if (vis.visibleFraction == 1) {
-          log("Creating........");
           CurrentKingsCordRoomId.updateRoomId(roomId: widget.kingsCord.id!);
         } else {
           CurrentKingsCordRoomId.updateRoomId(roomId: null);

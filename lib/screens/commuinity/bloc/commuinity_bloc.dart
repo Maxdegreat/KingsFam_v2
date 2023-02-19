@@ -60,8 +60,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       yield* _mapCommuinityLoadingCordsToState(event);
     } else if (event is CommunityLoadingPosts) {
       yield* _mapCommunityLoadingPostToState(event);
-    } else if (event is CommunityLoadingEvents) {
-      yield* _mapCommunityLoadingEventsToState(event);
     }
   }
 
@@ -70,17 +68,15 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   Stream<CommuinityState> _mapCommunityInitalEventToState(
       CommunityInitalEvent event) async* {
     emit(state.copyWith(
-        status: CommuintyStatus.loading, kingCords: [], mentionedCords: []));
+      // ADD ROOMS WITH INIT AS EMPTY IF THROWING ERRORS
+        status: CommuintyStatus.loading,));
     try {
       // grab badges
       if (event.commuinity.badges != null &&
           event.commuinity.badges!.isNotEmpty) {
-        log("we have cm badgses");
-        log(event.commuinity.badges.toString());
         emit(state.copyWith(badges: event.commuinity.badges));
       } else {
-        log("the cm badges are: ");
-        log(event.commuinity.badges.toString());
+        emit(state.copyWith(badges: ["member"]));
       }
 
       String uid = _authBloc.state.user!.uid;
@@ -163,19 +159,15 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
               .doc(uid)
               .get();
           if (cmUserInfoDoc.exists && cmUserInfoDoc.data() != null) {
-            String? kfRoleName = cmUserInfoDoc.data()!["kfRole"] ?? null;
-            // if user has a kfRole aka non custom do not attempt to look for rid
-            if (kfRoleName != null) {
-              Map<String, dynamic>? role =
-                  CmActions.getKfRolePermissions(roleName: kfRoleName);
-              emit(state.copyWith(role: role ?? {"member": []}));
-            } else {
-              Map<String, dynamic> role = await CmActions.getRidPermissions(
-                  rid: cmUserInfoDoc.data()!["roleId"],
-                  cmId: event.commuinity.id!);
+            String? kfRole = cmUserInfoDoc.data()!["kfRole"] ?? "member";
+            List<String> badges = cmUserInfoDoc.data()!["badges"] ?? ["member"];
+              Map<String, dynamic> role = {
+                "kfRole" : kfRole,
+                "badges" : badges, 
+              };
 
-              emit(state.copyWith(role: role));
-            }
+              emit(state.copyWith(role: role ));
+
           }
           // when the member is apart of the community
           emitWhenCmIsOpen(isMem, [], [], CommuintyStatus.loaded);
@@ -219,13 +211,15 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
         await KingsCordRepository()
             .futureWaitCord(
-                kcords, event.commuinity.id!, _authBloc.state.user!.uid)
+                kcords, event.commuinity.id!, _authBloc.state.user!.uid, state.role["badges"])
             .then((kingsCords) {
+              log(" your rooms: ${kingsCords["yourRooms"]}");
+              log(" other rooms: ${kingsCords["otherRooms"]}");
           // The updated status in the emit is used in cm screen listener. if status is updated we setstate. thats it.
           emit(state.copyWith(
-              kingCords: kingsCords["kinscord"],
-              vc: kingsCords["vc"],
-              mentionedCords: kingsCords["mentioned"],
+              yourRooms: kingsCords["yourRooms"],
+              otherRooms: kingsCords["otherRooms"],
+              pinedRooms: kingsCords["pinedRooms"],
               status: CommuintyStatus.updated));
           emit(state.copyWith(status: CommuintyStatus.inital));
         });
@@ -239,46 +233,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     }
   }
 
-  Stream<CommuinityState> _mapCommunityLoadingEventsToState(
-      CommunityLoadingEvents event) async* {
-    try {
-      QuerySnapshot eventSnaps = await FirebaseFirestore.instance
-          .collection(Paths.church)
-          .doc(event.cm.id)
-          .collection(Paths.events)
-          .limit(5)
-          .get();
-      List<Event?> initEvents = [];
-      for (var doc in eventSnaps.docs) {
-        Event? e = Event.formDoc(doc);
-        if (e != null) {
-          // make a date time to check if its a past date. if so del event
-          DateTime endTimeForDel = DateTime.fromMicrosecondsSinceEpoch(
-              e.endDate!.microsecondsSinceEpoch);
-          if (DateTime.now().isAfter(endTimeForDel)) {
-            FirebaseFirestore.instance
-                .collection(Paths.church)
-                .doc(event.cm.id)
-                .collection(Paths.events)
-                .doc(e.id!)
-                .delete();
-          } else {
-            initEvents.add(e);
-          }
-        }
-      }
-
-      emit(state.copyWith(events: initEvents));
-
-      // add(CommunityLoadingPosts(cm: event.cm));
-    } catch (e) {
-      log("There was an error in the cmBloc communityLoadingEvents: " +
-          e.toString());
-      emit(state.copyWith(
-          failure: Failure(message: "Ops something went wrong")));
-    }
-  }
-
+ 
   // this is the loaded for the community content. _____________
 
   Stream<CommuinityState> _mapCommunityLoadingPostToState(
@@ -302,7 +257,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       bool isMem, CommuintyStatus status, RequestStatus requestStatus) {
     emit(state.copyWith(
         isMember: isMem,
-        kingCords: [],
         postDisplay: [],
         status: status,
         requestStatus: requestStatus));
@@ -312,7 +266,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       CommuintyStatus status, RequestStatus requestStatus) {
     emit(state.copyWith(
       isMember: isMem,
-      kingCords: kcs,
       postDisplay: posts,
       status: status,
       requestStatus: requestStatus,
@@ -323,7 +276,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       CommuintyStatus status) {
     emit(state.copyWith(
       isMember: isMem,
-      kingCords: kcs,
       postDisplay: posts,
       status: status,
       requestStatus: RequestStatus.none,
@@ -433,10 +385,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     emit(state.copyWith(boosted: 1));
   }
 
-  void setTheme({required String cmId, required String theme}) {
-    _churchRepository.setTheme(cmId: cmId, theme: theme);
-    emit(state.copyWith(themePack: theme));
-  }
+
 
   Future<void> delKc(
       {required KingsCord cord, required Church commuinity}) async {
@@ -480,46 +429,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     return newName;
   }
 
-  Future<void> dispose() async {
-    state.copyWith(
-      currUserr: Userr.empty,
-      mentionedCords: [],
-      collapseCordColumn: false,
-      collapseVvrColumn: false,
-      events: [],
-      isMember: null,
-      postDisplay: [],
-      kingCords: [],
-      status: CommuintyStatus.inital,
-      failure: Failure(),
-      themePack: 'none',
-      boosted: 0,
-      isBaned: false,
-      banedUsers: [],
-      cmId: "",
-      requestStatus: RequestStatus.none,
-    );
-  }
 
-  void onCollapsedCord() {
-    if (state.collapseCordColumn)
-      emit(state.copyWith(collapseCordColumn: false));
-    else
-      emit(state.copyWith(collapseCordColumn: true));
-  }
-
-  void onCollapsedVvrColumn() {
-    if (state.collapseVvrColumn)
-      emit(state.copyWith(collapseVvrColumn: false));
-    else
-      emit(state.copyWith(collapseVvrColumn: true));
-  }
-
-  void onAddEvent({required Event event}) {
-    List<Event?> events = state.events;
-    events.add(event);
-    emit(state.copyWith(events: events));
-  }
 
   void updateCmId(String id, Church cm) {
     emit(state.copyWith(cmId: id));
@@ -528,25 +438,16 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   setReadStatusFalse({required String kcId}) {
     // seting the read status false for a given kc tracked by the KCid.
-    for (KingsCord? kc in state.kingCords) {
-      if (kc != null && kc.id! == kcId) {
-        state.kingCords.remove(kc);
-        state.kingCords.add(kc.copyWith(readStatus: false));
-        emit(state.copyWith(status: CommuintyStatus.updated));
-      }
-    }
+    // for (KingsCord? kc in state.kingCords) {
+    //   if (kc != null && kc.id! == kcId) {
+    //     state.kingCords.remove(kc);
+    //     state.kingCords.add(kc.copyWith(readStatus: false));
+    //     emit(state.copyWith(status: CommuintyStatus.updated));
+    //   }
+    // }
   }
 
-  setMentionedToFalse({required String kcId}) {
-    // also will update the read status
-    for (KingsCord? kc in state.mentionedCords) {
-      if (kc != null && kc.id! == kcId) {
-        state.mentionedCords.remove(kc);
-        state.kingCords.add(kc.copyWith(readStatus: false));
-        emit(state.copyWith(status: CommuintyStatus.updated));
-      }
-    }
-  }
+
 
 
   void addBadge(String badge) {
@@ -558,7 +459,14 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   void deleteBadge(String badge) {
     state.badges.remove(badge);
     emit(state.copyWith(badges: state.badges));
-    log(state.badges.toString());
+  }
+
+  void addUserBadge(String userId, String userBadge, String cmId) {
+    _churchRepository.addMemberBadge(userId, userBadge, cmId);
+  }
+
+  void rmvUserBadge(String userId, String userBadge, String cmId) {
+    _churchRepository.rmvMemberBadge(userId, userBadge, cmId);
   }
 
 }

@@ -198,8 +198,8 @@ class _MainDrawerState extends State<MainDrawer> {
 
                         SizedBox(height: 8),
 
-                        showVoice(context,
-                            context.read<ChatscreenBloc>().state.selectedCh!),
+                        // showVoice(context,
+                        //     context.read<ChatscreenBloc>().state.selectedCh!),
 
                         SizedBox(height: 8),
                       ],
