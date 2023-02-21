@@ -33,50 +33,59 @@ Widget singlePostDisplay({
   required Widget? ad,
 }) {
   List<Widget> items = [];
-  items.insert(0, SizedBox(
-    width: kIsWeb ? MediaQuery.of(context).size.width / 12 : MediaQuery.of(context).size.width / 4,
-    child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: 2),
-              CircleAvatar(
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                radius: 25,
-                child: IconButton(onPressed: () {
-                availableCameras().then((cameras) {
-                  Navigator.of(context).pushNamed(CameraScreen.routeName,
-                      arguments: CameraScreenArgs(cameras: cameras, cmId: cm.id!));
-                });
-                }, icon: Icon(Icons.add)),
-              ),
+  items.insert(
+      0,
+      SizedBox(
+        width: kIsWeb
+            ? MediaQuery.of(context).size.width / 12
+            : MediaQuery.of(context).size.width / 4,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
             SizedBox(height: 2),
-          Flexible(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 5.0),
-                child: Text(
-                 'Share',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.caption,
-                  maxLines: 1,
-                  overflow: TextOverflow.fade,
+            CircleAvatar(
+              backgroundColor: Theme.of(context).colorScheme.secondary,
+              radius: 25,
+              child: IconButton(
+                  onPressed: () {
+                    availableCameras().then((cameras) {
+                      Navigator.of(context).pushNamed(CameraScreen.routeName,
+                          arguments:
+                              CameraScreenArgs(cameras: cameras, cmId: cm.id!));
+                    });
+                  },
+                  icon: Icon(Icons.add)),
+            ),
+            SizedBox(height: 2),
+            Flexible(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 5.0),
+                  child: Text(
+                    'Share',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.caption,
+                    maxLines: 1,
+                    overflow: TextOverflow.fade,
+                  ),
                 ),
               ),
             ),
-          ),
-            ],
-          ),
-  ));
+          ],
+        ),
+      ));
   for (var w in cmBloc.state.postDisplay) {
     items.add(contentPreview(post: w!, context: context, cm: cm));
   }
   return Container(
     height: 80,
-    width: kIsWeb ? MediaQuery.of(context).size.width / 3.2 :MediaQuery.of(context).size.width / 1.2,
+    width: kIsWeb
+        ? MediaQuery.of(context).size.width / 3.2
+        : MediaQuery.of(context).size.width / 1.2,
     child: ListView(
       scrollDirection: Axis.horizontal,
       addAutomaticKeepAlives: true,
-      children: items,   
+      children: items,
     ),
   );
 }
@@ -142,89 +151,103 @@ Widget showRooms(BuildContext context, Church cm) {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                "Rooms", // ----------------------------------------------------------------- Rooms
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.outline,
-                  fontSize: 21,
-                  fontWeight: FontWeight.w800,
-                ),
-                overflow: TextOverflow.fade,
-              ),
-              //collapseOrExpand(context.read<CommuinityBloc>(), 'cord'),
               CmPermHandler.canMakeRoom(context.read<CommuinityBloc>())
                   ? new_kingscord(
                       cmBloc: context.read<CommuinityBloc>(),
                       cm: cm,
                       context: context)
                   : SizedBox.shrink(),
+              SizedBox(width: 7),
+              TextButton(
+                  onPressed: () {},
+                  child: Text(
+                    "Admin Room",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                    ),
+                    overflow: TextOverflow.fade,
+                  )),
             ],
           ),
         ),
         // _showVc(state, context, cm),
-       // your rooms
-        if (state.yourRooms.isNotEmpty)
-          ...[
-            Text("Your Rooms", style: Theme.of(context).textTheme.caption),
-            SizedBox(height: 7),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: state.yourRooms.map((cord) {
-            // log("cord: " + cord!.toString());
-            if (cord != null) {
-              return GestureDetector(
-                  onTap: () {
-                    if (cmPrivacySet.contains(state.status)) {
-                      snackBar(
-                          snackMessage: "You must be a member to view",
-                          context: context);
-                      return null;
-                    }
-                    NavtoKcFromRooms(context, state, cm, cord);
-                  },
-                  onLongPress: () {
-                    onLongPressCord(context, cord, cm);
-                  },
-                  child: showCordAsCmRoom(context, cord, cm));
-            } else {
-              return SizedBox.shrink();
-            }
-          }).toList(),
-            )
-          ],
+        // your rooms
+        if (state.yourRooms.isNotEmpty) ...[
+          Text(
+            "Your Rooms",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.outline,
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+            ),
+            overflow: TextOverflow.fade,
+          ),
+          SizedBox(height: 7),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: state.yourRooms.map((cord) {
+              // log("cord: " + cord!.toString());
+              if (cord != null) {
+                return GestureDetector(
+                    onTap: () {
+                      if (cmPrivacySet.contains(state.status)) {
+                        snackBar(
+                            snackMessage: "You must be a member to view",
+                            context: context);
+                        return null;
+                      }
+                      NavtoKcFromRooms(context, state, cm, cord);
+                    },
+                    onLongPress: () {
+                      onLongPressCord(context, cord, cm);
+                    },
+                    child: showCordAsCmRoom(context, cord, cm));
+              } else {
+                return SizedBox.shrink();
+              }
+            }).toList(),
+          )
+        ],
 
-          // other rooms
-           if (state.otherRooms.isNotEmpty)
-          ...[
-            Text("All Rooms", style: Theme.of(context).textTheme.caption),
-            SizedBox(height: 7),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: state.otherRooms.map((cord) {
-            // log("cord: " + cord!.toString());
-            if (cord != null) {
-              return GestureDetector(
-                  onTap: () {
-                    if (cmPrivacySet.contains(state.status)) {
-                      snackBar(
-                          snackMessage: "You must be a member to view",
-                          context: context);
-                      return null;
-                    }
-                    NavtoKcFromRooms(context, state, cm, cord);
-                  },
-                  onLongPress: () {
-                    onLongPressCord(context, cord, cm);
-                  },
-                  child: showCordAsCmRoom(context, cord, cm));
-            } else {
-              return SizedBox.shrink();
-            }
-          }).toList(),
-            )
-          ]
+        // other rooms
+        if (state.otherRooms.isNotEmpty) ...[
+          Text("All Rooms",
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.outline,
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+              ),
+              overflow: TextOverflow.fade),
+          SizedBox(height: 7),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: state.otherRooms.map((cord) {
+              // log("cord: " + cord!.toString());
+              if (cord != null) {
+                return GestureDetector(
+                    onTap: () {
+                      if (cmPrivacySet.contains(state.status)) {
+                        snackBar(
+                            snackMessage: "You must be a member to view",
+                            context: context);
+                        return null;
+                      }
+                      NavtoKcFromRooms(context, state, cm, cord);
+                    },
+                    onLongPress: () {
+                      onLongPressCord(context, cord, cm);
+                    },
+                    child: showCordAsCmRoom(context, cord, cm));
+              } else {
+                return SizedBox.shrink();
+              }
+            }).toList(),
+          )
+        ]
       ]);
 }
 
@@ -431,7 +454,9 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
     ),
     child: Container(
       // height: MediaQuery.of(context).size.height / 9,
-      width: kIsWeb ?  MediaQuery.of(context).size.width / 6 :  MediaQuery.of(context).size.width / 1, // 1.05,
+      width: kIsWeb
+          ? MediaQuery.of(context).size.width / 6
+          : MediaQuery.of(context).size.width / 1, // 1.05,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         color: Theme.of(context).colorScheme.secondary,
@@ -601,7 +626,6 @@ void onLongPressCord(BuildContext context, KingsCord cord, Church cm) {
         bgColor: Colors.red[400],
         context: context);
   } else {
-    
     if (CmPermHandler.canMakeRoom(context.read<CommuinityBloc>()))
       _delKcDialog(context: context, cord: cord, commuinity: cm);
     else

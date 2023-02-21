@@ -194,11 +194,11 @@ class _CreateRoomState extends State<CreateRoom> {
         // child 2 will be the chat room type
         _createRoomContainerDisplay(context, "chat", "Chat room",
             "A chat room allows for communication via text messages. You can share GIF's, images, videos, text, and react to messages."),
-        _createRoomContainerDisplay(context, "link", "Link Room",
-            "Use this room to share important information with your community. only members with certain roles of your choice can add information and links"),
+        // _createRoomContainerDisplay(context, "link", "Link Room",
+        //     "Use this room to share important information with your community. only members with certain roles of your choice can add information and links"),
 
-        _createRoomContainerDisplay(context, "event", "Event Room",
-            "Use this room to share epic events with your community! everyone or members with certain badges can come and view events "),
+        // _createRoomContainerDisplay(context, "event", "Event Room",
+        //     "Use this room to share epic events with your community! everyone or members with certain badges can come and view events "),
 
         // child 3 will be the says room type
         _createRoomContainerDisplay(context, "says", "Forum room",

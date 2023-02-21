@@ -105,9 +105,12 @@ Widget new_kingscord(
           Navigator.of(context).pushNamed(CreateRoom.routeName,
               arguments: CreateRoomArgs(cmBloc: cmBloc, cm: cm));
         },
-        child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: Icon(Icons.add)));
+        child: Text("+ New Room", style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+            ),
+            overflow: TextOverflow.fade,));
   } else
     return SizedBox.shrink();
 }

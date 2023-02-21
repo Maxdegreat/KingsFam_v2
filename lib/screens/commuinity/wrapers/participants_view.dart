@@ -115,8 +115,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
                               horizontal: 8.0, vertical: 8),
                           child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                primary:
-                                    Theme.of(context).colorScheme.secondary,
+                                backgroundColor: Theme.of(context).colorScheme.secondary,
                                 shape: StadiumBorder(),
                               ),
                               onPressed: () {
