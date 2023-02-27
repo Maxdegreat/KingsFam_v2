@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/roles/role_types.dart';
@@ -43,10 +44,9 @@ class _CreateRoomState extends State<CreateRoom> {
   late TextEditingController _txtController;
   late PageController _pageController;
   String selectedMode = "";
-  String _newBadgeName = "";
-  String rollesAllowed = Roles.Member;
-  Set roles = {"All Members"};
-  Set badges = {"Member"};
+  Set roles = {"Member"};
+  String chatPriority = "Passive Chat";
+
 
   // ---------------- state ------------------
 
@@ -128,20 +128,16 @@ class _CreateRoomState extends State<CreateRoom> {
               ] else ...[
                 TextButton(
                     onPressed: () async {
-                      if (badges.isEmpty || roles.isEmpty) {
-                        snackBar(snackMessage: "Hey, you cant leave the roles and / or badges empty :)", context: context, bgColor: Colors.redAccent);
-                        return ;
-                      }
                       await ChurchRepository().newKingsCord2(
                           currUserId: context.read<AuthBloc>().state.user!.uid,
                           ch: widget.cm,
                           cordName: _txtController.value.text,
                           mode: selectedMode,
                           rolesAllowed: null,
-                          metaData: badges.isNotEmpty || roles.isNotEmpty
+                          metaData: roles.isNotEmpty
                               ? {
-                                  "badges": badges.toList(),
                                   "roles": roles.toList(),
+                                  selectedMode == Mode.chat ? "chatPriority": chatPriority : null
                                 }
                               : null);
                       Navigator.of(context).pop();
@@ -220,14 +216,22 @@ class _CreateRoomState extends State<CreateRoom> {
         SizedBox(
           height: 10,
         ),
-        Text(
-          "Who can contribute to this room?",
-          style: Theme.of(context).textTheme.bodyText1,
-        ),
-        SizedBox(height: 25),
-        rowOfRoles(),
-        SizedBox(height: 50),
-        
+                            // who can write based on role
+                    Text("Below shows the roles of people who are allowed to add to this room (type, share links, images, gifs ect...)", style: Theme.of(context).textTheme.caption),
+                    SizedBox(
+                      height: 7,
+                    ),
+                    rowOfRoles(),
+                                        SizedBox(
+                      height: 7,
+                    ),
+                    // who can write based on role
+                    Text("Below shows the how notifications will be sent out for this chat room.)", style: Theme.of(context).textTheme.caption),
+                    SizedBox(
+                      height: 7,
+                    ),
+                    rowOfPriority(),
+
       ],
     );
   }
@@ -235,33 +239,55 @@ class _CreateRoomState extends State<CreateRoom> {
   Widget rowOfRoles() {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
-      child: Column(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          textForRR("All Members"),
-          textForRR("Mods, Admins and Leads"),
-          textForRR("Lead and Admins"),
+          textForRR("Member", false),
+          textForRR("Mod, Admin, Lead", false),
+          textForRR("Admin, Lead", false),
         ],
       ),
     );
   }
 
-  textForRR(String text) => Padding(
+  Widget rowOfPriority() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          textForRR("Passive Chat", true),
+          textForRR("Notify For All Messages", true),
+        ],
+      ),
+    );
+  }
+
+  textForRR(String text, bool? isForChatPriority) => Padding(
         padding: const EdgeInsets.all(8.0),
         child: GestureDetector(
           onTap: () {
-            if (roles.isNotEmpty) {
-              roles.clear();
-              roles.add(text);
+            if (isForChatPriority == null || !isForChatPriority) {
+              if (roles.isNotEmpty) {
+                roles.clear();
+                roles.add(text);
+              } else {
+                roles.add(text);
+              }
             } else {
-              roles.add(text);
+              chatPriority = text;
             }
+            
+
+
+
             setState(() {});
           },
           child: Container(
               decoration: BoxDecoration(
-                  border: roles.contains(text)
+                  border: roles.contains(text) || chatPriority == text
                       ? Border.all(color: Colors.greenAccent, width: .7)
                       : null,
                   color: Theme.of(context).colorScheme.secondary,
@@ -275,10 +301,6 @@ class _CreateRoomState extends State<CreateRoom> {
               )),
         ),
       );
-
-  
-
- 
 
   Widget _createRoomContainerDisplay(
       BuildContext context, String selectedType, String type, String disction) {

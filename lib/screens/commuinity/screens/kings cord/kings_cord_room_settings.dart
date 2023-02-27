@@ -40,7 +40,7 @@ class KingsCordRoomSettings extends StatefulWidget {
 class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
   String? kcName;
   String roleWithWritePermissions = "Member";
-
+  late String chatPriority;
   Set roles = {};
 
   @override
@@ -48,6 +48,14 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
     kcName = widget.kc.cordName;
     if (widget.kc.metaData != null && widget.kc.metaData?["roles"] != null) {
       roles = widget.kc.metaData?["roles"].toSet();
+    }
+
+    if (widget.kc.mode == Mode.chat) {
+      if (widget.kc.metaData?["chatPriority"] != null) {
+        chatPriority = widget.kc.metaData?["chatPriority"];
+      } else {
+        chatPriority = "Passive Chat";
+      }
     }
     super.initState();
   }
@@ -103,6 +111,15 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
                       height: 7,
                     ),
                     _rowOfRoles(),
+                                        SizedBox(
+                      height: 7,
+                    ),
+                    // who can write based on role
+                    Text("Below shows the how notifications will be sent out for this chat room.)", style: Theme.of(context).textTheme.caption),
+                    SizedBox(
+                      height: 7,
+                    ),
+                    _rowOfPriority(),
                     
                   ],
                 ),
@@ -128,6 +145,10 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
             if (roles.isNotEmpty) {
               widget.kc.metaData?["roles"] = roles.toList();
             }
+
+            if (widget.kc.mode == Mode.chat) {
+              widget.kc.metaData?["chatPriority"] = chatPriority;
+            } 
 
               
             // direct api call
@@ -161,36 +182,58 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
     );
   }
 
-   Widget _rowOfRoles() {
+  Widget _rowOfRoles() {
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+      scrollDirection: Axis.vertical,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _textForRR("All Members"),
-          _textForRR("Mods, Admins and Leads"),
-          _textForRR("Lead and Admins"),
+          textForRR("Member", false),
+          textForRR("Mod, Admin, Lead", false),
+          textForRR("Admin, Lead", false),
         ],
       ),
     );
   }
 
-  _textForRR(String text) => Padding(
+    Widget _rowOfPriority() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          textForRR("Passive Chat", true),
+          textForRR("Notify For All Messages", true),
+        ],
+      ),
+    );
+  }
+
+ textForRR(String text, bool? isForChatPriority) => Padding(
         padding: const EdgeInsets.all(8.0),
         child: GestureDetector(
           onTap: () {
-            if (roles.isNotEmpty) {
-              roles.clear();
-              roles.add(text);
+            if (isForChatPriority == null || !isForChatPriority) {
+              if (roles.isNotEmpty) {
+                roles.clear();
+                roles.add(text);
+              } else {
+                roles.add(text);
+              }
             } else {
-              roles.add(text);
+              chatPriority = text;
             }
+            
+
+
+
             setState(() {});
           },
           child: Container(
               decoration: BoxDecoration(
-                  border: roles.contains(text)
+                  border: roles.contains(text) || chatPriority == text
                       ? Border.all(color: Colors.greenAccent, width: .7)
                       : null,
                   color: Theme.of(context).colorScheme.secondary,

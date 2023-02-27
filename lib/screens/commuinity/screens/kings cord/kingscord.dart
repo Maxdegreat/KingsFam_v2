@@ -611,7 +611,14 @@ buildBottomTF(KingscordState state, BuildContext context, String mode) {
       && widget.kingsCord.metaData!["writePermissions"] == widget.role["roleName"] 
       || widget.role["roleName"] == "Lead"
       );
-      bool flagTf = (widget.kingsCord.metaData != null && widget.kingsCord.metaData!["roles"] != null && widget.kingsCord.metaData!["roles"].contains(context.read<CommuinityBloc>().state.role["kfRole"]));
+      bool flagTf = true;
+      if (widget.kingsCord.metaData != null && widget.kingsCord.metaData!["roles"] != null) {
+        
+        if (!(widget.kingsCord.metaData!["roles"].contains(context.read<CommuinityBloc>().state.role["kfRole"])) && !widget.kingsCord.metaData!["roles"].contains("Member")) {
+          flagTf = false;
+        }
+
+      } 
       if (mode == Mode.welcome)
         canSeeTf = false;
     final ctx = context.read<KingscordCubit>();
