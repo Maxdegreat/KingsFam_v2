@@ -140,37 +140,20 @@ Widget PostCircle(Post p, context) {
 }
 
 Widget showRooms(BuildContext context, Church cm) {
+
   CommuinityState state = context.read<CommuinityBloc>().state;
   return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CmPermHandler.canMakeRoom(context.read<CommuinityBloc>())
-                  ? new_kingscord(
-                      cmBloc: context.read<CommuinityBloc>(),
-                      cm: cm,
-                      context: context)
-                  : SizedBox.shrink(),
-              SizedBox(width: 7),
-              TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    "Admin Room",
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w800,
-                    ),
-                    overflow: TextOverflow.fade,
-                  )),
-            ],
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: CmPermHandler.canMakeRoom(context.read<CommuinityBloc>())
+              ? new_kingscord(
+                  cmBloc: context.read<CommuinityBloc>(),
+                  cm: cm,
+                  context: context)
+              : SizedBox.shrink(),
         ),
         // _showVc(state, context, cm),
         // your rooms

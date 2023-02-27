@@ -227,51 +227,15 @@ class _CreateRoomState extends State<CreateRoom> {
         SizedBox(height: 25),
         rowOfRoles(),
         SizedBox(height: 50),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              "Who can view to this room?",
-              style: Theme.of(context).textTheme.bodyText1,
-            ),
-            IconButton(
-                onPressed: () {
-                  _showModalBottomSheet();
-                },
-                icon: Icon(Icons.add))
-          ],
-        ),
-        Text(
-          "Pick a badge. Members with this badge can view the room. by default all members have a member badge",
-          style: Theme.of(context).textTheme.caption,
-        ),
-
-        // show lisstview of badges, select the ones that want
-        Expanded(
-          child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            itemCount: context.read<CommuinityBloc>().state.badges.length,
-            itemBuilder: (context, index) {
-              return textForBadge(
-                  context.read<CommuinityBloc>().state.badges[index]);
-            },
-          ),
-        )
-
-        // after all that jazz go to cmbloc and update querying to match.
-
-        // then make screen where you can give user badges
-
-        // yup... that seems like its it
+        
       ],
     );
   }
 
   Widget rowOfRoles() {
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
+      scrollDirection: Axis.vertical,
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -312,96 +276,9 @@ class _CreateRoomState extends State<CreateRoom> {
         ),
       );
 
-  textForBadge(String text) => Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GestureDetector(
-          onTap: () {
-            if (badges.contains(text)) {
-              badges.remove(text);
-            } else {
-              badges.add(text);
-            }
-            setState(() {});
-          },
-          child: Container(
-              decoration: BoxDecoration(
-                  border: badges.contains(text)
-                      ? Border.all(color: Colors.greenAccent, width: .7)
-                      : null,
-                  color: Theme.of(context).colorScheme.secondary,
-                  borderRadius: BorderRadius.circular(7)),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      text,
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                    IconButton(
-                        onPressed: () {
-                          log("pressed del");
-                          ChurchRepository().deleteBadge(widget.cm.id!, text);
-                          context.read<CommuinityBloc>().deleteBadge(text);
-                          _newBadgeName = "";
-                          setState(() {});
-                        },
-                        icon: Icon(Icons.delete))
-                  ],
-                ),
-              )),
-        ),
-      );
+  
 
-  void _showModalBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          padding: EdgeInsets.all(20.0),
-          child: Column(
-            children: <Widget>[
-              Text(
-                "Name your new badge",
-                style: TextStyle(fontSize: 20.0),
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
-              TextField(
-                onChanged: (String value) {
-                  setState(() {
-                    _newBadgeName = value;
-                  });
-                },
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  if (_newBadgeName.isNotEmpty) {
-                    ChurchRepository()
-                        .createBadge(widget.cm.id!, _newBadgeName);
-                    context.read<CommuinityBloc>().addBadge(_newBadgeName);
-                    _newBadgeName = "";
-                    setState(() {});
-                  } else
-                    snackBar(
-                        snackMessage: "Please add a badge name and try again",
-                        context: context);
-                  Navigator.pop(context);
-                },
-                child: Text("Done"),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+ 
 
   Widget _createRoomContainerDisplay(
       BuildContext context, String selectedType, String type, String disction) {

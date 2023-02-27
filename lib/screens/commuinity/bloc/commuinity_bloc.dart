@@ -71,13 +71,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       // ADD ROOMS WITH INIT AS EMPTY IF THROWING ERRORS
         status: CommuintyStatus.loading,));
     try {
-      // grab badges
-      if (event.commuinity.badges != null &&
-          event.commuinity.badges!.isNotEmpty) {
-        emit(state.copyWith(badges: event.commuinity.badges));
-      } else {
-        emit(state.copyWith(badges: ["member"]));
-      }
+      
 
       String uid = _authBloc.state.user!.uid;
       Userr currUserr = await _userrRepository.getUserrWithId(userrId: uid);
@@ -160,10 +154,9 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
               .get();
           if (cmUserInfoDoc.exists && cmUserInfoDoc.data() != null) {
             String? kfRole = cmUserInfoDoc.data()!["kfRole"] ?? "member";
-            List<String> badges = cmUserInfoDoc.data()!["badges"] ?? ["member"];
+          
               Map<String, dynamic> role = {
-                "kfRole" : kfRole,
-                "badges" : badges, 
+                "kfRole" : kfRole, 
               };
 
               emit(state.copyWith(role: role ));
@@ -211,15 +204,13 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
         await KingsCordRepository()
             .futureWaitCord(
-                kcords, event.commuinity.id!, _authBloc.state.user!.uid, state.role["badges"])
+                kcords, event.commuinity.id!, _authBloc.state.user!.uid)
             .then((kingsCords) {
-              log(" your rooms: ${kingsCords["yourRooms"]}");
-              log(" other rooms: ${kingsCords["otherRooms"]}");
+
+              log(" other rooms: ${kingsCords["kc"]}");
           // The updated status in the emit is used in cm screen listener. if status is updated we setstate. thats it.
           emit(state.copyWith(
-              yourRooms: kingsCords["yourRooms"],
-              otherRooms: kingsCords["otherRooms"],
-              pinedRooms: kingsCords["pinedRooms"],
+              yourRooms: kingsCords["kc"],
               status: CommuintyStatus.updated));
           emit(state.copyWith(status: CommuintyStatus.inital));
         });
@@ -461,12 +452,6 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     emit(state.copyWith(badges: state.badges));
   }
 
-  void addUserBadge(String userId, String userBadge, String cmId) {
-    _churchRepository.addMemberBadge(userId, userBadge, cmId);
-  }
 
-  void rmvUserBadge(String userId, String userBadge, String cmId) {
-    _churchRepository.rmvMemberBadge(userId, userBadge, cmId);
-  }
 
 }

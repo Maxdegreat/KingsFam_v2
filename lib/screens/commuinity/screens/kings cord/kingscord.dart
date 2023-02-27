@@ -19,6 +19,7 @@ import 'package:kingsfam/helpers/vid_helper.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
+import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kings_cord_room_settings.dart';
@@ -343,7 +344,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         ),
         actions: [
 
-          if (widget.role["roleName"] == "Admin" || widget.role["roleName"] == "Lead") ...[
+          if (widget.role["kfRole"] == "Admin" || widget.role["kfRole"] == "Lead") ...[
             IconButton(
                 onPressed: () {
                   Navigator.of(context).pushNamed(
@@ -610,6 +611,7 @@ buildBottomTF(KingscordState state, BuildContext context, String mode) {
       && widget.kingsCord.metaData!["writePermissions"] == widget.role["roleName"] 
       || widget.role["roleName"] == "Lead"
       );
+      bool flagTf = (widget.kingsCord.metaData != null && widget.kingsCord.metaData!["roles"] != null && widget.kingsCord.metaData!["roles"].contains(context.read<CommuinityBloc>().state.role["kfRole"]));
       if (mode == Mode.welcome)
         canSeeTf = false;
     final ctx = context.read<KingscordCubit>();
@@ -649,7 +651,7 @@ buildBottomTF(KingscordState state, BuildContext context, String mode) {
                         padding: const EdgeInsets.all(8.0),
                         child: Center(child: Text("Welcomes", style: Theme.of(context).textTheme.caption)),
                       )),
-                  if (canSeeTf || Mode.chat == mode && widget.userInfo["isMember"])
+                  if (canSeeTf || Mode.chat == mode && widget.userInfo["isMember"] && flagTf)
                   Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,

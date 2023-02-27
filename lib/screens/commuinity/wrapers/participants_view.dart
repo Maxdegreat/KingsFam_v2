@@ -455,65 +455,7 @@ class _ParticipantsViewState extends State<ParticipantsView>
                     ],
                   ),
                 ),
-                // child 1 --------------------------------------------------
 
-                // child 2 -----------------------------------------------------
-                // Padding(
-                //   padding: const EdgeInsets.all(8.0),
-                //   child: Column(
-                //     mainAxisAlignment: MainAxisAlignment.start,
-                //     crossAxisAlignment: CrossAxisAlignment.start,
-                //     children: [
-                //       // ElevatedButton(onPressed: () {
-
-                //       //   Navigator.of(context).pushNamed(CreateRole.routeName, arguments: CreateRoleArgs(cmId: widget.cm.id!));
-                //       // }, child: Text("Create role", style: Theme.of(context).textTheme.bodyText1,)),
-
-                //       SizedBox(height: 7),
-                //       Text("roles - " + roles.length.toString(),
-                //           style: Theme.of(context).textTheme.caption),
-                //       SizedBox(height: 10),
-                //       Padding(
-                //         padding: const EdgeInsets.symmetric(vertical: 5),
-                //         child: Container(
-                //           height: MediaQuery.of(context).size.height / 1.8,
-                //           child: ListView.builder(
-                //               itemCount: roles.length,
-                //               itemBuilder: (context, index) {
-                //                 Role role = roles[index];
-                //                 return Card(
-                //                   child: Padding(
-                //                     padding: const EdgeInsets.all(2.0),
-                //                     child: Column(
-                //                       mainAxisAlignment:
-                //                           MainAxisAlignment.start,
-                //                       crossAxisAlignment:
-                //                           CrossAxisAlignment.start,
-                //                       children: [
-                //                         ListTile(
-                //                           leading: Text(role.roleName,
-                //                               style: Theme.of(context)
-                //                                   .textTheme
-                //                                   .caption),
-                //                           onTap: () {
-                //                             // have a new screen that shows the role permissions
-                //                             Navigator.of(context).pushNamed(
-                //                                 RolePermissions.routeName,
-                //                                 arguments: RolePermissionsArgs(
-                //                                     role: role,
-                //                                     cmId: widget.cm.id!));
-                //                           },
-                //                         ),
-                //                       ],
-                //                     ),
-                //                   ),
-                //                 );
-                //               }),
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // )
               ]),
             ),
           ],
@@ -734,48 +676,13 @@ class _ParticipantsViewState extends State<ParticipantsView>
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 16.0),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: widget.cm.badges != null
-                          ? widget.cm.badges!.length
-                          : 0,
-                      itemBuilder: (BuildContext context, int index) {
-                        String badge = widget.cm.badges![index];
-                        return _badgeSelect(badge, user[2], user[0].id);
-                      },
-                    ),
-                  ),
+
                 ],
               ),
             ),
           ],
         );
       },
-    );
-  }
-
-  Widget _badgeSelect(String badge, List<String> userBadges, String userId) {
-    return GestureDetector(
-      onTap: () {
-        if (userBadges.contains(badge)) {
-          userBadges.remove(badge);
-          widget.cmBloc.rmvUserBadge(userId, badge, widget.cm.id!);
-        } else {
-          userBadges.add(badge);
-          widget.cmBloc.addUserBadge(userId, badge, widget.cm.id!);
-        }
-        setState(() {});
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 8.0),
-        decoration: BoxDecoration(
-          border: Border.all(color: userBadges.contains(badge) ? Colors.greenAccent : Colors.transparent)
-        ),
-        child: Text(
-          badge,
-          style: Theme.of(context).textTheme.caption,
-        ),
-      ),
     );
   }
 }

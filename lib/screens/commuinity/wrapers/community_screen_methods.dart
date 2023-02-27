@@ -173,7 +173,7 @@ dynamic showCmOptions(
     required BuildContext context}) {
   return showModalBottomSheet(
       context: context,
-      builder: (context) {
+      builder: (_) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,14 +191,8 @@ dynamic showCmOptions(
               onTap: () => Navigator.of(context).pushNamed(CommunityHome.routeName,
                   arguments: CommunityHomeArgs(cm: cm, cmB: cmBloc)),
             ),
-            if (context
-                    .read<CommuinityBloc>()
-                    .state
-                    .role["kfRoles"] == "Lead" ||
-                context
-                    .read<CommuinityBloc>()
-                    .state
-                    .role["kfRole"] == "Admin") ... [
+            if (cmBloc.state.role["kfRole"] == "Lead" ||
+                cmBloc.state.role["kfRole"] == "Admin") ... [
 
               ListTile(
                   title: Text("Update the Community name",

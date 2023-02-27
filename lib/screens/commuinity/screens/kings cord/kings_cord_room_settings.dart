@@ -41,18 +41,14 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
   String? kcName;
   String roleWithWritePermissions = "Member";
 
-  bool hasAddedMemberBadge = false;
-
   Set roles = {};
-  Set badges = {};
 
   @override
   void initState() {
     kcName = widget.kc.cordName;
-    roles = widget.kc.metaData?["roles"].toSet();
-    badges = widget.kc.metaData?["badges"].toSet();
-    log("badges: $badges");
-
+    if (widget.kc.metaData != null && widget.kc.metaData?["roles"] != null) {
+      roles = widget.kc.metaData?["roles"].toSet();
+    }
     super.initState();
   }
 
@@ -102,30 +98,12 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
                       height: 7,
                     ),
                     // who can write based on role
-                    Text("Below shows the roles of people who are allowed to add to this room (type, share links, images gifs ect...)", style: Theme.of(context).textTheme.caption),
+                    Text("Below shows the roles of people who are allowed to add to this room (type, share links, images, gifs ect...)", style: Theme.of(context).textTheme.caption),
                     SizedBox(
                       height: 7,
                     ),
                     _rowOfRoles(),
-                     Text("Below shows the badges for this room. If someone has a badge similir to this room then they will be able to see this room. (Admin and Leads can see all rooms)", style: Theme.of(context).textTheme.caption),
-                    SizedBox(
-                      height: 7,
-                    ),
-                            Expanded(
-          child: widget.kc.metaData!["badges"]!=null?ListView.builder(
-            scrollDirection: Axis.vertical,
-            itemCount: widget.cm.badges?.length,
-            itemBuilder: (context, index) {
-              return _textForBadge(
-                  widget.cm.badges![index]);
-            },
-          ):SizedBox.shrink(),
-        ),
-
                     
-                    SizedBox(
-                      height: 7,
-                    ),
                   ],
                 ),
               ),
@@ -150,9 +128,7 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
             if (roles.isNotEmpty) {
               widget.kc.metaData?["roles"] = roles.toList();
             }
-            if (badges.isNotEmpty) {
-              widget.kc.metaData?["badges"] = roles.toList();
-            }
+
               
             // direct api call
             FirebaseFirestore.instance.collection(Paths.church).doc(widget.cm.id).collection(Paths.kingsCord).doc(widget.kc.id).update({
@@ -229,44 +205,5 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
         ),
       );
 
-  _textForBadge(String text) => Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GestureDetector(
-          onTap: () {
-            if (badges.contains(text)) {
-              badges.remove(text);
-            } else {
-              badges.add(text);
-            }
-            setState(() {});
-          },
-          child: Container(
-              decoration: BoxDecoration(
-                  border: badges.contains(text)
-                      ? Border.all(color: Colors.greenAccent, width: .7)
-                      : null,
-                  color: Theme.of(context).colorScheme.secondary,
-                  borderRadius: BorderRadius.circular(7)),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      text,
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-
-                    // IconButton(onPressed: () {
-                    //   log("pressed del");
-                    // ChurchRepository().deleteBadge(widget.cm.id!, text);
-                    // // context.read<CommuinityBloc>().deleteBadge(text);
-                    // setState(() {});
-                    // }, icon: Icon(Icons.delete))
-                  ],
-                ),
-              )),
-        ),
-      );
+ 
 }

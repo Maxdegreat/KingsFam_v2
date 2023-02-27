@@ -102,10 +102,8 @@ class KingsCordRepository extends BaseKingsCordRepository {
       List<Future<KingsCord?>> futures,
       String cmId,
       String uid,
-      List<String> badges) async {
-    List<KingsCord> pinedRooms = [];
-    List<KingsCord> yourRooms = [];
-    List<KingsCord> otherRooms = [];
+  ) async {
+    List<KingsCord> kc_ = [];
 
     try {
       for (Future<KingsCord?> future in futures) {
@@ -173,7 +171,6 @@ class KingsCordRepository extends BaseKingsCordRepository {
               if (qs.docs.isNotEmpty) {
                 Says s = await Says.fromDoc(qs.docs.first);
                 recentS = s;
-                // we do not currently save kc time stamps
               }
             }
 
@@ -183,30 +180,14 @@ class KingsCordRepository extends BaseKingsCordRepository {
             //     .collection(cmId)
             //     .doc(kc.id);
 
-            bool addedKc = false;
-            if (kc.metaData != null && kc.metaData!["badges"] != null) {
-              for (var kcBadge in kc.metaData!["badges"]) {
-                if (badges.contains(kcBadge)) {
-                  addedKc = true;
-                  yourRooms.add(kc.copyWith(
+            if (kc.metaData != null) {
+              
+                
+                  kc_.add(kc.copyWith(
                       readStatus: readStatus,
-                      recentActivity: {"chat": recentM, "says": recentS}));
-                  
-                }
-              }
-              if (!addedKc) {
-                otherRooms.add(kc.copyWith(
-                    readStatus: readStatus,
-                    recentActivity: {"chat": recentM, "says": recentS}));
-              }
-            } else {
+                      recentActivity: {"chat": recentM, "says": recentS}));   
               
-                otherRooms.add(kc.copyWith(
-                    readStatus: readStatus,
-                    recentActivity: {"chat": recentM, "says": recentS}));
-              
-            }
-          }
+            }}
         });
         ;
       }
@@ -215,9 +196,7 @@ class KingsCordRepository extends BaseKingsCordRepository {
     }
 
     Map<String, List<KingsCord>> map = {};
-    map["pinedRooms"] = pinedRooms;
-    map["yourRooms"] = yourRooms;
-    map["otherRooms"] = otherRooms;
+    map["kc"] = kc_;
     return map;
   }
 }
