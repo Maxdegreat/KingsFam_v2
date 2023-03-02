@@ -79,12 +79,12 @@ class KingsCordScreen extends StatefulWidget {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
         builder: (context) => KingsCordScreen(
-          usr: args.usr,
-          role: args.role,
-          userInfo: args.userInfo,
-          commuinity: args.commuinity,
-          kingsCord: args.kingsCord,
-        ));
+              usr: args.usr,
+              role: args.role,
+              userInfo: args.userInfo,
+              commuinity: args.commuinity,
+              kingsCord: args.kingsCord,
+            ));
   }
 
   @override
@@ -106,9 +106,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   bool showMediaPopUp = false;
 
   List<String> UrlBucket = [];
-
-  Map<String, dynamic> metadata = {};
-  
 
   @override
   void dispose() {
@@ -172,7 +169,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
 //===========================================================================
 // building the bottom sheet
-  
 
   // for the mention user =================================================
   Widget _mentionUserContainer({required String? username}) {
@@ -248,7 +244,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     return Padding(
       padding: const EdgeInsets.all(7.0),
       child: Container(
-        
         width: double.infinity,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -256,16 +251,24 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text("Must be a member to join chat", style: Theme.of(context).textTheme.caption,),
+              Text(
+                "Must be a member to join chat",
+                style: Theme.of(context).textTheme.caption,
+              ),
               Container(
-                width: MediaQuery.of(context).size.width/2,
+                width: MediaQuery.of(context).size.width / 2,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pushNamed(CommunityHome.routeName,
-          arguments: CommunityHomeArgs(cm: widget.commuinity, cmB: null));
-                  }, 
-                  child: Text("Join", style: Theme.of(context).textTheme.bodyText1,),
-                  style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
+                        arguments: CommunityHomeArgs(
+                            cm: widget.commuinity, cmB: null));
+                  },
+                  child: Text(
+                    "Join",
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary),
                 ),
               )
             ],
@@ -274,7 +277,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.onPrimary,
           borderRadius: BorderRadius.circular(7),
-        ),     
+        ),
       ),
     );
   }
@@ -283,9 +286,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 //============================================================================
   @override
   void initState() {
-    if (widget.kingsCord.mode == Mode.announcement) {
-      metadata[Mode.announcement] = 1;
-    }
     scrollCtrl = ScrollController();
     scrollCtrl!.addListener(() {
       if (scrollCtrl!.position.maxScrollExtent == scrollCtrl!.position.pixels) {
@@ -310,27 +310,31 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       CurrentKingsCordRoomId.updateRoomId(roomId: null);
       log("visible bc of things... sikeee");
     } else {
-      if (VisibilityInfo(key: ObjectKey(widget.kingsCord.id)).visibleFraction == 1) {
+      if (VisibilityInfo(key: ObjectKey(widget.kingsCord.id)).visibleFraction ==
+          1) {
         log("visible bc of things");
         CurrentKingsCordRoomId.updateRoomId(roomId: widget.kingsCord.id);
       }
     }
     return Scaffold(
       appBar: AppBar(
-        
         centerTitle: false,
         toolbarHeight: 50,
         title: GestureDetector(
           onTap: () {
-            if (!kIsWeb)
-             scaffoldKey.currentState!.openDrawer();
+            if (!kIsWeb) scaffoldKey.currentState!.openDrawer();
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
-              ContainerWithURLImg(imgUrl: context.read<ChatscreenBloc>().state.selectedCh!.imageUrl, height: 35, width: 35,),
+              ContainerWithURLImg(
+                imgUrl:
+                    context.read<ChatscreenBloc>().state.selectedCh!.imageUrl,
+                height: 35,
+                width: 35,
+              ),
               SizedBox(width: 8),
               Text(
                 widget.kingsCord.cordName.length > 15
@@ -343,20 +347,18 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           ),
         ),
         actions: [
-
-          if (widget.role["kfRole"] == "Admin" || widget.role["kfRole"] == "Lead") ...[
+          if (widget.role["kfRole"] == "Admin" ||
+              widget.role["kfRole"] == "Lead") ...[
             IconButton(
                 onPressed: () {
                   Navigator.of(context).pushNamed(
                       KingsCordRoomSettings.routeName,
                       arguments: KingsCordRoomSettingsArgs(
-                          cm: widget.commuinity, kc: widget.kingsCord
-                        ));
+                          cm: widget.commuinity, kc: widget.kingsCord));
                 },
-                icon: Icon(Icons.more_horiz, color: Theme.of(context).iconTheme.color)),
+                icon: Icon(Icons.more_horiz,
+                    color: Theme.of(context).iconTheme.color)),
           ]
-
-          
         ],
       ),
 
@@ -379,105 +381,79 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 );
           }
 
+          return GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                state.status == KingsCordStatus.pagMsgs ||
+                        state.status == KingsCordStatus.getInitmsgs
+                    ? LinearProgressIndicator(
+                        color: Colors.amber[200],
+                        backgroundColor: Colors.white,
+                      )
+                    : SizedBox.shrink(),
+                // bulid message stream
+                _buildMessageStream(
+                    commuinity: widget.commuinity,
+                    kingsCord: widget.kingsCord,
+                    msgs: state.msgs),
+                //divider of a height 1
+                Divider(height: 1.0),
 
-          return Stack(
-            children: [
-              Positioned.fill(
-                  child: Container(
-                height: MediaQuery.of(context).size.height,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.centerRight,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                       // Theme.of(context).scaffoldBackgroundColor,
-                        Theme.of(context).colorScheme.secondary,
-                        Theme.of(context).colorScheme.onPrimary
-                      ]),
-                ),
-              )),
-              GestureDetector(
-                onTap: () => FocusScope.of(context).unfocus(),
-                child: Stack(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        state.status == KingsCordStatus.pagMsgs ||
-                                state.status == KingsCordStatus.getInitmsgs
-                            ? LinearProgressIndicator(
-                                color: Colors.amber[200],
-                                backgroundColor: Colors.white,
-                              )
-                            : SizedBox.shrink(),
-                        // bulid message stream
-                        _buildMessageStream(
-                            commuinity: widget.commuinity,
-                            kingsCord: widget.kingsCord,
-                            msgs: state.msgs),
-                        //divider of a height 1
-                        Divider(height: 1.0),
+                state.replyMessage != null && state.replyMessage!.isNotEmpty
+                    ? _showReplying(state)
+                    : SizedBox.shrink(),
 
-                        state.replyMessage != null &&
-                                state.replyMessage!.isNotEmpty
-                            ? _showReplying(state)
-                            : SizedBox.shrink(),
+                // this shows all the users that you have mentioned so far in the chat.
+                state.mentions.length > 0
+                    ? _showMentioned(state)
+                    : SizedBox.shrink(),
 
-                        // this shows all the users that you have mentioned so far in the chat.
-                        state.mentions.length > 0
-                            ? _showMentioned(state)
-                            : SizedBox.shrink(),
+                // this shows all possible mentions
+                _mentionUserContainer(username: _mentionedController),
 
-                        // this shows all possible mentions
-                        _mentionUserContainer(username: _mentionedController),
+                // this is can only ocour if the user is apart of the commuinity. in this case they can share
+                // content
+                state.fileShareStatus != FileShareStatus.inital
+                    ? Container(
+                        height: 90,
+                        width: double.infinity,
+                        color: Colors.transparent,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Sharing Files Fam, Sit Tight...",
+                              overflow: TextOverflow.fade,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
+                              children: state.filesToBePosted
+                                  .map((file) => ProfileImage(
+                                        radius: 27,
+                                        pfpUrl: '',
+                                        pfpImage: file,
+                                      ))
+                                  .toList(),
+                            ),
+                          ],
+                        ),
+                      )
+                    : SizedBox.shrink(),
 
-                        // this is can only ocour if the user is apart of the commuinity. in this case they can share
-                        // content
-                        state.fileShareStatus != FileShareStatus.inital
-                            ? Container(
-                                height: 90,
-                                width: double.infinity,
-                                color: Colors.transparent,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Sharing Files Fam, Sit Tight...",
-                                      overflow: TextOverflow.fade,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: state.filesToBePosted
-                                          .map((file) => ProfileImage(
-                                                radius: 27,
-                                                pfpUrl: '',
-                                                pfpImage: file,
-                                              ))
-                                          .toList(),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : SizedBox.shrink(),
+                // use the state.isMem to know if the user is a part of cm.
+                // this values will have to be updated soon tho. because we want
+                // dynamic roles to be sourced
+                widget.userInfo["isMember"]
+                    ? buildBottomTF(state, context, widget.kingsCord.mode)
+                    : _permissionDenied(
+                        messasge: "Join community to chat here"),
 
-                        // use the state.isMem to know if the user is a part of cm.
-                        // this values will have to be updated soon tho. because we want
-                        // dynamic roles to be sourced
-                        widget.userInfo["isMember"]
-                            ? buildBottomTF(state, context, widget.kingsCord.mode)
-                            : _permissionDenied(
-                                messasge: "Join community to chat here"),
-
-                        showMediaPopUp ? showMedias() : SizedBox.shrink()
-                      ],
-                    ),
-                  ],
-                ),
-              )
-            ],
+                showMediaPopUp ? showMedias() : SizedBox.shrink()
+              ],
+            ),
           );
         },
       ),
@@ -603,25 +579,22 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     );
   }
 
+  buildBottomTF(KingscordState state, BuildContext context, String mode) {
+    bool canSeeTf = (widget.role["roleName"] == "Lead");
+    bool flagTf = true;
+    List<String> allowed = [];
+    if (widget.kingsCord.metaData != null &&
+        widget.kingsCord.metaData!["roles"] != null) {
+      List<dynamic> rolesData = widget.kingsCord.metaData!["roles"];
+      List<String> roles_ = rolesData.map((role) => role.toString()).toList();
 
-  
-buildBottomTF(KingscordState state, BuildContext context, String mode) {
-    bool canSeeTf = (
-      widget.kingsCord.metaData!.containsKey("writePermissions") 
-      && widget.kingsCord.metaData!["writePermissions"] == widget.role["roleName"] 
-      || widget.role["roleName"] == "Lead"
-      );
-      bool flagTf = true;
-      if (widget.kingsCord.metaData != null && widget.kingsCord.metaData!["roles"] != null) {
-        
-        if (!(widget.kingsCord.metaData!["roles"].contains(context.read<CommuinityBloc>().state.role["kfRole"])) && !widget.kingsCord.metaData!["roles"].contains("Member")) {
-          flagTf = false;
-        }
-
-      } 
-      if (mode == Mode.welcome)
-        canSeeTf = false;
-    final ctx = context.read<KingscordCubit>();
+      allowed = roles_.first.split(",");
+      if (allowed
+          .contains(context.read<CommuinityBloc>().state.role["kfRole"])) {
+        flagTf = false;
+      }
+    }
+    if (mode == Mode.welcome) canSeeTf = false;
     return VisibilityDetector(
       key: Key(widget.kingsCord.id!),
       onVisibilityChanged: (vis) {
@@ -629,195 +602,211 @@ buildBottomTF(KingscordState state, BuildContext context, String mode) {
           CurrentKingsCordRoomId.updateRoomId(roomId: widget.kingsCord.id!);
         } else {
           CurrentKingsCordRoomId.updateRoomId(roomId: null);
-        } 
+        }
       },
       child: Container(
-          width: MediaQuery.of(context).size.width > 700 ? MediaQuery.of(context).size.width / 5: null,
+          width: MediaQuery.of(context).size.width > 700
+              ? MediaQuery.of(context).size.width / 5
+              : null,
           // margin: EdgeInsets.symmetric(horizontal: 5.0),
           child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  if (mode == Mode.announcement) ... [
-                    if (canSeeTf)
+                  if (!canSeeTf && Mode.welcome == mode)
                     Container(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 9.0, bottom: 8),
-                        child: Align(alignment: Alignment.centerLeft, child: Text("Announcement mode", style: Theme.of(context).textTheme.caption!.copyWith(fontWeight: FontWeight.w700),)),
-                      ),
-                    )
-                    else 
-                      Container(
-                        width: double.infinity, child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Align(alignment: Alignment.center, child: Text("You do not have permission to chat announcements", style: Theme.of(context).textTheme.caption)),
-                      ))
-                  ],
-                  if (!canSeeTf && Mode.welcome == mode) 
-                      Container(child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Center(child: Text("Welcomes", style: Theme.of(context).textTheme.caption)),
-                      )),
-                  if (canSeeTf || Mode.chat == mode && widget.userInfo["isMember"] && flagTf)
-                  Row(
+                        child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(
+                          child: Text("Welcomes",
+                              style: Theme.of(context).textTheme.caption)),
+                    )),
+                  if (canSeeTf ||
+                      Mode.chat == mode &&
+                          widget.userInfo["isMember"] &&
+                          flagTf)
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        IconButton(
-                            onPressed: () {
-                              showMediaPopUp = !showMediaPopUp;
-                              setState(() {});
-                            },
-                            icon: Icon(Icons.add)),
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.onPrimary,
-                              borderRadius: BorderRadius.circular(7),
-                            ),
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextFormField(
-                                    // validator: (value) {},
-                                    cursorColor: Theme.of(context)
-                                        .colorScheme
-                                        .inversePrimary,
-                                    textAlignVertical: TextAlignVertical.center,
-                                    style: TextStyle(fontSize: 18),
-                                    autocorrect: true,
-                                    controller: _messageController,
-                                    keyboardType: TextInputType.multiline,
-                                    maxLines: 4,
-                                    minLines: 1,
-                                    expands: false,
-                                    textCapitalization:
-                                        TextCapitalization.sentences,
-                                    onChanged: (messageText) {
-                                      if (messageText == '' ||
-                                          messageText == ' ' ||
-                                          messageText.isEmpty) {
-                                        _mentionedController = null;
-                                        containsAt = false;
-                                        context
-                                            .read<KingscordCubit>()
-                                            .onIsTyping(false);
-                                      }
-
-                                      if (messageText[messageText.length - 1] ==
-                                          '@') {
-                                        containsAt = true;
-                                        idxWhereStartWithat =
-                                            messageText.length - 1;
-                                      }
-
-                                      if (containsAt)
-                                        setState(() => _mentionedController =
-                                            messageText.substring(
-                                                idxWhereStartWithat + 1,
-                                                messageText.length));
-                                      if (messageText.endsWith(' ') ||
-                                          !messageText.contains("@")) {
-                                        containsAt = false;
-                                        idxWhereStartWithat = 0;
-                                        _mentionedController = null;
-                                      }
-
-                                      if (_messageController.text.length > 0)
-                                        ctx.onIsTyping(true);
-                                      else
-                                        ctx.onIsTyping(false);
-                                      setState(() {});
-                                    },
-                                    decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.all(2),
-                                      border: InputBorder.none,
-                                      // filled: true,
-                                      hintText: mode == "chat" ? 'Send message' : "Send an anouncement",
-                                      isCollapsed: true,
-                                      // fillColor: Color(hc.hexcolorCode("#141829")!)
-                                    )),
+                        Container(
+                          child: Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                borderRadius: BorderRadius.circular(7),
+                              ),
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                      onPressed: () {
+                                        showMediaPopUp = !showMediaPopUp;
+                                        setState(() {});
+                                      },
+                                      icon: Icon(Icons.add)),
+                                  Expanded(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary,
+                                        borderRadius: BorderRadius.circular(7),
+                                      ),
+                                      child: Align(
+                                        alignment: Alignment.center,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: TextFormField(
+                                              // validator: (value) {},
+                                              cursorColor: Theme.of(context)
+                                                  .colorScheme
+                                                  .inversePrimary,
+                                              textAlignVertical:
+                                                  TextAlignVertical.center,
+                                              style: TextStyle(fontSize: 18),
+                                              autocorrect: true,
+                                              controller: _messageController,
+                                              keyboardType:
+                                                  TextInputType.multiline,
+                                              maxLines: 4,
+                                              minLines: 1,
+                                              expands: false,
+                                              textCapitalization:
+                                                  TextCapitalization.sentences,
+                                              onChanged: (messageText) {
+                                                _onChanged(messageText);
+                                              },
+                                              decoration: InputDecoration(
+                                                contentPadding:
+                                                    EdgeInsets.all(2),
+                                                border: InputBorder.none,
+                                                // filled: true,
+                                                hintText: mode == "chat"
+                                                    ? 'Send message'
+                                                    : "Send an anouncement",
+                                                isCollapsed: true,
+                                                // fillColor: Color(hc.hexcolorCode("#141829")!)
+                                              )),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                         ),
                         Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                            child: IconButton(
-                              icon: !state.isTyping
-                                  ? Icon(
-                                      Iconsax.send_1,
-                                      size: 18,
-                                    )
-                                  : Icon(Iconsax.send_21, size: 18),
-                              color: state.isTyping ? Colors.amber : Colors.white,
-                              onPressed: state.isTyping
-                                  ? () {
-                                      // this will be passed to the cubit then to the db. upon a get msg lines will psrse for a good look
-                                      String messageWithsSmbolesForParsing = "";
-                                      // map of mentioned info that will be added to the kc cubit
-                                      Map<String, dynamic> mentionedInfo = {};
-                                      for (var u in state.mentions) {
-                                        mentionedInfo[u.id] = {
-                                          "username": u.username,
-                                          "token": u.token,
-                                          'communityName': widget.commuinity.name,
-                                          'kingsCordName':
-                                              widget.kingsCord.cordName,
-                                        };
-                                      }
-                                      var msgAsLst =
-                                          _messageController.text.split(' ');
-                                      // for (String msg in msgAsLst) {
-                                      //   // handels if a shares a link
-
-                                      //   if (msg.length > 8 &&
-                                      //       msg.substring(0, 8) == 'https://') {
-                                      //     messageWithsSmbolesForParsing += '{{a-$msg}}';
-                                      //     // we want to check if the msg is mentioning someone
-                                      //   } else {
-                                      //     messageWithsSmbolesForParsing += '$msg ';
-                                      //   }
-                                      // }
-                                      if (_messageController.text.length > 0 &&
-                                          _messageController.text.trim() != "") {
-                                        ctx.removeReply();
-
-                                        log("last msg: " +
-                                            state.msgs.first!.sender!.token
-                                                .toString() +
-                                            "\n");
-                                        ctx.onSendTxtMsg(
-                                          prevMsgSender: state.msgs.first,
-                                          churchId: widget.commuinity.id!,
-                                          kingsCordId: widget.kingsCord.id!,
-                                          txtMsgBodyWithSymbolsForParcing:
-                                              _messageController
-                                                  .text, //messageWithsSmbolesForParsing,
-                                          txtMsgWithOutSymbolesForParcing:
-                                              _messageController.text,
-                                          mentionedInfo: mentionedInfo,
-                                          cmTitle: widget.commuinity.name,
-                                          kingsCordData: widget.kingsCord,
-                                          currUserName: currUsersName,
-                                          reply: state.replyMessage,
-                                          metadata: metadata
-                                        );
-                                      }
-                                      ctx.onIsTyping(false);
-                                      _messageController.clear();
-                                      ctx.clearMention();
-                                      setState(() {});
-                                    }
-                                  : null,
-                            )),
-                      ]),
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(7),
+                          ),
+                          margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: IconButton(
+                            icon: !state.isTyping
+                                ? Icon(
+                                    Iconsax.send_1,
+                                    size: 18,
+                                  )
+                                : Icon(Iconsax.send_21, size: 18),
+                            color: Colors.white,
+                            onPressed: state.isTyping
+                                ? () {
+                                    _codeForOnP(state);
+                                  }
+                                : null,
+                          ),
+                        ),
+                      ],
+                    )
                 ],
               ))),
     );
   }
 
+  _codeForOnP(KingscordState state) {
+    if (state.isTyping) {
+      // this will be passed to the cubit then to the db. upon a get msg lines will psrse for a good look
+      String messageWithsSmbolesForParsing = "";
+      // map of mentioned info that will be added to the kc cubit
+      Map<String, dynamic> mentionedInfo = {};
+      for (var u in state.mentions) {
+        mentionedInfo[u.id] = {
+          "username": u.username,
+          "token": u.token,
+          'communityName': widget.commuinity.name,
+          'kingsCordName': widget.kingsCord.cordName,
+        };
+      }
+      var msgAsLst = _messageController.text.split(' ');
+      // for (String msg in msgAsLst) {
+      //   // handels if a shares a link
+
+      //   if (msg.length > 8 &&
+      //       msg.substring(0, 8) == 'https://') {
+      //     messageWithsSmbolesForParsing += '{{a-$msg}}';
+      //     // we want to check if the msg is mentioning someone
+      //   } else {
+      //     messageWithsSmbolesForParsing += '$msg ';
+      //   }
+      // }
+      if (_messageController.text.length > 0 &&
+          _messageController.text.trim() != "") {
+        context.read<KingscordCubit>().removeReply();
+
+        log("last msg: " + state.msgs.first!.sender!.token.toString() + "\n");
+        context.read<KingscordCubit>().onSendTxtMsg(
+              prevMsgSender: state.msgs.first,
+              churchId: widget.commuinity.id!,
+              kingsCordId: widget.kingsCord.id!,
+              txtMsgBodyWithSymbolsForParcing:
+                  _messageController.text, //messageWithsSmbolesForParsing,
+              txtMsgWithOutSymbolesForParcing: _messageController.text,
+              mentionedInfo: mentionedInfo,
+              cmTitle: widget.commuinity.name,
+              kingsCordData: widget.kingsCord,
+              currUserName: currUsersName,
+              reply: state.replyMessage,
+              metadata: widget.kingsCord.metaData,
+            );
+      }
+      context.read<KingscordCubit>().onIsTyping(false);
+      _messageController.clear();
+      context.read<KingscordCubit>().clearMention();
+      setState(() {});
+    }
+  }
+
+  _onChanged(String messageText) {
+    if (messageText == '' || messageText == ' ' || messageText.isEmpty) {
+      _mentionedController = null;
+      containsAt = false;
+      context.read<KingscordCubit>().onIsTyping(false);
+    }
+
+    if (messageText[messageText.length - 1] == '@') {
+      containsAt = true;
+      idxWhereStartWithat = messageText.length - 1;
+    }
+
+    if (containsAt) {
+      setState(() => _mentionedController =
+          messageText.substring(idxWhereStartWithat + 1, messageText.length));
+    }
+
+    if (messageText.endsWith(' ') || !messageText.contains("@")) {
+      containsAt = false;
+      idxWhereStartWithat = 0;
+      _mentionedController = null;
+    }
+
+    if (_messageController.text.length > 0) {
+      context.read<KingscordCubit>().onIsTyping(true);
+    } else {
+      context.read<KingscordCubit>().onIsTyping(false);
+    }
+    setState(() {});
+  }
 
   _showMentioned(KingscordState state) {
     return Container(

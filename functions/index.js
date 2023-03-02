@@ -666,57 +666,50 @@ exports.onCreateKc = functions.firestore
 exports.onKingsCordMessageSent = functions.firestore
   .document("/church/{churchId}/kingsCord/{kingsCordId}/messages/{messageId}")
   .onCreate(async (snapshot, context) => {
+
     const cmId = context.params.churchId;
     const kcId = context.params.kingsCordId;
+    const cmRef = admin.firestore().collection("church").doc(cmId);
     const kcRef = admin
       .firestore()
       .collection("church")
       .doc(cmId)
       .collection("kingsCord")
       .doc(kcId);
-    const cmRef = admin.firestore().collection("church").doc(cmId);
 
     var kcMsgData = snapshot.data();
     var senderId = kcMsgData.sender.path.split("/")[1];
     var senderUsername = kcMsgData.senderUsername;
 
-    // var recentMessage;
-    // if (kcMsgData.imageUrl !== null) {
-    //   recentMessage = "An image was shared";
-    // } else if (kcMsgData.videoUrl !== null) {
-    //   recentMessage = "A video was shared";
-    // } else {
-    //   recentMessage = kcMsgData.text;
-    // }
+  
+    cmRef.update({recentMsgTime: kcMsgData.date,});
 
-    cmRef.update({
-      recentMsgTime: kcMsgData.date,
-    });
-    kcRef.update({
-      // 'recentSender' : [senderId, kcMsgData.senderUsername ],
-      recentTimestamp: kcMsgData.date,
-      // 'recentMessage' : recentMessage,
-    });
-    // send notif as topic if msg contains "anouncment" in metadata
+    kcRef.update({ recentTimestamp: kcMsgData.date });
 
     functions.logger.log("this is the complete snapshot: ", snapshot.data());
-    if (snapshot.data().metadata.announcement !== undefined) {
+    
+    var chatPriority = snapshot.data().metadata.chatPriority;
+
       functions.logger.log(
-        "The contents of metedata checking if announcements is not null: ",
-        snapshot.data().metadata.announcement
+        "The contents of metedata checking if chatPriority is not null and is all msgs: ",
+        snapshot.data().metadata.chatPriority
       );
 
-      var snapData = snapshot.data();
+      
       var cmSnap = await cmRef.get();
       var cmData = cmSnap.data();
       var messageBody;
 
-      if (snapData.text === undefined || snapData.text === "")
+      if (snapData.text === undefined || snapData.text === "") {
         messageBody = "shared something";
-      else messageBody = snapData.text;
+      }
+      else {
+        messageBody = snapData.text;
+      }
+
       const message = {
         notification: {
-          title: "anouncment:" + cmData.name,
+          title: kcMsgData.metadata.kcName + " " + cmData.name,
           body: snapData.senderUsername + ": " + messageBody,
         },
         data: {
@@ -730,16 +723,29 @@ exports.onKingsCordMessageSent = functions.firestore
         priority: "high",
         timeToLive: 60 * 60 * 24,
       };
-      admin
+
+      if (chatPriority !== undefined && chatPriority == "Notify For All Messages" ) {
+        var topic = cmId + kcId + "topic";
+        admin
         .messaging()
-        .sendToTopic("church" + cmId, message)
+        .sendToTopic(topic, message)
         .then((value) => {
-          functions.logger.log("sent the topicMessage", "/church/" + cmId);
+          functions.logger.log("sent the topicMessage", topic);
         })
         .catch((err) => {
-          console.log(String(err), console.log("sent to: /church/" + cmId));
+          console.log(String(err), console.log("sent to: " + topic));
         });
-    }
+      } else if (chatPriority === undefined || chatPriority === "Passive Chat") {
+        // get the user of most recent chat member.
+        var recentUser = getRecentKcUser();
+        admin.messaging().sendToDevice(recentUser.tokens, message, options)
+        // if same as sender | check if recent chat is 5 hr apart | if true just send to all users
+
+        // if not same as user notfi that recent user 
+      }
+      
+      
+    
   });
 
 // _________________________________________HELPERS__________________________________________
@@ -765,6 +771,31 @@ async function deleteQueryBatch(db, query, resolve) {
   process.nextTick(() => {
     deleteQueryBatch(db, query, resolve);
   });
+}
+
+async function getRecentKcUser(cmId, kcId) {
+  var messageSnap = await admin.firestore()
+  .collection('church')
+  .doc(cmId)
+  .collection('kingscord')
+  .doc(kcId)
+  .collection('messages')
+  .orderBy('sentAt', 'desc')
+  .limit(1)
+  .startAfter(admin.firestore.Timestamp.now())
+  .get()
+
+  var user;
+
+  messageSnap.docs.forEach(async(msg) => {
+    if (msg.sender != null) {
+      var userId = msg.sender.split('/')[1];
+      var userRef = await admin.firestore().collection("users").doc(userId).get();
+      var user = userRef.data()
+    }
+  })
+
+  return user
 }
 
 // when a user has opted to recieve notifications in a kings cord room

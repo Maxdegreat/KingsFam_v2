@@ -11,6 +11,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/kc_meta_data.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
@@ -201,118 +202,32 @@ class KingscordCubit extends Cubit<KingscordState> {
     required String currUserName, // aka sender username
     required String? reply,
     required Message? prevMsgSender,
-    required Map<String, dynamic> metadata,
+    required Map<String, dynamic>? metadata,
   }) async {
-    // log("recent: " + state.recentNotifLst.toString());
-    // log("all: " + state.allNotifLst.toString());
-    // This should tell the cloud that the mentioned id was mentioned through the cloud
-    // I have added the function to send a noti to the users phone. the update for this to happen is in the
-    // functions index.js file
 
-    emit(state.copyWith(mentions: [], potentialMentions: []));
-
-    Set mentionedIds = new Set();
-
-    if (!metadata.containsKey("anouncement")) {
-          for (var id in mentionedInfo.keys) {
-      if (txtMsgBodyWithSymbolsForParcing.length > 1 &&
-          txtMsgBodyWithSymbolsForParcing.length < 450) {
-        var path = FirebaseFirestore.instance
-            .collection(Paths.mention)
-            .doc(id)
-            .collection(churchId)
-            .doc(kingsCordId);
-
-            path.set({
-              'communityName': mentionedInfo[id]['communityName'],
-              'username': mentionedInfo[id]['username'],
-              'token': mentionedInfo[id]['token'],
-              'messageBody': txtMsgWithOutSymbolesForParcing,
-              'type': 'kc_type',
-            }).then((_) {
-              Future.delayed(Duration(seconds: 2)).then((value) => path.delete());
-            });
-            mentionedIds.add(id);
-      }
-    } 
-
-     if (reply != null  ) {
-      if (reply.isNotEmpty && !mentionedIds.contains(reply.substring(163, 183)) ) {
-
-        var path = FirebaseFirestore.instance.collection(Paths.mention).doc(reply.substring(163, 183))
-        .collection(churchId).doc(kingsCordId);
-
-        path.set({
-          'communityName': cmTitle,
-          'username': currUserName,
-          'token': reply.substring(0, 163),
-          'messageBody': txtMsgWithOutSymbolesForParcing,
-          'type': 'kc_type',
-        }).then((_) async {
-          Future.delayed(Duration(seconds: 2)).then((value) {
-            path.delete();
-          });
-        });
-      }
-    
-   }
-
-    List<String> toSendNotifications = state.allNotifLst;
-    Set<dynamic> toSendNotificationsT =  state.recentMsgIdToTokenMap.values.toSet();
-    
-    // log("prevSender: " + prevMsgSender!.sender!.token[0].toString());
-    if (prevMsgSender != null) 
-      toSendNotifications.add(prevMsgSender.sender!.id);
-      // toSendNotificationsT.add(prevMsgSender.sender!.token[0]);
-    
-    for (var i in toSendNotifications) {
-      if (state.recentMsgIdToTokenMap.containsKey(i))
-        continue;
-      else {
-        if (!mentionedIds.contains(i)) {
-          Userr userr = await UserrRepository().getUserrWithId(userrId: i);
-          // currently tokens are updated so each NEW user should only havb a  single token
-          toSendNotificationsT.add(userr.token[0]);
-        }
-      }
+    if (metadata != null) {
+      metadata["kcName"] = kingsCordData.cordName;
+    } else { 
+      metadata = {};
+      metadata["kcName"] = kingsCordData.cordName;
     }
-
-    // log("the tokens in sendToDevicies: " + toSendNotificationsT.toString());
-
-    var path = FirebaseFirestore.instance
-        .collection(Paths.kcMsgNotif)
-        .doc(churchId)
-        .collection(Paths.kingsCord)
-        .doc(kingsCordId);
-
-        path.set({
-          'communityName': cmTitle,
-          'username': currUserName,
-          'token': toSendNotificationsT.toList(),
-          'messageBody': txtMsgWithOutSymbolesForParcing,
-          'type': 'kc_type',
-          'kcId': kingsCordId,
-        })
-        .then((value) => path.delete())
-        .catchError((error) => log("Failed to add user: $error"));
-    }
-    log("the metadata is: " + metadata.toString());
-    // the creation of the message
+    
     final message = Message(
       text: txtMsgBodyWithSymbolsForParcing,
       date: Timestamp.fromDate(DateTime.now()),
       imageUrl: null,
       senderUsername: currUserName,
       reply: reply,
-      metadata: metadata
+      metadata: metadata,
+      mentionedIds: mentionedInfo.keys.toSet().toList(),
     );
-    // ------------------------------------------------------------- BELOW IS WHERE WE SEND THE MESSAGE -------------------------------------------------------------
-    // uploading the message to cloud
+    
     _kingsCordRepository.sendMsgTxt(
         churchId: churchId,
         kingsCordId: kingsCordId,
         message: message,
         senderId: _authBloc.state.user!.uid);
+
   }
 
   Future<void> onSendGiphyMessage({

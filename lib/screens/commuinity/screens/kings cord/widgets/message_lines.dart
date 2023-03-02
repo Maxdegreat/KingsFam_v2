@@ -19,6 +19,7 @@ import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/giphy/giphy_widget.dart';
 import 'package:kingsfam/widgets/hide_content/hide_content_full_screen_post.dart';
 import 'package:kingsfam/widgets/link_preview_container.dart';
+import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -639,6 +640,7 @@ class _MessageLinesState extends State<MessageLines> {
             ? kingsCordProfileImg()
             : kingsCordProfileIcon(),
         decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(7),
             border: Border.all(
                 width: .7,
                 color: widget.message.sender!.colorPref == ""
@@ -649,17 +651,13 @@ class _MessageLinesState extends State<MessageLines> {
                 ? Colors.red
                 : Color(
                     hexcolor.hexcolorCode(widget.message.sender!.colorPref)),
-            shape: BoxShape.circle),
+            ),
       ),
     );
   }
 
-  Widget? kingsCordProfileImg() => CircleAvatar(
-        backgroundColor: Colors.grey[400],
-        backgroundImage:
-            CachedNetworkImageProvider(widget.message.sender!.profileImageUrl),
-        radius: 8,
-      );
+  Widget? kingsCordProfileImg() => ContainerWithURLImg(imgUrl: widget.message.sender!.profileImageUrl, height: 35, width: 35);
+
 
   Widget? kingsCordProfileIcon() =>
       Container(child: Icon(Icons.account_circle));

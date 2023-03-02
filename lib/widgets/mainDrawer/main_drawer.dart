@@ -194,6 +194,7 @@ class _MainDrawerState extends State<MainDrawer> {
 
                         showRooms(context,
                             context.read<ChatscreenBloc>().state.selectedCh!),
+
                         _showAd(),
 
                         SizedBox(height: 8),
@@ -247,9 +248,12 @@ class _MainDrawerState extends State<MainDrawer> {
               right: 3,
             ),
             child: Container(
-              height: 59,
+              height: 50,
               width: double.infinity,
-              child: AdWidget(ad: _nativeAd!),
+              child: Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: AdWidget(ad: _nativeAd!),
+              ),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.secondary,
                 borderRadius: BorderRadius.circular(10),
@@ -307,13 +311,3 @@ class _MainDrawerState extends State<MainDrawer> {
     }
   }
 }
-
-// Widget MainDrawer(BuildContext context, ChatscreenBloc? chatScreenBloc) {
-
-  
-
-//   return SafeArea(
-//     child: Drawer(
-
-//   );
-// }
