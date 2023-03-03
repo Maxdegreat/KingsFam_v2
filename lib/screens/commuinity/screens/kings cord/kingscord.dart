@@ -319,6 +319,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     }
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.onPrimary,
         centerTitle: false,
         toolbarHeight: 50,
         title: GestureDetector(
@@ -384,75 +385,92 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
           return GestureDetector(
             onTap: () => FocusScope.of(context).unfocus(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Stack(
               children: [
-                state.status == KingsCordStatus.pagMsgs ||
-                        state.status == KingsCordStatus.getInitmsgs
-                    ? LinearProgressIndicator(
-                        color: Colors.amber[200],
-                        backgroundColor: Colors.white,
-                      )
-                    : SizedBox.shrink(),
-                // bulid message stream
-                _buildMessageStream(
-                    commuinity: widget.commuinity,
-                    kingsCord: widget.kingsCord,
-                    msgs: state.msgs),
-                //divider of a height 1
-                Divider(height: 1.0),
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Theme.of(context).colorScheme.secondary,
+                        Theme.of(context).scaffoldBackgroundColor
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.centerRight,
+                    ),
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    state.status == KingsCordStatus.pagMsgs ||
+                            state.status == KingsCordStatus.getInitmsgs
+                        ? LinearProgressIndicator(
+                            color: Colors.amber,
+                            backgroundColor:
+                                Theme.of(context).scaffoldBackgroundColor,
+                          )
+                        : SizedBox.shrink(),
+                    // bulid message stream
+                    _buildMessageStream(
+                        commuinity: widget.commuinity,
+                        kingsCord: widget.kingsCord,
+                        msgs: state.msgs),
+                    //divider of a height 1
+                    Divider(height: 1.0),
 
-                state.replyMessage != null && state.replyMessage!.isNotEmpty
-                    ? _showReplying(state)
-                    : SizedBox.shrink(),
+                    state.replyMessage != null && state.replyMessage!.isNotEmpty
+                        ? _showReplying(state)
+                        : SizedBox.shrink(),
 
-                // this shows all the users that you have mentioned so far in the chat.
-                state.mentions.length > 0
-                    ? _showMentioned(state)
-                    : SizedBox.shrink(),
+                    // this shows all the users that you have mentioned so far in the chat.
+                    state.mentions.length > 0
+                        ? _showMentioned(state)
+                        : SizedBox.shrink(),
 
-                // this shows all possible mentions
-                _mentionUserContainer(username: _mentionedController),
+                    // this shows all possible mentions
+                    _mentionUserContainer(username: _mentionedController),
 
-                // this is can only ocour if the user is apart of the commuinity. in this case they can share
-                // content
-                state.fileShareStatus != FileShareStatus.inital
-                    ? Container(
-                        height: 90,
-                        width: double.infinity,
-                        color: Colors.transparent,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Sharing Files Fam, Sit Tight...",
-                              overflow: TextOverflow.fade,
+                    // this is can only ocour if the user is apart of the commuinity. in this case they can share
+                    // content
+                    state.fileShareStatus != FileShareStatus.inital
+                        ? Container(
+                            height: 90,
+                            width: double.infinity,
+                            color: Colors.transparent,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Sharing Files Fam, Sit Tight...",
+                                  overflow: TextOverflow.fade,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: state.filesToBePosted
+                                      .map((file) => ProfileImage(
+                                            radius: 27,
+                                            pfpUrl: '',
+                                            pfpImage: file,
+                                          ))
+                                      .toList(),
+                                ),
+                              ],
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.max,
-                              children: state.filesToBePosted
-                                  .map((file) => ProfileImage(
-                                        radius: 27,
-                                        pfpUrl: '',
-                                        pfpImage: file,
-                                      ))
-                                  .toList(),
-                            ),
-                          ],
-                        ),
-                      )
-                    : SizedBox.shrink(),
+                          )
+                        : SizedBox.shrink(),
 
-                // use the state.isMem to know if the user is a part of cm.
-                // this values will have to be updated soon tho. because we want
-                // dynamic roles to be sourced
-                widget.userInfo["isMember"]
-                    ? buildBottomTF(state, context, widget.kingsCord.mode)
-                    : _permissionDenied(
-                        messasge: "Join community to chat here"),
+                    // use the state.isMem to know if the user is a part of cm.
+                    // this values will have to be updated soon tho. because we want
+                    // dynamic roles to be sourced
+                    widget.userInfo["isMember"]
+                        ? buildBottomTF(state, context, widget.kingsCord.mode)
+                        : _permissionDenied(
+                            messasge: "Join community to chat here"),
 
-                showMediaPopUp ? showMedias() : SizedBox.shrink()
+                    showMediaPopUp ? showMedias() : SizedBox.shrink()
+                  ],
+                ),
               ],
             ),
           );

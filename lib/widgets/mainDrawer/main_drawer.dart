@@ -84,6 +84,7 @@ class _MainDrawerState extends State<MainDrawer> {
 
   @override
   void dispose() {
+
     _nativeAd?.dispose();
     super.dispose();
   }

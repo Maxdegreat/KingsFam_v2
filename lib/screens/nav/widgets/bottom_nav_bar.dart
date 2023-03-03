@@ -17,8 +17,8 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    HexColor hc = HexColor();
     return BottomNavigationBar(
+      
       elevation: 0,
       backgroundColor: Theme.of(context).colorScheme.secondary, // Color.fromARGB(255, 27, 49, 67),
       showSelectedLabels: false,

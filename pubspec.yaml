@@ -109,13 +109,17 @@ dev_dependencies:
 # flutter pub run flutter_native_splash:create
 # flutter clean && flutter pub get && flutter pub run flutter_native_splash:create
 flutter_native_splash:
+  image: assets/kf_crown_black_960_960.png
+  image_dark: assets/kf_crown_white_960_960.png
   color: "#FFFFFF"
   color_dark: "#101010"
-  image: assets/kf_crown_transparent.png
+  icon_background_color: "#101010"
+  icon_background_color_dark: "#FFFFFF"
 
 
   android_12:
-    image: assets/KINGSFAM_LOGO_black_bg.png
+    image: assets/kf_crown_black_960_960.png
+    image_dark: assets/kf_crown_white_960_960.png
     color: "#FFFFFF"
     color_dark: "#101010"
     icon_background_color: "#101010"

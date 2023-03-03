@@ -28,11 +28,11 @@ class NavScreen extends StatelessWidget {
   final Map<BottomNavItem, Widget> items = {
     BottomNavItem.chats: Icon(
       Icons.question_answer,
-      size: 20,
+      size: 15,
     ),
-    BottomNavItem.search: Icon(Icons.search, size: 20),
-    BottomNavItem.notifications: Icon(Icons.favorite_border, size: 20),
-    BottomNavItem.profile: Icon(Icons.account_circle, size: 20)
+    BottomNavItem.search: Icon(Icons.search, size: 15),
+    BottomNavItem.notifications: Icon(Icons.favorite_border, size: 15),
+    BottomNavItem.profile: Icon(Icons.account_circle, size: 15)
   };
 
   @override
@@ -105,7 +105,10 @@ class NavScreen extends StatelessWidget {
                           if (index == 0 ||
                               BottomNavItem.values[index] ==
                                   BottomNavItem.chats) {
-                            if (!kIsWeb) scaffoldKey.currentState!.openDrawer();
+                            if (!kIsWeb) {
+                              scaffoldKey.currentState!.openDrawer();
+                              context.read<BottomnavbarCubit>().showBottomNav(true);
+                            }
                             _selectBottomNavItem(context, selectedItem,
                                 selectedItem == state.selectedItem);
                           } else
