@@ -10,6 +10,7 @@ import 'package:image_cropper/image_cropper.dart';
 
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/global_keys.dart';
+import 'package:kingsfam/config/mock_flag.dart';
 import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/helpers/helpers.dart';
 import 'package:kingsfam/helpers/kingscord_path.dart';
@@ -377,7 +378,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             context.read<KingscordCubit>().onLoadInit(
                   cmId: widget.commuinity.id!,
                   kcId: widget.kingsCord.id!,
-                  limit: 17,
+                  limit: MockFlag.ISMOCKTESTING ? 17 : 27,
                 );
           }
 
@@ -698,7 +699,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                         ),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.black,
+                            color: Theme.of(context).colorScheme.onPrimary,
                             borderRadius: BorderRadius.circular(7),
                           ),
                           margin: const EdgeInsets.symmetric(horizontal: 4.0),

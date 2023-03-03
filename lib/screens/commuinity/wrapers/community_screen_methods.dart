@@ -52,34 +52,40 @@ Widget contentPreview(
   return GestureDetector(
     onTap: () => Navigator.of(context)
         .pushNamed(CommuinityFeedScreen.routeName,
-            arguments:
-                CommuinityFeedScreenArgs(commuinity: cm, passedPost: null))
-        ,
+            arguments: CommuinityFeedScreenArgs(commuinity: cm, passedPost: null)),
     child: SizedBox(
-      width: MediaQuery.of(context).size.width / 4,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircleAvatar(
-            radius: 25,
-            backgroundImage: CachedNetworkImageProvider(url),
-          ),
-          SizedBox(height: 2),
-          Flexible(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 5.0),
-                child: Text(
-                  post.author.username,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.caption,
-                  maxLines: 1,
-                  overflow: TextOverflow.fade,
+      // width: MediaQuery.of(context).size.width / 4,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(7),
+                  color: Theme.of(context).colorScheme.secondary,
+                  image: DecorationImage(image: CachedNetworkImageProvider(url), fit: BoxFit.cover)
+                ),
+                height: 50,
+                width: 50,
+                 ),
+            SizedBox(height: 2),
+            Flexible(
+              child: Container(
+                width: 55,
+                child: Center(
+                  child: Text(
+                    post.author.username,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.caption,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     ),
   );

@@ -240,27 +240,29 @@ class _MainDrawerState extends State<MainDrawer> {
   }
 
   Widget _showAd() {
-    return _isNativeAdLoaded && !kIsWeb
-        ? Padding(
-            padding: const EdgeInsets.only(
-              top: 5,
-              bottom: 5,
-              right: 3,
-            ),
-            child: Container(
-              height: 50,
-              width: double.infinity,
-              child: Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: AdWidget(ad: _nativeAd!),
-              ),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          )
-        : const SizedBox.shrink();
+    return AnimatedSwitcher(
+        duration: Duration(milliseconds: 100),
+        child: _isNativeAdLoaded && !kIsWeb
+            ? Padding(
+                padding: const EdgeInsets.only(
+                  top: 5,
+                  bottom: 5,
+                  right: 3,
+                ),
+                child: Container(
+                  height: 50,
+                  width: double.infinity,
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: AdWidget(ad: _nativeAd!),
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              )
+            : const SizedBox.shrink());
   }
 
   Container _cmsList(BuildContext context, List<Widget> drawerLst) {

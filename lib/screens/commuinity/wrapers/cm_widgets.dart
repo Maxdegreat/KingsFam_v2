@@ -40,22 +40,25 @@ Widget singlePostDisplay({
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(height: 2),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(7),
-                color: Theme.of(context).colorScheme.secondary,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(7),
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+                height: 50,
+                width: 50,
+                child: IconButton(
+                    onPressed: () {
+                      availableCameras().then((cameras) {
+                        Navigator.of(context).pushNamed(CameraScreen.routeName,
+                            arguments:
+                                CameraScreenArgs(cameras: cameras, cmId: cm.id!));
+                      });
+                    },
+                    icon: Icon(Icons.photo_camera_outlined)),
               ),
-              height: 50,
-              width: 50,
-              child: IconButton(
-                  onPressed: () {
-                    availableCameras().then((cameras) {
-                      Navigator.of(context).pushNamed(CameraScreen.routeName,
-                          arguments:
-                              CameraScreenArgs(cameras: cameras, cmId: cm.id!));
-                    });
-                  },
-                  icon: Icon(Icons.photo_camera_outlined)),
             ),
             SizedBox(height: 2),
             Flexible(

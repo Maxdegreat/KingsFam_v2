@@ -20,7 +20,7 @@ class BottomNavBar extends StatelessWidget {
     HexColor hc = HexColor();
     return BottomNavigationBar(
       elevation: 0,
-      backgroundColor: Colors.black, // Color.fromARGB(255, 27, 49, 67),
+      backgroundColor: Theme.of(context).colorScheme.secondary, // Color.fromARGB(255, 27, 49, 67),
       showSelectedLabels: false,
       showUnselectedLabels: false,
       type: BottomNavigationBarType.fixed,

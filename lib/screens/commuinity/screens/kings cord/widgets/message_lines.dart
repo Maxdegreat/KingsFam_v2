@@ -303,7 +303,6 @@ class _MessageLinesState extends State<MessageLines> {
   _buildText(BuildContext context) {
     if (widget.message.metadata!['reactions'] == {}) {
       widget.message.metadata!['reactions']![''] = 0;
-      log(widget.message.metadata!['reactions']);
     }
 
     List<String> links = [];
@@ -374,7 +373,8 @@ class _MessageLinesState extends State<MessageLines> {
               _showReactionBarUi(
                   messageReactions: widget.message.metadata!["reactions"])
             ],
-          ));
+          )
+        );
     }
     // the return of the text when there is no links involved
     RegExp regExp = RegExp(r'^@.+');
@@ -392,10 +392,8 @@ class _MessageLinesState extends State<MessageLines> {
               child: Padding(
                 padding: const EdgeInsets.all(2.0),
                 child: Text(widget.message.text!,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyText1!
-                        .copyWith(fontWeight: FontWeight.w500, fontSize: 15)),
+                    style: Theme.of(context).textTheme.caption!.copyWith(fontSize: 15,
+                                fontWeight: FontWeight.w400)),
               )),
           _showReactionBarUi(
             messageReactions: widget.message.metadata!["reactions"],
@@ -537,88 +535,84 @@ class _MessageLinesState extends State<MessageLines> {
             ? _messageWelcomeWidget()
             : Padding(
               padding: const EdgeInsets.symmetric(vertical: 2.0),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // a row displaying imageurl of member and name
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        kingsCordAvtar(context),
-                        SizedBox(
-                          width: 5.0,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  widget.message.sender!.username,
-                                  style: Theme.of(context).textTheme.caption!.copyWith(fontSize: 18,
-                                      fontWeight: FontWeight.w400)
-                                ),
-                                SizedBox(width: 5),
-                                Text('${widget.message.date.timeAgo()}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .caption!
-                                        .copyWith(fontStyle: FontStyle.italic)),
-                              ],
-                            ),
-                            SizedBox(height: 2),
-                            widget.message.reply != null &&
-                                    widget.message.reply!.isNotEmpty
-                                ? Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 4.0, bottom: 5),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Theme.of(context).colorScheme.secondary,
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(2.0),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(2.0),
-                                          child: Text(
-                                            "reply to " +
-                                                widget.message.reply!
-                                                    .split(": ")
-                                                    .first
-                                                    .substring(188),
-                                            style: TextStyle(
-                                                fontStyle: FontStyle.italic,
-                                                color: Theme.of(context).colorScheme.primary,
-                                                fontSize: 15),
-                                          ),
-                                        ),
-                                      ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  kingsCordAvtar(context),
+                  SizedBox(
+                    width: 15.0,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            widget.message.sender!.username,
+                            style: Theme.of(context)
+                        .textTheme
+                        .bodyText1!
+                        .copyWith(fontWeight: FontWeight.w500, fontSize: 15), 
+                            
+                          ),
+                          SizedBox(width: 5),
+                          Text('${widget.message.date.timeAgo()}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .caption!
+                                  .copyWith(fontStyle: FontStyle.italic)),
+                        ],
+                      ),
+                      SizedBox(height: 2),
+                      widget.message.reply != null &&
+                              widget.message.reply!.isNotEmpty
+                          ? Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 4.0, bottom: 5),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.secondary,
+                                    borderRadius:
+                                        BorderRadius.circular(10)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: Text(
+                                      "reply to " +
+                                          widget.message.reply!
+                                              .split(": ")
+                                              .first
+                                              .substring(188),
+                                      style: TextStyle(
+                                          fontStyle: FontStyle.italic,
+                                          color: Theme.of(context).colorScheme.primary,
+                                          fontSize: 15),
                                     ),
-                                  )
-                                : SizedBox.shrink(),
-                            Container(
-                                constraints: BoxConstraints(
-                                  maxWidth:
-                                      MediaQuery.of(context).size.width / 1.4,
+                                  ),
                                 ),
-                                child: widget.message.giphyId != null
-                                    ? DisplayGif(giphyId: widget.message.giphyId!)
-                                    : widget.message.text != null
-                                        ? _buildText(context)
-                                        : widget.message.videoUrl != null &&
-                                                widget.message.thumbnailUrl !=
-                                                    null
-                                            ? _buildVideo(context)
-                                            : _buildImage(context)),
-                          ],
-                        )
-                      ],
-                    ),
-                  ],
-                ),
+                              ),
+                            )
+                          : SizedBox.shrink(),
+                      Container(
+                          constraints: BoxConstraints(
+                            maxWidth:
+                                MediaQuery.of(context).size.width / 1.4,
+                          ),
+                          child: widget.message.giphyId != null
+                              ? DisplayGif(giphyId: widget.message.giphyId!)
+                              : widget.message.text != null
+                                  ? _buildText(context)
+                                  : widget.message.videoUrl != null &&
+                                          widget.message.thumbnailUrl !=
+                                              null
+                                      ? _buildVideo(context)
+                                      : _buildImage(context)),
+                    ],
+                  )
+                ],
+              ),
             ),
       ),
     );

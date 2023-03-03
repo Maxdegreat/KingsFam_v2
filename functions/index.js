@@ -700,17 +700,17 @@ exports.onKingsCordMessageSent = functions.firestore
       var cmData = cmSnap.data();
       var messageBody;
 
-      if (snapData.text === undefined || snapData.text === "") {
+      if (kcMsgData.text === undefined || kcMsgData.text === "") {
         messageBody = "shared something";
       }
       else {
-        messageBody = snapData.text;
+        messageBody = kcMsgData.text;
       }
 
       const message = {
         notification: {
           title: kcMsgData.metadata.kcName + " " + cmData.name,
-          body: snapData.senderUsername + ": " + messageBody,
+          body: kcMsgData.senderUsername + ": " + messageBody,
         },
         data: {
           type: String("kc_type"),

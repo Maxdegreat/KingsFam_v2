@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -40,80 +39,69 @@ class LinkPreviewContainerState extends State<LinkPreviewContainer> {
     if (_preview != null) {
       _title = _preview!.title != null ? _preview!.title : "";
       _imageUrl = _preview!.image != null ? _preview!.image : null;
-      _description = _preview!.description != null ? _preview!.description : null;
+      _description =
+          _preview!.description != null ? _preview!.description : null;
     }
-    return _preview != null
-        ? Container(
-            width:  MediaQuery.of(context).size.width > 400 ? MediaQuery.of(context).size.width / 5.9 : MediaQuery.of(context).size.width / 1.4,
-            decoration: BoxDecoration(
-              color: Color.fromARGB(110, 255, 193, 7),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: _preview != null
-                  ? [
-                    
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (_title != null) ... [
-                        Padding(
-                         padding: const EdgeInsets.only(top: 0.0, bottom: 4, left: 4),
-                          child: Text(_title,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: _description!=null||(_description!=null&&_description.length<5) ? 2 : null,
-                              style: Theme.of(context).textTheme.caption!.copyWith(color: Colors.white, fontSize: 15)
-                            
-                            ),
-                        ),
-                      ],
-                        
-                    
-                      if (_description != null) ... [
-                        Padding(
-                         padding: const EdgeInsets.only(top: 0, bottom: 4, left: 4),
-                          child: Text(_description,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                              style: Theme.of(context).textTheme.caption!.copyWith(color: Colors.white54, fontSize: 15)),
-                        ),
-                      ],
-                        ],
-                      ),
+    return AnimatedSwitcher(
+      
+      duration: Duration(milliseconds: 500),
+      child: _preview != null
+          ? Container(
+            
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(7),
+                color: Theme.of(context).colorScheme.secondary,
+            //       border: Border(
+            //     left: BorderSide(
+            //       color: Theme.of(context).colorScheme.inversePrimary,
+            //       width: 3.0,
+            //     ),
+            //  )
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_title!=null) ... [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                        _title,
+                        style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 15),
                     ),
+                      )],
 
-                      _imageUrl != null
-                          ? Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                height: MediaQuery.of(context).size.width > 400 ? 100 : MediaQuery.of(context).size.width / 5,
-                                width: MediaQuery.of(context).size.width > 400 ? 100 : MediaQuery.of(context).size.width / 5,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(7.0),
-                                    image: DecorationImage( fit: BoxFit.cover,
-                                        image: CachedNetworkImageProvider(
-                                            _imageUrl))),
-                              ),
-                            )
-                          : SizedBox.shrink(),
+                    if (_description != null && _description.isNotEmpty) ... [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                        _description,
+                        style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 15, color: Colors.blueAccent),
+                    ),
+                      )
+                    ],
+
+                    if (_imageUrl != null) ... [
+                      Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  height: MediaQuery.of(context).size.width > 400 ? 200 : MediaQuery.of(context).size.width / 5,
+                                  width: MediaQuery.of(context).size.width > 400 ? 200 : MediaQuery.of(context).size.width / 5,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(7.0),
+                                      image: DecorationImage( fit: BoxFit.cover,
+                                          image: CachedNetworkImageProvider(
+                                              _imageUrl))),
+                                ),
+                              )
                     ]
-                  : [],
-            ),
-          )
-        : Container(
-            height: ( MediaQuery.of(context).size.width/ 5 ) + 8,
-            width:  MediaQuery.of(context).size.width > 400 ? MediaQuery.of(context).size.width / 5.9 : MediaQuery.of(context).size.width / 1.4,
-            child: Center(child: Text("Loading...")),
-            decoration: BoxDecoration(
-              color: Color.fromARGB(110, 255, 193, 7),
-              borderRadius: BorderRadius.circular(4),
-              
-            ));
+                  ],
+                ),
+              ),
+            )
+          : SizedBox.shrink(),
+    );
   }
-
-
 }
