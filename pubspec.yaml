@@ -110,12 +110,17 @@ dev_dependencies:
 # flutter clean && flutter pub get && flutter pub run flutter_native_splash:create
 flutter_native_splash:
   color: "#FFFFFF"
-  image: assets/KINGSFAM_LOGO_black_bg.png
+  color_dark: "#101010"
+  image: assets/kf_crown_transparent.png
+
 
   android_12:
     image: assets/KINGSFAM_LOGO_black_bg.png
-    color: "#101010"
-    icon_background_color: "#FFFFFF"
+    color: "#FFFFFF"
+    color_dark: "#101010"
+    icon_background_color: "#101010"
+    icon_background_color_dark: "#FFFFFF"
+
 
 flutter_icons:
   android: true
@@ -137,6 +142,7 @@ flutter:
     - assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png
 
     - assets/KINGSFAM_LOGO_black_bg.png
+    - assets/kf_crown_transparent.png
     - assets/mock_photos/
     # SVG's are below
     # ANIMATIONS are below
