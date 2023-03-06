@@ -37,7 +37,7 @@ class DisplayMsg extends StatelessWidget {
 
   _says(Size size, TextTheme s) {
     return Container(
-      height: (size.height / 9) / 2.5,
+      // height: (size.height / 9) / 2.5,
       // width: (size.width / 1.3) / 1.4,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7),

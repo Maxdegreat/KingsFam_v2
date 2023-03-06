@@ -15,7 +15,7 @@ class KingscordState extends Equatable {
   final Failure failure;
   final List<Message?> msgs;
   final Queue<File> filesToBePosted;
-  final String? replyMessage;
+  final Message? replyMessage;
   final bool replying;
   final List<Userr> potentialMentions;
   final List<Userr> mentions;
@@ -74,7 +74,7 @@ class KingscordState extends Equatable {
     FileShareStatus? fileShareStatus,
     Queue<File>? filesToBePosted,
     Failure? failure,
-    String? replyMessage,
+    Message? replyMessage,
     bool? replying,
     List<Userr>? potentialMentions,
     List<Userr>? mentions, // if mentions does not work add the final at front of line

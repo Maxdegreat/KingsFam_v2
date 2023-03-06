@@ -368,19 +368,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
               //   padding: const EdgeInsets.only(left: 20, top: 2),
               //   child: DisplayMsg(m: null, s: null, amountInVc: cord.metaData!["inCall"]),
               // )
-            ] else if (cord.mode == Mode.announcement) ...[
-              Padding(
-                padding: const EdgeInsets.only(left: 20, top: 2),
-                child: DisplayMsg(
-                    m: cord.recentActivity!["chat"], s: null, amountInVc: null),
-              )
-            ] else if (cord.mode == Mode.attendance) ...[
-              // Padding(
-              //   padding: const EdgeInsets.only(left: 20, top: 2),
-              //   child: DisplayMsg(
-              //       m: cord.recentActivity!["chat"], s: null, amountInVc: null),
-              // )
-            ]
+            ] 
           ],
         ),
       ),

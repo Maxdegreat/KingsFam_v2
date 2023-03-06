@@ -20,7 +20,7 @@ class Message {
   final List<String>? mentionedIds;
   final Map<String, int>? reactions;
   final Map<String, dynamic>? metadata; // was Map<String, int> reactions
-  final String? reply;
+  final Message? replyMsg;
   final String? giphyId;
 
 //2 gen the constructor
@@ -36,7 +36,7 @@ class Message {
     this.reactions,
     required this.date,
     this.metadata,
-    this.reply,
+    this.replyMsg,
     this.giphyId,
   });
 
@@ -52,7 +52,7 @@ class Message {
         date,
         mentionedIds,
         metadata,
-        reply,
+        replyMsg,
         giphyId,
       ];
 
@@ -68,7 +68,7 @@ class Message {
     Timestamp? date,
     List<String>? mentionedIds,
     Map<String, dynamic>? metadata,
-    String? reply,
+    Message? replyMsg,
     String? giphyLocal,
   }) {
     return Message(
@@ -81,7 +81,7 @@ class Message {
       videoUrl: videoUrl ?? this.videoUrl,
       date: date ?? this.date,
       mentionedIds: mentionedIds ?? this.mentionedIds,
-      reply: reply ?? this.reply,
+      replyMsg: replyMsg ?? this.replyMsg,
       giphyId: giphyId ?? this.giphyId
     );
   }
@@ -95,10 +95,11 @@ class Message {
   }
 
   // 5 make the to doc
-  Map<String, dynamic> ToDoc({required String senderId}) {
+  Map<String, dynamic> ToDoc({required String senderId, String? cmId = null, String? kcId = null, String? replyMsgId = null, }) {
     try {
       return {
       'sender': FirebaseFirestore.instance.collection(Paths.users).doc(senderId),
+      'replyMsg': replyMsgId == null ? null : FirebaseFirestore.instance.collection(Paths.church).doc(cmId).collection(Paths.kingsCord).doc(kcId).collection(Paths.messages).doc(replyMsgId),
       'senderUsername': senderUsername,
       'text': text,
       'imageUrl': imageUrl,
@@ -107,8 +108,6 @@ class Message {
       'date': date,
       'mentionedIds': mentionedIds,
       'metadata': metadata ?? {},
-       // This should be a string where the value is the ID of the og message.
-      'reply': reply,
       "giphyId": giphyId,
     };
     } catch (e) {
@@ -137,7 +136,7 @@ class Message {
       metadata: Map<String, dynamic>.from(data['metadata'] ?? {}),
       reactions: Map<String, int>.from(data['reactions'] ?? {}),
       mentionedIds: List<String>.from(data['mentionedIds'] ?? []),
-      reply: data['reply'] ?? null,
+      replyMsg: data['replyMsg'] ?? null,
       giphyId: data['giphyId'] ?? null,
     );
   }

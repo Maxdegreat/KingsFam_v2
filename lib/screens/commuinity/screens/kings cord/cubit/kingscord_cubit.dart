@@ -134,8 +134,8 @@ class KingscordCubit extends Cubit<KingscordState> {
       for (int i = 0; i < msgs.length; i++) {
         Message? m = await msgs[i];
         if (m != null) {
-          if (m.reply != null) {
-            m.copyWith(reply: m.reply);
+          if (m.replyMsg != null) {
+            m.copyWith(replyMsg: m);
           }
         allMsgs.add(m);
       // get the most recent ids
@@ -200,7 +200,7 @@ class KingscordCubit extends Cubit<KingscordState> {
     required String cmTitle,
     required KingsCord kingsCordData,
     required String currUserName, // aka sender username
-    required String? reply,
+    required Message? reply,
     required Message? prevMsgSender,
     required Map<String, dynamic>? metadata,
   }) async {
@@ -217,7 +217,7 @@ class KingscordCubit extends Cubit<KingscordState> {
       date: Timestamp.fromDate(DateTime.now()),
       imageUrl: null,
       senderUsername: currUserName,
-      reply: reply,
+      replyMsg: reply != null ? reply : null,
       metadata: metadata,
       mentionedIds: mentionedInfo.keys.toSet().toList(),
     );
@@ -395,13 +395,12 @@ class KingscordCubit extends Cubit<KingscordState> {
     }
   }
 
-  addReply(String msg, Userr sender) {
-    selectMention(userr: sender);
-    emit(state.copyWith(replyMessage: msg));
+  addReply(Message m) {
+    emit(state.copyWith(replyMessage: m));
   }
 
   removeReply() {
-   emit(state.copyWith(replyMessage: "", mentions: []));
+   emit(state.copyWith(replyMessage: null));
   } 
 
   // for upword pagination just go to the top and add the next 10 or so to the begining of the list.

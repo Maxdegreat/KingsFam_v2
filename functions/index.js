@@ -686,7 +686,7 @@ exports.onKingsCordMessageSent = functions.firestore
 
     kcRef.update({ recentTimestamp: kcMsgData.date });
 
-    functions.logger.log("this is the complete snapshot: ", snapshot.data());
+    functions.logger.log("complete snapshot: ", snapshot.data());
     
     var chatPriority = snapshot.data().metadata.chatPriority;
 
@@ -724,6 +724,21 @@ exports.onKingsCordMessageSent = functions.firestore
         timeToLive: 60 * 60 * 24,
       };
 
+      if (kcMsgData.reply !== undefined) {
+        // handle if a message was replied to
+      }
+
+      if (kcMsgData.mentionedIds !== undefined && kcMsgData.mentionedIds.length > 0) {
+        // handle if a message contains replies
+        var tokenBucket = [];
+        for (var i = 0; i < kcMsgData.mentionedIds; i++) {
+          var user = getUserWithId(kcMsgData.mentionedIds[i]);
+          tokenBucket.push(user.token[0])
+        }
+        admin.messaging().sendToDevice(tokenBucket, message, options);
+        return ;
+      }
+
       if (chatPriority !== undefined && chatPriority == "Notify For All Messages" ) {
         var topic = cmId + kcId + "topic";
         admin
@@ -737,8 +752,16 @@ exports.onKingsCordMessageSent = functions.firestore
         });
       } else if (chatPriority === undefined || chatPriority === "Passive Chat") {
         // get the user of most recent chat member.
-        var recentUser = getRecentKcUser();
-        admin.messaging().sendToDevice(recentUser.tokens, message, options)
+        console.log("about to call getRecentKcUser");
+        getRecentKcUser(cmId, kcId).then((user) => {
+          if (user !== undefined) {
+            console.log("4")
+            admin.messaging().sendToDevice(user.token[0], message, options);
+          } else {
+            console.log("The user is still undefined")
+          }
+        });
+        
         // if same as sender | check if recent chat is 5 hr apart | if true just send to all users
 
         // if not same as user notfi that recent user 
@@ -774,28 +797,50 @@ async function deleteQueryBatch(db, query, resolve) {
 }
 
 async function getRecentKcUser(cmId, kcId) {
-  var messageSnap = await admin.firestore()
-  .collection('church')
+  try {
+    functions.logger.log("in getRecentKcUser, cmId and kcId", cmId, kcId)
+  var messageSnap = await admin
+  .firestore()
+  .collection("church")
   .doc(cmId)
-  .collection('kingscord')
+  .collection("kingsCord")
   .doc(kcId)
   .collection('messages')
-  .orderBy('sentAt', 'desc')
-  .limit(1)
-  .startAfter(admin.firestore.Timestamp.now())
-  .get()
+  .orderBy('date', 'desc')
+  .limit(2)
+  // .startAfter(admin.firestore.Timestamp.now())
+  .get();
 
   var user;
-
-  messageSnap.docs.forEach(async(msg) => {
-    if (msg.sender != null) {
-      var userId = msg.sender.split('/')[1];
+  // ========= READ =========
+  // Limit is 2 above but will return on fist itr of for loop 
+  // in order to just notify the most recent user (note using decending order)
+  for (var i = messageSnap.docs.length - 1; i >= 0; i--) {
+    console.log("1")
+    var msgData = messageSnap.docs[i].data();
+    if (msgData.sender !== null) {
+      console.log("2 in if, next should be if we got the user")
+      var userId = msgData.sender.path.split('/')[1];
       var userRef = await admin.firestore().collection("users").doc(userId).get();
-      var user = userRef.data()
+      user = userRef.data()
+      functions.logger.log("3 returning user is: ", user)
+      return user
     }
-  })
+  }
 
-  return user
+  functions.logger.log("The user after the loop: ", user);
+  console.log("we are returning undefined");
+  return undefined;
+
+  
+  } catch (error) {
+    functions.logger.log("The error is: " + error)
+  }
+}
+
+async function getUserWithId(uid) {
+  var userRef = await admin.firestore().collection("users").doc(uid).get();
+  return userRef.data();
 }
 
 // when a user has opted to recieve notifications in a kings cord room

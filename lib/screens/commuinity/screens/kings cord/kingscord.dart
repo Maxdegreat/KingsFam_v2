@@ -418,7 +418,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                     //divider of a height 1
                     Divider(height: 1.0),
 
-                    state.replyMessage != null && state.replyMessage!.isNotEmpty
+                    state.replyMessage != null
                         ? _showReplying(state)
                         : SizedBox.shrink(),
 
@@ -566,34 +566,37 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   }
 
   _showReplying(KingscordState state) {
-    return Container(
-      color: Color.fromARGB(110, 255, 193, 7),
-      height: 40,
-      width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Center(
-            child: IconButton(
-                icon: Icon(Iconsax.trash, color: Colors.grey),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+                        decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondary,
+                  borderRadius: BorderRadius.circular(7),
+                ),
+        width: double.infinity,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            IconButton(
+                icon: Icon(Iconsax.close_circle, color: Colors.grey),
                 onPressed: () {
                   log(state.replyMessage.toString());
                   context.read<KingscordCubit>().removeReply();
                 }),
-          ),
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 4.0),
-              child: Text(
-                "Replying to " + state.replyMessage!.split("[#-=]")[1],
-                style: TextStyle(color: Colors.grey, fontSize: 15),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 4.0),
+                child: Text(
+                  "Replying to " + state.replyMessage!.senderUsername! + "\n" + state.replyMessage!.text!,
+                  style: TextStyle(color: Colors.grey, fontSize: 15),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

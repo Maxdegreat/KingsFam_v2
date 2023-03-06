@@ -45,18 +45,18 @@ class MessageLines extends StatefulWidget {
 }
 
 class _MessageLinesState extends State<MessageLines> {
-
   late String msgBodyForReply;
 
   @override
   void initState() {
     super.initState();
-        msgBodyForReply = widget.message.text != null
+    msgBodyForReply = widget.message.text != null
         ? widget.message.text!
         : " Shared something";
   }
 
-  uploadReaction(String reaction, String msgId, Map<String, int> reactions, Map<String, dynamic> metadata) {
+  uploadReaction(String reaction, String msgId, Map<String, int> reactions,
+      Map<String, dynamic> metadata) {
     int? incrementedReaction = reactions[reaction];
     if (incrementedReaction == null) {
       incrementedReaction = 1;
@@ -103,7 +103,7 @@ class _MessageLinesState extends State<MessageLines> {
   _showReactionBarUi({required Map<String, dynamic>? messageReactions}) {
     Map<String, dynamic> reactions = {};
     if (widget.message.metadata!.containsKey("reactions"))
-      reactions = widget.message.metadata!['reactions']; 
+      reactions = widget.message.metadata!['reactions'];
     if (!(reactions.length > 0)) {
       return SizedBox.shrink();
     } else {
@@ -115,8 +115,7 @@ class _MessageLinesState extends State<MessageLines> {
               children: reactions.keys.map((e) {
             return Padding(
               padding: const EdgeInsets.only(top: 5.0, bottom: 5.0, right: 7),
-              child: reactionContainer(
-                  reaction: e, num: reactions[e]!),
+              child: reactionContainer(reaction: e, num: reactions[e]!),
             );
           }).toList()),
         ),
@@ -207,78 +206,94 @@ class _MessageLinesState extends State<MessageLines> {
                   children: [
                     SizedBox(width: 7),
                     ListTile(
-                      leading: Icon(Icons.reply),
-                      title: Text("Reply", style: Theme.of(context).textTheme.bodyText1),
-                      onTap: () {
-                    kcubit!.addReply(
-                    widget.message.sender!.token[0] +
-                        widget.message.id! +
-                        "[#-=]" +
-                        widget.message.sender!.username +
-                        ": " +
-                        msgBodyForReply,
-                    widget.message.sender!);
-                      },
-                    ),
-                                         ListTile(
+                        leading: Icon(Icons.reply),
+                        title: Text("Reply",
+                            style: Theme.of(context).textTheme.bodyText1),
+                        onTap: () => kcubit!.addReply(widget.message)),
+                    ListTile(
                       leading: Icon(Icons.copy),
-                      title: Text("Copy", style: Theme.of(context).textTheme.bodyText1),
+                      title: Text("Copy",
+                          style: Theme.of(context).textTheme.bodyText1),
                       onTap: () {
-                              if (widget.message.text != null) {
-                                copyTextToClip(widget.message.text!);
-                                snackBar(
-                                    snackMessage: "copied", context: context);
-                              } else {
-                                snackBar(
-                                    snackMessage: "can not copy",
-                                    context: context);
-                              }
-                            },
-                    ),
-                   if (context.read<AuthBloc>().state.user!.uid == widget.message.sender!.id) ... [
-                    ListTile(
-                      leading: Icon(Icons.delete),
-                      title: Text("Unsend", style: Theme.of(context).textTheme.bodyText1),
-                      onTap: () {
-                         
-                              FirebaseFirestore.instance
-                                  .collection(Paths.church)
-                                  .doc(this.widget.cm.id!)
-                                  .collection(Paths.kingsCord)
-                                  .doc(this.widget.kc.id!)
-                                  .collection(Paths.messages)
-                                  .doc(this.widget.message.id)
-                                  .delete();
-                              Navigator.of(context).pop();
+                        if (widget.message.text != null) {
+                          copyTextToClip(widget.message.text!);
+                          snackBar(snackMessage: "copied", context: context);
+                        } else {
+                          snackBar(
+                              snackMessage: "can not copy", context: context);
+                        }
                       },
                     ),
-
-                   ]
-
-                   else ... [
-                     ListTile(
-                      leading: Icon(Icons.report, color: Colors.redAccent,),
-                      title: Text("Report this message", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
-                      onTap: () {
-                         Map<String, dynamic> info = {
-                          "userId" : widget.message.sender!.id,
-                          "what" : "message",
-                          "continue": FirebaseFirestore.instance.collection(Paths.church).doc(widget.cm.id).collection(Paths.kingsCord).doc(widget.kc.id).collection(Paths.messages).doc(widget.message.id),                 
-                        };
-                        Navigator.of(context).pushNamed(ReportContentScreen.routeName, arguments: RepoetContentScreenArgs(info: info));
-                      }
-                    ),
-
-                    ListTile(
-                      leading: Icon(Icons.block, color: Colors.redAccent,),
-                      title: Text("Block "+ widget.message.sender!.username, style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
-                      onTap: () {
-                          context.read<BuidCubit>().onBlockUser(widget.message.sender!.id);
-                          snackBar(snackMessage: widget.message.sender!.username + "is blocked", context: context);
-                         Navigator.of(context).pop();
-                      }
-                    ),
-                   ],
+                    if (context.read<AuthBloc>().state.user!.uid ==
+                        widget.message.sender!.id) ...[
+                      ListTile(
+                        leading: Icon(Icons.delete),
+                        title: Text("Unsend",
+                            style: Theme.of(context).textTheme.bodyText1),
+                        onTap: () {
+                          FirebaseFirestore.instance
+                              .collection(Paths.church)
+                              .doc(this.widget.cm.id!)
+                              .collection(Paths.kingsCord)
+                              .doc(this.widget.kc.id!)
+                              .collection(Paths.messages)
+                              .doc(this.widget.message.id)
+                              .delete();
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ] else ...[
+                      ListTile(
+                          leading: Icon(
+                            Icons.report,
+                            color: Colors.redAccent,
+                          ),
+                          title: Text(
+                            "Report this message",
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText1!
+                                .copyWith(color: Colors.redAccent),
+                          ),
+                          onTap: () {
+                            Map<String, dynamic> info = {
+                              "userId": widget.message.sender!.id,
+                              "what": "message",
+                              "continue": FirebaseFirestore.instance
+                                  .collection(Paths.church)
+                                  .doc(widget.cm.id)
+                                  .collection(Paths.kingsCord)
+                                  .doc(widget.kc.id)
+                                  .collection(Paths.messages)
+                                  .doc(widget.message.id),
+                            };
+                            Navigator.of(context).pushNamed(
+                                ReportContentScreen.routeName,
+                                arguments: RepoetContentScreenArgs(info: info));
+                          }),
+                      ListTile(
+                          leading: Icon(
+                            Icons.block,
+                            color: Colors.redAccent,
+                          ),
+                          title: Text(
+                            "Block " + widget.message.sender!.username,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText1!
+                                .copyWith(color: Colors.redAccent),
+                          ),
+                          onTap: () {
+                            context
+                                .read<BuidCubit>()
+                                .onBlockUser(widget.message.sender!.id);
+                            snackBar(
+                                snackMessage: widget.message.sender!.username +
+                                    "is blocked",
+                                context: context);
+                            Navigator.of(context).pop();
+                          }),
+                    ],
                   ],
                 ),
               ],
@@ -320,7 +335,8 @@ class _MessageLinesState extends State<MessageLines> {
         textWithLinksForColumn.add(Text(tempString,
             style: Theme.of(context)
                 .textTheme
-                .bodyText1!.copyWith(fontWeight: FontWeight.w500, fontSize: 15)));
+                .bodyText1!
+                .copyWith(fontWeight: FontWeight.w500, fontSize: 15)));
         tempString = "";
         // add the element to the links so that the code knows visually there is a link in a show link preview
         links.add(element);
@@ -330,10 +346,10 @@ class _MessageLinesState extends State<MessageLines> {
             launch(element);
           },
           child: Text(element,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText1!
-                  .copyWith(fontWeight: FontWeight.w500, fontSize: 15, color: Colors.blue)),
+              style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 15,
+                  color: Colors.blue)),
         );
         // add the links to the list below so that the code can later use these txtbuttons w/ links as child
         textWithLinksForColumn.add(l);
@@ -373,8 +389,7 @@ class _MessageLinesState extends State<MessageLines> {
               _showReactionBarUi(
                   messageReactions: widget.message.metadata!["reactions"])
             ],
-          )
-        );
+          ));
     }
     // the return of the text when there is no links involved
     RegExp regExp = RegExp(r'^@.+');
@@ -392,8 +407,10 @@ class _MessageLinesState extends State<MessageLines> {
               child: Padding(
                 padding: const EdgeInsets.all(2.0),
                 child: Text(widget.message.text!,
-                    style: Theme.of(context).textTheme.caption!.copyWith(fontSize: 15,
-                                fontWeight: FontWeight.w400)),
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(fontSize: 15, fontWeight: FontWeight.w400)),
               )),
           _showReactionBarUi(
             messageReactions: widget.message.metadata!["reactions"],
@@ -486,7 +503,6 @@ class _MessageLinesState extends State<MessageLines> {
     );
   }
 
-
   bool isInit = false;
   KingscordCubit? kcubit;
   @override
@@ -499,24 +515,28 @@ class _MessageLinesState extends State<MessageLines> {
       }
     }
 
-
     return BlocProvider.value(
       value: kcubit!,
-      child: 
-
-      context.read<BuidCubit>().state.buids.contains(widget.message.sender!.id) 
-
-      ? HideContent.textContent(Theme.of(context).textTheme, () {context.read<BuidCubit>().onBlockUser(widget.message.sender!.id); Navigator.of(context).pop();})
-      
-      : GestureDetector(
-          onLongPress: () {
-            _showReactionsBar(
-                widget.message.id!,
-                widget.message.metadata!.containsKey('reactions') ? widget.message.metadata!['reactions'] : {} ,
-                context,
-                widget.message.metadata!);
-          },
-        child: messageLineChild()),
+      child: context
+              .read<BuidCubit>()
+              .state
+              .buids
+              .contains(widget.message.sender!.id)
+          ? HideContent.textContent(Theme.of(context).textTheme, () {
+              context.read<BuidCubit>().onBlockUser(widget.message.sender!.id);
+              Navigator.of(context).pop();
+            })
+          : GestureDetector(
+              onLongPress: () {
+                _showReactionsBar(
+                    widget.message.id!,
+                    widget.message.metadata!.containsKey('reactions')
+                        ? widget.message.metadata!['reactions']
+                        : {},
+                    context,
+                    widget.message.metadata!);
+              },
+              child: messageLineChild()),
     );
   }
 
@@ -527,93 +547,84 @@ class _MessageLinesState extends State<MessageLines> {
       padding: const EdgeInsets.only(bottom: 20, left: 8.0, right: 8.0),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: widget.message.metadata!.containsKey(Mode.announcement) ? Color.fromARGB(46, 255, 193, 7) : null
-        ),
+            borderRadius: BorderRadius.circular(10),
+            color: widget.message.metadata!.containsKey(Mode.announcement)
+                ? Color.fromARGB(46, 255, 193, 7)
+                : null),
         // color: Colors.white24,
         child: messageType
             ? _messageWelcomeWidget()
             : Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  kingsCordAvtar(context),
-                  SizedBox(
-                    width: 15.0,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            widget.message.sender!.username,
-                            style: Theme.of(context)
-                        .textTheme
-                        .bodyText1!
-                        .copyWith(fontWeight: FontWeight.w500, fontSize: 15), 
-                            
-                          ),
-                          SizedBox(width: 5),
-                          Text('${widget.message.date.timeAgo()}',
+                padding: const EdgeInsets.symmetric(vertical: 2.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    kingsCordAvtar(context),
+                    SizedBox(
+                      width: 15.0,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              widget.message.sender!.username,
                               style: Theme.of(context)
                                   .textTheme
-                                  .caption!
-                                  .copyWith(fontStyle: FontStyle.italic)),
-                        ],
-                      ),
-                      SizedBox(height: 2),
-                      widget.message.reply != null &&
-                              widget.message.reply!.isNotEmpty
-                          ? Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 4.0, bottom: 5),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.secondary,
-                                    borderRadius:
-                                        BorderRadius.circular(10)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(2.0),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: Text(
-                                      "reply to " +
-                                          widget.message.reply!
-                                              .split(": ")
-                                              .first
-                                              .substring(188),
-                                      style: TextStyle(
-                                          fontStyle: FontStyle.italic,
-                                          color: Theme.of(context).colorScheme.primary,
-                                          fontSize: 15),
-                                    ),
+                                  .bodyText1!
+                                  .copyWith(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 15),
+                            ),
+                            SizedBox(width: 5),
+                            Text('${widget.message.date.timeAgo()}',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .caption!
+                                    .copyWith(fontStyle: FontStyle.italic)),
+                          ],
+                        ),
+                        SizedBox(height: 2),
+                        widget.message.replyMsg != null &&
+                                widget.message.replyMsg != null
+                            ? Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 4.0, bottom: 5),
+                                child: RichText(
+                                  text: TextSpan(
+                                    style:  Theme.of(context).textTheme.caption,
+
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                          text: 'Replied ' + widget.message.replyMsg!.senderUsername!),
+                                      TextSpan(
+                                        text: widget.message.replyMsg!.text != null ? widget.message.replyMsg!.text! : 'Shared something',
+                                        style: Theme.of(context).textTheme.caption
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ),
-                            )
-                          : SizedBox.shrink(),
-                      Container(
-                          constraints: BoxConstraints(
-                            maxWidth:
-                                MediaQuery.of(context).size.width / 1.4,
-                          ),
-                          child: widget.message.giphyId != null
-                              ? DisplayGif(giphyId: widget.message.giphyId!)
-                              : widget.message.text != null
-                                  ? _buildText(context)
-                                  : widget.message.videoUrl != null &&
-                                          widget.message.thumbnailUrl !=
-                                              null
-                                      ? _buildVideo(context)
-                                      : _buildImage(context)),
-                    ],
-                  )
-                ],
+                              )
+                            : SizedBox.shrink(),
+                        Container(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width / 1.4,
+                            ),
+                            child: widget.message.giphyId != null
+                                ? DisplayGif(giphyId: widget.message.giphyId!)
+                                : widget.message.text != null
+                                    ? _buildText(context)
+                                    : widget.message.videoUrl != null &&
+                                            widget.message.thumbnailUrl != null
+                                        ? _buildVideo(context)
+                                        : _buildImage(context)),
+                      ],
+                    )
+                  ],
+                ),
               ),
-            ),
       ),
     );
   }
@@ -635,23 +646,22 @@ class _MessageLinesState extends State<MessageLines> {
             : kingsCordProfileIcon(),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(7),
-            border: Border.all(
-                width: .7,
-                color: widget.message.sender!.colorPref == ""
-                    ? Colors.red
-                    : Color(hexcolor
-                        .hexcolorCode(widget.message.sender!.colorPref))),
-            color: widget.message.sender!.colorPref == ""
-                ? Colors.red
-                : Color(
-                    hexcolor.hexcolorCode(widget.message.sender!.colorPref)),
-            ),
+          border: Border.all(
+              width: .7,
+              color: widget.message.sender!.colorPref == ""
+                  ? Colors.red
+                  : Color(
+                      hexcolor.hexcolorCode(widget.message.sender!.colorPref))),
+          color: widget.message.sender!.colorPref == ""
+              ? Colors.red
+              : Color(hexcolor.hexcolorCode(widget.message.sender!.colorPref)),
+        ),
       ),
     );
   }
 
-  Widget? kingsCordProfileImg() => ContainerWithURLImg(imgUrl: widget.message.sender!.profileImageUrl, height: 35, width: 35);
-
+  Widget? kingsCordProfileImg() => ContainerWithURLImg(
+      imgUrl: widget.message.sender!.profileImageUrl, height: 35, width: 35);
 
   Widget? kingsCordProfileIcon() =>
       Container(child: Icon(Icons.account_circle));

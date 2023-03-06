@@ -26,7 +26,7 @@ class ThemeInfo {
       colorScheme: ColorScheme.fromSwatch().copyWith(
         secondary: Colors.grey[200],
         primary: Colors.amber,
-        onPrimary: Colors.grey[200],
+        onPrimary: Colors.grey[100],
         inversePrimary: Colors.black,
         outline: Colors.grey[800]
         ),
