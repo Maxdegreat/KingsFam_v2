@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:kingsfam/config/constants.dart';
-import 'package:kingsfam/screens/chat_room/chat_room.dart';
 import 'package:kingsfam/screens/edit_profile/edit_profile_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';

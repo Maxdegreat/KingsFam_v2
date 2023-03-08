@@ -1,20 +1,13 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/mock_flag.dart';
 import 'package:kingsfam/config/paths.dart';
-import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/church/base_church_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
-import 'package:kingsfam/roles/role_types.dart';
-import 'package:kingsfam/screens/commuinity/actions.dart';
 
 class ChurchRepository extends BaseChurchRepository {
   final fb = FirebaseFirestore.instance.collection(Paths.church);
@@ -37,7 +30,8 @@ class ChurchRepository extends BaseChurchRepository {
           .map((snap) {
         List<Future<Message?>> bucket = [];
         snap.docs.forEach((doc) {
-          Future<Message?> msg = Message.fromDoc(doc);
+          log("!!!!!!!!!!!!!!!");
+          Future<Message?> msg = Message.fromDoc(doc, cmId, kcId);
           bucket.add(msg);
         });
         return bucket;
@@ -90,7 +84,7 @@ class ChurchRepository extends BaseChurchRepository {
       for (var s in snaps.docs) {
         // where s is a snapshot to a Message
         if (s.exists) {
-          Message? m = await Message.fromDoc(s);
+          Message? m = await Message.fromDoc(s, cmId, kcId);
           bucket.add(m);
         }
       }

@@ -106,11 +106,10 @@ class KingscordCubit extends Cubit<KingscordState> {
 
   void onLoadInit(
       {required String cmId, required String kcId, required int limit}) async {
-    // I need to load the all list and the recent list
-    // then update the state with the users who are opt in
+
     emit(state.copyWith(status: KingsCordStatus.getInitmsgs));
     emit(state.copyWith(msgs: [], recentMsgIdToTokenMap: {}));
-    await getNotifLst(cmId: cmId, kcId: kcId);
+
 
     paginateMsg(cmId: cmId, kcId: kcId, limit: limit);
   }
@@ -201,15 +200,14 @@ class KingscordCubit extends Cubit<KingscordState> {
     required KingsCord kingsCordData,
     required String currUserName, // aka sender username
     required Message? reply,
-    required Message? prevMsgSender,
-    required Map<String, dynamic>? metadata,
+    Map<String, dynamic>? metadata = const {},
   }) async {
 
-    if (metadata != null) {
-      metadata["kcName"] = kingsCordData.cordName;
-    } else { 
-      metadata = {};
-      metadata["kcName"] = kingsCordData.cordName;
+    log("metadata is null: " + (metadata == null).toString());
+
+    metadata!["kcName"] = kingsCordData.cordName;
+    if (reply != null) {
+      metadata["replyId"] = reply.id;
     }
     
     final message = Message(
@@ -217,7 +215,6 @@ class KingscordCubit extends Cubit<KingscordState> {
       date: Timestamp.fromDate(DateTime.now()),
       imageUrl: null,
       senderUsername: currUserName,
-      replyMsg: reply != null ? reply : null,
       metadata: metadata,
       mentionedIds: mentionedInfo.keys.toSet().toList(),
     );
@@ -227,7 +224,6 @@ class KingscordCubit extends Cubit<KingscordState> {
         kingsCordId: kingsCordId,
         message: message,
         senderId: _authBloc.state.user!.uid);
-
   }
 
   Future<void> onSendGiphyMessage({
@@ -370,29 +366,6 @@ class KingscordCubit extends Cubit<KingscordState> {
         status: KingsCordStatus.initial,
         fileShareStatus: fileShareStatus,
         filesToBePosted: state.filesToBePosted));
-  }
-
-  Future<void> getNotifLst({required String cmId, required String kcId}) async {
-    DocumentReference ref = FirebaseFirestore.instance
-        .collection(Paths.church)
-        .doc(cmId)
-        .collection(Paths.kingsCord)
-        .doc(kcId)
-        .collection(Paths.roomSettings)
-        .doc(kcId);
-
-    DocumentSnapshot snap = await ref.get();
-    if (snap.exists) {
-      // now I need to store the curr list in local state
-      Map<String, dynamic> data = snap.data() as Map<String, dynamic>;
-
-      List<String> r = List.from(data["recent"]);
-      List<String> a = List.from(data["all"]);
-
-      emit(state.copyWith(recentNotifLst: r, allNotifLst: a));
-    } else {
-      emit(state.copyWith(recentNotifLst: [], allNotifLst: []));
-    }
   }
 
   addReply(Message m) {

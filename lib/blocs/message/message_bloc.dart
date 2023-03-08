@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/repositories/chat/chat_repository.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
 
 part 'message_event.dart';
@@ -12,13 +11,10 @@ part 'message_state.dart';
 class MessageBloc extends Bloc<MessageEvent, MessageState> {
   final ChurchRepository _churchRepository;
   // ignore: unused_field
-  final ChatRepository _chatRepository;
   StreamSubscription<List<Future<Message?>>>? _msgStreamSubscription;
   MessageBloc({
     required ChurchRepository churchRepository,
-    required ChatRepository chatRepository,
   }) : _churchRepository = churchRepository,
-       _chatRepository = chatRepository,
        super(MessageState.inital());
 
   @override

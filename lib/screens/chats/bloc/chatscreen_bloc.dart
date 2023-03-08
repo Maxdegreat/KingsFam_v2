@@ -10,18 +10,15 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/mock_flag.dart';
-import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
-import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 
 part 'chatscreen_event.dart';
 part 'chatscreen_state.dart';
 
 class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
-  final ChatRepository _chatRepository;
   final AuthBloc _authBloc;
   final PostsRepository _postsRepository;
   final LikedPostCubit _likedPostCubit;
@@ -33,13 +30,12 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   // StreamSubscription<List<Church?>>? _churchStreamSubscription; // a stream form shared preerences
 
   ChatscreenBloc({
-    required ChatRepository chatRepository,
     required AuthBloc authBloc,
     required LikedPostCubit likedPostCubit,
     required PostsRepository postsRepository,
     required ChurchRepository churchRepository,
     required UserrRepository userrRepository,
-  })  : _chatRepository = chatRepository,
+  })  : 
         _userrRepository = userrRepository,
         _authBloc = authBloc,
         _likedPostCubit = likedPostCubit,

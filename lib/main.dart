@@ -68,7 +68,6 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<ChurchRepository>(create: (_) => ChurchRepository()),
         RepositoryProvider<KingsCordRepository>(
             create: (_) => KingsCordRepository()),
-        RepositoryProvider<ChatRepository>(create: (_) => ChatRepository()),
         RepositoryProvider<AuthRepository>(create: (_) => AuthRepository()),
         RepositoryProvider<PrayerRepo>(create: (_) => PrayerRepo()),
         RepositoryProvider<UserrRepository>(create: (_) => UserrRepository()),
@@ -93,7 +92,6 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider<ChatscreenBloc>(
             create: (context) => ChatscreenBloc(
-                chatRepository: context.read<ChatRepository>(),
                 authBloc: context.read<AuthBloc>(),
                 likedPostCubit: context.read<LikedPostCubit>(),
                 postsRepository: context.read<PostsRepository>(),
@@ -153,7 +151,6 @@ class MyApp extends StatelessWidget {
           BlocProvider<ProfileBloc>(
               create: (context) => ProfileBloc(
                   prayerRepo: context.read<PrayerRepo>(),
-                  chatRepository: context.read<ChatRepository>(),
                   userrRepository: context.read<UserrRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   postRepository: context.read<PostsRepository>(),

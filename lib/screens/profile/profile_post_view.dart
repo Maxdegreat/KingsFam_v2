@@ -55,7 +55,6 @@ class ProfilePostView extends StatefulWidget {
         builder: (context) => BlocProvider<ProfileBloc>(
               create: (_) => ProfileBloc(
                 prayerRepo: context.read<PrayerRepo>(),
-                chatRepository: context.read<ChatRepository>(),
                 churchRepository: context.read<ChurchRepository>(),
                 authBloc: context.read<AuthBloc>(),
                 likedPostCubit: context.read<LikedPostCubit>(),

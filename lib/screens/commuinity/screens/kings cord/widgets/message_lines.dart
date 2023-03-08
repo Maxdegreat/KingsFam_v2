@@ -209,7 +209,11 @@ class _MessageLinesState extends State<MessageLines> {
                         leading: Icon(Icons.reply),
                         title: Text("Reply",
                             style: Theme.of(context).textTheme.bodyText1),
-                        onTap: () => kcubit!.addReply(widget.message)),
+                        onTap: () {
+                        kcubit!.addReply(widget.message);
+                        Navigator.of(context).pop();
+                    
+                        }), 
                     ListTile(
                       leading: Icon(Icons.copy),
                       title: Text("Copy",

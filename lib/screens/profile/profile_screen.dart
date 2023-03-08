@@ -54,7 +54,6 @@ class ProfileScreen extends StatefulWidget {
                   userrRepository: context.read<UserrRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   postRepository: context.read<PostsRepository>(),
-                  chatRepository: context.read<ChatRepository>()
                   // ..add(ProfileLoadUserr(userId: args.userId, vidCtrl: null)
                   ),
               child: ProfileScreen(

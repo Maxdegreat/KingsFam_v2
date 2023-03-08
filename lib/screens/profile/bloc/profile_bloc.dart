@@ -12,7 +12,6 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/models/prayer_modal.dart';
 import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
-import 'package:kingsfam/screens/chat_room/chat_room.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
 import 'package:video_player/video_player.dart';
 
@@ -25,7 +24,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final AuthBloc _authBloc;
   final LikedPostCubit _likedPostCubit;
   final ChurchRepository _churchRepository;
-  final ChatRepository _chatRepository;
   final PrayerRepo _prayerRepo;
 
   // <List<Future<Post?>>>? _postStreamSubscription;
@@ -36,14 +34,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       required PostsRepository postRepository,
       required LikedPostCubit likedPostCubit,
       required ChurchRepository churchRepository,
-      required ChatRepository chatRepository,
       required PrayerRepo prayerRepo})
       : _userrRepository = userrRepository,
         _authBloc = authBloc,
         _postsRepository = postRepository,
         _likedPostCubit = likedPostCubit,
         _churchRepository = churchRepository,
-        _chatRepository = chatRepository,
         _prayerRepo = prayerRepo,
         super(ProfileState.initial());
 
@@ -75,9 +71,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       yield* _mapProfileShowPostsTosState();
     } else if (event is ProfileLikePost) {
       yield* _mapLikePostToState(event);
-    } else if (event is ProfileDm) {
-      yield* _mapProfileDmToState(event);
-    } else if (event is ProfileLoadFollowersUsers) {
+    } 
+    // else if (event is ProfileDm) {
+    //   yield* _mapProfileDmToState(event);
+    // } 
+    else if (event is ProfileLoadFollowersUsers) {
       yield* _mapProfileLoadFollowersUsersToState(event);
     } else if (event is ProfileLoadFollowingUsers) {
       yield* _mapProfileLoadFollowingUsersToState(event);
@@ -238,92 +236,92 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }
   }
 
-  Stream<ProfileState> _mapProfileDmToState(ProfileDm event) async* {
-    try {
-      var user1Id = _authBloc.state.user!.uid;
-      var user2Id = event.profileOwnersId;
-      DocumentReference docRef1 =
-          FirebaseFirestore.instance.collection(Paths.users).doc(user1Id);
+  // Stream<ProfileState> _mapProfileDmToState(ProfileDm event) async* {
+  //   try {
+  //     var user1Id = _authBloc.state.user!.uid;
+  //     var user2Id = event.profileOwnersId;
+  //     DocumentReference docRef1 =
+  //         FirebaseFirestore.instance.collection(Paths.users).doc(user1Id);
 
-      DocumentReference docRef2 =
-          FirebaseFirestore.instance.collection(Paths.users).doc(user2Id);
+  //     DocumentReference docRef2 =
+  //         FirebaseFirestore.instance.collection(Paths.users).doc(user2Id);
 
-      QueryDocumentSnapshot<Map<String, dynamic>>? chatDoc;
-      var chatRef = await FirebaseFirestore.instance
-          .collection(Paths.chats)
-          .where('memRefs', arrayContainsAny: [docRef1, docRef2]).get();
+  //     QueryDocumentSnapshot<Map<String, dynamic>>? chatDoc;
+  //     var chatRef = await FirebaseFirestore.instance
+  //         .collection(Paths.chats)
+  //         .where('memRefs', arrayContainsAny: [docRef1, docRef2]).get();
 
-      if (chatRef.docs.length > 0) {
-        log("!!!!!!!!!!!!!!!!");
-        log("The chat ref exist");
-        chatDoc = chatRef.docs[0];
-        Chat chat = await Chat.fromDoc(chatDoc);
-        if (chat.id != null)
-          Navigator.of(event.ctx).pushNamed(ChatRoom.routeName,
-              arguments: ChatRoomArgs(chat: chat));
-        else
-          yield state.copyWith(
-              status: ProfileStatus.error,
-              failure: Failure(message: "Ops Something Went Wrong"));
-      } else {
-        log("in the else statement, meaning that the chat doc does not exist");
-        final currUser = await _userrRepository.getUserrWithId(
-            userrId: _authBloc.state.user!.uid);
-        final profileOwner = await _userrRepository.getUserrWithId(
-            userrId: event.profileOwnersId);
-        final Map<String, List<dynamic>> memTokens = {
-          _authBloc.state.user!.uid: currUser.token,
-          event.profileOwnersId: profileOwner.token,
-        };
-        final readStatus = {
-          _authBloc.state.user!.uid: false,
-          event.profileOwnersId: false
-        };
-        final recentMessage = {
-          'timestamp': Timestamp.now(),
-          'recentMessage': 'yoo, fam ${currUser.username} started a chat',
-          'recentSender': _authBloc.state.user!.uid
-        };
-        final memRefs = [
-          FirebaseFirestore.instance
-              .collection(Paths.users)
-              .doc(_authBloc.state.user!.uid),
-          FirebaseFirestore.instance
-              .collection(Paths.users)
-              .doc(event.profileOwnersId)
-        ];
+  //     if (chatRef.docs.length > 0) {
+  //       log("!!!!!!!!!!!!!!!!");
+  //       log("The chat ref exist");
+  //       chatDoc = chatRef.docs[0];
+  //       Chat chat = await Chat.fromDoc(chatDoc);
+  //       if (chat.id != null)
+  //         Navigator.of(event.ctx).pushNamed(ChatRoom.routeName,
+  //             arguments: ChatRoomArgs(chat: chat));
+  //       else
+  //         yield state.copyWith(
+  //             status: ProfileStatus.error,
+  //             failure: Failure(message: "Ops Something Went Wrong"));
+  //     } else {
+  //       log("in the else statement, meaning that the chat doc does not exist");
+  //       final currUser = await _userrRepository.getUserrWithId(
+  //           userrId: _authBloc.state.user!.uid);
+  //       final profileOwner = await _userrRepository.getUserrWithId(
+  //           userrId: event.profileOwnersId);
+  //       final Map<String, List<dynamic>> memTokens = {
+  //         _authBloc.state.user!.uid: currUser.token,
+  //         event.profileOwnersId: profileOwner.token,
+  //       };
+  //       final readStatus = {
+  //         _authBloc.state.user!.uid: false,
+  //         event.profileOwnersId: false
+  //       };
+  //       final recentMessage = {
+  //         'timestamp': Timestamp.now(),
+  //         'recentMessage': 'yoo, fam ${currUser.username} started a chat',
+  //         'recentSender': _authBloc.state.user!.uid
+  //       };
+  //       final memRefs = [
+  //         FirebaseFirestore.instance
+  //             .collection(Paths.users)
+  //             .doc(_authBloc.state.user!.uid),
+  //         FirebaseFirestore.instance
+  //             .collection(Paths.users)
+  //             .doc(event.profileOwnersId)
+  //       ];
 
-        var a = currUser.username.substring(0, 3);
-        var b = profileOwner.username.substring(0, 3);
-        // TODO SEARCH PRAM
-        Chat chat = Chat(
-            memRefs: memRefs,
-            activeMems: [],
-            chatName: '$a & $b',
-            memberTokens: memTokens,
-            readStatus: readStatus,
-            recentMessage: recentMessage,
-            searchPram: []);
+  //       var a = currUser.username.substring(0, 3);
+  //       var b = profileOwner.username.substring(0, 3);
+  //       // TODO SEARCH PRAM
+  //       Chat chat = Chat(
+  //           memRefs: memRefs,
+  //           activeMems: [],
+  //           chatName: '$a & $b',
+  //           memberTokens: memTokens,
+  //           readStatus: readStatus,
+  //           recentMessage: recentMessage,
+  //           searchPram: []);
 
-        await _chatRepository.createChat(
-            chat: chat,
-            shouldPassBackChat: true,
-            ctx: event.ctx); // the chat is now made
-        // 2 options:
+  //       await _chatRepository.createChat(
+  //           chat: chat,
+  //           shouldPassBackChat: true,
+  //           ctx: event.ctx); // the chat is now made
+  //       // 2 options:
 
-        // 1 nav all the way home and you will see the chat in the right side
+  //       // 1 nav all the way home and you will see the chat in the right side
 
-        // 2 find the chat and just nav to
-      }
-    } catch (e) {
-      yield state.copyWith(
-          status: ProfileStatus.error,
-          failure: Failure(
-              message: e.toString(),
-              //"mmm, error when trying to do a holy slide into them dms",
-              code: e.toString()));
-    }
-  }
+  //       // 2 find the chat and just nav to
+  //     }
+  //   } catch (e) {
+  //     yield state.copyWith(
+  //         status: ProfileStatus.error,
+  //         failure: Failure(
+  //             message: e.toString(),
+  //             //"mmm, error when trying to do a holy slide into them dms",
+  //             code: e.toString()));
+  //   }
+  // }
 
   Stream<ProfileState> _mapProfileLoadFollowersUsersToState(
       ProfileLoadFollowersUsers event) async* {

@@ -136,7 +136,7 @@ class KingsCordRepository extends BaseKingsCordRepository {
                 .get();
 
             if (msgQs.docs.isNotEmpty) {
-              Message m = await Message.fromDoc(msgQs.docs[0]);
+              Message m = await Message.fromDoc(msgQs.docs[0], cmId, kc.id!);
               recentM = m;
 
               List<String>? savedKcTimeStmap =

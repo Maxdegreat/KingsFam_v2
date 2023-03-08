@@ -80,18 +80,11 @@ class CustomRoute {
       case ProfilePostView.routeName:
         return ProfilePostView.route(settings.arguments as ProfilePostViewArgs);
 
-      case CreateChatScreen.routeName:
-        return CreateChatScreen.route(settings.arguments as CreateChatArgs);
 
       case AddUsers.routeName:
         return AddUsers.route(settings.arguments as CreateNewGroupArgs);
 
-      case ChatRoom.routeName:
-        return ChatRoom.route(args: settings.arguments as ChatRoomArgs);
 
-      case ChatRoomSettings.routeName:
-        return ChatRoomSettings.route(
-            args: settings.arguments as ChatRoomSettingsArgs);
 
       case BuildChurch.routeName:
         return BuildChurch.route();

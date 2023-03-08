@@ -581,7 +581,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             IconButton(
                 icon: Icon(Iconsax.close_circle, color: Colors.grey),
                 onPressed: () {
-                  log(state.replyMessage.toString());
                   context.read<KingscordCubit>().removeReply();
                 }),
             Flexible(
@@ -776,9 +775,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           _messageController.text.trim() != "") {
         context.read<KingscordCubit>().removeReply();
 
-        log("last msg: " + state.msgs.first!.sender!.token.toString() + "\n");
         context.read<KingscordCubit>().onSendTxtMsg(
-              prevMsgSender: state.msgs.first,
               churchId: widget.commuinity.id!,
               kingsCordId: widget.kingsCord.id!,
               txtMsgBodyWithSymbolsForParcing:

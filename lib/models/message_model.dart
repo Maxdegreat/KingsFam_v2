@@ -117,12 +117,20 @@ class Message {
   }
 
   //6 make the fromDoc
-  static Future<Message> fromDoc(DocumentSnapshot doc) async {
+  static Future<Message> fromDoc(DocumentSnapshot doc, String? cmId, String? kcId) async {
     final data = doc.data() as Map<String, dynamic>;
     Userr? user;
     DocumentReference? userRef = data['sender'] as DocumentReference;
     var docSnap = await userRef.get();
     user = Userr.fromDoc(docSnap);
+    
+    Message? replyMessage;
+    if (data["metadata"] != null && cmId != null && kcId != null) {
+      var _metaData = Map<String, dynamic>.from(data['metadata'] ?? {});
+      if (_metaData.containsKey("replyId")) {
+        replyMessage = await _getReplyMsg(_metaData["replyId"], cmId, kcId); 
+      }
+    }
 
     return Message(
       id: doc.id,
@@ -136,8 +144,14 @@ class Message {
       metadata: Map<String, dynamic>.from(data['metadata'] ?? {}),
       reactions: Map<String, int>.from(data['reactions'] ?? {}),
       mentionedIds: List<String>.from(data['mentionedIds'] ?? []),
-      replyMsg: data['replyMsg'] ?? null,
+      replyMsg: replyMessage,
       giphyId: data['giphyId'] ?? null,
     );
   }
+
+  static Future<Message?> _getReplyMsg(String replyId, String cmId, String kcId) async {
+    DocumentSnapshot replySnap = await FirebaseFirestore.instance.collection(Paths.church).doc(cmId).collection(Paths.kingsCord).doc(kcId).collection(Paths.messages).doc(replyId).get();
+    return await Message.fromDoc(replySnap, null, null);
+  }
+
 }

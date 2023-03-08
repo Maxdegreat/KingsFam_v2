@@ -226,12 +226,7 @@ class _AddUsersState extends State<AddUsers> {
                                         break;
 
                                       default:
-                                        Navigator.of(context).pushNamed(
-                                            CreateChatScreen.routeName,
-                                            arguments: CreateChatArgs(
-                                                selectedMembers: state
-                                                    .selectedUsers
-                                                    .toList()));
+                                        
                                     }
 
                                     // print(state.selectedUsers.map((member) => member.username));
