@@ -210,10 +210,9 @@ class _MessageLinesState extends State<MessageLines> {
                         title: Text("Reply",
                             style: Theme.of(context).textTheme.bodyText1),
                         onTap: () {
-                        kcubit!.addReply(widget.message);
-                        Navigator.of(context).pop();
-                    
-                        }), 
+                          kcubit!.addReply(widget.message);
+                          Navigator.of(context).pop();
+                        }),
                     ListTile(
                       leading: Icon(Icons.copy),
                       title: Text("Copy",
@@ -595,19 +594,55 @@ class _MessageLinesState extends State<MessageLines> {
                                 widget.message.replyMsg != null
                             ? Padding(
                                 padding:
-                                    const EdgeInsets.only(top: 4.0, bottom: 5),
-                                child: RichText(
-                                  text: TextSpan(
-                                    style:  Theme.of(context).textTheme.caption,
-
-                                    children: <TextSpan>[
-                                      TextSpan(
-                                          text: 'Replied ' + widget.message.replyMsg!.senderUsername!),
-                                      TextSpan(
-                                        text: widget.message.replyMsg!.text != null ? widget.message.replyMsg!.text! : 'Shared something',
-                                        style: Theme.of(context).textTheme.caption
+                                    const EdgeInsets.symmetric(vertical: 2.0),
+                                child: Container(
+                                  padding: EdgeInsets.only(left:5.0),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(7.0),
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                        topRight: Radius.circular(7.0),
+                                        bottomRight: Radius.circular(7.0),
                                       ),
-                                    ],
+                                      color:
+                                          Theme.of(context).colorScheme.secondary,
+                                      // boxShadow: [
+                                      //   BoxShadow(
+                                      //       color: Theme.of(context)
+                                      //           .colorScheme
+                                      //           .primary,
+                                      //       spreadRadius: 3),
+                                      // ],
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 4.0, bottom: 5, left: 2, right: 2),
+                                      child: RichText(
+                                        text: TextSpan(
+                                          style:
+                                              Theme.of(context).textTheme.caption,
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                                text: 'Replied ' +
+                                                    widget.message.replyMsg!
+                                                        .senderUsername!),
+                                            TextSpan(
+                                                text: widget.message.replyMsg!
+                                                            .text !=
+                                                        null
+                                                    ? widget
+                                                        .message.replyMsg!.text!
+                                                    : 'Shared something',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .caption),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               )

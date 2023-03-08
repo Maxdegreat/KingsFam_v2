@@ -96,7 +96,6 @@ class ChurchRepository extends BaseChurchRepository {
     // this was members { "currId":userRef } or top level was a list
     // .where('members.$currId.userReference', isEqualTo: userRef)
     int limit = MockFlag.ISMOCKTESTING ? 3 : 20;
-    log("we are now in the getCmsStream");
     List<Future<Church?>> bucket = [];
     return FirebaseFirestore.instance
         .collection(Paths.users)

@@ -189,7 +189,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             .getInitPotentialMentions(widget.commuinity.id!);
       } else {
         context.read<KingscordCubit>().searchMentionedUsers(
-            cmId: widget.commuinity.id!, username: username);
+            cmId: widget.commuinity.id!, username: username.toLowerCase());
       }
     }
     var state = context.read<KingscordCubit>().state;
@@ -197,10 +197,11 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     return username != null
         ? Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Container(
+                // height: (55 * state.potentialMentions.length).toDouble(),
                 decoration: BoxDecoration(
-                    color: Color.fromARGB(110, 255, 193, 7),
+                    color: Theme.of(context).colorScheme.secondary,
                     borderRadius: BorderRadius.circular(15)),
                 // width: double.infinity,
                 child: ListView.builder(
@@ -212,8 +213,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                             radius: 24, pfpUrl: _mentioned.profileImageUrl),
                         title: Text(
                           _mentioned.username,
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary),
+                          style: Theme.of(context).textTheme.subtitle1,
                           overflow: TextOverflow.fade,
                         ),
                         onTap: () {
@@ -368,6 +368,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       body: BlocConsumer<KingscordCubit, KingscordState>(
         listener: (context, state) {},
         builder: (context, state) {
+          log("!!!!!!! MSG REPLY STATE: " + state.replyMessage.toString());
           currUsersName = widget.usr.username;
           if (widget.kingsCord.id! != recentkcid || initCubit) {
             // indicates a switch...
@@ -385,92 +386,75 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
           return GestureDetector(
             onTap: () => FocusScope.of(context).unfocus(),
-            child: Stack(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Theme.of(context).colorScheme.secondary,
-                        Theme.of(context).scaffoldBackgroundColor
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.centerRight,
-                    ),
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    state.status == KingsCordStatus.pagMsgs ||
-                            state.status == KingsCordStatus.getInitmsgs
-                        ? LinearProgressIndicator(
-                            color: Colors.amber,
-                            backgroundColor:
-                                Theme.of(context).scaffoldBackgroundColor,
-                          )
-                        : SizedBox.shrink(),
-                    // bulid message stream
-                    _buildMessageStream(
-                        commuinity: widget.commuinity,
-                        kingsCord: widget.kingsCord,
-                        msgs: state.msgs),
-                    //divider of a height 1
-                    Divider(height: 1.0),
+                state.status == KingsCordStatus.pagMsgs || state.status == KingsCordStatus.getInitmsgs
+                    ? LinearProgressIndicator(
+                        color: Colors.amber,
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
+                      )
+                    : SizedBox.shrink(),
+                // bulid message stream
+                _buildMessageStream(
+                    commuinity: widget.commuinity,
+                    kingsCord: widget.kingsCord,
+                    msgs: state.msgs),
+                //divider of a height 1
+                Divider(height: 1.0),
 
-                    state.replyMessage != null
-                        ? _showReplying(state)
-                        : SizedBox.shrink(),
+                state.replyMessage != null
+                    ? _showReplying(state)
+                    : SizedBox.shrink(),
 
-                    // this shows all the users that you have mentioned so far in the chat.
-                    state.mentions.length > 0
-                        ? _showMentioned(state)
-                        : SizedBox.shrink(),
+                // this shows all the users that you have mentioned so far in the chat.
+                state.mentions.length > 0
+                    ? _showMentioned(state)
+                    : SizedBox.shrink(),
 
-                    // this shows all possible mentions
-                    _mentionUserContainer(username: _mentionedController),
+                // this shows all possible mentions
+                _mentionUserContainer(username: _mentionedController),
 
-                    // this is can only ocour if the user is apart of the commuinity. in this case they can share
-                    // content
-                    state.fileShareStatus != FileShareStatus.inital
-                        ? Container(
-                            height: 90,
-                            width: double.infinity,
-                            color: Colors.transparent,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Sharing Files Fam, Sit Tight...",
-                                  overflow: TextOverflow.fade,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: state.filesToBePosted
-                                      .map((file) => ProfileImage(
-                                            radius: 27,
-                                            pfpUrl: '',
-                                            pfpImage: file,
-                                          ))
-                                      .toList(),
-                                ),
-                              ],
+                // this is can only ocour if the user is apart of the commuinity. in this case they can share
+                // content
+                state.fileShareStatus != FileShareStatus.inital
+                    ? Container(
+                        height: 90,
+                        width: double.infinity,
+                        color: Colors.transparent,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Sharing Files Fam, Sit Tight...",
+                              overflow: TextOverflow.fade,
                             ),
-                          )
-                        : SizedBox.shrink(),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
+                              children: state.filesToBePosted
+                                  .map((file) => ProfileImage(
+                                        radius: 27,
+                                        pfpUrl: '',
+                                        pfpImage: file,
+                                      ))
+                                  .toList(),
+                            ),
+                          ],
+                        ),
+                      )
+                    : SizedBox.shrink(),
 
-                    // use the state.isMem to know if the user is a part of cm.
-                    // this values will have to be updated soon tho. because we want
-                    // dynamic roles to be sourced
-                    widget.userInfo["isMember"]
-                        ? buildBottomTF(state, context, widget.kingsCord.mode)
-                        : _permissionDenied(
-                            messasge: "Join community to chat here"),
+                // use the state.isMem to know if the user is a part of cm.
+                // this values will have to be updated soon tho. because we want
+                // dynamic roles to be sourced
+                widget.userInfo["isMember"]
+                    ? buildBottomTF(state, context, widget.kingsCord.mode)
+                    : _permissionDenied(
+                        messasge: "Join community to chat here"),
 
-                    showMediaPopUp ? showMedias() : SizedBox.shrink()
-                  ],
-                ),
+                showMediaPopUp ? showMedias() : SizedBox.shrink()
               ],
             ),
           );
@@ -582,6 +566,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 icon: Icon(Iconsax.close_circle, color: Colors.grey),
                 onPressed: () {
                   context.read<KingscordCubit>().removeReply();
+                  setState(() {});
                 }),
             Flexible(
               child: Padding(
@@ -759,21 +744,11 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           'kingsCordName': widget.kingsCord.cordName,
         };
       }
-      var msgAsLst = _messageController.text.split(' ');
-      // for (String msg in msgAsLst) {
-      //   // handels if a shares a link
 
-      //   if (msg.length > 8 &&
-      //       msg.substring(0, 8) == 'https://') {
-      //     messageWithsSmbolesForParsing += '{{a-$msg}}';
-      //     // we want to check if the msg is mentioning someone
-      //   } else {
-      //     messageWithsSmbolesForParsing += '$msg ';
-      //   }
-      // }
       if (_messageController.text.length > 0 &&
           _messageController.text.trim() != "") {
-        context.read<KingscordCubit>().removeReply();
+      context.read<KingscordCubit>().removeReply();
+
 
         context.read<KingscordCubit>().onSendTxtMsg(
               churchId: widget.commuinity.id!,
@@ -792,6 +767,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       context.read<KingscordCubit>().onIsTyping(false);
       _messageController.clear();
       context.read<KingscordCubit>().clearMention();
+      log("!!!!!!!! REPLY STATE: " + context.read<KingscordCubit>().state.replyMessage.toString());
       setState(() {});
     }
   }

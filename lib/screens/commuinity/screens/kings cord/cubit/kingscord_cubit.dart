@@ -65,24 +65,29 @@ class KingscordCubit extends Cubit<KingscordState> {
       users.add(user);
     }
     if (username.isEmpty) {
-    emit(state.copyWith(potentialMentions: []));
+      emit(state.copyWith(potentialMentions: []));
     } else {
-    emit(state.copyWith(potentialMentions: users));
+      emit(state.copyWith(potentialMentions: users));
     }
   }
 
   Future<void> getInitPotentialMentions(String cmId) async {
-    if (state.potentialMentions.length == 0) {
-      CollectionReference colR = FirebaseFirestore.instance.collection(Paths.communityMembers).doc(cmId).collection(Paths.members);
-    QuerySnapshot docSaps = await colR.limit(4).get();
-    List<Userr> users = [];
-    for (DocumentSnapshot s in docSaps.docs) {
-      Userr u = await UserrRepository().getUserrWithId(userrId: s.id);
-      users.add(u);
+    if (state.initPM.isEmpty) {
+      CollectionReference colR = FirebaseFirestore.instance
+          .collection(Paths.communityMembers)
+          .doc(cmId)
+          .collection(Paths.members);
+      QuerySnapshot docSaps = await colR.limit(4).get();
+      List<Userr> users = [];
+      for (DocumentSnapshot s in docSaps.docs) {
+        Userr u = await UserrRepository().getUserrWithId(userrId: s.id);
+        users.add(u);
+      }
+      List<Userr> initPMs = List<Userr>.from(state.initPM)..addAll(users);
+      emit(state.copyWith(initPM: initPMs));
     }
-    List<Userr> pMentions = List<Userr>.from(state.potentialMentions)..addAll(users);
-    emit(state.copyWith(potentialMentions: pMentions));
-    }
+
+    emit(state.copyWith(potentialMentions: state.initPM));
   }
 
   void selectMention({required Userr userr}) {
@@ -106,79 +111,75 @@ class KingscordCubit extends Cubit<KingscordState> {
 
   void onLoadInit(
       {required String cmId, required String kcId, required int limit}) async {
-
+        
     emit(state.copyWith(status: KingsCordStatus.getInitmsgs));
     emit(state.copyWith(msgs: [], recentMsgIdToTokenMap: {}));
 
-
     paginateMsg(cmId: cmId, kcId: kcId, limit: limit);
   }
-  
-  Future<void> paginateMsg({required String cmId, required String kcId, required int limit}) async {
+
+  Future<void> paginateMsg(
+      {required String cmId, required String kcId, required int limit}) async {
     try {
-
-
       if (state.msgs.isEmpty) {
-            // this is a temp set to be used for copywith. copy x num most recent users
-    // into the recentnotif list (granted not all of them will get a noty bc opt options)
-    Map<String, dynamic> recentMsgIdTokenForOpt = {};
+        // this is a temp set to be used for copywith. copy x num most recent users
+        // into the recentnotif list (granted not all of them will get a noty bc opt options)
+        Map<String, dynamic> recentMsgIdTokenForOpt = {};
 
-    //int limit = 45;
-    _msgStreamSubscription?.cancel();
-    _msgStreamSubscription = _churchRepository
-        .getMsgStream(cmId: cmId, kcId: kcId, limit: limit, lastPostDoc: null)
-        .listen((msgs) async {
-      // final allMsgs = await Future.wait(msgs);
-      List<Message> allMsgs = [];
-      for (int i = 0; i < msgs.length; i++) {
-        Message? m = await msgs[i];
-        if (m != null) {
-          if (m.replyMsg != null) {
-            m.copyWith(replyMsg: m);
+        //int limit = 45;
+        _msgStreamSubscription?.cancel();
+        _msgStreamSubscription = _churchRepository
+            .getMsgStream(
+                cmId: cmId, kcId: kcId, limit: limit, lastPostDoc: null)
+            .listen((msgs) async {
+          // final allMsgs = await Future.wait(msgs);
+          List<Message> allMsgs = [];
+          for (int i = 0; i < msgs.length; i++) {
+            Message? m = await msgs[i];
+            if (m != null) {
+              if (m.replyMsg != null) {
+                m.copyWith(replyMsg: m);
+              }
+              allMsgs.add(m);
+              // get the most recent ids
+              int count = 0;
+              for (var x in allMsgs) {
+                count += 1;
+                if (state.recentNotifLst.contains(x))
+                  recentMsgIdTokenForOpt[x.sender!.id] = x.sender!.token;
+                if (count == 15) {
+                  break;
+                }
+              }
+            }
           }
-        allMsgs.add(m);
-      // get the most recent ids
-      int count = 0;
-      for (var x in allMsgs) {
-        count += 1;
-        if (state.recentNotifLst.contains(x))
-          recentMsgIdTokenForOpt[x.sender!.id] = x.sender!.token;
-        if (count == 15) {
-          break;
-        }
-      } 
-        }
-      }
 
-      emit(state.copyWith(
-          msgs: allMsgs, recentMsgIdToTokenMap: recentMsgIdTokenForOpt));
-      // log("recentMsgIds: " + state.recentMsgIdToTokenMap.toString());
-      // log("roomSettings: " + state.recentNotifLst.toString() + " all now: " + state.allNotifLst.toString());
-    emit(state.copyWith(status: KingsCordStatus.initial));
-    });
-
+          emit(state.copyWith(
+              msgs: allMsgs, recentMsgIdToTokenMap: recentMsgIdTokenForOpt));
+          // log("recentMsgIds: " + state.recentMsgIdToTokenMap.toString());
+          // log("roomSettings: " + state.recentNotifLst.toString() + " all now: " + state.allNotifLst.toString());
+          emit(state.copyWith(status: KingsCordStatus.initial));
+        });
       } else {
         emit(state.copyWith(status: KingsCordStatus.pagMsgs));
         log("okay we should now pag");
 
+        if (state.msgs.isEmpty) return;
+        String? lastDocId = state.msgs.last!.id;
+        // paginate in repo and store lst in new lst.
+        List<Message?> messages = await _churchRepository.paginateMsg(
+            cmId: cmId, kcId: kcId, lastDocId: lastDocId, limit: limit);
+        log(messages.length.toString());
+        List<Message?> stateMsg = state.msgs;
+        for (var msg in messages) {
+          stateMsg.add(msg);
+        }
+        // pass that updated lst into kc.
+        // log("value OF STATE.MSG IS (before) " + state.msgs.toString());
 
-
-      if (state.msgs.isEmpty) return;
-    String? lastDocId = state.msgs.last!.id;
-    // paginate in repo and store lst in new lst.
-    List<Message?> messages = await _churchRepository.paginateMsg(cmId: cmId, kcId: kcId, lastDocId: lastDocId, limit: limit);
-    log(messages.length.toString());
-    List<Message?> stateMsg = state.msgs;
-    for (var msg in messages) {
-      stateMsg.add(msg);
-    }
-    // pass that updated lst into kc.
-    // log("value OF STATE.MSG IS (before) " + state.msgs.toString());
-
-    emit(state.copyWith(msgs: stateMsg, status: KingsCordStatus.initial));
-    // log("value OF STATE.MSG IS " + state.msgs.toString());
-    }
-    
+        emit(state.copyWith(msgs: stateMsg, status: KingsCordStatus.initial));
+        // log("value OF STATE.MSG IS " + state.msgs.toString());
+      }
     } catch (e) {
       log("There was an error in the kingscord cubit");
       log("error in method paginateMsg, code is: " + e.toString());
@@ -202,14 +203,13 @@ class KingscordCubit extends Cubit<KingscordState> {
     required Message? reply,
     Map<String, dynamic>? metadata = const {},
   }) async {
-
     log("metadata is null: " + (metadata == null).toString());
 
     metadata!["kcName"] = kingsCordData.cordName;
     if (reply != null) {
       metadata["replyId"] = reply.id;
     }
-    
+
     final message = Message(
       text: txtMsgBodyWithSymbolsForParcing,
       date: Timestamp.fromDate(DateTime.now()),
@@ -218,7 +218,7 @@ class KingscordCubit extends Cubit<KingscordState> {
       metadata: metadata,
       mentionedIds: mentionedInfo.keys.toSet().toList(),
     );
-    
+
     _kingsCordRepository.sendMsgTxt(
         churchId: churchId,
         kingsCordId: kingsCordId,
@@ -239,7 +239,6 @@ class KingscordCubit extends Cubit<KingscordState> {
       senderUsername: currUsername,
     );
     try {
-      
       // send msg via krepo
       await _kingsCordRepository.onSendGiphyMessage(
         cmId: cmId,
@@ -373,8 +372,8 @@ class KingscordCubit extends Cubit<KingscordState> {
   }
 
   removeReply() {
-   emit(state.copyWith(replyMessage: null));
-  } 
+    emit(state.copyWith(replyMessage: null));
+  }
 
   // for upword pagination just go to the top and add the next 10 or so to the begining of the list.
 

@@ -18,6 +18,7 @@ class KingscordState extends Equatable {
   final Message? replyMessage;
   final bool replying;
   final List<Userr> potentialMentions;
+  final List<Userr> initPM;
   final List<Userr> mentions;
 
   // used for sending notifications
@@ -39,6 +40,7 @@ class KingscordState extends Equatable {
     required this.replyMessage,
     required this.replying,
     required this.potentialMentions,
+    required this.initPM,
     required this.mentions,
     required this.recentNotifLst,
     required this.allNotifLst,
@@ -58,6 +60,7 @@ class KingscordState extends Equatable {
         replyMessage,
         replying,
         potentialMentions,
+        initPM,
         mentions,
         recentNotifLst,
         allNotifLst,
@@ -77,6 +80,7 @@ class KingscordState extends Equatable {
     Message? replyMessage,
     bool? replying,
     List<Userr>? potentialMentions,
+    List<Userr>? initPM,
     List<Userr>? mentions, // if mentions does not work add the final at front of line
     List<String>? recentNotifLst,
     List<String>? allNotifLst,
@@ -94,8 +98,9 @@ class KingscordState extends Equatable {
       failure: failure ?? this.failure,
       filesToBePosted: filesToBePosted ?? this.filesToBePosted,
       replying: replying ?? this.replying,
-      replyMessage: replyMessage ?? this.replyMessage,
+      replyMessage: replyMessage,
       potentialMentions: potentialMentions ?? this.potentialMentions,
+      initPM: initPM ?? this.initPM,
       mentions: mentions ?? this.mentions,
       recentNotifLst: recentNotifLst ?? this.recentNotifLst,
       allNotifLst: allNotifLst ?? this.allNotifLst,
@@ -118,6 +123,7 @@ class KingscordState extends Equatable {
       replyMessage: null,
       replying: true,
       potentialMentions: [],
+      initPM: [],
       mentions: [],
       recentNotifLst: [],
       allNotifLst: [],
