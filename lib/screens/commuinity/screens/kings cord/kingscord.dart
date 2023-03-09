@@ -195,20 +195,19 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     var state = context.read<KingscordCubit>().state;
 
     return username != null
-        ? Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Container(
-                // height: (55 * state.potentialMentions.length).toDouble(),
-                decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondary,
-                    borderRadius: BorderRadius.circular(15)),
-                // width: double.infinity,
-                child: ListView.builder(
-                    itemCount: state.potentialMentions.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      Userr _mentioned = state.potentialMentions[index];
-                      return ListTile(
+        ? Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Container(
+             width: double.infinity,
+            child: Container(
+              height: (state.potentialMentions.length <= 10) ? state.potentialMentions.length * 55.0 : 200.0,
+              child: ListView.builder(
+                  itemCount: state.potentialMentions.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    Userr _mentioned = state.potentialMentions[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: ListTile(
                         leading: ProfileImage(
                             radius: 24, pfpUrl: _mentioned.profileImageUrl),
                         title: Text(
@@ -233,11 +232,12 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                           _mentionedController = null;
                           setState(() {});
                         },
-                      );
-                    }),
-              ),
+                      ),
+                    );
+                  }),
             ),
-          )
+          ),
+        )
         : SizedBox.shrink();
   }
 

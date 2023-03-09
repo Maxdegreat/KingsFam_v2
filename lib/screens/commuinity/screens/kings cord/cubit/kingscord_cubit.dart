@@ -112,8 +112,8 @@ class KingscordCubit extends Cubit<KingscordState> {
   void onLoadInit(
       {required String cmId, required String kcId, required int limit}) async {
         
+    emit(KingscordState.initial());
     emit(state.copyWith(status: KingsCordStatus.getInitmsgs));
-    emit(state.copyWith(msgs: [], recentMsgIdToTokenMap: {}));
 
     paginateMsg(cmId: cmId, kcId: kcId, limit: limit);
   }
