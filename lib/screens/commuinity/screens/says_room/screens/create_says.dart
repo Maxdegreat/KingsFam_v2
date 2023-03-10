@@ -47,8 +47,6 @@ class CreateSays extends StatefulWidget {
 class _CreateSaysState extends State<CreateSays> {
   late TextEditingController _controller;
   late TextEditingController _controllerT;
-  String _title = "Untitled";
-  Map<String, dynamic> items = {};
 
   @override
   void initState() {
@@ -66,7 +64,6 @@ class _CreateSaysState extends State<CreateSays> {
 
   @override
   Widget build(BuildContext context) {
-    double _txtHeight = 50;
 
     return SafeArea(
         child: Scaffold(
@@ -77,109 +74,80 @@ class _CreateSaysState extends State<CreateSays> {
               Icons.arrow_back_ios,
               color: Theme.of(context).iconTheme.color,
             )),
-        title: Text(_title, style: Theme.of(context).textTheme.bodyText1),
-        actions: [_sendSays()],
       ),
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 1,
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  width: double.infinity,
-                  child: TextField(
-                    maxLines: 1,
-                    style: Theme.of(context)
-                        .textTheme
-                        .caption!
-                        .copyWith(fontSize: 25, fontWeight: FontWeight.w500),
-                    textAlign: TextAlign.left,
-                    controller: _controllerT,
-                    decoration: InputDecoration(
-                      alignLabelWithHint: true,
-                      border: InputBorder.none,
-                      focusColor: Theme.of(context).colorScheme.secondary,
-                      hintStyle: Theme.of(context)
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [Container(
+                    height: 70,
+                    width: double.infinity,
+                    child: TextField(
+                      maxLines: 1,
+                      style: Theme.of(context)
                           .textTheme
                           .caption!
                           .copyWith(fontSize: 25, fontWeight: FontWeight.w500),
-                      hintText: "Untitled",
-                    ),
-                    onChanged: (_) => setState(() {
-                      _title = _controllerT.text;
-                      if (_controllerT.text.isEmpty) {
-                        _title = "Untitled";
-                      }
-                    }),
-                    textInputAction: TextInputAction.search,
-                    textAlignVertical: TextAlignVertical.center,
-                  ),
-                ),
-              ),
-              // ------------------
-              Expanded(
-                flex: 10,
-                child: Container(
-                  width: double.infinity,
-                  child: TextField(
-                    keyboardType: TextInputType.multiline,
-                    minLines: null,
-                    maxLines: 150,
-                    textCapitalization: TextCapitalization.sentences,
-                    autocorrect: true,
-                    decoration: InputDecoration(
+                      textAlign: TextAlign.left,
+                      controller: _controllerT,
+                      decoration: InputDecoration(
+                        alignLabelWithHint: true,
                         border: InputBorder.none,
+                        focusColor: Theme.of(context).colorScheme.secondary,
                         hintStyle: Theme.of(context)
                             .textTheme
                             .caption!
-                            .copyWith(fontSize: 17),
-                        hintText: "..."),
-                    controller: _controller,
-                    onSubmitted: (String value) async {
-                      await showDialog<void>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Thanks!'),
-                            content: Text(
-                                'You typed "$value", which has length ${value.characters.length}.'),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: const Text('OK'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
+                            .copyWith(fontSize: 25, fontWeight: FontWeight.w500),
+                        hintText: "Title",
+                      ),
+                      onChanged: (_) => setState(() {}),
+                      textInputAction: TextInputAction.search,
+                      textAlignVertical: TextAlignVertical.center,
+                    ),
                   ),
+                  
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        
+                      ],
+                    )
+
+                  ],
                 ),
               ),
-              items.length > 0 ? _footerShow() : const SizedBox.shrink(),
-              _footer(),
-            ],
-          ),
+            ),
+            Spacer(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: _footer(),
+            ),
+          ],
         ),
       ),
     ));
   }
 
   _sendSays() {
-    return TextButton(
+    
+
+    return OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        shape: StadiumBorder(),
+        side: BorderSide(color: Theme.of(context).colorScheme.primary, width: .5),
+      ),
       child: Text(
         "Publish",
-        style: Theme.of(context).textTheme.bodyText1,
+        style: Theme.of(context).textTheme.subtitle1,
       ),
       onPressed: () {
         try {
@@ -229,21 +197,6 @@ class _CreateSaysState extends State<CreateSays> {
     );
   }
 
-  Widget _footerShow() {
-    return SingleChildScrollView(
-      child: ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          if (items.values.toList()[index].contains("https://")) {
-            return Container(height: 50, width: 50, child: Text(items.values.length.toString(), style: Theme.of(context).textTheme.bodyText1,));
-          } else {
-            return Container(height: 50, width: 50, child: Text(items.values.length.toString(), style: Theme.of(context).textTheme.bodyText1,));
-          }
-        } ,
-      )
-    );
-  }
-
   // need to make a footer
   Widget _footer() {
     return Container(
@@ -255,34 +208,29 @@ class _CreateSaysState extends State<CreateSays> {
         mainAxisSize: MainAxisSize.max,
         children: [
           // child 1 will be a image
-          _imageFooterBtn(),
+          //  _imageFooterBtn(),
           // child 2 will be a gif
           _gifFooterBtn(),
+          Spacer(),
+          _sendSays()
         ],
       ),
     );
   }
 
-  _imageFooterBtn() {
-    return IconButton(
-        onPressed: () async {
-          final pickedFile = await ImageHelper.pickImageFromGallery(
-              context: context,
-              cropStyle: CropStyle.rectangle,
-              title: 'Add To Forum');
-          if (pickedFile != null) {
-            items["item-" + (items.keys.length + 1).toString()] = pickedFile;
-            _controller.value = TextEditingValue(
-              text: _controller.value.text +
-                  " item-" +
-                  (items.keys.length + 1).toString(),
-              selection: TextSelection.collapsed(
-                  offset: _controller.value.text.length + 1),
-            );
-          }
-        },
-        icon: Icon(Icons.image));
-  }
+  // _imageFooterBtn() {
+  //   return IconButton(
+  //       onPressed: () async {
+  //         final pickedFile = await ImageHelper.pickImageFromGallery(
+  //             context: context,
+  //             cropStyle: CropStyle.rectangle,
+  //             title: 'Add To Forum');
+  //         if (pickedFile != null) {
+
+  //         }
+  //       },
+  //       icon: Icon(Icons.image));
+  // }
 
   _gifFooterBtn() {
     return IconButton(
@@ -294,13 +242,10 @@ class _CreateSaysState extends State<CreateSays> {
             randomID: Uuid().v4().toString(),
             tabColor: Theme.of(context).colorScheme.primary,
           ).then((gif) {
-            items["item-" + (items.keys.length + 1).toString()] = gif!.url!;
             _controller.value = TextEditingValue(
-              text: _controller.value.text +
-                  " item-" +
-                  (items.keys.length + 1).toString(),
-              selection: TextSelection.collapsed(
-                  offset: _controller.value.text.length + 1),
+              text: _controller.value.text + gif!.url!,
+              selection: TextSelection.fromPosition(
+                  TextPosition(offset: _controller.text.length)),
             );
           });
         },
