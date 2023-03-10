@@ -75,23 +75,15 @@ class _DisplayGifState extends State<DisplayGif> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(7),
                   ),
-                  child: Container(
-                    width: double.parse(gif!.images!.fixedWidth.width),
-                    height: double.parse(gif!.images!.fixedWidth.height),
-                    clipBehavior: Clip.hardEdge,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(7),
-                    ),
-                    child: AnimatedOpacity(
-                      opacity: 1.0,
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.easeIn,
-                      child: FadeInImage.memoryNetwork(
-                        placeholder:
-                            kTransparentImage, // Use kTransparentImage as the placeholder
-                        image: gif!.images!.fixedWidth.url,
-                        fit: BoxFit.cover,
-                      ),
+                  child: AnimatedOpacity(
+                    opacity: 1.0,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeIn,
+                    child: FadeInImage.memoryNetwork(
+                      placeholder:
+                          kTransparentImage, // Use kTransparentImage as the placeholder
+                      image: gif!.images!.fixedWidth.url,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),

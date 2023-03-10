@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +7,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/cubits/liked_says/liked_says_cubit.dart';
 import 'package:kingsfam/extensions/date_time_extension.dart';
 import 'package:kingsfam/models/says_model.dart';
+import 'package:kingsfam/widgets/giphy/giphy_widget.dart';
 import 'package:kingsfam/widgets/snackbar.dart';
 
 class SaysViewArgs {
@@ -181,15 +183,80 @@ class _SaysViewState extends State<SaysView> {
 
   _body(BuildContext context, Says s) {
     return Padding(
-      padding: const EdgeInsets.only(top: 8, bottom: 8.0, right: 8, left: 8),
-      child: SingleChildScrollView(
-        child: Text(
-          s.contentTxt,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 200,
-          style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 15.9, fontWeight: FontWeight.w400),
-        ),
+        padding: const EdgeInsets.only(top: 8, bottom: 8.0, right: 8, left: 8),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: _buildContent(context, s.contentTxt),
+          ),
+        ));
+  }
+
+  final urlRegExp = RegExp(
+    r'(?:^|[^\w])(https?://\S+)(?:$|[^\w])',
+    caseSensitive: false,
+  );
+
+
+List<Widget> _buildContent(BuildContext context, String contentTxt) {
+  final lines = contentTxt.split('\n');
+  final widgets = <Widget>[];
+
+  for (final line in lines) {
+    final spans = <InlineSpan>[];
+    final words = line.split(' ');
+
+    for (final word in words) {
+      if (urlRegExp.hasMatch(word)) {
+        final url = urlRegExp.firstMatch(word)!.group(0)!;
+        final before = word.substring(0, word.indexOf(url));
+        final after = word.substring(word.indexOf(url) + url.length);
+        spans.add(TextSpan(text: before));
+        spans.add(WidgetSpan(child: urlDisplay(url)));
+        spans.add(TextSpan(text: after));
+      } else {
+        spans.add(TextSpan(text: word));
+      }
+      spans.add(TextSpan(text: ' '));
+    }
+
+    widgets.add(
+      RichText(
+        text: TextSpan(children: spans),
       ),
     );
   }
+
+  return widgets;
+}
+
+String extractGiphyId(String url) {
+  final lastIndex = url.lastIndexOf('-');
+  if (lastIndex >= 0) {
+    return url.substring(lastIndex+1, url.length);
+  }
+  return '';
+}
+
+
+urlDisplay(String url) {
+  if (url.contains("https://giphy.com/gifs/")) {
+    String gifId = extractGiphyId(url);
+    log("GIF ID: " + gifId);
+    if (gifId.isNotEmpty)
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DisplayGif(giphyId: gifId),
+        // const SizedBox(height: 4),
+        // Text(url, style: TextStyle(fontSize: 15, color: Colors.blueAccent),)
+      ],
+    );
+    else return Text(url, style: const TextStyle(fontSize: 15, color: Colors.blueAccent),);
+  }
+}
+
+
 }
