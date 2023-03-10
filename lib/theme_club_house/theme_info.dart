@@ -83,7 +83,7 @@ class ThemeInfo {
           brightness: Brightness.dark,
           secondary: Colors.grey[900],
           primary: Colors.amber,
-          inversePrimary: Colors.grey[400],
+          inversePrimary: Colors.white, //grey[400],
           onPrimary: Colors.black,
           outline: Colors.white30
         ),

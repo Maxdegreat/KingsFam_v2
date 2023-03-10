@@ -115,7 +115,7 @@ class KingsCordRepository extends BaseKingsCordRepository {
 
         await future.then((kc) async {
           if (kc != null) {
-            log(kc.metaData!.toString());
+            // log(kc.metaData!.toString());
             // if (kc.metaData == null)
             //   kc = kc.copyWith(metaData: {"inCall": 0});
             // else if (kc.metaData!["inCall"] != null)

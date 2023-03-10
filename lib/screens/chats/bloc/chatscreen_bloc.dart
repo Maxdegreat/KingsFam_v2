@@ -115,7 +115,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
         _churchRepository.FutureChurchsAndMentioned(
                 c: churchs, uid: _authBloc.state.user!.uid)
             .then((chs) {
-          log("......................................");
+    
           if (chs["c"].isEmpty) {
             emit(state.copyWith(selectedCh: null));
             getChsToJoinIfNeeded(false, chsToJoin);
@@ -130,6 +130,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
           emit(state.copyWith(status: ChatStatus.sccuess));
           
           UserPreferences.getLastVisitedKc().then((lastVisitedKc) {
+            log("lastVisitedKc: " + lastVisitedKc.toString());
             if (lastVisitedKc == null) {
               KingsCordRepository().getKcFirstCm(state.selectedCh!.id!).then((kc) {
               if (kc != null)

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/cubits/liked_says/liked_says_cubit.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/helpers/kingscord_path.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/models/says_model.dart';
@@ -34,23 +35,33 @@ class SaysRoom extends StatefulWidget {
 }
 
 class _SaysRoomState extends State<SaysRoom> {
+  String? recentkcid;
+
   @override
   void initState() {
-    context
-        .read<SaysBloc>()
-        .add(SaysFetchSays(cmId: widget.cm.id!, kcId: widget.kcId));
-    UserPreferences.updateLastVisitedKc(widget.kcId);
-
+    recentkcid = widget.kcId;
+    CurrentKingsCordRoomId.updateRoomId(roomId: widget.kcId);
     super.initState();
   }
 
   @override
   void dispose() {
+    CurrentKingsCordRoomId.updateRoomId(roomId: null);
+    // UserPreferences.updateKcTimeStamp(
+    //     cmId: widget.cm.id!, kcId: widget.kcId);
     super.dispose();
   }
 
+  bool initCubit = true;
   @override
   Widget build(BuildContext context) {
+    if (widget.kcId != recentkcid || initCubit) {
+      log("indicates a switch...");
+      UserPreferences.updateKcTimeStamp(cmId: widget.cm.id!, kcId: widget.kcId);
+      recentkcid = widget.kcId;
+      initCubit = false;
+    }
+
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -177,15 +188,15 @@ class _SaysRoomState extends State<SaysRoom> {
                                 );
                               })
                           : Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Center(
                                 child: Text(
                                   "well... there are currently no public forms to view.",
                                   textAlign: TextAlign.center,
                                   style: Theme.of(context).textTheme.caption,
                                 ),
                               ),
-                          ),
+                            ),
                     ));
               },
             )));

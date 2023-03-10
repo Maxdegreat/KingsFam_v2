@@ -152,7 +152,6 @@ class _ReviewPendingRequestState extends State<ReviewPendingRequest> {
   initGetUsers() async {
     List<Userr> x = [];
     x = await grabLimitUserrs();
-    log("the users count is: " + x.length.toString());
     for (var j in x) {
       users.add(j);
     }
@@ -170,7 +169,6 @@ class _ReviewPendingRequestState extends State<ReviewPendingRequest> {
           .limit(12)
           .get();
       lastSeenDocSnap = snaps.docs.last;
-      log("snaps doc len: " + snaps.docs.length.toString());
       for (var x in snaps.docs) {
         if (x.exists) {
           Userr u = await UserrRepository().getUserrWithId(userrId: x.id);

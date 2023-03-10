@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:giphy_get/giphy_get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/helpers/image_helper.dart';
@@ -46,8 +47,8 @@ class CreateSays extends StatefulWidget {
 class _CreateSaysState extends State<CreateSays> {
   late TextEditingController _controller;
   late TextEditingController _controllerT;
-  List<dynamic> outputs = [];
   String _title = "Untitled";
+  Map<String, dynamic> items = {};
 
   @override
   void initState() {
@@ -135,9 +136,6 @@ class _CreateSaysState extends State<CreateSays> {
                     textCapitalization: TextCapitalization.sentences,
                     autocorrect: true,
                     decoration: InputDecoration(
-                        // fillColor: Theme.of(context).colorScheme.secondary,
-                        // filled: true,
-                        // focusColor: Theme.of(context).colorScheme.secondary,
                         border: InputBorder.none,
                         hintStyle: Theme.of(context)
                             .textTheme
@@ -168,7 +166,8 @@ class _CreateSaysState extends State<CreateSays> {
                   ),
                 ),
               ),
-              // _footer(),
+              items.length > 0 ? _footerShow() : const SizedBox.shrink(),
+              _footer(),
             ],
           ),
         ),
@@ -230,17 +229,25 @@ class _CreateSaysState extends State<CreateSays> {
     );
   }
 
+  Widget _footerShow() {
+    return SingleChildScrollView(
+      child: ListView.builder(
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          if (items.values.toList()[index].contains("https://")) {
+            return Container(height: 50, width: 50, child: Text(items.values.length.toString(), style: Theme.of(context).textTheme.bodyText1,));
+          } else {
+            return Container(height: 50, width: 50, child: Text(items.values.length.toString(), style: Theme.of(context).textTheme.bodyText1,));
+          }
+        } ,
+      )
+    );
+  }
+
   // need to make a footer
   Widget _footer() {
     return Container(
       height: MediaQuery.of(context).size.shortestSide / 10,
-      decoration: BoxDecoration(
-          // color: Theme.of(context).colorScheme.secondary,
-          border: Border(
-              top: BorderSide(
-        width: 0.5,
-        color: Theme.of(context).colorScheme.inversePrimary,
-      ))),
       width: double.infinity,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -264,9 +271,14 @@ class _CreateSaysState extends State<CreateSays> {
               cropStyle: CropStyle.rectangle,
               title: 'Add To Forum');
           if (pickedFile != null) {
-            // store the file in outputs
-
-            // outputs should show visibily on the screen
+            items["item-" + (items.keys.length + 1).toString()] = pickedFile;
+            _controller.value = TextEditingValue(
+              text: _controller.value.text +
+                  " item-" +
+                  (items.keys.length + 1).toString(),
+              selection: TextSelection.collapsed(
+                  offset: _controller.value.text.length + 1),
+            );
           }
         },
         icon: Icon(Icons.image));
@@ -282,7 +294,14 @@ class _CreateSaysState extends State<CreateSays> {
             randomID: Uuid().v4().toString(),
             tabColor: Theme.of(context).colorScheme.primary,
           ).then((gif) {
-            outputs.add(Text(gif!.url!, style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.blueAccent),));
+            items["item-" + (items.keys.length + 1).toString()] = gif!.url!;
+            _controller.value = TextEditingValue(
+              text: _controller.value.text +
+                  " item-" +
+                  (items.keys.length + 1).toString(),
+              selection: TextSelection.collapsed(
+                  offset: _controller.value.text.length + 1),
+            );
           });
         },
         icon: Icon(Icons.gif));

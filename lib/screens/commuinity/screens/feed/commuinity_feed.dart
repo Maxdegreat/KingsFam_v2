@@ -135,7 +135,6 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
                           // if next post is empty then display an ad (empty post)
                           // are added in bloc programatically as placeholders for ads
                           if (state.posts[index]!.author == Userr.empty) {
-                            log("the state.post is: " + state.posts[index].toString());
                             return PostSingleView(
                               isLiked: false,
                               post: null,

@@ -1,6 +1,5 @@
 
 // used to see if a user needs to revive a notification in app for rooms.
-import 'dart:developer';
 
 class CurrentKingsCordRoomId {
   static String? currentKingsCordRoomId;

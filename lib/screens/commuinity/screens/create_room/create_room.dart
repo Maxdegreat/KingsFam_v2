@@ -47,7 +47,6 @@ class _CreateRoomState extends State<CreateRoom> {
   Set roles = {"Member"};
   String chatPriority = "Passive Chat";
 
-
   // ---------------- state ------------------
 
   @override
@@ -137,7 +136,9 @@ class _CreateRoomState extends State<CreateRoom> {
                           metaData: roles.isNotEmpty
                               ? {
                                   "roles": roles.toList(),
-                                  selectedMode == Mode.chat ? "chatPriority": chatPriority : null
+                                  selectedMode == Mode.chat
+                                      ? "chatPriority"
+                                      : chatPriority: null
                                 }
                               : null);
                       Navigator.of(context).pop();
@@ -216,22 +217,25 @@ class _CreateRoomState extends State<CreateRoom> {
         SizedBox(
           height: 10,
         ),
-                            // who can write based on role
-                    Text("Below shows the roles of people who are allowed to add to this room (type, share links, images, gifs ect...)", style: Theme.of(context).textTheme.caption),
-                    SizedBox(
-                      height: 7,
-                    ),
-                    rowOfRoles(),
-                                        SizedBox(
-                      height: 7,
-                    ),
-                    // who can write based on role
-                    Text("Below shows the how notifications will be sent out for this chat room.)", style: Theme.of(context).textTheme.caption),
-                    SizedBox(
-                      height: 7,
-                    ),
-                    rowOfPriority(),
-
+        // who can write based on role
+        Text(
+            "Below shows the roles of people who are allowed to add to this room (type, share links, images, gifs ect...)",
+            style: Theme.of(context).textTheme.caption),
+        SizedBox(
+          height: 7,
+        ),
+        rowOfRoles(),
+        SizedBox(
+          height: 7,
+        ),
+        // who can write based on role
+        Text(
+            "Below shows the how notifications will be sent out for this room)",
+            style: Theme.of(context).textTheme.caption),
+        SizedBox(
+          height: 7,
+        ),
+        rowOfPriority(),
       ],
     );
   }
@@ -279,9 +283,6 @@ class _CreateRoomState extends State<CreateRoom> {
             } else {
               chatPriority = text;
             }
-            
-
-
 
             setState(() {});
           },
@@ -351,20 +352,26 @@ class _CreateRoomState extends State<CreateRoom> {
 
   Widget _textField(BuildContext context) {
     return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(7)),
       width: double.infinity,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(height: 8.0),
-          TextField(
-              decoration: InputDecoration(
+          Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: TextField(
+                decoration: InputDecoration(
+                  
                   hintText: "Enter a room name",
                   fillColor: Theme.of(context).colorScheme.secondary,
                   filled: true,
                   focusColor: Theme.of(context).colorScheme.secondary,
-                  focusedBorder: UnderlineInputBorder()),
-              onChanged: (value) => _txtController.text = value),
+                  border: InputBorder.none,
+                ),
+                onChanged: (value) => _txtController.text = value),
+          ),
         ],
       ),
     );

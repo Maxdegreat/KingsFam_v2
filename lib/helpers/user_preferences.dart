@@ -47,13 +47,18 @@ class UserPreferences {
   }
 
   // update Last visited kc
-  static updateLastVisitedKc(String kcId) =>  _preferences!.setString(_lastVisitiedKc, kcId);
+  static updateLastVisitedKc(String kcId) {
+    _preferences!.setString(_lastVisitiedKc, kcId);
+    log("kcId from updateLastVisitedKc: " + kcId);
+
+  } 
   
 
   static Future<String?> getLastVisitedKc() async => await _preferences!.getString(_lastVisitiedKc);
 
   static Future updateKcTimeStamp(
       {required String cmId, required String kcId}) async {
+        log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     List<String>? kts = await _preferences!.getStringList(_kcTimeStamp + cmId);
     if (kts != null) {
       bool done = false;
@@ -108,20 +113,17 @@ class UserPreferences {
     List<String>? uids = await _preferences!.getStringList("blockedUIDS");
     bool isBlocked = false;
 
-    log(uids.toString());
 
     if (uids != null) {
       if (uids.contains(uid)) {
         isBlocked = true;
       }
-      log("isBlocked: " + isBlocked.toString());
 
       if (isBlocked)
         uids.remove(uid);
       else
         uids.add(uid);
 
-      log("uids: " + uids.toString());
 
       // update the local db
 

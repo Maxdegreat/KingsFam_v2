@@ -30,7 +30,6 @@ class ChurchRepository extends BaseChurchRepository {
           .map((snap) {
         List<Future<Message?>> bucket = [];
         snap.docs.forEach((doc) {
-          log("!!!!!!!!!!!!!!!");
           Future<Message?> msg = Message.fromDoc(doc, cmId, kcId);
           bucket.add(msg);
         });

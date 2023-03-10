@@ -38,7 +38,6 @@ Future<void> handleMessage(RemoteMessage message, BuildContext context) async {
             .get();
         log("does snap k exist?");
         log("snapK: " + snapK.id);
-        log(snapK.exists.toString());
         Church? cm = await Church.fromDoc(snap);
         KingsCord? kc = KingsCord.fromDoc(snapK);
         if (kc != null) {

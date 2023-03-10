@@ -110,11 +110,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
   @override
   void dispose() {
-    log("!!!!!!!!!!!!!!!!!!!!!DISPOSING DISPOSING DISPOSING DISPOSING DISPOSING");
     CurrentKingsCordRoomId.updateRoomId(roomId: null);
     _messageController.dispose();
-    UserPreferences.updateKcTimeStamp(
-        cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!);
+    // UserPreferences.updateKcTimeStamp(
+    //     cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!);
     super.dispose();
   }
 
@@ -368,7 +367,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       body: BlocConsumer<KingscordCubit, KingscordState>(
         listener: (context, state) {},
         builder: (context, state) {
-          log("!!!!!!! MSG REPLY STATE: " + state.replyMessage.toString());
           currUsersName = widget.usr.username;
           if (widget.kingsCord.id! != recentkcid || initCubit) {
             // indicates a switch...
@@ -767,7 +765,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       context.read<KingscordCubit>().onIsTyping(false);
       _messageController.clear();
       context.read<KingscordCubit>().clearMention();
-      log("!!!!!!!! REPLY STATE: " + context.read<KingscordCubit>().state.replyMessage.toString());
       setState(() {});
     }
   }

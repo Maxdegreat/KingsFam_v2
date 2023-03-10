@@ -207,7 +207,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
                 kcords, event.commuinity.id!, _authBloc.state.user!.uid)
             .then((kingsCords) {
 
-              log(" other rooms: ${kingsCords["kc"]}");
+             
           // The updated status in the emit is used in cm screen listener. if status is updated we setstate. thats it.
           emit(state.copyWith(
               yourRooms: kingsCords["kc"],

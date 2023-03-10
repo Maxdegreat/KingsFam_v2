@@ -26,16 +26,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   @override
   void initState() {
-
     super.initState();
   }
 
   @override
   void dispose() {
-
     super.dispose();
   }
 
@@ -46,113 +43,83 @@ class _LoginScreenState extends State<LoginScreen> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        backgroundColor: Color(hexColor.hexcolorCode("#20263d")),
         body: SafeArea(
+            child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
             child: Column(
-          children: [
-            Spacer(),
-            Align(
-                alignment: Alignment.center,
-                child: Column(
-                  children: [
-                    Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 35.0),
-                        child: Column(
-                          children: [
-                            Text('Welcome To ',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline2!
-                                    .copyWith(color: Colors.white)),
-                            Text('KING\'S FAM',
-                                style: Theme.of(context).textTheme.headline3)
-                          ],
-                        )),
-                    SizedBox(height: 20),
-                   
-                  ],
-                )),
-            SizedBox(height: 17),
-            Center(
-                child: Text(
-              "Christian Communities For This Generation!",
-              style: Theme.of(context)
-                  .textTheme
-                  .caption!
-                  .copyWith(color: Colors.white, fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center,
-            )),
-            SizedBox(height: 15),
-          
-             Container(
-              width: size.width > 700 ? size.width / 7: size.width / 1.2,
-              child: TextButton.icon(
-                onPressed: () =>
-                    context.read<AuthRepository>().signInWithGoogle(),
-                icon: FaIcon(
-                  FontAwesomeIcons.google,
-                  color: Colors.amber[400],
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 40),
+                Text('Welcome To 👑',
+                    style: Theme.of(context).textTheme.headline2!),
+                Text('KING\'S FAM',
+                    style: Theme.of(context).textTheme.headline3),
+                SizedBox(height: 15),
+                Text(
+                  "Christian Communities For This Generation!",
+                  style: Theme.of(context)
+                      .textTheme
+                      .caption!
+                      .copyWith(fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.center,
                 ),
-                label: Text('Continue With Google',
-                    style: Theme.of(context).textTheme.bodyText2!.copyWith(color: Colors.black)),
-                style: TextButton.styleFrom(backgroundColor: Colors.white),
-              ),
+                SizedBox(height: 25),
+                Container(
+                    width: size.width > 700 ? size.width / 7 : size.width / 1.2,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.inversePrimary),
+                      child: Text("Continue With Google",
+                          style: Theme.of(context)
+                              .textTheme
+                              .subtitle1!
+                              .copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary)),
+                      onPressed: () =>
+                          context.read<AuthRepository>().signInWithGoogle(),
+                    )),
+                SizedBox(height: 5),
+                if (!kIsWeb) ...[
+                  // ------------------------------------------------------ manuel sign in methods
+
+                  Container(
+                      width:
+                          size.width > 700 ? size.width / 7 : size.width / 1.2,
+                      child: ElevatedButton(
+                        onPressed: () => context
+                            .read<AuthRepository>()
+                            .signInWithApple(context),
+                        child: Text("Sign In With Apple",
+                            style: Theme.of(context)
+                                .textTheme
+                                .subtitle1!
+                                .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimary)),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.inversePrimary),
+                      )),
+                ],
+                const SizedBox(height: 40),
+                Container(
+                  width: size.width / 1.2,
+                  child: Text(
+                    "not forsaking the assembling of ourselves together, as is the manner of some, but exhorting one another, and so much the more as you see the Day approaching. Hebrews 10:25",
+                    style: Theme.of(context).textTheme.caption,
+                    textAlign: TextAlign.start,
+                  ),
+                  
+                )
+              ],
             ),
-            SizedBox(height: 10),
-          if (!kIsWeb) ...[
-            // ------------------------------------------------------ manuel sign in methods
-            Platform.isIOS
-                ? Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: Container(
-                         width: size.width > 700 ? size.width / 7: size.width / 1.2,
-                        child: TextButton.icon(
-                          onPressed: () => context
-                              .read<AuthRepository>()
-                              .signInWithApple(context),
-                          icon: Icon(
-                            Icons.apple,
-                            color: Colors.amber,
-                          ),
-                          label: Text("Sign In With Apple",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText2!
-                                  .copyWith(
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.black)),
-                          style: TextButton.styleFrom(
-                              backgroundColor: Colors.white),
-                        )),
-                  )
-                : SizedBox.shrink(),
-             Container(
-               width: size.width / 1.2,
-               child: TextButton(
-                   onPressed: () {
-                     //push route to sign up screen
-                     Navigator.of(context).pushNamed(SignupFormScreen.routeName);
-                   },
-                   child: Text('Sign Up',
-                       style: Theme.of(context).textTheme.bodyText1),
-                   style: TextButton.styleFrom(backgroundColor: Colors.amber[400])),
-             ),
-             SizedBox(height: 20.0),
-           ],
-            Container(
-              width: size.width > 700 ? size.width / 7: size.width / 1.2,
-              child: TextButton(                                                                                  
-                  onPressed: () {
-                    //push named route to login screen
-                    Navigator.of(context).pushNamed(LoginFormScren.routeName);
-                  },
-                  child: Text('Login',
-                      style: Theme.of(context).textTheme.bodyText1),
-                  style:
-                      TextButton.styleFrom(backgroundColor: Colors.amber[400])),
-            ),
-            Spacer(),
-        ])),
+          ),
+        )),
       ),
     );
   }

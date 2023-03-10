@@ -149,26 +149,35 @@ Widget showRooms(BuildContext context, Church cm) {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: CmPermHandler.canMakeRoom(context.read<CommuinityBloc>())
-              ? new_kingscord(
-                  cmBloc: context.read<CommuinityBloc>(),
-                  cm: cm,
-                  context: context)
-              : SizedBox.shrink(),
-        ),
+        
         // _showVc(state, context, cm),
         // your rooms
         if (state.yourRooms.isNotEmpty) ...[
-          Text(
-            "Your Rooms",
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.outline,
-              fontSize: 15,
-              fontWeight: FontWeight.w800,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              children: [
+                Text(
+                  "Your Rooms",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.outline,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                  ),
+                  overflow: TextOverflow.fade,
+                ),
+
+                SizedBox(width: 7),
+
+                CmPermHandler.canMakeRoom(context.read<CommuinityBloc>())
+                ? new_kingscord(
+                    cmBloc: context.read<CommuinityBloc>(),
+                    cm: cm,
+                    context: context)
+                : SizedBox.shrink(),
+
+              ],
             ),
-            overflow: TextOverflow.fade,
           ),
           SizedBox(height: 7),
           Column(

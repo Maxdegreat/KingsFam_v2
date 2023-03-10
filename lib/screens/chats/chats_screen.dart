@@ -139,7 +139,7 @@ class _ChatsScreenState extends State<ChatsScreen>
 
           if (state.status == ChatStatus.setStateKc) {
             if (state.selectedKc != null) {
-              log("selectedKc is not null");
+              
               if (state.selectedKc!.mode == Mode.chat ||
                   state.selectedKc!.mode == Mode.welcome) {
                 currentScreen = KingsCordScreen(
