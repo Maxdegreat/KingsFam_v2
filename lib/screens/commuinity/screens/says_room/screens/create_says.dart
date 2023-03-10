@@ -85,59 +85,108 @@ class _CreateSaysState extends State<CreateSays> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20.0, left: 20.0, right: 20.0, top: 8.0),
-              child: Column(
-                children: [
-                  Container(
-                    height: 70,
-                    width: double.infinity,
-                    child: TextField(
-                      maxLines: 1,
-                      style: Theme.of(context).textTheme.caption!.copyWith(
-                          fontSize: 25, fontWeight: FontWeight.w500),
-                      textAlign: TextAlign.left,
-                      controller: _controllerT,
-                      decoration: InputDecoration(
-                        alignLabelWithHint: true,
-                        border: InputBorder.none,
-                        focusColor: Theme.of(context).colorScheme.secondary,
-                        hintStyle: Theme.of(context)
-                            .textTheme
-                            .caption!
-                            .copyWith(
-                                fontSize: 25, fontWeight: FontWeight.w500),
-                        hintText: "Title",
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 0.0, left: 20.0, right: 20.0, top: 8.0),
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      child: TextField(
+                        maxLines: 1,
+                        style: Theme.of(context).textTheme.caption!.copyWith(
+                            fontSize: 25, fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.left,
+                        controller: _controllerT,
+                        decoration: InputDecoration(
+                          alignLabelWithHint: true,
+                          border: InputBorder.none,
+                          focusColor: Theme.of(context).colorScheme.secondary,
+                          hintStyle: Theme.of(context)
+                              .textTheme
+                              .caption!
+                              .copyWith(
+                                  fontSize: 25, fontWeight: FontWeight.w500),
+                          hintText: "Title",
+                        ),
+                        onChanged: (_) => setState(() {}),
+                        textInputAction: TextInputAction.search,
+                        textAlignVertical: TextAlignVertical.center,
                       ),
-                      onChanged: (_) => setState(() {}),
-                      textInputAction: TextInputAction.search,
-                      textAlignVertical: TextAlignVertical.center,
                     ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                     ContainerWithURLImg(
-                        imgUrl: context
-                            .read<ProfileBloc>()
-                            .state
-                            .userr
-                            .profileImageUrl,
-                        height: 35,
-                        width: 35,
-                      ),
+            
+               
+            
+            
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                       ContainerWithURLImg(
+                          imgUrl: context
+                              .read<ProfileBloc>()
+                              .state
+                              .userr
+                              .profileImageUrl,
+                          height: 35,
+                          width: 35,
+                        ),
+            
+                        const SizedBox(width: 15),
+            
+                         _columnForDescription(),
+            
+                         
+                        
+                      ],
+                    ),
+            
 
-                      const SizedBox(width: 15),
-
-                       _columnForDescriptionNdText()
+                 Expanded(
                       
-                    ],
-                  )
-                ],
+                      child: TextField(
+                        keyboardType: TextInputType.multiline,
+                        minLines: null,
+                        maxLines: 200,
+                        textCapitalization: TextCapitalization.sentences,
+                        autocorrect: true,
+                        decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintStyle: Theme.of(context)
+                                .textTheme
+                                .caption!
+                                .copyWith(fontSize: 17),
+                            hintText: "you can type here"),
+                        controller: _controller,
+                        onSubmitted: (String value) async {
+                          await showDialog<void>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Thanks!'),
+                                content: Text(
+                                    'You typed "$value", which has length ${value.characters.length}.'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+            
+                    
+                  ],
+                ),
               ),
             ),
-            Spacer(),
+            
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: _footer(),
@@ -148,24 +197,14 @@ class _CreateSaysState extends State<CreateSays> {
     ));
   }
 
-  _columnForDescriptionNdText() {
+  _columnForDescription() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(context.read<ProfileBloc>().state.userr.username + " to " + "kcName", style: Theme.of(context).textTheme.caption, maxLines: 1, overflow: TextOverflow.fade),
-        SizedBox(height: 8),
-        widget(
-          child: Container(
-            height: 200,
-        
-            child: Text("Kjk")
-          ),
-        ),
-
-
-
-        
+        Text(context.read<ProfileBloc>().state.userr.username + " to ", style: Theme.of(context).textTheme.caption, maxLines: 1, overflow: TextOverflow.fade),
+        const SizedBox(height: 8),
+        Text("KcName", style: Theme.of(context).textTheme.caption, maxLines: 1, overflow: TextOverflow.fade)   
       ],
     );
   }
