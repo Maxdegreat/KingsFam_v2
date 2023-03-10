@@ -46,21 +46,10 @@ class ProfileScreen extends StatefulWidget {
   static Route route({required ProfileScreenArgs args}) {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
-        builder: (context) => BlocProvider<ProfileBloc>(
-              create: (_) => ProfileBloc(
-                  prayerRepo: context.read<PrayerRepo>(),
-                  churchRepository: context.read<ChurchRepository>(),
-                  likedPostCubit: context.read<LikedPostCubit>(),
-                  userrRepository: context.read<UserrRepository>(),
-                  authBloc: context.read<AuthBloc>(),
-                  postRepository: context.read<PostsRepository>(),
-                  // ..add(ProfileLoadUserr(userId: args.userId, vidCtrl: null)
-                  ),
-              child: ProfileScreen(
-                initScreen: args.initScreen,
-                ownerId: args.userId,
-              ),
-            ));
+        builder: (context) => ProfileScreen(
+          initScreen: args.initScreen,
+          ownerId: args.userId,
+        ));
   }
 
   @override

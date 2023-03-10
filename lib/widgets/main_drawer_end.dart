@@ -1,7 +1,6 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';

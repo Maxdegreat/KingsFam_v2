@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
@@ -22,6 +23,7 @@ import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/says_room/says_room.dart';
+import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/widgets/mainDrawer/main_drawer.dart';
 
 import 'package:kingsfam/widgets/widgets.dart';
@@ -102,6 +104,7 @@ class _ChatsScreenState extends State<ChatsScreen>
     CurrentKingsCordRoomId();
     NotificationHelper.initalize(flutterLocalNotificationsPlugin);
     context.read<BuidCubit>().init();
+    context.read<ProfileBloc>().add(ProfileLoadUserOnly(userId: context.read<AuthBloc>().state.user!.uid));
     //super.build(context);
   }
 

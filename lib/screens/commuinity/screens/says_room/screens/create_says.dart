@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:giphy_get/giphy_get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/helpers/image_helper.dart';
@@ -9,6 +10,8 @@ import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/models/says_model.dart';
 import 'package:kingsfam/repositories/says/says_repository.dart';
+import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
+import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
 import 'package:kingsfam/widgets/snackbar.dart';
 import 'package:uuid/uuid.dart';
 
@@ -64,7 +67,6 @@ class _CreateSaysState extends State<CreateSays> {
 
   @override
   Widget build(BuildContext context) {
-
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
@@ -83,19 +85,17 @@ class _CreateSaysState extends State<CreateSays> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  children: [Container(
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20.0, left: 20.0, right: 20.0, top: 8.0),
+              child: Column(
+                children: [
+                  Container(
                     height: 70,
                     width: double.infinity,
                     child: TextField(
                       maxLines: 1,
-                      style: Theme.of(context)
-                          .textTheme
-                          .caption!
-                          .copyWith(fontSize: 25, fontWeight: FontWeight.w500),
+                      style: Theme.of(context).textTheme.caption!.copyWith(
+                          fontSize: 25, fontWeight: FontWeight.w500),
                       textAlign: TextAlign.left,
                       controller: _controllerT,
                       decoration: InputDecoration(
@@ -105,7 +105,8 @@ class _CreateSaysState extends State<CreateSays> {
                         hintStyle: Theme.of(context)
                             .textTheme
                             .caption!
-                            .copyWith(fontSize: 25, fontWeight: FontWeight.w500),
+                            .copyWith(
+                                fontSize: 25, fontWeight: FontWeight.w500),
                         hintText: "Title",
                       ),
                       onChanged: (_) => setState(() {}),
@@ -113,17 +114,27 @@ class _CreateSaysState extends State<CreateSays> {
                       textAlignVertical: TextAlignVertical.center,
                     ),
                   ),
-                  
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        
-                      ],
-                    )
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                     ContainerWithURLImg(
+                        imgUrl: context
+                            .read<ProfileBloc>()
+                            .state
+                            .userr
+                            .profileImageUrl,
+                        height: 35,
+                        width: 35,
+                      ),
 
-                  ],
-                ),
+                      const SizedBox(width: 15),
+
+                       _columnForDescriptionNdText()
+                      
+                    ],
+                  )
+                ],
               ),
             ),
             Spacer(),
@@ -137,13 +148,34 @@ class _CreateSaysState extends State<CreateSays> {
     ));
   }
 
-  _sendSays() {
-    
+  _columnForDescriptionNdText() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(context.read<ProfileBloc>().state.userr.username + " to " + "kcName", style: Theme.of(context).textTheme.caption, maxLines: 1, overflow: TextOverflow.fade),
+        SizedBox(height: 8),
+        widget(
+          child: Container(
+            height: 200,
+        
+            child: Text("Kjk")
+          ),
+        ),
 
+
+
+        
+      ],
+    );
+  }
+
+  _sendSays() {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
         shape: StadiumBorder(),
-        side: BorderSide(color: Theme.of(context).colorScheme.primary, width: .5),
+        side:
+            BorderSide(color: Theme.of(context).colorScheme.primary, width: .5),
       ),
       child: Text(
         "Publish",
@@ -159,7 +191,7 @@ class _CreateSaysState extends State<CreateSays> {
 
           if (title != null) {
             if (_controllerT.value.text.length > 35) {
-              snackBar(
+              snackBar( 
                   snackMessage: "Make sure your title is 25 or less chars",
                   context: context,
                   bgColor: Colors.red[400]);

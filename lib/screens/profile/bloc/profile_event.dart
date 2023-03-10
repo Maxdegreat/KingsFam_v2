@@ -7,6 +7,11 @@ abstract class ProfileEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class ProfileLoadUserOnly extends ProfileEvent {
+  final String userId;
+  const ProfileLoadUserOnly({required this.userId});
+}
+
 class ProfileLoadUserr extends ProfileEvent {
   final String userId;
   final VideoPlayerController? vidCtrl;

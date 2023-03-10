@@ -73,17 +73,7 @@ class TabNavigator extends StatelessWidget {
         );
 
       case BottomNavItem.profile:
-        return BlocProvider<ProfileBloc>(
-          create: (_) => ProfileBloc(
-            prayerRepo: ctx.read<PrayerRepo>(),
-            churchRepository: ctx.read<ChurchRepository>(),
-            likedPostCubit: ctx.read<LikedPostCubit>(),
-            userrRepository: ctx.read<UserrRepository>(),
-            authBloc: ctx.read<AuthBloc>(),
-            postRepository: ctx.read<PostsRepository>(),
-          ),
-          child: ProfileScreen(ownerId: ctx.read<AuthBloc>().state.user!.uid, initScreen: true,),
-        );
+        return ProfileScreen(ownerId: ctx.read<AuthBloc>().state.user!.uid, initScreen: true,);
       default:
         return Scaffold();
     }

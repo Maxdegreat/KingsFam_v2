@@ -45,7 +45,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   @override
   Future<void> close() {
-   // _postStreamSubscription!.cancel();
+    // _postStreamSubscription!.cancel();
     return super.close();
   }
 
@@ -53,7 +53,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   Stream<ProfileState> mapEventToState(
     ProfileEvent event,
   ) async* {
-    if (event is ProfileLoadUserr) {
+    if (event is ProfileLoadUserOnly) {
+      yield* _loadUserOnlyToState(event);
+    } else if (event is ProfileLoadUserr) {
       yield* _mapProfileLoadUserToState(event);
     }
     // else if (event is ProfilePaginatePosts) {
@@ -71,10 +73,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       yield* _mapProfileShowPostsTosState();
     } else if (event is ProfileLikePost) {
       yield* _mapLikePostToState(event);
-    } 
+    }
     // else if (event is ProfileDm) {
     //   yield* _mapProfileDmToState(event);
-    // } 
+    // }
     else if (event is ProfileLoadFollowersUsers) {
       yield* _mapProfileLoadFollowersUsersToState(event);
     } else if (event is ProfileLoadFollowingUsers) {
@@ -119,13 +121,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       if (lastPostDoc != null && lastPostDoc.exists) {
         // we want to grab some 2 post and pass them onto the users post.
         List<Post?> lst = await _postsRepository.getUserPosts(
-          userId: event.userId, 
-          limit: 2, 
-          lastPostDoc: lastPostDoc
-        );
-          
-          add(ProfileUpdatePost(post: lst));
-   
+            userId: event.userId, limit: 2, lastPostDoc: lastPostDoc);
+
+        add(ProfileUpdatePost(post: lst));
+
         print("got new posts");
       }
       yield state.copyWith(status: ProfileStatus.loaded);
@@ -133,6 +132,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       print(
           "There was an error. location ProfileBloc paginatePosts. code: ${e.toString()}");
     }
+  }
+
+  Stream<ProfileState> _loadUserOnlyToState(ProfileLoadUserOnly event) async* {
+    log("we in");
+    Userr userr = await _userrRepository.getUserrWithId(userrId: event.userId);
+    yield state.copyWith(userr: userr);
+    log("user is: " + state.userr.toString());
   }
 
   Stream<ProfileState> _mapProfileLoadUserToState(
@@ -165,13 +171,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       // log("seen id's: $seen");
       // whenever a new post is posted it will update the home page post view
       yield state.copyWith(post: []);
-      List<Post?> lst = 
-      await _postsRepository.getUserPosts(
-          userId: event.userId, 
-          limit: 2, 
-          lastPostDoc: null,
-        );
-        add(ProfileUpdatePost(post: lst ));
+      List<Post?> lst = await _postsRepository.getUserPosts(
+        userId: event.userId,
+        limit: 2,
+        lastPostDoc: null,
+      );
+      add(ProfileUpdatePost(post: lst));
 
       yield state.copyWith(
           seen: seen,
@@ -213,7 +218,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     try {
       _userrRepository.followerUserr(
           userr: state.userr, followersId: _authBloc.state.user!.uid);
-      final updatedUserr = state.userr.copyWith(followers: state.userr.followers + 1);
+      final updatedUserr =
+          state.userr.copyWith(followers: state.userr.followers + 1);
       yield state.copyWith(userr: updatedUserr, isFollowing: true);
     } catch (error) {
       state.copyWith(
