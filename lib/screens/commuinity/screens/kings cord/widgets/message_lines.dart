@@ -412,8 +412,8 @@ class _MessageLinesState extends State<MessageLines> {
                 child: Text(widget.message.text!,
                     style: Theme.of(context)
                         .textTheme
-                        .caption!
-                        .copyWith(fontSize: 15, fontWeight: FontWeight.w400)),
+                        .bodyText1!
+                        .copyWith(fontSize: 15, fontWeight: FontWeight.w500)),
               )),
           _showReactionBarUi(
             messageReactions: widget.message.metadata!["reactions"],
@@ -578,7 +578,7 @@ class _MessageLinesState extends State<MessageLines> {
                                   .textTheme
                                   .bodyText1!
                                   .copyWith(
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: FontWeight.w600,
                                       fontSize: 15),
                             ),
                             SizedBox(width: 5),
@@ -686,7 +686,7 @@ class _MessageLinesState extends State<MessageLines> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(7),
           border: Border.all(
-              width: .7,
+              width: 1,
               color: widget.message.sender!.colorPref == ""
                   ? Colors.red
                   : Color(

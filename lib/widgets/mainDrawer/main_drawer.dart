@@ -108,6 +108,15 @@ class _MainDrawerState extends State<MainDrawer> {
               ));
   }
 
+  _updateSelectedItem(BottomNavItem i) {
+    if (i == context.read<BottomnavbarCubit>().state.selectedItem) {
+      scaffoldKey.currentState!.closeDrawer();
+    } else {
+      context.read<BottomnavbarCubit>().updateSelectedItem(i);
+      scaffoldKey.currentState!.closeDrawer();
+    }
+  }
+
   _getContents() {
     List<Widget> drawerLst = _getCms();
     return Container(
@@ -129,6 +138,18 @@ class _MainDrawerState extends State<MainDrawer> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   _cmsList(context, drawerLst),
+
+                  IconButton(onPressed: (){
+                    _updateSelectedItem(BottomNavItem.search);
+                  }, icon: Icon(Icons.search)),
+
+                  IconButton(onPressed: (){
+                    _updateSelectedItem(BottomNavItem.notifications);
+                  }, icon: Icon(Icons.favorite_border)),
+
+                  IconButton(onPressed: (){
+                    _updateSelectedItem(BottomNavItem.profile);
+                  }, icon: Icon(Icons.portable_wifi_off_outlined)),
 
                   GestureDetector(
                       onTap: () => Navigator.of(context)
@@ -269,7 +290,7 @@ class _MainDrawerState extends State<MainDrawer> {
   Container _cmsList(BuildContext context, List<Widget> drawerLst) {
     Size size = MediaQuery.of(context).size;
     return Container(
-        height: MediaQuery.of(context).size.height / 1.4,
+        height: MediaQuery.of(context).size.height / 1.7,
         child: ListView(children: drawerLst));
   }
 

@@ -45,8 +45,7 @@ class NavScreen extends StatelessWidget {
           return Scaffold(
             //  appBar: AppBar(),
             key: scaffoldKey,
-
-            drawer: MainDrawer(),
+            
             body: Stack(
               // the body is a stack the stack of the bottom sheet
               children: items // this is a map, bottomnavitem to icon data
@@ -121,6 +120,8 @@ class NavScreen extends StatelessWidget {
                       )
                     : SizedBox.shrink()
                 : null,
+                extendBody: false,
+                drawer: MainDrawer(),
           );
         },
       ),

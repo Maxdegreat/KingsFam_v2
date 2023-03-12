@@ -154,7 +154,7 @@ Widget showRooms(BuildContext context, Church cm) {
         // your rooms
         if (state.yourRooms.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            padding: const EdgeInsets.only(top: 8.0),
             child: Row(
               children: [
                 Text(
@@ -179,7 +179,7 @@ Widget showRooms(BuildContext context, Church cm) {
               ],
             ),
           ),
-          SizedBox(height: 7),
+      
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,

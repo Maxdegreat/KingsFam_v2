@@ -24,6 +24,7 @@ import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kings_cord_room_settings.dart';
+import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
 import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
@@ -606,8 +607,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       onVisibilityChanged: (vis) {
         if (vis.visibleFraction == 1) {
           CurrentKingsCordRoomId.updateRoomId(roomId: widget.kingsCord.id!);
+          context.read<BottomnavbarCubit>().showBottomNav(false);
         } else {
-          CurrentKingsCordRoomId.updateRoomId(roomId: null);
+          context.read<BottomnavbarCubit>().showBottomNav(true);
         }
       },
       child: Container(

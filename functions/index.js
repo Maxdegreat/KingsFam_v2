@@ -690,12 +690,6 @@ exports.onKingsCordMessageSent = functions.firestore
     
     var chatPriority = snapshot.data().metadata.chatPriority;
 
-      functions.logger.log(
-        "The contents of metedata checking if chatPriority is not null and is all msgs: ",
-        snapshot.data().metadata.chatPriority
-      );
-
-      
       var cmSnap = await cmRef.get();
       var cmData = cmSnap.data();
       var messageBody;
@@ -722,13 +716,18 @@ exports.onKingsCordMessageSent = functions.firestore
       const options = {
         priority: "high",
         timeToLive: 60 * 60 * 24,
-      };
+      };          
+         
+      console.log("now checking if statments");
 
-      if (kcMsgData.reply !== undefined) {
+      if (kcMsgData.replyMsg !== undefined && kcMsgData.replyMsg !== null) {
         // handle if a message was replied to
+        functions.logger.log("replyMsg is not null", kcMsgData.replyMsg)
       }
+      console.log("checking second if statment");
 
       if (kcMsgData.mentionedIds !== undefined && kcMsgData.mentionedIds.length > 0) {
+        functions.logger.log("mentionedIds is not null: " + kcMsgData.mentionedIds)
         // handle if a message contains replies
         var tokenBucket = [];
         for (var i = 0; i < kcMsgData.mentionedIds; i++) {
@@ -738,7 +737,8 @@ exports.onKingsCordMessageSent = functions.firestore
         admin.messaging().sendToDevice(tokenBucket, message, options);
         return ;
       }
-
+      console.log("1");
+      functions.logger.log("The value of chatP = ", chatPriority);
       if (chatPriority !== undefined && chatPriority == "Notify For All Messages" ) {
         var topic = cmId + kcId + "topic";
         admin
@@ -750,12 +750,12 @@ exports.onKingsCordMessageSent = functions.firestore
         .catch((err) => {
           console.log(String(err), console.log("sent to: " + topic));
         });
-      } else if (chatPriority === undefined || chatPriority === "Passive Chat") {
+      } else if (chatPriority === undefined || chatPriority === "Passive Chat" || chatPriority === null) {
+      console.log("2");
         // get the user of most recent chat member.
         console.log("about to call getRecentKcUser");
         getRecentKcUser(cmId, kcId).then((user) => {
           if (user !== undefined) {
-            console.log("4")
             admin.messaging().sendToDevice(user.token[0], message, options);
           } else {
             console.log("The user is still undefined")
@@ -766,6 +766,8 @@ exports.onKingsCordMessageSent = functions.firestore
 
         // if not same as user notfi that recent user 
       }
+      console.log("um???");
+
       
       
     
@@ -816,7 +818,7 @@ async function getRecentKcUser(cmId, kcId) {
   // Limit is 2 above but will return on fist itr of for loop 
   // in order to just notify the most recent user (note using decending order)
   for (var i = messageSnap.docs.length - 1; i >= 0; i--) {
-    console.log("1")
+    console.log("in 1")
     var msgData = messageSnap.docs[i].data();
     if (msgData.sender !== null) {
       console.log("2 in if, next should be if we got the user")

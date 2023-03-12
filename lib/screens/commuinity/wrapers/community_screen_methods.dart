@@ -106,17 +106,10 @@ Widget new_kingscord(
   if (cmBloc.state.role["kfRole"] == "Lead" ||
       cmBloc.state.role["kfRole"] == "Admin" ||
       cmBloc.state.role["kfRole"] == "Mod") {
-    return GestureDetector(
-        onTap: () {
-          Navigator.of(context).pushNamed(CreateRoom.routeName,
+    return IconButton(onPressed: () {
+      Navigator.of(context).pushNamed(CreateRoom.routeName,
               arguments: CreateRoomArgs(cmBloc: cmBloc, cm: cm));
-        },
-        child: Text("+ New Room", style: TextStyle(
-              color: Theme.of(context).colorScheme.primary,
-              fontSize: 15,
-              fontWeight: FontWeight.w800,
-            ),
-            overflow: TextOverflow.fade,));
+    }, icon: Icon(Icons.add));
   } else
     return SizedBox.shrink();
 }

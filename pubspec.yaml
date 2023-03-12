@@ -129,7 +129,7 @@ flutter_native_splash:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/KINGSFAM_LOGO_black_bg.png"
+  image_path: "assets/kf_crown_white_960_960.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -143,12 +143,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/icons/Logo_files/PNG/KINGSFAM_LOGO.png
-
-    - assets/KINGSFAM_LOGO_black_bg.png
-    - assets/kf_crown_transparent.png
+    - assets/icon_transparent.png
     - assets/mock_photos/
     # SVG's are below
     # ANIMATIONS are below
-    - assets/animations/
     - .env

@@ -67,33 +67,15 @@ class _SaysViewState extends State<SaysView> {
                 )),
             title: _header(context, widget.s),
           ),
-          body: GestureDetector(
-            onDoubleTap: () {
-              if (widget.s.id != null) {
-                context
-                    .read<LikedSaysCubit>()
-                    .updateOnCloudLike(
-                        cmId: widget.cmId,
-                        kcId: widget.kcId,
-                        sayId: widget.s.id!,
-                        currLikes: widget.s.likes)
-                    .then((value) => setState(() {}));
-              } else
-                snackBar(
-                    snackMessage: "s.id is null",
-                    context: context,
-                    bgColor: Colors.red);
-            },
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  _title(context, widget.s),
-                  _body(context, widget.s),
-                ],
-              ),
+          body: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                _title(context, widget.s),
+                _body(context, widget.s),
+              ],
             ),
           ),
           persistentFooterButtons: [
@@ -223,7 +205,7 @@ List<Widget> _buildContent(BuildContext context, String contentTxt) {
 
     widgets.add(
       RichText(
-        text: TextSpan(children: spans),
+        text: TextSpan(children: spans, style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 15)),
       ),
     );
   }
