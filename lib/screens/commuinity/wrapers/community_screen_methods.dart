@@ -109,7 +109,7 @@ Widget new_kingscord(
     return IconButton(onPressed: () {
       Navigator.of(context).pushNamed(CreateRoom.routeName,
               arguments: CreateRoomArgs(cmBloc: cmBloc, cm: cm));
-    }, icon: Icon(Icons.add));
+    }, icon: Icon(Icons.add, color: Theme.of(context).colorScheme.primary));
   } else
     return SizedBox.shrink();
 }

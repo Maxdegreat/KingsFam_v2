@@ -154,8 +154,10 @@ Widget showRooms(BuildContext context, Church cm) {
         // your rooms
         if (state.yourRooms.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.only(top: 8.0),
+            padding: const EdgeInsets.only(top: 0.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   "Your Rooms",
@@ -166,8 +168,6 @@ Widget showRooms(BuildContext context, Church cm) {
                   ),
                   overflow: TextOverflow.fade,
                 ),
-
-                SizedBox(width: 7),
 
                 CmPermHandler.canMakeRoom(context.read<CommuinityBloc>())
                 ? new_kingscord(
@@ -195,6 +195,7 @@ Widget showRooms(BuildContext context, Church cm) {
                         return null;
                       }
                       NavtoKcFromRooms(context, state, cm, cord);
+                      
                     },
                     onLongPress: () {
                       onLongPressCord(context, cord, cm);
@@ -407,6 +408,7 @@ void NavtoKcFromRooms(
     BuildContext context, CommuinityState state, Church cm, KingsCord cord) {
   context.read<ChatscreenBloc>()..add(ChatScreenUpdateSelectedKc(kc: cord));
   context.read<CommuinityBloc>().setReadStatusFalse(kcId: cord.id!);
+  context.read<BottomnavbarCubit>().updateSelectedItem(BottomNavItem.chats);
   // context.read<CommuinityBloc>().setMentionedToFalse(kcId: cord.id!);
   scaffoldKey.currentState!.closeDrawer();
   // Navigator.of(context)

@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
@@ -55,7 +56,7 @@ class _MessageLinesState extends State<MessageLines> {
         : " Shared something";
   }
 
-  uploadReaction(String reaction, String msgId, Map<String, int> reactions,
+  uploadReaction(String reaction, String msgId, Map<String, dynamic> reactions,
       Map<String, dynamic> metadata) {
     int? incrementedReaction = reactions[reaction];
     if (incrementedReaction == null) {
@@ -123,7 +124,7 @@ class _MessageLinesState extends State<MessageLines> {
     }
   }
 
-  _showReactionsBar(String messageId, Map<String, int>? messageReactions,
+  _showReactionsBar(String messageId, Map<String, dynamic>? messageReactions,
       BuildContext context, Map<String, dynamic> metadata) {
     if (messageReactions == null) {
       messageReactions = {};
@@ -321,7 +322,6 @@ class _MessageLinesState extends State<MessageLines> {
     caseSensitive: false,
   );
 
-
   // if i send the message.
   _buildText(BuildContext context) {
     if (widget.message.metadata!['reactions'] == {}) {
@@ -330,38 +330,53 @@ class _MessageLinesState extends State<MessageLines> {
 
     final lines = widget.message.text!.split('\n');
     final widgets = <Widget>[];
+    bool hasLinkPreview = false;
 
-   for (final line in lines) {
-    final spans = <InlineSpan>[];
-    final words = line.split(' ');
+    for (final line in lines) {
+      final spans = <InlineSpan>[];
+      Widget? linkPreview;
+      final words = line.split(' ');
 
-    for (final word in words) {
-      if (word.startsWith('https://')) {
-        final url = word;
-        spans.add(WidgetSpan(child: LinkPreviewContainer(link: url)));
-        final launchUrl = GestureDetector(
-          onTap: () =>  launch(url),
-          child: Text(url, style: Theme.of(context)
-                .textTheme
-                .bodyText1!
-                .copyWith(fontWeight: FontWeight.w500, fontSize: 15, color: Colors.blueAccent) ),
-        );
-        spans.add(WidgetSpan(child: launchUrl));
-      } else {
-        spans.add(TextSpan(text: word, style: Theme.of(context)
+      for (final word in words) {
+        if (word.startsWith('https://') && !hasLinkPreview) {
+          final url = word;
+          linkPreview = LinkPreviewContainer(link: url, color: Color(hc.hexcolorCode(widget.message.sender!.colorPref)));
+          hasLinkPreview = true;
+        }
+
+        if (word.startsWith('https://')) {
+          final launchUrl = GestureDetector(
+            onTap: () => launch(word),
+            child: Text(word,
+                style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 15,
+                    color: Colors.blueAccent)),
+          );
+          spans.add(WidgetSpan(child: launchUrl));
+        } else {
+        spans.add(TextSpan(
+            text: word,
+            style: Theme.of(context)
                 .textTheme
                 .bodyText1!
                 .copyWith(fontWeight: FontWeight.w500, fontSize: 15)));
+        }
+
+        spans.add(TextSpan(text: " "));
       }
-      spans.add(TextSpan(text: " "));
+      widgets.add(RichText(text: TextSpan(children: spans)));
+      if (linkPreview != null) {
+        widgets.insert(0, RichText(text: WidgetSpan(child: linkPreview)));
+      }
     }
-    widgets.add(RichText(text: TextSpan(children: spans)));
-   }
-   return Column(
-    mainAxisAlignment: MainAxisAlignment.start,
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: widgets..add(_showReactionBarUi(messageReactions: widget.message.metadata!["reactions"])),
-   );
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: widgets
+        ..add(_showReactionBarUi(
+            messageReactions: widget.message.metadata!["reactions"])),
+    );
 
     // checking for strings starting with https:// I do this w/ regex
     // widget.message.text!.split(RegExp("\\s")).forEach((element) {
@@ -380,7 +395,7 @@ class _MessageLinesState extends State<MessageLines> {
     //     // make a blue link text so that indivdual links can be taped on
     //     Widget l = GestureDetector(
     //       onTap: () {
-           
+
     //       },
     //       child: Text(element,
     //           style: Theme.of(context).textTheme.bodyText1!.copyWith(
@@ -565,7 +580,6 @@ class _MessageLinesState extends State<MessageLines> {
             })
           : GestureDetector(
               onLongPress: () {
-                snackBar(snackMessage: "longPressed", context: context);
                 _showReactionsBar(
                     widget.message.id!,
                     widget.message.metadata!.containsKey('reactions')
@@ -629,12 +643,13 @@ class _MessageLinesState extends State<MessageLines> {
                                 widget.message.replyMsg != null
                             ? Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 2.0),
+                                    const EdgeInsets.symmetric(vertical: 3.0),
                                 child: Container(
-                                  padding: EdgeInsets.only(left:5.0),
+                                  padding: EdgeInsets.only(left: 5.0),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(7.0),
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                   ),
                                   child: Container(
                                     decoration: BoxDecoration(
@@ -642,8 +657,9 @@ class _MessageLinesState extends State<MessageLines> {
                                         topRight: Radius.circular(7.0),
                                         bottomRight: Radius.circular(7.0),
                                       ),
-                                      color:
-                                          Theme.of(context).colorScheme.secondary,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
                                       // boxShadow: [
                                       //   BoxShadow(
                                       //       color: Theme.of(context)
@@ -654,14 +670,18 @@ class _MessageLinesState extends State<MessageLines> {
                                     ),
                                     child: Padding(
                                       padding: const EdgeInsets.only(
-                                          top: 4.0, bottom: 5, left: 2, right: 2),
+                                          top: 4.0,
+                                          bottom: 5,
+                                          left: 2,
+                                          right: 2),
                                       child: RichText(
                                         text: TextSpan(
-                                          style:
-                                              Theme.of(context).textTheme.caption,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .caption,
                                           children: <TextSpan>[
                                             TextSpan(
-                                                text: 'Replied ' +
+                                                text: 'Replied ' + 
                                                     widget.message.replyMsg!
                                                         .senderUsername!),
                                             TextSpan(

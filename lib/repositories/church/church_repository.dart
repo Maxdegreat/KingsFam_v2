@@ -332,7 +332,6 @@ class ChurchRepository extends BaseChurchRepository {
           mode: "welcome",
           tag: doc.id,
           cordName: "Welcome 🥳 🎉",
-          subscribedIds: [],
           // recentSender: [recentSender.id, recentSender.username],
         );
 
@@ -408,7 +407,6 @@ class ChurchRepository extends BaseChurchRepository {
         tag: ch.id!,
         cordName: cordName,
         mode: mode,
-        rolesAllowed: rolesAllowed,
         metaData: metaData
         //subscribedIds: [],
       );

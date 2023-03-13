@@ -482,18 +482,17 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                     tabColor: Colors.amber,
                   ).then((gif) {
                     if (gif != null) {
-                      log(gif.id!);
-                      log(gif.url!);
+
                       // send the Giphy as a message.
-                      // snackBar(snackMessage: "snackMessage", context: context);
-                      // context
-                      //     .read<KingscordCubit>()
-                      //     .onSendGiphyMessage(
-                      //         giphyId: gif.id!,
-                      //         cmId: widget.commuinity.id!,
-                      //         kcId: widget.kingsCord.id!,
-                      //         currUsername: widget.usr.username)
-                      //     .then((value) => log("sent giphy"));
+                     
+                      context
+                          .read<KingscordCubit>()
+                          .onSendGiphyMessage(
+                              giphyId: gif.id!,
+                              cmId: widget.commuinity.id!,
+                              kcId: widget.kingsCord.id!,
+                              currUsername: widget.usr.username)
+                          .then((value) => log("sent giphy"));
                     } else {
                       // snackBar(
                       //   snackMessage: "Ops... Something went wrong",
@@ -561,7 +560,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         width: double.infinity,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             IconButton(
                 icon: Icon(Iconsax.close_circle, color: Colors.grey),
@@ -829,6 +828,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             height: 15,
             width: MediaQuery.of(context).size.width / 1.8,
             child: ListView.builder(
+              cacheExtent: 150,
               scrollDirection: Axis.horizontal,
               itemCount: state.mentions.length,
               itemBuilder: (BuildContext context, int index) {

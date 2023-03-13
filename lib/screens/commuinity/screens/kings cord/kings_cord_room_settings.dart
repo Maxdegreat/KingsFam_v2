@@ -79,7 +79,7 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
                   Icons.arrow_back_ios,
                   color: Theme.of(context).iconTheme.color,
                 )),
-            title: Text("Room settings",
+            title: Text("Room Settings",
                 style: Theme.of(context).textTheme.bodyText1),
             actions: [_save()],
           )),
@@ -184,7 +184,7 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
 
   Widget _rowOfRoles() {
     return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
+      scrollDirection: Axis.horizontal,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -192,6 +192,7 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
           textForRR("Member", false),
           textForRR("Mod, Admin, Lead", false),
           textForRR("Admin, Lead", false),
+          
         ],
       ),
     );
@@ -199,7 +200,7 @@ class _KingsCordRoomSettingsState extends State<KingsCordRoomSettings> {
 
     Widget _rowOfPriority() {
     return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
+      scrollDirection: Axis.horizontal,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,

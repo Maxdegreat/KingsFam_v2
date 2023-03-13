@@ -145,6 +145,7 @@ flutter:
   assets:
     - assets/icon_transparent.png
     - assets/mock_photos/
+    - assets/share_post_temp.png
     # SVG's are below
     # ANIMATIONS are below
     - .env

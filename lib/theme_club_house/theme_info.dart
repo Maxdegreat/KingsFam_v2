@@ -29,7 +29,7 @@ class ThemeInfo {
       scaffoldBackgroundColor: Colors.white,
       colorScheme: ColorScheme.fromSwatch().copyWith(
           secondary: Colors.grey[200],
-          onSecondary: Colors.grey[600],
+          onSecondary: Colors.black12,
           primary: Colors.amber,
           onPrimary: Colors.grey[100],
           inversePrimary: Colors.black,
@@ -83,8 +83,9 @@ class ThemeInfo {
             backgroundColor: Color(hexcolor.hexcolorCode('#121212'))),
         colorScheme: ColorScheme.fromSwatch().copyWith(
             brightness: Brightness.dark,
+            
             secondary: Colors.grey[900],
-            onSecondary: Colors.grey[400],
+            onSecondary: Colors.black45,
             primary: Colors.amber,
             inversePrimary: Colors.white, //grey[400],
             onPrimary: Colors.black,

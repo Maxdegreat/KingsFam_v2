@@ -34,7 +34,9 @@ class Pair {
 
 class HexColor {
   // public function
-  hexcolorCode(String colorHexCode) {
+  hexcolorCode(String? colorHexCode) {
+    if (colorHexCode == null) 
+      colorHexCode = "FF0000 ";
     String colorNew = '0xff' + colorHexCode;
     colorNew = colorNew.replaceAll('#', '');
     int colorInt = int.parse(colorNew);

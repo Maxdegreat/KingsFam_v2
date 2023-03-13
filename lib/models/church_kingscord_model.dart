@@ -10,8 +10,6 @@ class KingsCord extends Equatable {
   final String mode;
   final String tag;
   final List<Userr>? members;
-  final String? rolesAllowed;
-  final List<String>? subscribedIds;
   final bool? readStatus;
   final Map<String, dynamic>? recentActivity;
   final Map<String, dynamic>? metaData;
@@ -20,13 +18,11 @@ class KingsCord extends Equatable {
   //make a constructor for fields
   KingsCord({
     this.id,
-    this.subscribedIds,
     required this.tag,
     required this.cordName,
     // required this.recentSender,
     this.members,
     required this.mode,
-    this.rolesAllowed,
     this.readStatus,
     this.recentActivity,
     this.metaData
@@ -40,8 +36,6 @@ class KingsCord extends Equatable {
         cordName,
         members,
         mode,
-        rolesAllowed,
-        subscribedIds,
         readStatus,
         recentActivity,
         metaData,
@@ -54,10 +48,8 @@ class KingsCord extends Equatable {
     String? cordName,
     // List<String>? recentSender,
     Timestamp? recentTimestamp,
-    List<String>? subscribedIds,
     List<Userr>? members,
     String? mode,
-    String? rolesAllowed,
     bool? readStatus,
     Map<String, dynamic>? recentActivity,
     Map<String, dynamic>? metaData,
@@ -68,10 +60,8 @@ class KingsCord extends Equatable {
       tag: tag ?? this.tag,
       cordName: cordName ?? this.cordName,
       // recentSender: recentSender ?? this.recentSender,
-      subscribedIds: subscribedIds ?? this.subscribedIds,
       members: members ?? this.members,
       mode: mode ?? this.mode,
-      rolesAllowed: rolesAllowed ?? Roles.Member,
       readStatus: readStatus ?? this.readStatus,
       recentActivity: recentActivity ?? this.recentActivity,
       metaData: metaData?? this.metaData,
@@ -85,9 +75,7 @@ class KingsCord extends Equatable {
       'tag': tag,
       'cordName': cordName,
       // 'recentSender': recentSender,
-      'subscribedIds': subscribedIds ?? [],
       'mode': mode,
-      'rolesAllowed': rolesAllowed ?? Roles.Member,
       "metaData": metaData
     };
   }
@@ -99,9 +87,7 @@ class KingsCord extends Equatable {
       id: doc.id,
       tag: data['tag'],
       cordName: data['cordName'] ?? 'MainRoom',
-      subscribedIds: List<String>.from(data['subscribedIds']),
       mode: data['mode'],
-      rolesAllowed: data['rolesAllowed'] ?? Roles.Member,
       metaData: data['metaData'] ?? {},
     );
   }
@@ -112,9 +98,8 @@ class KingsCord extends Equatable {
         id: doc.id,
         tag: data['tag'],
         cordName: data['cordName'] ?? 'MainRoom',
-        subscribedIds: List<String>.from(data['subscribedIds']),
         mode: data['mode'],
-        metaData: data['metaData'] ?? {},
-        rolesAllowed: data['rolesAllowed'] ?? Roles.Member);
+        metaData: data['metaData'] ?? {}
+    );
   }
 }

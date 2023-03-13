@@ -40,6 +40,7 @@ import 'package:kingsfam/screens/commuinity/screens/kings%20cord/widgets/display
 import 'package:kingsfam/screens/commuinity/screens/vc/vc_screen.dart';
 import 'package:kingsfam/screens/commuinity/wrapers/participants_view.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
+import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/widgets/drawer_icon_container.dart';
 import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
 import 'package:kingsfam/widgets/widgets.dart';
@@ -84,7 +85,6 @@ class _MainDrawerState extends State<MainDrawer> {
 
   @override
   void dispose() {
-
     _nativeAd?.dispose();
     super.dispose();
   }
@@ -138,28 +138,65 @@ class _MainDrawerState extends State<MainDrawer> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   _cmsList(context, drawerLst),
-
-                  IconButton(onPressed: (){
-                    _updateSelectedItem(BottomNavItem.search);
-                  }, icon: Icon(Icons.search)),
-
-                  IconButton(onPressed: (){
-                    _updateSelectedItem(BottomNavItem.notifications);
-                  }, icon: Icon(Icons.favorite_border)),
-
-                  IconButton(onPressed: (){
-                    _updateSelectedItem(BottomNavItem.profile);
-                  }, icon: Icon(Icons.portable_wifi_off_outlined)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Divider(
+                      color: Theme.of(context).colorScheme.onSecondary,
+                      thickness: 1.0,
+                    ),
+                  ),
 
                   GestureDetector(
                       onTap: () => Navigator.of(context)
                           .pushNamed(BuildChurch.routeName),
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: drawerIcon(Icon(
-                          Icons.add,
-                          color: Theme.of(context).colorScheme.secondary,
-                        )),
+                        padding: const EdgeInsets.only(bottom: 0.0),
+                        child: drawerIcon(
+                            Icon(
+                              Icons.add,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            context),
+                      )),
+
+                  GestureDetector(
+                      onTap: () => _updateSelectedItem(BottomNavItem.search),
+                      child: Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: drawerIcon(
+                            Icon(
+                              Icons.search,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            context),
+                      )),
+
+                  GestureDetector(
+                      onTap: () =>
+                          _updateSelectedItem(BottomNavItem.notifications),
+                      child: Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: drawerIcon(
+                            Icon(
+                              Icons.favorite_border,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            context),
+                      )),
+
+                  GestureDetector(
+                      onTap: () => _updateSelectedItem(BottomNavItem.profile),
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: drawerIcon(ContainerWithURLImg(
+                          imgUrl: context
+                              .read<ProfileBloc>()
+                              .state
+                              .userr
+                              .profileImageUrl,
+                          height: 45,
+                          width: 45,
+                        ), context)
                       )),
 
                   // const SizedBox(height: 20,)
@@ -247,10 +284,12 @@ class _MainDrawerState extends State<MainDrawer> {
                       style: Theme.of(context).textTheme.bodyText1,
                     ),
                     const SizedBox(height: 10),
-                    drawerIcon(Icon(
-                      Icons.add,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ))
+                    drawerIcon(
+                        Icon(
+                          Icons.add,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                        context)
                   ],
                 ),
               ),
