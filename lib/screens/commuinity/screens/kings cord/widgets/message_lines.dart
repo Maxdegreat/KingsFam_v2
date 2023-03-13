@@ -220,7 +220,6 @@ class _MessageLinesState extends State<MessageLines> {
                       onTap: () {
                         if (widget.message.text != null) {
                           copyTextToClip(widget.message.text!);
-                          snackBar(snackMessage: "copied", context: context);
                         } else {
                           snackBar(
                               snackMessage: "can not copy", context: context);
@@ -317,110 +316,145 @@ class _MessageLinesState extends State<MessageLines> {
         : SizedBox.shrink();
   }
 
+  final urlRegExp = RegExp(
+    r'(?:^|[^\w])(https?://\S+)(?:$|[^\w])',
+    caseSensitive: false,
+  );
+
+
   // if i send the message.
   _buildText(BuildContext context) {
     if (widget.message.metadata!['reactions'] == {}) {
       widget.message.metadata!['reactions']![''] = 0;
     }
 
-    List<String> links = [];
-    List<Widget> textWithLinksForColumn = [];
-    String tempString = "";
-    // checking for strings starting with https:// I do this w/ regex
-    widget.message.text!.split(RegExp("\\s")).forEach((element) {
-      if (!element.startsWith('https://')) {
-        if (textWithLinksForColumn.isEmpty && tempString.isEmpty) {
-          tempString += element;
-        } else {
-          tempString += " $element ";
-        }
-      } else if (element.startsWith('https://')) {
-        textWithLinksForColumn.add(Text(tempString,
-            style: Theme.of(context)
+    final lines = widget.message.text!.split('\n');
+    final widgets = <Widget>[];
+
+   for (final line in lines) {
+    final spans = <InlineSpan>[];
+    final words = line.split(' ');
+
+    for (final word in words) {
+      if (word.startsWith('https://')) {
+        final url = word;
+        spans.add(WidgetSpan(child: LinkPreviewContainer(link: url)));
+        final launchUrl = GestureDetector(
+          onTap: () =>  launch(url),
+          child: Text(url, style: Theme.of(context)
+                .textTheme
+                .bodyText1!
+                .copyWith(fontWeight: FontWeight.w500, fontSize: 15, color: Colors.blueAccent) ),
+        );
+        spans.add(WidgetSpan(child: launchUrl));
+      } else {
+        spans.add(TextSpan(text: word, style: Theme.of(context)
                 .textTheme
                 .bodyText1!
                 .copyWith(fontWeight: FontWeight.w500, fontSize: 15)));
-        tempString = "";
-        // add the element to the links so that the code knows visually there is a link in a show link preview
-        links.add(element);
-        // make a blue link text so that indivdual links can be taped on
-        Widget l = GestureDetector(
-          onTap: () {
-            launch(element);
-          },
-          child: Text(element,
-              style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 15,
-                  color: Colors.blue)),
-        );
-        // add the links to the list below so that the code can later use these txtbuttons w/ links as child
-        textWithLinksForColumn.add(l);
       }
-    });
-
-    // The return of the build text when there is an unsent message
-    if (widget.message.text == "(code:unsent 10987345)") {
-      return Text("deleted",
-          style: Theme.of(context)
-              .textTheme
-              .bodyText1!
-              .copyWith(fontWeight: FontWeight.w300));
+      spans.add(TextSpan(text: " "));
     }
+    widgets.add(RichText(text: TextSpan(children: spans)));
+   }
+   return Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: widgets..add(_showReactionBarUi(messageReactions: widget.message.metadata!["reactions"])),
+   );
 
-    if (links.isNotEmpty) {
-      // the return of the build text when the links are not empty
-      return GestureDetector(
-          onTap: () {
-            if (links.length == 1) {
-              launch(links[0]);
-            }
-          },
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              LinkPreviewContainer(link: links.first),
-              // if a link was sent only without any text
-              // widget.message.text!.trim().length != links[0].trim().length ? Text(widget.message.text!) : Text("#weblink")
-              Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: textWithLinksForColumn.map((e) => e).toList()),
-              _showReactionBarUi(
-                  messageReactions: widget.message.metadata!["reactions"])
-            ],
-          ));
-    }
-    // the return of the text when there is no links involved
-    RegExp regExp = RegExp(r'^@.+');
-    return GestureDetector(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // _showReplyBarUi(widget.message.replyed),
-          Container(
-              decoration: regExp.hasMatch(widget.message.text!)
-                  ? BoxDecoration(
-                      borderRadius: BorderRadius.circular(7),
-                      color: Color.fromARGB(110, 255, 193, 7))
-                  : null,
-              child: Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Text(widget.message.text!,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyText1!
-                        .copyWith(fontSize: 15, fontWeight: FontWeight.w500)),
-              )),
-          _showReactionBarUi(
-            messageReactions: widget.message.metadata!["reactions"],
-          )
-        ],
-      ),
-    );
+    // checking for strings starting with https:// I do this w/ regex
+    // widget.message.text!.split(RegExp("\\s")).forEach((element) {
+    //   if (!element.startsWith('https://')) {
+    //     if (textWithLinksForColumn.isEmpty && tempString.isEmpty) {
+    //       tempString += element;
+    //     } else {
+    //       tempString += " $element ";
+    //     }
+    //   } else if (element.startsWith('https://')) {
+    //     textWithLinksForColumn.add(Text(tempString,
+    //         style: ));
+    //     tempString = "";
+    //     // add the element to the links so that the code knows visually there is a link in a show link preview
+    //     links.add(element);
+    //     // make a blue link text so that indivdual links can be taped on
+    //     Widget l = GestureDetector(
+    //       onTap: () {
+           
+    //       },
+    //       child: Text(element,
+    //           style: Theme.of(context).textTheme.bodyText1!.copyWith(
+    //               fontWeight: FontWeight.w500,
+    //               fontSize: 15,
+    //               color: Colors.blue)),
+    //     );
+    //     // add the links to the list below so that the code can later use these txtbuttons w/ links as child
+    //     textWithLinksForColumn.add(l);
+    //   }
+    // });
+
+    // // The return of the build text when there is an unsent message
+    // if (widget.message.text == "(code:unsent 10987345)") {
+    //   return Text("deleted",
+    //       style: Theme.of(context)
+    //           .textTheme
+    //           .bodyText1!
+    //           .copyWith(fontWeight: FontWeight.w300));
+    // }
+
+    // if (links.isNotEmpty) {
+    //   // the return of the build text when the links are not empty
+    //   return GestureDetector(
+    //       onTap: () {
+    //         if (links.length == 1) {
+    //           launch(links[0]);
+    //         }
+    //       },
+    //       child: Column(
+    //         mainAxisAlignment: MainAxisAlignment.start,
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         mainAxisSize: MainAxisSize.min,
+    //         children: [
+    //           LinkPreviewContainer(link: links.first),
+    //           // if a link was sent only without any text
+    //           // widget.message.text!.trim().length != links[0].trim().length ? Text(widget.message.text!) : Text("#weblink")
+    //           Column(
+    //               mainAxisAlignment: MainAxisAlignment.start,
+    //               crossAxisAlignment: CrossAxisAlignment.start,
+    //               mainAxisSize: MainAxisSize.min,
+    //               children: textWithLinksForColumn.map((e) => e).toList()),
+    //           _showReactionBarUi(
+    //               messageReactions: widget.message.metadata!["reactions"])
+    //         ],
+    //       ));
+    // }
+    // // the return of the text when there is no links involved
+    // RegExp regExp = RegExp(r'^@.+');
+    // return GestureDetector(
+    //   child: Column(
+    //     crossAxisAlignment: CrossAxisAlignment.start,
+    //     children: [
+    //       // _showReplyBarUi(widget.message.replyed),
+    //       Container(
+    //           decoration: regExp.hasMatch(widget.message.text!)
+    //               ? BoxDecoration(
+    //                   borderRadius: BorderRadius.circular(7),
+    //                   color: Color.fromARGB(110, 255, 193, 7))
+    //               : null,
+    //           child: Padding(
+    //             padding: const EdgeInsets.all(2.0),
+    //             child: Text(widget.message.text!,
+    //                 style: Theme.of(context)
+    //                     .textTheme
+    //                     .bodyText1!
+    //                     .copyWith(fontSize: 15, fontWeight: FontWeight.w500)),
+    //           )),
+    //       _showReactionBarUi(
+    //         messageReactions: widget.message.metadata!["reactions"],
+    //       )
+    //     ],
+    //   ),
+    // );
   }
 
   //for an image
@@ -531,6 +565,7 @@ class _MessageLinesState extends State<MessageLines> {
             })
           : GestureDetector(
               onLongPress: () {
+                snackBar(snackMessage: "longPressed", context: context);
                 _showReactionsBar(
                     widget.message.id!,
                     widget.message.metadata!.containsKey('reactions')
