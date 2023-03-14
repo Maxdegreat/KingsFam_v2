@@ -9,10 +9,9 @@ class BannerImage extends StatelessWidget {
   final String? bannerImageUrl;
   final File? bannerImage; //comes form phone gallery
   final bool isOpasaty;
-  final int? passedColor;
   final double? passedheight;
 
-  const BannerImage({this.bannerImageUrl, this.passedheight,  this.bannerImage, required this.isOpasaty, this.passedColor});
+  const BannerImage({this.bannerImageUrl, this.passedheight,  this.bannerImage, required this.isOpasaty});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +36,6 @@ class BannerImage extends StatelessWidget {
                         : null,
               ),
             ),
-            passedColor != null ? Container(height: 1, width: double.infinity, color: Color(passedColor!),) : SizedBox.shrink(),
             
           ],
         ),

@@ -82,6 +82,7 @@ class _SaysRoomState extends State<SaysRoom> {
                           .imageUrl,
                       height: 15,
                       width: 15,
+                      pc: null
                     )),
               ),
               actions: [

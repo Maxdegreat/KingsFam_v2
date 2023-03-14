@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
+import 'package:kingsfam/screens/profile/widgets/profile_button.dart';
 import 'package:kingsfam/screens/profile/widgets/show_follows.dart';
 
 class ProfileStats extends StatelessWidget {
-  final int posts;
   final int followers;
   final int following;
-  final String username;
   final ProfileBloc profileBloc;
   final BuildContext ctxFromPf;
   const ProfileStats({
     Key? key,
     required this.profileBloc,
-    required this.username,
-    required this.posts,
     required this.followers,
     required this.following,
     required this.ctxFromPf,
@@ -22,6 +21,7 @@ class ProfileStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isCurrUser = context.read<AuthBloc>().state.user!.uid == profileBloc.state.userr.id;
     return Container( //FlexFit.loose fits for the flexible children (using Flexible rather than Expanded)
     
         child: Column(
@@ -32,11 +32,16 @@ class ProfileStats extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
               
                       followersInfoBtn(context),
                       SizedBox(width: 10),
-                      followingInfoBtn(ctxFromPf)
+                      followingInfoBtn(ctxFromPf),
+                      Spacer(),
+                      ProfileButton(isCurrentUserr: isCurrUser, isFollowing: profileBloc.state.isFollowing)
+
                 ],
               ),
             ),

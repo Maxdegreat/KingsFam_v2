@@ -173,7 +173,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       yield state.copyWith(post: []);
       List<Post?> lst = await _postsRepository.getUserPosts(
         userId: event.userId,
-        limit: 2,
+        limit: 3,
         lastPostDoc: null,
       );
       add(ProfileUpdatePost(post: lst));

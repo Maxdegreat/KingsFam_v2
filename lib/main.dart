@@ -160,6 +160,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           //THEME DATA
           themeMode: ThemeMode.system,
+          // will make cubit to update theme -> updateThemeState() -> dark, light, or tiered customs
           theme: ThemeInfo().themeClubHouseLight(),
           darkTheme: ThemeInfo().themeClubHouseDark(),
           debugShowCheckedModeBanner: false,

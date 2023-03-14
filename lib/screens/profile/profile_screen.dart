@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
@@ -16,9 +17,11 @@ import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/profile/widgets/commuinity_container.dart';
+import 'package:kingsfam/screens/profile/widgets/container_w_children.dart';
 import 'package:kingsfam/screens/profile/widgets/prayer_chunck.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/prayer/prayer_snipit.dart';
+import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
 
@@ -103,7 +106,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
         //----------------------------------------scaffold starts here
         return Scaffold(
-
+            appBar: AppBar(
+               title: Text(
+                      state.userr.username,
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    actions: [
+                      if (!state.isCurrentUserr)
+                         GestureDetector(
+                      onTap: () {
+                        _showOptions();
+                      },
+                      child: Icon(Icons.more_vert)
+                      ),
+                    ],
+            ),
             //---------------------------------------------------body path
             body: _bodyBabbyyyy(state));
       },
@@ -174,31 +191,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onRefresh: () async => context
                 .read<ProfileBloc>()
                 .add(ProfileLoadUserr(userId: state.userr.id)),
-            child: CustomScrollView(
-              controller: scrollController,
-              slivers: [
-                SliverAppBar(
-                  floating: true,
-                  pinned: true,
-                  title: Text(
-                    state.userr.username,
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                  actions: [
-                    if (!state.isCurrentUserr)
-                       GestureDetector(
-                    onTap: () {
-                      _showOptions();
-                    },
-                    child: Icon(Icons.more_vert)
-                    ),
-                  ],
-                  // expandedHeight: 200,
-                ),
-                SliverToBoxAdapter(
-                  child: Column(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: 
+                  
+                  Column(
                       mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         if ((widget.ownerId != context.read<AuthBloc>().state.user!.uid && context.read<BuidCubit>().state.buids.contains(widget.ownerId))) ... [
                         ListTile(
@@ -214,59 +215,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                         Stack(
                           children: [
-                            Container(
-                              height: MediaQuery.of(context).size.height / 5,
-                              width: double.infinity,
-                            ),
+
                             BannerImage(
                               isOpasaty: false,
                               bannerImageUrl: state.userr.bannerImageUrl,
-                              passedColor:
-                                  hexcolor.hexcolorCode(state.userr.colorPref),
                             ),
+
                             Positioned(
-                              top: 50,
-                              left: 20,
-                              child: ProfileImage(
-                                radius: 45,
-                                pfpUrl: state.userr.profileImageUrl,
-                              ),
+                             right: (MediaQuery.of(context).size.shortestSide / 2 )- 40,
+                             left: (MediaQuery.of(context).size.shortestSide / 2 )- 40,
+                             height: 55,
+                             bottom: -20,
+                             child: ContainerWithURLImg(imgUrl: state.userr.profileImageUrl, width: 50, height: 50, pc: Theme.of(context).scaffoldBackgroundColor),
                             ),
-                            Positioned(
-                              top: 105,
-                              right: state.isCurrentUserr ? 0 : 10,
-                              child: ProfileButton(
-                                isCurrentUserr: state.isCurrentUserr,
-                                isFollowing: state.isFollowing,
-                                colorPref: state.userr.colorPref,
-                                profileOwnersId: widget.ownerId,
-                              ),
-                            )
                           ],
                           clipBehavior: Clip.none,
                         ),
 
-                        Padding(
-                          padding: state.userr.bio.isNotEmpty
-                              ? EdgeInsets.symmetric(vertical: 10)
-                              : EdgeInsets.symmetric(vertical: 0),
-                          child: BigBoyBio(
-                              username: state.userr.username,
-                              bio: state.userr.bio),
-                        ),
+                        const SizedBox(height: 40),
 
-                        ProfileStats(
-                            username: state.userr.username,
-                            posts: state.post.length,
+                        containerWChildren(
+                          [
+                            Text(state.userr.username, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyLarge),
+                            Divider(color: Theme.of(context).colorScheme.inversePrimary),
+                            if (state.userr.bio.isNotEmpty)
+                              Text(state.userr.bio, style: Theme.of(context).textTheme.caption),
+                            Divider(color: Theme.of(context).colorScheme.inversePrimary),
+                            ProfileStats(
                             followers: state.userr.followers,
                             following: state.userr.following,
                             profileBloc: context.read<ProfileBloc>(),
                             ctxFromPf: context),
+                            
+                          ], 
+                          Color(hc.hexcolorCode(state.userr.colorPref)), Theme.of(context).colorScheme.secondary, double.infinity
+                        ),
 
-                        // add a linked list of commuinitys that I am in ... lol im done with this alredy but linked list dont make me laugh
-                        CommuinityContainer(
-                            cms: state.cms, ownerId: widget.ownerId),
-                        GestureDetector(
+                        const SizedBox(height: 40),
+                        
+                        containerWChildren(
+                          [
+                            if (state.post.isNotEmpty || state.prayer != null || state.cms.isNotEmpty) ... [
+                              if (state.cms.isNotEmpty) ... [
+                              CommuinityContainer(cms: state.cms, ownerId: widget.ownerId),
+                            Divider(color: Theme.of(context).colorScheme.inversePrimary),
+                            ],
+                            
+                            if (state.prayer != null) ... [
+                              GestureDetector(
                             onTap: () => state.prayer != null
                                 ? PrayerChunk(
                                     context, state.prayer!, state.userr)
@@ -275,22 +271,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 state.prayer,
                                 hexcolor.hexcolorCode(state.userr.colorPref),
                                 context)),
+                            Divider(color: Theme.of(context).colorScheme.inversePrimary),
+                            ],
+
+                            if (state.post.isNotEmpty) ... [
+                              imageGrids(state: state)
+                            ]
+                            ] else ... [
+                              Center(child: Text("Hmmm, well looks like theres nothing to see here", style: Theme.of(context).textTheme.caption,),)
+                            ]
+                          ], 
+                          Color(hc.hexcolorCode(state.userr.colorPref)), Theme.of(context).colorScheme.secondary, double.infinity),
+                        
+                        const SizedBox(height: 40),
                       ]),
-                ),
-                state.loadingPost
-                    ? SliverToBoxAdapter(
-                        child: LinearProgressIndicator(
-                        color: Colors.blue,
-                      ))
-                    : state.post.length > 0
-                        ? imageGrids(state: state)
-                        : SliverToBoxAdapter(
-                            child: Center(
-                                child: Text(
-                                    "${state.userr.username} Has No Post To Display Fam",
-                                    style:
-                                        Theme.of(context).textTheme.caption)))
-              ],
+                  
+                  
+                
+              ),
             ));
             
     }
@@ -299,63 +297,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // John 3:16 for God so loved the world that he gave his one and only son that whoever believes in him should not parish but have
   // eternal life. Amen.
 
-  imageGrids({required ProfileState state}) => SliverToBoxAdapter(
-          child: Padding(
+  imageGrids({required ProfileState state}) => Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4.0, top: 5),
-              child: Text(
-                state.userr.username + " Post's",
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyText1!
-                    .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4.0),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pushNamed(ProfilePostView.routeName,
-                      arguments: ProfilePostViewArgs(
-                          startIndex: 0,
-                          posts: state.post,
-                          currUsrId: context.read<AuthBloc>().state.user!.uid));
-                },
-                child: Text(
-                  "View all Posts",
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText1!
-                      .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
-                ),
-              ),
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height / 3,
-              width: double.infinity,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: state.post.length,
-                itemBuilder: (context, index) {
-                  Post? post = state.post[index];
-                  if (post != null)
-                    return displayPfpPost(post, index, state.post);
-                  return SizedBox.shrink();
-                },
-              ),
-            )
-          ],
+  mainAxisAlignment: MainAxisAlignment.start,
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Padding(
+      padding: const EdgeInsets.only(bottom: 4.0, top: 5),
+      child: Text(
+        state.userr.username + " Post's",
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context)
+            .textTheme
+            .bodyText1!
+            .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
+      ),
+    ),
+    Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context).pushNamed(ProfilePostView.routeName,
+              arguments: ProfilePostViewArgs(
+                  startIndex: 0,
+                  posts: state.post,
+                  currUsrId: context.read<AuthBloc>().state.user!.uid));
+        },
+        child: Text(
+          "View all Posts",
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context)
+              .textTheme
+              .bodyText1!
+              .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
         ),
-      ));
+      ),
+    ),
+    Container(
+      height: MediaQuery.of(context).size.shortestSide / 3,
+      width: double.infinity,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: state.post.length,
+        itemBuilder: (context, index) {
+          Post? post = state.post[index];
+          if (post != null)
+            return displayPfpPost(post, index, state.post, state);
+          return SizedBox.shrink();
+        },
+      ),
+    )
+  ],
+        ),
+      );
 
-  Widget displayPfpPost(Post post, int index, List<Post?> lst) {
+  Widget displayPfpPost(Post post, int index, List<Post?> lst, ProfileState state) {
     String displayImg = (post.imageUrl ?? post.thumbnailUrl)!;
     return GestureDetector(
       onTap: () => Navigator.of(context).pushNamed(ProfilePostView.routeName,
@@ -366,27 +363,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
-          height: MediaQuery.of(context).size.height / 5,
-          width: MediaQuery.of(context).size.width * .70,
+          padding: EdgeInsets.only(bottom: 2.0),
+            decoration: BoxDecoration(
+              color: Color(hc.hexcolorCode(state.userr.colorPref)),
+              borderRadius: BorderRadius.circular(7),),
           child: Container(
-              height: MediaQuery.of(context).size.height / 5,
-              width: MediaQuery.of(context).size.width * .70,
+              height:MediaQuery.of(context).size.shortestSide / 4,
+              width: MediaQuery.of(context).size.shortestSide / 4,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(7),
                 image: DecorationImage(
                     image: CachedNetworkImageProvider(displayImg),
                     fit: BoxFit.cover),
+                    
               )),
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [
-                    Theme.of(context).colorScheme.secondary,
-                    Theme.of(context).colorScheme.primary,
-                  ]),
-              border: Border.all(color: Colors.amber, width: 1),
-              borderRadius: BorderRadius.circular(7.0)),
         ),
       ),
     );

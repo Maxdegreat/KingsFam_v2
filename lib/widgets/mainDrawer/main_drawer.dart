@@ -196,6 +196,7 @@ class _MainDrawerState extends State<MainDrawer> {
                               .profileImageUrl,
                           height: 45,
                           width: 45,
+                          pc: null
                         ), context)
                       )),
 
@@ -367,7 +368,8 @@ class _MainDrawerState extends State<MainDrawer> {
                         : MediaQuery.of(context).size.shortestSide / 8,
                     width: MediaQuery.of(context).size.shortestSide > 500
                         ? 70
-                        : MediaQuery.of(context).size.shortestSide / 8),
+                        : MediaQuery.of(context).size.shortestSide / 8,
+                  pc: null),
               ),
             ));
       }).toList();

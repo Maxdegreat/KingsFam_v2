@@ -336,6 +336,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                     context.read<ChatscreenBloc>().state.selectedCh!.imageUrl,
                 height: 35,
                 width: 35,
+                pc: null
               ),
               SizedBox(width: 8),
               Text(

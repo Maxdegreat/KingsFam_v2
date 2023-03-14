@@ -123,9 +123,11 @@ class _ProfilePostViewState extends State<ProfilePostView> {
         return Scaffold(
           backgroundColor: Colors.black,
           appBar: AppBar(
+            backgroundColor: Colors.black,
+            leading: IconButton(onPressed: ()=> Navigator.of(context).pop(), icon: Icon(Icons.arrow_back_ios, color: Colors.white,)),
             title: loaded
-                ? Text("${state.post[0]!.author.username}\'s posts", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.black),)
-                : Text("posts", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.black)),
+                ? Text("${state.post[0]!.author.username}\'s posts", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.white),)
+                : Text("posts", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.white)),
             actions: [],
           ),
           body: loaded

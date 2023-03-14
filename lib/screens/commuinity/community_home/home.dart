@@ -118,7 +118,7 @@ class _CommunityHomemState extends State<CommunityHome> {
                                        ContainerWithURLImg(
                                       height: size.width / 3,
                                       width: size.width / 3,
-                                      imgUrl: widget.cm.imageUrl),
+                                      imgUrl: widget.cm.imageUrl, pc: null),
                                   SizedBox(height: 10),
                                   Text(widget.cm.name, style: Theme.of(context).textTheme.bodyText1,),
                                     ],

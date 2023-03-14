@@ -755,7 +755,7 @@ class _MessageLinesState extends State<MessageLines> {
   }
 
   Widget? kingsCordProfileImg() => ContainerWithURLImg(
-      imgUrl: widget.message.sender!.profileImageUrl, height: 35, width: 35);
+      imgUrl: widget.message.sender!.profileImageUrl, height: 35, width: 35, pc: null);
 
   Widget? kingsCordProfileIcon() =>
       Container(child: Icon(Icons.account_circle));

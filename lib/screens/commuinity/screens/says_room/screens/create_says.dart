@@ -130,6 +130,7 @@ class _CreateSaysState extends State<CreateSays> {
                               .profileImageUrl,
                           height: 35,
                           width: 35,
+                          pc: null
                         ),
             
                         const SizedBox(width: 15),
