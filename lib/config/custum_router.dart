@@ -13,7 +13,6 @@ import 'package:kingsfam/screens/commuinity/screens/says_room/screens/create_say
 import 'package:kingsfam/screens/profile/widgets/show_follows.dart';
 
 import 'package:kingsfam/screens/screens.dart';
-import 'package:kingsfam/screens/search/more_cm_screen.dart';
 
 
 class CustomRoute {
@@ -127,9 +126,6 @@ class CustomRoute {
       case UpdateCmThemePack.routeName:
         return UpdateCmThemePack.route(
             settings.arguments as UpdateCmThemePackArgs);
-
-      case MoreCm.routeName:
-        return MoreCm.route(settings.arguments as MoreCmArgs);
 
       case ShowFollowsScreen.routeName:
         return ShowFollowsScreen.route(args:

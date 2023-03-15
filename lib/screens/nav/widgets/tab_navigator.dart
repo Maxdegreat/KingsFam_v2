@@ -1,5 +1,7 @@
 
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
@@ -23,11 +25,13 @@ class TabNavigator extends StatelessWidget {
   static const String tabNavigatorRoot = '/';
   final GlobalKey<NavigatorState> navigatorKey;
   final BottomNavItem item;
+  final BuildContext? context;
 
   const TabNavigator({
     Key? key,
     required this.navigatorKey,
     required this.item,
+    this.context
   }) : super(key: key);
 
   @override
@@ -63,17 +67,18 @@ class TabNavigator extends StatelessWidget {
         return SearchScreen();
         
 
-      case BottomNavItem.notifications:
-        return BlocProvider<NotyBloc>(
-          create: (context) => NotyBloc(
-            notificationRepository: context.read<NotificationRepository>(), 
-            authBloc: context.read<AuthBloc>(),
-          ),
-          child: NotificationsScreen(),
-        );
+      // case BottomNavItem.notifications:
+      //   return BlocProvider<NotyBloc>(
+      //     create: (context) => NotyBloc(
+      //       notificationRepository: context.read<NotificationRepository>(), 
+      //       authBloc: context.read<AuthBloc>(),
+      //     ),
+      //     child: NotificationsScreen(),
+      //   );
 
       case BottomNavItem.profile:
-        return ProfileScreen(ownerId: ctx.read<AuthBloc>().state.user!.uid, initScreen: true,);
+        this.context!.read<ProfileBloc>()..add(ProfileLoadUserr(userId: ctx.read<AuthBloc>().state.user!.uid));
+        return ProfileScreen(ownerId: ctx.read<AuthBloc>().state.user!.uid, initScreen: false);
       default:
         return Scaffold();
     }

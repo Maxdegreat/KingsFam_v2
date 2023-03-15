@@ -261,6 +261,17 @@ class ChurchRepository extends BaseChurchRepository {
     //batch.commit();
   }
 
+  Future<List<KingsCord>> getRooms(String id) async {
+    List<KingsCord> bucket = [];
+    var snapshots = await fb.doc(id).collection(Paths.kingsCord).limit(7).get();
+    for (var i in snapshots.docs) {
+      KingsCord? kc = KingsCord.fromDoc(i);
+      if (kc != null) {
+        bucket.add(kc);
+      }
+    }
+    return bucket;
+  }
   // not everyone will have a role if you think about it.
   // if roleName is nullable then we assume that the role is non existant. just a member
   Future<void> createRole(
@@ -594,13 +605,12 @@ class ChurchRepository extends BaseChurchRepository {
     // return churchSnap.docs.map((doc) => Church.fromDoc(doc)).toList();
   }
 
-  Future<List<Church>> grabChurchAllOver(
-      {required String location, int limit = 3, String? lastPostId}) async {
+  Future<List<Church>> grabChurches(
+      {int limit = 7, String? lastPostId}) async {
     final QuerySnapshot<Map<String, dynamic>> churchSnap;
     if (lastPostId == null) {
       churchSnap = await FirebaseFirestore.instance
           .collection(Paths.church)
-          .where('location', isNotEqualTo: location)
           .limit(limit)
           .get();
       List<Church> bucket = [];
@@ -614,11 +624,8 @@ class ChurchRepository extends BaseChurchRepository {
           .collection(Paths.church)
           .doc(lastPostId)
           .get();
-
       churchSnap = await FirebaseFirestore.instance
           .collection(Paths.church)
-          .orderBy("location")
-          .where('location', isNotEqualTo: location)
           .startAfterDocument(lastDocSnap)
           .limit(limit)
           .get();

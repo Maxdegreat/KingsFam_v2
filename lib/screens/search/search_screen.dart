@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
@@ -63,9 +65,9 @@ class _SearchScreenState extends State<SearchScreen> {
       if (scrollController.position.pixels != 0.0 &&
           scrollController.position.maxScrollExtent ==
               scrollController.position.pixels) {
+                log('PAGINATING!!!');
         context.read<SearchBloc>()
-          ..add(GrabUsersPaginate(
-              currId: context.read<AuthBloc>().state.user!.uid));
+          ..add(PaginateChList(currId: context.read<AuthBloc>().state.user!.uid));
       }
     }
   }
@@ -171,92 +173,37 @@ class _SearchScreenState extends State<SearchScreen> {
     switch (state.status) {
       case SearchStatus.pag:
       case SearchStatus.initial:
-        return CustomScrollView(
-          controller: scrollController,
-          slivers: [
-            SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text("Local Communities",
-                          style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 20)
-                        ),
-                      TextButton(
-                          onPressed: () => NavHelper().navToMoreCm(
-                              context, "local", context.read<SearchBloc>()),
-                          child: Text(
-                            "More ...",
-                            style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).colorScheme.primary),
-                          ))
-                    ],
-                  ),
-                  SizedBox(height: 3.0),
-                  state.churches.length > 0
-                      ? Container(
-                          height: MediaQuery.of(context).size.height / 3,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: state.churches.length,
-                            itemBuilder: (context, index) {
-                              Church church = state.churches[index];
-                              return GestureDetector(
-                                  onTap: () => navToChurch(
-                                      context: context, commuinity: church),
-                                  child: search_Church_container(
-                                      church: church, context: context));
-                            },
-                          ))
-                      : Container(
-                          height: 170,
-                          child: Center(
-                              child: Text("You Are In Every Community?!?!"))),
-                  SizedBox(height: 10.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Global Communitys",
-                        style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 20),
-                      ),
-                      TextButton(
-                          onPressed: () => NavHelper().navToMoreCm(
-                              context, "global", context.read<SearchBloc>()),
-                          child: Text(
-                            "More ...",
-                            style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).colorScheme.primary),
-                          ))
-                    ],
-                  ),
-                  SizedBox(height: 5.0),
-                  state.chruchesNotEqualLocation.length > 0
-                      ? Container(
-                          height: MediaQuery.of(context).size.height / 3,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: state.chruchesNotEqualLocation.length,
-                            itemBuilder: (context, index) {
-                              Church church =
-                                  state.chruchesNotEqualLocation[index];
-                              return GestureDetector(
-                                  onTap: () => navToChurch(
-                                      context: context, commuinity: church),
-                                  child: search_Church_container(
-                                      church: church, context: context));
-                            },
-                          ))
-                      : Container(
-                          height: 170,
-                          child:
-                              Center(child: Text("hmm, nothing to see here"))),
-                ],
-              ),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 5),
+            Text(
+              "Discover Communities",
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText1!
+                  .copyWith(fontSize: 20, fontWeight: FontWeight.bold),
             ),
+            SizedBox(height: 5.0),
+            state.chruchesNotEqualLocation.length > 0
+                ? Expanded(
+                    // height: MediaQuery.of(context).size.height / 3,
+                    child: ListView.builder(
+                    controller: scrollController,
+                    scrollDirection: Axis.vertical,
+                    itemCount: state.chruchesNotEqualLocation.length,
+                    itemBuilder: (context, index) {
+                      Church church = state.chruchesNotEqualLocation[index];
+                      return GestureDetector(
+                          onTap: () =>
+                              navToChurch(context: context, commuinity: church),
+                          child: search_Church_container(
+                              church: church, context: context));
+                    },
+                  ))
+                : Container(
+                    height: 170,
+                    child: Center(child: Text("hmm, nothing to see here"))),
           ],
         );
 

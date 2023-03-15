@@ -25,7 +25,7 @@ class BannerImage extends StatelessWidget {
               height: passedheight != null ? passedheight :  MediaQuery.of(context).size.height / 8,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
-                color: Color(hc.hexcolorCode('#141829')),
+                color: Theme.of(context).colorScheme.secondary,
                 image: bannerImage != null
                     ? DecorationImage(
                         image: FileImage(bannerImage!), fit: BoxFit.fitWidth)

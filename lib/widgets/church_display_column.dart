@@ -6,61 +6,73 @@ import '../models/church_model.dart';
 
 Widget search_Church_container(
     {required Church church, required BuildContext context}) {
-  return Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: Container(
-      height: MediaQuery.of(context).size.width > 400 ? 400 : null,
-      width: MediaQuery.of(context).size.width > 400 ? 400 : MediaQuery.of(context).size.width * .70,
-      child: Padding(
-        padding:
-            const EdgeInsets.only(top: 8.0, bottom: 12.0, left: 12, right: 12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
+  return Container(
+    // color: Colors.green,
+    padding: const EdgeInsets.symmetric(vertical: 10),
+    // width: MediaQuery.of(context).size.shortestSide ,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _cmImgae(church.imageUrl),
+        const SizedBox(width: 20),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-                height: MediaQuery.of(context).size.width > 400 ? 200 : MediaQuery.of(context).size.height / 10,
-                width: MediaQuery.of(context).size.width > 400 ? 200 : MediaQuery.of(context).size.height / 3,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(7),
-                  image: DecorationImage(
-                      image: CachedNetworkImageProvider(church.imageUrl),
-                      fit: BoxFit.cover),
-                )),
-            SizedBox(height: 10),
-            Text(
-              church.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyText1,
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 2),
-            Text(church.about,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.caption,
-                textAlign: TextAlign.center),
-            SizedBox(height: 2),
-            Text(
-              "Members: ${church.size}",
-              style: Theme.of(context).textTheme.caption,
-            ),
-            SizedBox(height: 2),
+              width: (MediaQuery.of(context).size.shortestSide / 1.65),
+              padding: const EdgeInsets.only(right: 16),
+              child: _cmName(church.name, context)),
+            const SizedBox(height: 10),
+            Container(
+              width: (MediaQuery.of(context).size.shortestSide / 1.65),
+              padding: const EdgeInsets.only(right: 16),
+              child: _cmAbout(church.about, context)),
           ],
-        ),
-      ),
-      decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topRight,
-              colors: [
-                Theme.of(context).colorScheme.secondary,
-                Theme.of(context).colorScheme.onPrimary,
-              ]),
-          // border:Border.all(color: Colors.amber, width: .5),
-          borderRadius: BorderRadius.circular(10.0)),
+        )
+      ],
     ),
+  );
+}
+
+_cmImgae(imgUrl) => Container(
+  height: 100,
+  width: 100,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(7),
+          image: DecorationImage(
+              image: CachedNetworkImageProvider(imgUrl), fit: BoxFit.cover)),
+    );
+
+Text _cmName(name, context) => Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.w700));
+Text _cmAbout(about, context) => Text(about, maxLines: 2, overflow: TextOverflow.fade,  style: Theme.of(context).textTheme.subtitle1!.copyWith(fontWeight: FontWeight.w400));
+
+
+Widget churchDisplayContainer(BuildContext context, Church cm) {
+  return Container(
+    padding: EdgeInsets.only(top: 3, right: 3),
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.primary,
+      borderRadius: BorderRadius.circular(7)
+    ),
+    child: Container(
+      padding: const EdgeInsets.all(7),
+     decoration: BoxDecoration(
+       color: Theme.of(context).colorScheme.secondary,
+       borderRadius: BorderRadius.circular(7)
+     ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _cmImgae(cm.imageUrl),
+          const SizedBox(height: 20),
+          _cmName(cm.name, context),
+          const SizedBox(height: 10),
+          _cmAbout(cm.about, context),
+        ],
+      ),
+    )
   );
 }

@@ -17,9 +17,9 @@ class PaginateChList1 extends SearchEvent {
   const PaginateChList1({required this.currId});
 }
 
-class PaginateChListNotEqualToLocation extends SearchEvent {
+class PaginateChList extends SearchEvent {
   final String currId;
-  const PaginateChListNotEqualToLocation({required this.currId});
+  const PaginateChList({required this.currId});
 }
 
 class UserrSelected extends SearchEvent {

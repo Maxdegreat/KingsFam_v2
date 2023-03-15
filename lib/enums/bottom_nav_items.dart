@@ -1,6 +1,6 @@
 enum BottomNavItem {
   chats,
   search,
-  notifications,
+  // notifications,
   profile,
 }

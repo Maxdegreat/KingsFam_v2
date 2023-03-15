@@ -60,22 +60,15 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // controllers
 
   ScrollController scrollController = ScrollController();
-  // late VideoPlayerController _perkedVideoPlayerController;
   @override
   void initState() {
     super.initState();
 
-    // scrollController.addListener(listenToScrolling);
+    
   }
 
-  initializeProfileScreen(BuildContext context) {
-    if (widget.initScreen == true || hasSeen == true)
-      context.read<ProfileBloc>()
-        ..add(ProfileLoadUserr(userId: widget.ownerId, vidCtrl: null));
-  }
 
   bool hasSeen = false;
   @override
@@ -96,11 +89,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (context.read<BottomnavbarCubit>().state.selectedItem == BottomNavItem.profile) {
           if (!hasSeen) {
             hasSeen = true;
-            initializeProfileScreen(context);
+        //     context.read<ProfileBloc>()
+        // ..add(ProfileLoadUserr(userId: context.read<AuthBloc>().state.user!.uid, vidCtrl: null));
           }
         } else if (widget.ownerId != context.read<AuthBloc>().state.user!.uid && widget.initScreen) {
           if (!hasSeen) {
-            initializeProfileScreen(context);
+            context.read<ProfileBloc>()
+        ..add(ProfileLoadUserr(userId: widget.ownerId, vidCtrl: null));
             hasSeen = true;
           }
         }
@@ -238,9 +233,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           [
                             Text(state.userr.username, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyLarge),
                             Divider(color: Theme.of(context).colorScheme.inversePrimary),
-                            if (state.userr.bio.isNotEmpty)
+                            if (state.userr.bio.isNotEmpty) ... [
                               Text(state.userr.bio, style: Theme.of(context).textTheme.caption),
                             Divider(color: Theme.of(context).colorScheme.inversePrimary),
+
+                            ],
                             ProfileStats(
                             followers: state.userr.followers,
                             following: state.userr.following,
@@ -258,7 +255,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             if (state.post.isNotEmpty || state.prayer != null || state.cms.isNotEmpty) ... [
                               if (state.cms.isNotEmpty) ... [
                               CommuinityContainer(cms: state.cms, ownerId: widget.ownerId),
-                            Divider(color: Theme.of(context).colorScheme.inversePrimary),
+                              Divider(color: Theme.of(context).colorScheme.inversePrimary),
                             ],
                             
                             if (state.prayer != null) ... [

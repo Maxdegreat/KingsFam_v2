@@ -9,6 +9,7 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/config/mock_flag.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
@@ -168,15 +169,20 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   }
 
   Future<void> removeCmFromJoinedCms({required String leftCmId}) async {
-    if (state.chs != null) {
-      for (var i in state.chs!) {
-        if (i!.id == leftCmId) {
-          state.chs!.remove(i);
-          emit(state.copyWith(chs: state.chs));
-          break;
-        }
-      }
-    }
+
+    emit(ChatscreenState.initial());
+    add(LoadCms());
+    scaffoldKey.currentState!.closeDrawer();
+
+    // if (state.chs != null) {
+    //   for (var i in state.chs!) {
+    //     if (i!.id == leftCmId) {
+    //       state.chs!.remove(i);
+    //       emit(state.copyWith(chs: state.chs));
+    //       break;
+    //     }
+    //   }
+    // }
 
     if (state.selectedCh == null || state.selectedCh == leftCmId) {
       if (state.chs!.length > 0)

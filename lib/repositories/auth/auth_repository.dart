@@ -1,3 +1,4 @@
+import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -127,40 +128,44 @@ class AuthRepository extends BaseAuthRepository {
     await _firebaseAuth.signOut();
   }
 
-  Future<void> deleteAccount() async {
-    if (currUser != null) {
-      currUser!.delete();
-      // remove the users post 
-      FirebaseFirestore db = FirebaseFirestore.instance;
-      var batch = db.batch();
-      QuerySnapshot p = await FirebaseFirestore.instance.collection(Paths.posts).where('author', isEqualTo: FirebaseFirestore.instance.collection(Paths.users).doc(currUser!.uid)).get();
-      p.docs.forEach((doc) async {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        var imageUrl = data['imageUrl'] ?? null;
-        var videoUrl = data['videoUrl'] ?? null;
-        var thumbnailUrl = data['thumbnailUrl'] ?? null;
-        if (imageUrl != null)
-          FirebaseStorage.instance.refFromURL(imageUrl).delete();
-        if (videoUrl != null)
-          FirebaseStorage.instance.refFromURL(videoUrl).delete();
-        if (thumbnailUrl != null)
-          FirebaseStorage.instance.refFromURL(thumbnailUrl).delete();
-        Userr u = await UserrRepository().getUserrWithId(userrId: currUser!.uid);
-        if (u.profileImageUrl.isNotEmpty) {
-          FirebaseStorage.instance.refFromURL(u.profileImageUrl).delete();
-        }
-        if (u.bannerImageUrl!=null || u.bannerImageUrl.isNotEmpty) {
-          FirebaseStorage.instance.refFromURL(u.bannerImageUrl).delete();
-        }
-
-        // TODO LATER ADD THE URLS INTO A BATCH DEL;
-        batch.delete(doc.reference);
-      });
-      await batch.commit();
-      // update the user document and make it a deled account
-      await FirebaseFirestore.instance.collection(Paths.users).doc(currUser!.uid).update(Userr.empty.copyWith().toDoc());
+  Future<void> deleteAccount(User fbu) async {
+    dev.log("curr user: $currUser");
+  
+    dev.log("not a null user");
+    //  
+    // remove the user's posts 
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    var batch = db.batch();
+    QuerySnapshot p = await db.collection(Paths.posts).where('author', isEqualTo: db.collection(Paths.users).doc(fbu.uid)).get();
+    dev.log("len of p:  ${p.docs.length}");
+    for (final doc in p.docs) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      var imageUrl = data['imageUrl'] ?? null;
+      var videoUrl = data['videoUrl'] ?? null;
+      var thumbnailUrl = data['thumbnailUrl'] ?? null;
+      if (imageUrl != null)
+        await FirebaseStorage.instance.refFromURL(imageUrl).delete();
+      if (videoUrl != null)
+        await FirebaseStorage.instance.refFromURL(videoUrl).delete();
+      if (thumbnailUrl != null)
+        await FirebaseStorage.instance.refFromURL(thumbnailUrl).delete();
+      Userr u = await UserrRepository().getUserrWithId(userrId: currUser!.uid);
+      if (u.profileImageUrl.isNotEmpty) {
+        await FirebaseStorage.instance.refFromURL(u.profileImageUrl).delete();
+      }
+      if (u.bannerImageUrl!=null || u.bannerImageUrl.isNotEmpty) {
+        await FirebaseStorage.instance.refFromURL(u.bannerImageUrl).delete();
+      }
+      // Add the URLs to batch delete
+      batch.delete(doc.reference);
     }
-  }
+    await batch.commit();
+    // update the user document and make it a deleted account
+    await FirebaseFirestore.instance.collection(Paths.users).doc(fbu.uid).update(Userr.empty.copyWith().toDoc());
+    dev.log("deleted!!!!!! ACCOUNT");
+  
+}
+
 
     final googleSignIn = GoogleSignIn();
   // Stream<auth.User?> get user => _firebaseAuth.userChanges();

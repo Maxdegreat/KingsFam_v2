@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 import 'package:kingsfam/extensions/locations.dart';
 import 'package:kingsfam/helpers/image_helper.dart';
@@ -66,237 +67,245 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     String dropdownValue = "Remote";
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: Icon(
-                Icons.arrow_back_ios,
-                color: Theme.of(context).iconTheme.color,
-              )),
-          title: Text(
-            'Edit Profile',
-            style: Theme.of(context).textTheme.bodyText1,
-          ),
-        ),
-        body: BlocConsumer<EditProfileCubit, EditProfileState>(
-            listener: (context, state) {
-          if (state.status == EditProfileStatus.success) {
-            Navigator.of(context).pop();
-          } else if (state.status == EditProfileStatus.error) {
-            showDialog(
-                context: context,
-                builder: (context) =>
-                    ErrorDialog(content: state.failure.message));
-          }
-        }, builder: (context, state) {
-          // I need to set the user color pref initally. it can be changed later but just so it is not set to a default color.
-          // this will help the user know what they are changing in realtime and prevent them from muptile updates via writes
-          if (state.colorPref == '') {
-            log(widget.userr.colorPref);
-            context
-                .read<EditProfileCubit>()
-                .updateColorPreff(widget.userr.colorPref);
-          }
+    return BlocConsumer<EditProfileCubit, EditProfileState>(
+      listener: (context, state) {
+              if (state.status == EditProfileStatus.success) {
+                Navigator.of(context).pop();
+              } else if (state.status == EditProfileStatus.error) {
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        ErrorDialog(content: state.failure.message));
+              }
+      },
+      
+      builder: (context, state) {if (state.colorPref == '') {
+                log(widget.userr.colorPref);
+                context
+                    .read<EditProfileCubit>()
+                    .updateColorPreff(widget.userr.colorPref);
+              }
+              TextStyle linkStyle = Theme.of(context)
+                  .textTheme
+                  .subtitle1!
+                  .copyWith(color: Colors.blueAccent);
+        return GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: Icon(
+                    Icons.arrow_back_ios,
+                    color: Theme.of(context).iconTheme.color,
+                  )),
+              actions: [
+                IconButton(
+                    onPressed: () => _submitForm(
+                        context, state.status == EditProfileStatus.submitting),
+                    icon: Icon(
+                      Icons.check,
+                      color: Colors.green,
+                    ))
+              ],
+              title: Text(
+                'Edit Profile',
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+            ),
+            body: 
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    if (state.status == EditProfileStatus.submitting)
+                      const LinearProgressIndicator(),
+                    GestureDetector(
+                      onTap: () => _pickBannerImage(context),
+                      child: BannerImage(
+                        isOpasaty: false,
+                        bannerImageUrl: widget.userr.bannerImageUrl,
+                        bannerImage: state.bannerImage,
+                      ),
+                    ),
+                    Container(
+                        child: GestureDetector(
+                      onTap: () => _pickProfileImage(context),
+                      child: ProfileImage(
+                        radius: 40.0,
+                        pfpUrl: widget.userr.profileImageUrl,
+                        pfpImage: state.profileImage,
+                      ),
+                    )),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        TextButton(
+                            onPressed: () => _pickBannerImage(context),
+                            child: Text(
+                              "Edit banner pciture",
+                              style: linkStyle,
+                            )),
+                        const SizedBox(width: 10),
+                        TextButton(
+                            onPressed: () => _pickProfileImage(context),
+                            child: Text(
+                              "Edit profile pciture",
+                              style: linkStyle,
+                            ))
+                      ],
+                    ),
+                    Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15.0, vertical: 10.0),
+                        child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                TextFormField(
+                                  cursorColor: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
+                                  initialValue: widget.userr.username,
+                                  decoration:
+                                      InputDecoration(hintText: 'Username'),
+                                  onChanged: (value) => context
+                                      .read<EditProfileCubit>()
+                                      .usernameChanged(value),
+                                  validator: (value) => value!.trim().isEmpty
+                                      ? 'Username can\'t be empty'
+                                      : null,
+                                ),
+                                // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ B I O ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                TextFormField(
+                                  cursorColor: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
+                                  initialValue: widget.userr.bio,
+                                  decoration: InputDecoration(hintText: 'Bio'),
+                                  onChanged: (value) => context
+                                      .read<EditProfileCubit>()
+                                      .bioChanged(value),
+                                  validator: (value) => value!.trim().isEmpty
+                                      ? 'Bio can\'t be empty'
+                                      : null,
+                                ),
+                                // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ C O L O R P R E F ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                SizedBox(height: 15.0),
+                                Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 5),
+                                    child: Text(
+                                        'My Color Pref is... ${hexToColor[state.colorPref]}',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 17,
+                                          color: Color(hexcolor
+                                              .hexcolorCode(state.colorPref)),
+                                        )),
+                                  ),
+                                ),
 
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                if (state.status == EditProfileStatus.submitting)
-                  const LinearProgressIndicator(),
-                GestureDetector(
-                  onTap: () => _pickBannerImage(context),
-                  child: BannerImage(
-                    isOpasaty: false,
-                    bannerImageUrl: widget.userr.bannerImageUrl,
-                    bannerImage: state.bannerImage,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: ElevatedButton(
-                    onPressed: () => _pickBannerImage(context),
-                    child: Text(
-                  "Edit banner image",
-                  style: Theme.of(context).textTheme.bodyText1,
-                    ),
-                    style: ElevatedButton.styleFrom(
-                    //shape: StadiumBorder(),
-                      backgroundColor: Theme.of(context).colorScheme.primary),
-                  ),
-                ),
-                Container(
-                    child: GestureDetector(
-                  onTap: () => _pickProfileImage(context),
-                  child: ProfileImage(
-                    radius: 40.0,
-                    pfpUrl: widget.userr.profileImageUrl,
-                    pfpImage: state.profileImage,
-                  ),
-                )),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: ElevatedButton(
-                    onPressed: () => _pickProfileImage(context),
-                    child: Text(
-                      "Edit banner image",
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      // shape: StadiumBorder(),
-                        backgroundColor: Theme.of(context).colorScheme.primary),
-                  ),
-                ),
-                Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 15.0, vertical: 20.0),
-                    child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            TextFormField(
-                              cursorColor: Theme.of(context).colorScheme.inversePrimary,
-                              initialValue: widget.userr.username,
-                              decoration: InputDecoration(hintText: 'Username'),
-                              onChanged: (value) => context
-                                  .read<EditProfileCubit>()
-                                  .usernameChanged(value),
-                              validator: (value) => value!.trim().isEmpty
-                                  ? 'Username can\'t be empty'
-                                  : null,
-                            ),
-                            // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ B I O ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                            TextFormField(
-                              cursorColor: Theme.of(context).colorScheme.inversePrimary,
-                              initialValue: widget.userr.bio,
-                              decoration: InputDecoration(hintText: 'Bio'),
-                              onChanged: (value) => context
-                                  .read<EditProfileCubit>()
-                                  .bioChanged(value),
-                              validator: (value) => value!.trim().isEmpty
-                                  ? 'Bio can\'t be empty'
-                                  : null,
-                            ),
-                            // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ C O L O R P R E F ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                            SizedBox(height: 15.0),
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 5),
-                                child: Text(
-                                    'My Color Pref is... ${hexToColor[state.colorPref]}',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 17,
+                                PickColorPref(
+                                    hexcolormapStr: hexcolormapStr,
+                                    hexcolormapInt: hexcolormapInt,
+                                    hexcolor: hexcolor),
+
+                                Divider(
+                                  color: Colors.grey,
+                                  height: 5.0,
+                                  thickness: .5,
+                                ),
+
+                                Container(
+                                  width: double.infinity,
+                                  child: DropdownButton<String>(
+                                    value: Location.dropdownValue,
+                                    icon: const Icon(Icons.arrow_downward),
+                                    iconSize: 24,
+                                    elevation: 16,
+                                    style: const TextStyle(color: Colors.white),
+                                    underline: Container(
+                                      height: 2,
                                       color: Color(hexcolor
                                           .hexcolorCode(state.colorPref)),
-                                    )),
-                              ),
-                            ),
-
-                            PickColorPref(
-                                hexcolormapStr: hexcolormapStr,
-                                hexcolormapInt: hexcolormapInt,
-                                hexcolor: hexcolor),
-
-                            Divider(
-                              color: Colors.grey,
-                              height: 5.0,
-                              thickness: .5,
-                            ),
-
-                            Container(
-                              width: double.infinity,
-                              child: DropdownButton<String>(
-                                value: Location.dropdownValue,
-                                icon: const Icon(Icons.arrow_downward),
-                                iconSize: 24,
-                                elevation: 16,
-                                style: const TextStyle(color: Colors.white),
-                                underline: Container(
-                                  height: 2,
-                                  color: Color(
-                                      hexcolor.hexcolorCode(state.colorPref)),
-                                ),
-                                onChanged: (String? newValue) {
-                                  setState(
-                                      () => Location.dropdownValue = newValue!);
-                                  context
-                                      .read<EditProfileCubit>()
-                                      .locationChanged(newValue!);
-                                },
-                                items: locations()
-                                    .map<DropdownMenuItem<String>>(
-                                        (String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                              ),
-                            ),
-
-                            SizedBox(height: 15.0),
-                            ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: Theme.of(context).colorScheme.primary),
-                                onPressed: () => _submitForm(
-                                    context,
-                                    state.status ==
-                                        EditProfileStatus.submitting),
-                                child: Text('Save changes', style: Theme.of(context).textTheme.bodyText1,)),
-
-                            SizedBox(
-                              height: 20,
-                            ),
-
-                            Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  TextButton(
-                                    onLongPress: () =>
-                                        context.read<AuthRepository>().logout(),
-                                    onPressed: () => snackBar(snackMessage: "Long Press For 5 Seconds To Log Out", context: context),
-
-                                    child: Text(
-                                      "Log Me Out",
-                                      style:
-                                          Theme.of(context).textTheme.bodyText1,
                                     ),
-                                  ),
-                                  SizedBox(
-                                    height: 15,
-                                  ),
-                                  TextButton(
-                                    onLongPress: () async {
-                                      await delAcc(context)
-                                          ? context
-                                              .read<AuthRepository>()
-                                              .deleteAccount()
-                                          : snackBar(
-                                              snackMessage:
-                                                  "Your account was not deleted.",
-                                              context: context);
+                                    onChanged: (String? newValue) {
+                                      setState(() =>
+                                          Location.dropdownValue = newValue!);
+                                      context
+                                          .read<EditProfileCubit>()
+                                          .locationChanged(newValue!);
                                     },
-                                    onPressed: () => snackBar(snackMessage:
-                                                "Long Press For 5 Seconds To to delete your account. Note your account will be forever deleted", context: context),
-                                    child: Text(
-                                      "Delete my account",
-                                      style: TextStyle(color: Colors.red),
-                                    ),
-                                  )
-                                ])
-                          ],
-                        )))
-              ],
-            ),
-          );
-        }),
-      ),
+                                    items: locations()
+                                        .map<DropdownMenuItem<String>>(
+                                            (String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+
+                                SizedBox(height: 15.0),
+
+                                SizedBox(
+                                  height: 20,
+                                ),
+
+                                Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      TextButton(
+                                        onLongPress: () => context
+                                            .read<AuthRepository>()
+                                            .logout(),
+                                        onPressed: () => snackBar(
+                                            snackMessage:
+                                                "Long Press For 5 Seconds To Log Out",
+                                            context: context),
+                                        child: Text(
+                                          "Log Me Out",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 15,
+                                      ),
+                                      TextButton(
+                                        onLongPress: () async {
+                                          await delAcc(context)
+                                              ? context
+                                                  .read<AuthRepository>()
+                                                  .deleteAccount(context.read<AuthBloc>().state.user!)
+                                              : snackBar(
+                                                  snackMessage:
+                                                      "Your account was not deleted.",
+                                                  context: context);
+                                        },
+                                        onPressed: () => snackBar(
+                                            snackMessage:
+                                                "Long Press For 5 Seconds To to delete your account. Note your account will be forever deleted",
+                                            context: context),
+                                        child: Text(
+                                          "Delete my account",
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      )
+                                    ])
+                              ],
+                            )))
+                  ],
+                ),
+              )));
+      },
     );
   }
 
@@ -346,7 +355,6 @@ Future delAcc(BuildContext context) {
             SizedBox(
               height: 20,
             ),
-            
             GestureDetector(
                 onTap: () => Navigator.pop(context, true),
                 child: Text("Delete your account",

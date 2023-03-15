@@ -23,8 +23,8 @@ class BottomNavBar extends StatelessWidget {
       showSelectedLabels: false,
       showUnselectedLabels: false,
       type: BottomNavigationBarType.fixed,
-      selectedItemColor: Colors.amber[600],
-      unselectedItemColor: Colors.white,
+      selectedItemColor: Theme.of(context).colorScheme.primary,
+      unselectedItemColor: Theme.of(context).colorScheme.inversePrimary,
       currentIndex: BottomNavItem.values.indexOf(selectedItem),
       onTap: onTap,
       items: items

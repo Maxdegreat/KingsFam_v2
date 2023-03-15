@@ -2,17 +2,14 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/models/prayer_modal.dart';
 import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
 import 'package:kingsfam/repositories/repositories.dart';
-import 'package:kingsfam/screens/profile/profile_screen.dart';
 import 'package:video_player/video_player.dart';
 
 part 'profile_event.dart';
@@ -113,7 +110,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       ProfilePaginatePosts event) async* {
     yield state.copyWith(status: ProfileStatus.paginating);
     try {
-      Stream<List<Future<Post?>>> posts;
+      
       final lastPostId = state.post.isNotEmpty ? state.post.last!.id : null;
       var lastPostDoc = await _postsRepository.getUserPostHelper(
           userId: event.userId, lastPostId: lastPostId);
@@ -143,17 +140,16 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   Stream<ProfileState> _mapProfileLoadUserToState(
       ProfileLoadUserr event) async* {
+    yield ProfileState.initial();
     yield state.copyWith(status: ProfileStatus.loading, loadingPost: true);
 
     try {
-      final userr =
-          await _userrRepository.getUserrWithId(userrId: event.userId);
+      final userr = await _userrRepository.getUserrWithId(userrId: event.userId);
       yield state.copyWith(userr: userr);
 
       // grab any potential prayers
 
-      List<PrayerModal> pm =
-          await _prayerRepo.getUsrsPrayers(usrId: userr.id, limit: 1);
+      List<PrayerModal> pm = await _prayerRepo.getUsrsPrayers(usrId: event.userId, limit: 1);
 
       if (pm.isNotEmpty) {
         yield (state.copyWith(prayer: pm[0].prayer));

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
@@ -42,7 +43,6 @@ class CommunityHome extends StatefulWidget {
 class _CommunityHomemState extends State<CommunityHome> {
   late CommuinityBloc cmB;
   bool _initalized = false;
-  bool _showFullAbout = false;
 
   @override
   void initState() {
@@ -52,6 +52,7 @@ class _CommunityHomemState extends State<CommunityHome> {
 
   Future<void> initCmB() async {
     cmB = await _getCmB();
+    cmB.getRooms(cmB.state.cmId);
     _initalized = true;
     setState(() {});
   }
@@ -64,164 +65,156 @@ class _CommunityHomemState extends State<CommunityHome> {
         ? Center(child: CircularProgressIndicator())
         : SafeArea(
             child: Scaffold(
-                appBar: AppBar(
-                  actions: [
-                    IconButton(onPressed: () async {
-                String generatedDeepLink =
-                    await FirebaseDynamicLinkService.createDynamicLink(
-                        widget.cm, true);
-                communityInvitePopUp(context, generatedDeepLink);
-              }, icon: Icon(Icons.share))
-                  ],
-                  backgroundColor: Theme.of(context).colorScheme.secondary,
-                  leading: IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: Icon(
-                        Icons.arrow_back_ios,
-                        color: Theme.of(context).iconTheme.color,
-                      )),
-                ),
-                body: BlocProvider.value(
-                    value: cmB,
-                    child: BlocConsumer<CommuinityBloc, CommuinityState>(
-                      listener: (context, state) {
-                        if (state.status == CommuintyStatus.error) {
-                          log("!!!!!!! error in commuinityBloc. found from home page");
-                        }
-                      },
-                      builder: ((context, state) {
-                        return SingleChildScrollView(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Align(alignment: Alignment.topLeft, child: Text(widget.cm.name + " Home", style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 30))),
-                                ),
-                               Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.secondary,
-                                  borderRadius: BorderRadius.circular(10)
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                       ContainerWithURLImg(
-                                      height: size.width / 3,
-                                      width: size.width / 3,
-                                      imgUrl: widget.cm.imageUrl, pc: null),
-                                  SizedBox(height: 10),
-                                  Text(widget.cm.name, style: Theme.of(context).textTheme.bodyText1,),
-                                    ],
+            appBar: AppBar(
+              actions: [
+                IconButton(
+                    onPressed: () async {
+                      String generatedDeepLink =
+                          await FirebaseDynamicLinkService.createDynamicLink(
+                              widget.cm, true);
+                      communityInvitePopUp(context, generatedDeepLink);
+                    },
+                    icon: Icon(
+                      Icons.share,
+                      color: Theme.of(context).iconTheme.color,
+                    ))
+              ],
+              leading: IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: Icon(
+                    Icons.arrow_back_ios,
+                    color: Theme.of(context).iconTheme.color,
+                  )),
+            ),
+            body: BlocProvider.value(
+                value: cmB,
+                child: BlocConsumer<CommuinityBloc, CommuinityState>(
+                  listener: (context, state) {
+                    if (state.status == CommuintyStatus.error) {
+                      log("!!!!!!! error in commuinityBloc. found from home page");
+                    }
+                  },
+                  builder: ((context, state) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          flex: 9,
+                          child: SingleChildScrollView(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: ContainerWithURLImg(
+                                        height: size.width / 3,
+                                        width: size.width / 3,
+                                        imgUrl: widget.cm.imageUrl,
+                                        pc: null),
                                   ),
-                                ),
-                               ),
-                                SizedBox(height: 10),
-                                  Container(
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                       color: Theme.of(context).colorScheme.secondary,
-                                  borderRadius: BorderRadius.circular(10)
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: _aboutInfo(4),
-                                    )),
-                                  SizedBox(height: 10),
-                                if (!_showFullAbout) ...[
+                                  const SizedBox(height: 20),
+                                  Align(
+                                      alignment: Alignment.center,
+                                      child: Text(widget.cm.name,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                                  fontSize: 25,
+                                                  fontWeight: FontWeight.bold))),
+                                  const SizedBox(height: 10),
+                                  _aboutInfo(),
+                                  const SizedBox(height: 10),
                                   _memberInfo(),
-                                SizedBox(height: 10),
-                                _joinLeaveBtn(state),
-                                ]
-                              ],
+                                  const SizedBox(height: 10),
+                                  Text("Rooms", style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.bold)),
+
+                                ]..addAll(_listOfRooms(state)),
+                              ),
                             ),
                           ),
-                        );
-                      }),
-                    ))));
-  }
-
-  Future<dynamic> _showFullAboutSheet() {
-    return showModalBottomSheet(
-        backgroundColor: Colors.black45,
-        context: (context),
-        builder: (context) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Center(
-                      child: Icon(Icons.drag_handle_outlined,
-                          color: Colors.white24)),
-                  SizedBox(height: 10),
-                  _aboutInfo(null),
-                ]),
-          );
-        });
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                child: _joinLeaveBtn(state),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    );
+                  }),
+                )),
+          ));
   }
 
   _memberInfo() {
     return Container(
+      padding: const EdgeInsets.only(right: 3),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary,
-        borderRadius: BorderRadius.circular(10)
+        borderRadius: BorderRadius.circular(7),
+        color: Theme.of(context).colorScheme.primary,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.people_alt_sharp,
-                color: Theme.of(context).iconTheme.color,
-              ),
-              SizedBox(width: 5),
-              Text(widget.cm.size.toString(),
-                  style: Theme.of(context).textTheme.caption),
-              SizedBox(width: 5),
-              Text("Members", style: Theme.of(context).textTheme.caption),
-            ]),
+      child: Container(
+        decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.secondary,
+            borderRadius: BorderRadius.circular(7)),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.people_alt_sharp,
+                  color: Theme.of(context).iconTheme.color,
+                ),
+                SizedBox(width: 5),
+                Text(widget.cm.size.toString(),
+                    style: Theme.of(context).textTheme.caption),
+                SizedBox(width: 5),
+                Text("Members", style: Theme.of(context).textTheme.caption),
+              ]),
+        ),
       ),
     );
   }
 
-  Widget _aboutInfo(int? maxLines) {
+  List<Widget> _listOfRooms(CommuinityState state) {
+    List<Widget> bucket = [];
+    state.otherRooms.forEach((element) {
+      bucket.add(Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Text(element!.cordName,
+            style: Theme.of(context).textTheme.bodyText1),
+      ));
+    });
+    return bucket;
+  }
+
+  Widget _aboutInfo() {
     return Align(
-      alignment: Alignment.centerLeft,
-      child: GestureDetector(
-        onTap: () {
-          _showFullAbout = true;
-          setState(() {});
-          _showFullAboutSheet()
-              .then((value) => {_showFullAbout = false, setState(() {})});
-        },
-        child: Padding(
-          padding: const EdgeInsets.only(right: 8.0),
-          child: Text(
-            "About: " + widget.cm.about,
-            style: maxLines != null
-                ? Theme.of(context).textTheme.caption
-                : Theme.of(context)
-                    .textTheme
-                    .caption!
-                    .copyWith(color: Colors.white),
-            softWrap: true,
-            overflow: TextOverflow.ellipsis,
-            maxLines: maxLines != null ? maxLines : 100,textAlign: TextAlign.center,
-          ),
+      alignment: Alignment.center,
+      child: Padding(
+        padding: const EdgeInsets.only(right: 8.0),
+        child: Text(
+          widget.cm.about,
+          style: Theme.of(context).textTheme.subtitle1,
+          softWrap: true,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 100,
+          textAlign: TextAlign.center,
         ),
       ),
     );
@@ -274,44 +267,23 @@ class _CommunityHomemState extends State<CommunityHome> {
 
   Widget showArmored({required CommuinityBloc cmB, required Church cm}) {
     return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                    "This is an armored community. Place a request to join. You will be notified when admited",
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyText1!
-                        .copyWith(color: Colors.blue)),
-              ),
-              decoration: BoxDecoration(
-                  color: Color.fromARGB(75, 54, 114, 244),
-                  borderRadius: BorderRadius.circular(15)),
-            ),
-            // ------------------
-            SizedBox(height: 7),
-            Icon(Icons.health_and_safety_outlined, size: 50),
-            SizedBox(height: 7),
-            ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).colorScheme.secondary),
-                onPressed: () {
-                  cmB.state.requestStatus == RequestStatus.pending
-                      ? snackBar(
-                          snackMessage: "Your Request is pending",
-                          context: context)
-                      : cmB.requestToJoin(
-                          cm, context.read<AuthBloc>().state.user!.uid);
-                },
-                child: cmB.state.requestStatus == RequestStatus.pending
-                    ? Text("Pending ...")
-                    : Text("Request To Join")),
-          ],
-        ));
+      padding: const EdgeInsets.all(8.0),
+      child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.all(10), shape: StadiumBorder()),
+          onPressed: () {
+            cmB.state.requestStatus == RequestStatus.pending
+                ? snackBar(
+                    snackMessage: "Your Request is pending", context: context)
+                : cmB.requestToJoin(
+                    cm, context.read<AuthBloc>().state.user!.uid);
+          },
+          child: cmB.state.requestStatus == RequestStatus.pending
+              ? Text("Pending ...",
+                  style: Theme.of(context).textTheme.bodyText1)
+              : Text("Request To Join",
+                  style: Theme.of(context).textTheme.bodyText1)),
+    );
   }
 
 // this is the join btn ____________________________________
@@ -327,10 +299,11 @@ class _CommunityHomemState extends State<CommunityHome> {
                 child: Container(
                   child: ElevatedButton(
                       onPressed: () {
-                        if (!context
-                            .read<CommuinityBloc>()
-                            .state
-                            .role["kfRole"] == "Lead") {
+                        if (!(context
+                                .read<CommuinityBloc>()
+                                .state
+                                .role["kfRole"] ==
+                            "Lead")) {
                           context
                               .read<CommuinityBloc>()
                               .onLeaveCommuinity(commuinity: cm)
@@ -339,10 +312,8 @@ class _CommunityHomemState extends State<CommunityHome> {
                                 .read<ChatscreenBloc>()
                                 .removeCmFromJoinedCms(leftCmId: cm.id!);
                           });
-                          cm.members.remove(context
-                              .read<CommuinityBloc>()
-                              .state
-                              .currUserr);
+                          cm.members.remove(
+                              context.read<CommuinityBloc>().state.currUserr);
 
                           cmB..add(CommunityInitalEvent(commuinity: cm));
                           setState(() {});
@@ -360,8 +331,7 @@ class _CommunityHomemState extends State<CommunityHome> {
                       ),
                       style: ElevatedButton.styleFrom(
                           shape: StadiumBorder(),
-                          primary:
-                              Theme.of(context).colorScheme.secondary)),
+                          primary: Theme.of(context).colorScheme.secondary)),
                 ),
               )
             : Padding(

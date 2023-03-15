@@ -452,6 +452,13 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     emit(state.copyWith(badges: state.badges));
   }
 
+  void getRooms(String id) async {
+    log("len of Id" + id.length.toString());
+    List <KingsCord> r = await _churchRepository.getRooms(id);
+    log("r len: " + r.length.toString());
+    emit(state.copyWith(otherRooms: r));
+  }
+
 
 
 }

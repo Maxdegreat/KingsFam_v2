@@ -18,9 +18,6 @@ class NavHelper {
   Future<void> navToBuyPerk(BuildContext context, String type) => Navigator.of(context).pushNamed(BuyPerkScreen.routeName, arguments: BuyPerkArgs(type: type));
 
   Future<void> navToUpdateCmTheme(BuildContext context, CommuinityBloc commuinityBloc, String cmName, String cmId) => Navigator.of(context).pushNamed(UpdateCmThemePack.routeName, arguments: UpdateCmThemePackArgs(commuinityBloc: commuinityBloc, cmName: cmName, cmId: cmId));
-
-  Future<void> navToMoreCm(BuildContext context, String type, SearchBloc bloc) => Navigator.of(context).pushNamed(MoreCm.routeName, arguments: MoreCmArgs(type: type, bloc: bloc));
-
   // Future<void> navToImageEditor(BuildContext context, File file) => Navigator.of(context).pushNamed(ImageEditorExample.routeName, arguments: ImageEditorArgs(file: file));
 
   Future<void> navToPostContent(BuildContext context, File editedImage, String type) => Navigator.of(context).pushNamed(PostContentScreen.routeName, arguments: PostContentArgs(content: editedImage, type: type));

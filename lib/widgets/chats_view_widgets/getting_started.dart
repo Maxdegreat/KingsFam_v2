@@ -39,11 +39,11 @@ class _GettingStartedState extends State<GettingStarted> {
               child: Align(
                   alignment: Alignment.center,
                   child: Text(
-                    "Find A Christian Community",
+                    "Christian Communities For This Generation!",
                     style: Theme.of(context)
                         .textTheme
                         .bodyText1!
-                        .copyWith(fontSize: 30),
+                        .copyWith(fontWeight: FontWeight.bold, fontSize: 25),
                     textAlign: TextAlign.center,
                   )),
             ),
@@ -69,7 +69,7 @@ class _GettingStartedState extends State<GettingStarted> {
                 onTap: () => Navigator.of(context).pushNamed(
                     CommunityHome.routeName,
                     arguments: CommunityHomeArgs(cm: i, cmB: null)),
-                child: search_Church_container(church: i, context: context));
+                child: churchDisplayContainer(context, i));
           },
         );
       }).toList(),

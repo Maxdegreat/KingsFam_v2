@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -13,8 +12,6 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/camera/bloc/camera_screen.dart';
 
 import 'package:kingsfam/config/global_keys.dart';
-import 'package:kingsfam/config/mode.dart';
-import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/enums/bottom_nav_items.dart';
 import 'package:kingsfam/helpers/ad_helper.dart';
 import 'package:kingsfam/helpers/clipboard.dart';
@@ -30,14 +27,12 @@ import 'package:kingsfam/repositories/userr/userr_repository.dart';
 import 'package:kingsfam/screens/build_church/build_church.dart';
 import 'package:kingsfam/screens/build_church/cubit/buildchurch_cubit.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
-import 'package:kingsfam/screens/commuinity/actions.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/community_settings/update_privacy.dart';
 import 'package:kingsfam/screens/commuinity/screens/create_room/create_room.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/commuinity_feed.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/widgets/display_msg.dart';
-import 'package:kingsfam/screens/commuinity/screens/vc/vc_screen.dart';
 import 'package:kingsfam/screens/commuinity/wrapers/participants_view.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
@@ -171,18 +166,18 @@ class _MainDrawerState extends State<MainDrawer> {
                             context),
                       )),
 
-                  GestureDetector(
-                      onTap: () =>
-                          _updateSelectedItem(BottomNavItem.notifications),
-                      child: Padding(
-                        padding: const EdgeInsets.all(0.0),
-                        child: drawerIcon(
-                            Icon(
-                              Icons.favorite_border,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            context),
-                      )),
+                  // GestureDetector(
+                  //     onTap: () =>
+                  //         _updateSelectedItem(BottomNavItem.notifications),
+                  //     child: Padding(
+                  //       padding: const EdgeInsets.all(0.0),
+                  //       child: drawerIcon(
+                  //           Icon(
+                  //             Icons.favorite_border,
+                  //             color: Theme.of(context).colorScheme.primary,
+                  //           ),
+                  //           context),
+                  //     )),
 
                   GestureDetector(
                       onTap: () => _updateSelectedItem(BottomNavItem.profile),
@@ -270,29 +265,38 @@ class _MainDrawerState extends State<MainDrawer> {
               },
             )
           ] else ...[
-            Align(
-              alignment: Alignment.centerRight,
-              child: GestureDetector(
-                onTap: () =>
-                    Navigator.of(context).pushNamed(BuildChurch.routeName),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Text(
-                      "Create your community",
-                      style: Theme.of(context).textTheme.bodyText1,
+            Expanded(
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () =>
+                          Navigator.of(context).pushNamed(BuildChurch.routeName),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Text(
+                            "Create your community",
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
+                          const SizedBox(height: 10),
+                          drawerIcon(
+                              Icon(
+                                Icons.add,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              context)
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 10),
-                    drawerIcon(
-                        Icon(
-                          Icons.add,
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
-                        context)
-                  ],
-                ),
+                  )
+                ],
               ),
             )
           ]

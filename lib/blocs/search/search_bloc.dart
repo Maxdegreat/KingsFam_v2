@@ -36,37 +36,14 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       yield* _mapAddMemberToState(event);
     } else if (event is RemoveMember) {
       yield* _mapRemoveMemberToState(event);
-    } else if (event is PaginateChList1) {
-      yield* _mapPaginateChList1(event);
-    } else if (event is PaginateChListNotEqualToLocation) {
-      yield* _mapPaginateChListNotEqualToLocation(event);
+    } else if (event is PaginateChList) {
+      yield* _mapPaginateChList(event);
     }
   }
 
 
-  Stream<SearchState> _mapPaginateChList1(PaginateChList1 event) async* {
-    yield state.copyWith(status: SearchStatus.pag);
-    try {
-      List<Church>? newCms = [];
-      List<Church>? updatedCms = [];
-      final String? lastCmId =
-          state.churches.isNotEmpty ? state.churches.last.id : null;
-      if (lastCmId != null) {
-        newCms = await _churchRepository.grabChurchWithLocation(
-            location: state.user.location, limit: 4, lastPostId: lastCmId);
-        updatedCms = state.churches..addAll(newCms);
-        yield state.copyWith(churches: updatedCms, status: SearchStatus.initial);
-      }
-    } catch (e) {
-      yield state.copyWith(
-          status: SearchStatus.error,
-          failure: Failure(
-              message: "uhh, sorry. error when geting next set of data",
-              code: e.toString() + " from the search bloc"));
-    }
-  }
 
-  Stream<SearchState> _mapPaginateChListNotEqualToLocation(PaginateChListNotEqualToLocation event) async* {
+  Stream<SearchState> _mapPaginateChList(PaginateChList event) async* {
     yield state.copyWith(status: SearchStatus.pag);
     List<Church>? newCms = [];
     List<Church>? updatedCms = [];
@@ -74,8 +51,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         state.chruchesNotEqualLocation.isNotEmpty ? state.chruchesNotEqualLocation.last.id : null;
     // log("the last cmId: $lastCmId");
     if (lastCmId != null) {
-      newCms = await _churchRepository.grabChurchAllOver(
-          location: state.user.location, limit: 4, lastPostId: lastCmId);
+      newCms = await _churchRepository.grabChurches(limit: 7, lastPostId: lastCmId);
       // log("new cms: ${newCms.length}");
       updatedCms = state.chruchesNotEqualLocation..addAll(newCms);
       // log("updated cms len is: ${updatedCms.length}");
@@ -84,27 +60,22 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   }
 
   Stream<SearchState> _mapLoadUserToState(InitializeUser event) async* {
-    log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     yield state.copyWith(status: SearchStatus.loading, );
     try {
-      Userr user =
-          await _userrRepository.getUserrWithId(userrId: event.currentUserrId);
-
-      List<Church> churches = await _churchRepository.grabChurchWithLocation(
-          location: user.location);
-
+      
+      // CHURCHES IS NOT CURRENTLY BEING USED
       // CHURCHLLIST2 IS CURRENTLY NOT BEING USED
-      List<Church> churchesList3 =
-          await _churchRepository.grabChurchAllOver(location: user.location);
+      // USER / LOCATION IS NOT CURRENTLY BEING USED
+      List<Church> churchesList3 = await _churchRepository.grabChurches();
 
-      // await _userrRepository.grabUserExploreListNext10(ownerId);
       yield state.copyWith(
-          user: user,
-          churches: churches,
+          user: null,
+          churches: [],
           churchesList2: [], //churchesList2,
           chruchesNotEqualLocation: churchesList3,
+          status: SearchStatus.initial
+      );
 
-          status: SearchStatus.initial);
     } catch (e) {
       state.copyWith(
           failure: Failure(message: "Check your internet connection"),
