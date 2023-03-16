@@ -104,7 +104,8 @@ class _ChatsScreenState extends State<ChatsScreen>
     CurrentKingsCordRoomId();
     NotificationHelper.initalize(flutterLocalNotificationsPlugin);
     context.read<BuidCubit>().init();
-    context.read<ProfileBloc>().add(ProfileLoadUserOnly(userId: context.read<AuthBloc>().state.user!.uid));
+    context.read<ProfileBloc>().add(
+        ProfileLoadUserOnly(userId: context.read<AuthBloc>().state.user!.uid));
     //super.build(context);
   }
 
@@ -121,7 +122,6 @@ class _ChatsScreenState extends State<ChatsScreen>
   var currentScreen;
   @override
   Widget build(BuildContext context) {
-
     if (!hasInitCm) {
       context.read<ChatscreenBloc>()..add(LoadCms());
       hasInitCm = true;
@@ -142,7 +142,6 @@ class _ChatsScreenState extends State<ChatsScreen>
 
           if (state.status == ChatStatus.setStateKc) {
             if (state.selectedKc != null) {
-              
               if (state.selectedKc!.mode == Mode.chat ||
                   state.selectedKc!.mode == Mode.welcome) {
                 currentScreen = KingsCordScreen(
@@ -175,7 +174,8 @@ class _ChatsScreenState extends State<ChatsScreen>
         }, builder: (context, state) {
           // check userpreferences. if no data for has aggred to terms of use show a alert dialog
           if (!UserPreferences.getHasAggredToTermsOfService() &&
-              !hasAskedForAgrement && !kIsWeb) {
+              !hasAskedForAgrement &&
+              !kIsWeb) {
             hasAskedForAgrement = true;
             SchedulerBinding.instance.addPostFrameCallback((_) {
               Future.delayed(Duration(seconds: 2)).then((value) {
@@ -232,7 +232,7 @@ class _ChatsScreenState extends State<ChatsScreen>
                         TextButton(
                           child: Text('Agree'),
                           onPressed: () {
-                            UserPreferences.setAgreeToTermsOfService(); 
+                            UserPreferences.setAgreeToTermsOfService();
                             Navigator.of(context).pop();
                           },
                         ),
@@ -256,23 +256,30 @@ class _ChatsScreenState extends State<ChatsScreen>
               state: state,
             );
           else if (currentScreen != null)
-            return kIsWeb?  
-             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if (kIsWeb)
-                  MainDrawer(),
-                SizedBox(width: 7),
-                Expanded(child: currentScreen   ),
-              ],
-            ) : currentScreen;
+            return kIsWeb
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      if (kIsWeb) MainDrawer(),
+                      SizedBox(width: 7),
+                      Expanded(child: currentScreen),
+                    ],
+                  )
+                : currentScreen;
           else {
             return Center(
-                child: Text(
-              "Opps... sorry something went wrong. KingsFam will handle this error soon.",
-              textAlign: TextAlign.center,
-            ));
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/placeholder_kf.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            );
           }
         }));
   }

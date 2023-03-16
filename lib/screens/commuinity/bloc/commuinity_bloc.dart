@@ -236,6 +236,13 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       else
         posts = MockPostData.getMockPosts2;
       emit(state.copyWith(postDisplay: posts, status: CommuintyStatus.loaded));
+
+      // check if any pending request in cm
+      if (state.role["kfRole"] == "Lead" || state.role["kfRole"] == "Admin" || state.role["kfRole"] == "Mod") {
+        var requestSnap = await FirebaseFirestore.instance.collection(Paths.requestToJoinCm).doc(state.cmId).collection(Paths.request).limit(1).get();
+        emit(state.copyWith(cmHasRequest: requestSnap.docs.first.exists));
+      }
+
     } catch (e) {
       emit(state.copyWith(
           failure: Failure(
@@ -441,16 +448,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
 
 
-  void addBadge(String badge) {
-    var b = state.badges;
-    b.add(badge);
-    emit(state.copyWith(badges: b));
-  }
 
-  void deleteBadge(String badge) {
-    state.badges.remove(badge);
-    emit(state.copyWith(badges: state.badges));
-  }
 
   void getRooms(String id) async {
     log("len of Id" + id.length.toString());

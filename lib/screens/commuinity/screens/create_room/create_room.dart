@@ -56,8 +56,6 @@ class _CreateRoomState extends State<CreateRoom> {
     _txtController = TextEditingController();
     _pageController = PageController();
 
-    context.read<CommuinityBloc>().addBadge("Member");
-
     super.initState();
   }
 

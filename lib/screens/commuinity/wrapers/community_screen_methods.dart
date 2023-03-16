@@ -179,6 +179,7 @@ dynamic showCmOptions(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
+              leading: cmBloc.state.cmHasRequest ? CircleAvatar(backgroundColor: Theme.of(context).colorScheme.primary, radius: 7) : const SizedBox.shrink(),
               title: Text("View members, pending and baned", style: Theme.of(context).textTheme.bodyText1,
                   overflow: TextOverflow.fade,),
               onTap: () => Navigator.of(context).pushNamed(ParticipantsView.routeName,

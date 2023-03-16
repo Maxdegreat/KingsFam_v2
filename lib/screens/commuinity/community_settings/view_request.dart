@@ -76,7 +76,7 @@ class _ReviewPendingRequestState extends State<ReviewPendingRequest> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  Text("You can allow people to join or deny them because you are an admin or Lead role.", textAlign: TextAlign.center,),
+                  Text("You can allow people to join or deny them because you are an admin or Lead role.", textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyText1),
                   Container(
                       height: MediaQuery.of(context).size.height / 1.4,
                       child: ListView.builder(
@@ -85,7 +85,7 @@ class _ReviewPendingRequestState extends State<ReviewPendingRequest> {
                         itemBuilder: (context, index) {
                           Userr user = users[index];
                           return Card(
-                            color: Color(hc.hexcolorCode("##141829")),
+                            color: Theme.of(context).colorScheme.secondary,
                             child: Padding(
                               padding: const EdgeInsets.all(2.0),
                               child: Column(
@@ -97,7 +97,7 @@ class _ReviewPendingRequestState extends State<ReviewPendingRequest> {
                                       pfpUrl: user.profileImageUrl,
                                       radius: 30,
                                     ),
-                                    title: Text(user.username),
+                                    title: Text(user.username, style: Theme.of(context).textTheme.bodyText1 ),
                                   ),
                                   _trailing(user)
                                 ],
@@ -124,7 +124,7 @@ class _ReviewPendingRequestState extends State<ReviewPendingRequest> {
                // remove from state
               users.remove(user);
               setState(() {});
-              snackBar(snackMessage: "green chgeck", context: context);
+              FirebaseFirestore.instance.collection(Paths.requestToJoinCm).doc(widget.cm.id!).collection(Paths.request).doc(user.id).delete();
             },
             icon: Icon(Icons.check_sharp, color: Colors.green)),
 
@@ -138,9 +138,6 @@ class _ReviewPendingRequestState extends State<ReviewPendingRequest> {
             // remove from state
             users.remove(user);
             setState(() {});
-
-
-            snackBar(snackMessage: "red x", context: context);
           },
           icon: FaIcon(FontAwesomeIcons.ban, color: Colors.red),
         )

@@ -250,14 +250,16 @@ class _MainDrawerState extends State<MainDrawer> {
                         showRooms(context,
                             context.read<ChatscreenBloc>().state.selectedCh!),
 
-                        _showAd(),
+                        if (state.yourRooms.length > 1) ... [
+                          _showAd(),
+                        const SizedBox(height: 8),
+                        ],
 
-                        SizedBox(height: 8),
 
                         // showVoice(context,
                         //     context.read<ChatscreenBloc>().state.selectedCh!),
 
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                       ],
                     ),
                   ),

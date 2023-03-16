@@ -85,7 +85,7 @@ class _ShowFollowsScreenState extends State<ShowFollowsScreen> {
                   return ListTile(
                     leading: ProfileImage(pfpUrl: u.profileImageUrl, radius: 22,),
                     title: Text(u.username),
-                    onTap: (() => Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: u.id, initScreen: false))),
+                    onTap: (() => Navigator.of(context).pushNamed(ProfileScreen.routeName, arguments: ProfileScreenArgs(userId: u.id, initScreen: true))),
                   );
                 },
               ),

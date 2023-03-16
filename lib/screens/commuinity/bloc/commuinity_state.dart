@@ -33,7 +33,7 @@ class CommuinityState extends Equatable {
   final RequestStatus requestStatus;
   final Map<String, dynamic> role;
   final String cmId;
-  final List<String> badges;
+  final bool cmHasRequest;
 
   const CommuinityState({
     required this.isMember,
@@ -50,7 +50,7 @@ class CommuinityState extends Equatable {
     required this.requestStatus,
     required this.role,
     required this.cmId,
-    required this.badges,
+    required this.cmHasRequest,
   });
 
   @override
@@ -69,14 +69,14 @@ class CommuinityState extends Equatable {
     requestStatus,
     role,
     cmId,
-    badges,
+    cmHasRequest,
       ];
 
   factory CommuinityState.inital() {
     return CommuinityState(
       role: { // MIGRATE NAME LATER TO CMMEMBERINFO
         "kfRole": "Member", // default can be string Member or null
-        "badges" : ["member"],
+        // "badges" : ["member"],
       },
       currUserr: Userr.empty,
       otherRooms: [],
@@ -91,7 +91,7 @@ class CommuinityState extends Equatable {
       banedUsers: [],
       cmId: "",
       requestStatus: RequestStatus.none,
-      badges: ["members"]
+      cmHasRequest: false,
     );
   }
   CommuinityState copyWith({
@@ -109,11 +109,10 @@ class CommuinityState extends Equatable {
   RequestStatus? requestStatus,
   Map<String, dynamic>? role,
   String? cmId,
-  List<String>? badges,
+  bool? cmHasRequest,
   }) {
     return CommuinityState(
       role: role ?? this.role,
-      badges: badges ?? this.badges,
       banedUsers: banedUsers ?? this.banedUsers,
       boosted: boosted ?? this.boosted,
       cmId: cmId ?? this.cmId,
@@ -127,7 +126,7 @@ class CommuinityState extends Equatable {
       requestStatus: requestStatus ?? this.requestStatus,
       status: status ?? this.status,
       yourRooms: yourRooms ?? this.yourRooms,
-
+      cmHasRequest: cmHasRequest ?? this.cmHasRequest,
     );
   }
 }

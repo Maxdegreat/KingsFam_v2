@@ -541,11 +541,15 @@ class _ParticipantsViewState extends State<ParticipantsView>
                   onPressed: () {
                     Navigator.of(context).pushNamed(
                         ReviewPendingRequest.routeName,
-                        arguments: ReviewPendingRequestArgs(cm: widget.cm));
+                        arguments: ReviewPendingRequestArgs(cm: widget.cm)).then((value) {
+                          if (value == false) {
+                            // TODO update copywith and make pending join false. also do this in review screen
+                          }
+                        });
                   },
                   child: Text(
                     "Pending Joins",
-                    style: Theme.of(context).textTheme.bodyText1,
+                    style: cmBloc.state.cmHasRequest ?  Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).colorScheme.primary) : Theme.of(context).textTheme.bodyText1,
                   ),
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.secondary,
