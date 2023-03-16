@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:kingsfam/config/constants.dart';
 
 import '../models/church_model.dart';
 
@@ -10,28 +9,38 @@ Widget search_Church_container(
     // color: Colors.green,
     padding: const EdgeInsets.symmetric(vertical: 10),
     // width: MediaQuery.of(context).size.shortestSide ,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _cmImgae(church.imageUrl),
-        const SizedBox(width: 20),
-        Column(
+    child: Container(
+      padding: const EdgeInsets.only(right: 5),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(7),
+        color: Theme.of(context).colorScheme.primary,
+      ),
+      child: Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: (MediaQuery.of(context).size.shortestSide / 1.65),
-              padding: const EdgeInsets.only(right: 16),
-              child: _cmName(church.name, context)),
-            const SizedBox(height: 10),
-            Container(
-              width: (MediaQuery.of(context).size.shortestSide / 1.65),
-              padding: const EdgeInsets.only(right: 16),
-              child: _cmAbout(church.about, context)),
+            _cmImgae(church.imageUrl),
+            const SizedBox(width: 20),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: (MediaQuery.of(context).size.shortestSide / 1.65),
+                  padding: const EdgeInsets.only(right: 16),
+                  child: _cmName(church.name, context)),
+                const SizedBox(height: 10),
+                Container(
+                  width: (MediaQuery.of(context).size.shortestSide / 1.65),
+                  padding: const EdgeInsets.only(right: 16),
+                  child: _cmAbout(church.about, context)),
+              ],
+            )
           ],
-        )
-      ],
+        ),
+      ),
     ),
   );
 }

@@ -681,7 +681,7 @@ exports.onKingsCordMessageSent = functions.firestore
     var senderId = kcMsgData.sender.path.split("/")[1];
     var senderUsername = kcMsgData.senderUsername;
 
-  
+
     cmRef.update({recentMsgTime: kcMsgData.date,});
 
     kcRef.update({ recentTimestamp: kcMsgData.date });
@@ -734,12 +734,15 @@ exports.onKingsCordMessageSent = functions.firestore
           var user = getUserWithId(kcMsgData.mentionedIds[i]);
           tokenBucket.push(user.token[0])
         }
+
         admin.messaging().sendToDevice(tokenBucket, message, options);
         return ;
       }
+ 
+      
       console.log("1");
       functions.logger.log("The value of chatP = ", chatPriority);
-      if (chatPriority !== undefined && chatPriority == "Notify For All Messages" ) {
+      if (chatPriority !== undefined && chatPriority == "Notify For All Messages" || messageBody.includes("@everyone")) {
         var topic = cmId + kcId + "topic";
         admin
         .messaging()

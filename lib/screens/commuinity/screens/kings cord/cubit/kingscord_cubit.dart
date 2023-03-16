@@ -64,7 +64,7 @@ class KingscordCubit extends Cubit<KingscordState> {
       Userr user = await UserrRepository().getUserrWithId(userrId: j.id);
       users.add(user);
     }
-    if (username.isEmpty) {
+    if (username.isEmpty || username.length == 1) {
       emit(state.copyWith(potentialMentions: []));
     } else {
       emit(state.copyWith(potentialMentions: users));
@@ -84,6 +84,7 @@ class KingscordCubit extends Cubit<KingscordState> {
         users.add(u);
       }
       List<Userr> initPMs = List<Userr>.from(state.initPM)..addAll(users);
+      
       emit(state.copyWith(initPM: initPMs));
     }
 
@@ -203,12 +204,13 @@ class KingscordCubit extends Cubit<KingscordState> {
     required Message? reply,
     Map<String, dynamic>? metadata = const {},
   }) async {
-    log("metadata is null: " + (metadata == null).toString());
+    
 
     metadata!["kcName"] = kingsCordData.cordName;
     if (reply != null) {
       metadata["replyId"] = reply.id;
     }
+
 
     final message = Message(
       text: txtMsgBodyWithSymbolsForParcing,

@@ -195,48 +195,72 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     var state = context.read<KingscordCubit>().state;
 
     return username != null
-        ? Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Container(
-             width: double.infinity,
-            child: Container(
-              height: (state.potentialMentions.length <= 10) ? state.potentialMentions.length * 55.0 : 200.0,
-              child: ListView.builder(
-                  itemCount: state.potentialMentions.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    Userr _mentioned = state.potentialMentions[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: ListTile(
-                        leading: ProfileImage(
-                            radius: 24, pfpUrl: _mentioned.profileImageUrl),
-                        title: Text(
-                          _mentioned.username,
-                          style: Theme.of(context).textTheme.subtitle1,
-                          overflow: TextOverflow.fade,
-                        ),
-                        onTap: () {
-                          var oldMessageControllerBody = _messageController.text
-                              .substring(0, idxWhereStartWithat);
-                          _messageController.text = oldMessageControllerBody +=
-                              '@${_mentioned.username} ';
-                          _messageController.selection =
-                              TextSelection.fromPosition(TextPosition(
-                                  offset: _messageController.text.length));
-                          context
-                              .read<KingscordCubit>()
-                              .selectMention(userr: _mentioned);
-                          username = null;
-                          state.mentions.length = 0;
-                          containsAt = false;
-                          _mentionedController = null;
-                          setState(() {});
-                        },
-                      ),
-                    );
-                  }),
+        ? Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // username.length == 0 ? Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            //   child: TextButton(onPressed: () {
+            //     var oldMessageControllerBody = _messageController.text
+            //                       .substring(0, idxWhereStartWithat);
+            //                   _messageController.text = oldMessageControllerBody +=
+            //                       '@everyone ';
+            //                   _messageController.selection =
+            //                       TextSelection.fromPosition(TextPosition(
+            //                           offset: _messageController.text.length));
+                              
+            //                   username = null;
+            //                   state.mentions.length = 0;
+            //                   containsAt = false;
+            //                   _mentionedController = null;
+            //                   setState(() {});
+            //   }, child: Text("@everyone", style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.blueAccent),)),
+            // ) : SizedBox.shrink(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Container(
+                 width: double.infinity,
+                child: Container(
+                  height: (state.potentialMentions.length <= 10) ? state.potentialMentions.length * 55.0 : 200.0,
+                  child: ListView.builder(
+                      itemCount: state.potentialMentions.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        Userr _mentioned = state.potentialMentions[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: ListTile(
+                            leading: ProfileImage(
+                                radius: 24, pfpUrl: _mentioned.profileImageUrl),
+                            title: Text(
+                              _mentioned.username,
+                              style: Theme.of(context).textTheme.subtitle1,
+                              overflow: TextOverflow.fade,
+                            ),
+                            onTap: () {
+                              var oldMessageControllerBody = _messageController.text
+                                  .substring(0, idxWhereStartWithat);
+                              _messageController.text = oldMessageControllerBody +=
+                                  '@${_mentioned.username} ';
+                              _messageController.selection =
+                                  TextSelection.fromPosition(TextPosition(
+                                      offset: _messageController.text.length));
+                              context
+                                  .read<KingscordCubit>()
+                                  .selectMention(userr: _mentioned);
+                              username = null;
+                              state.mentions.length = 0;
+                              containsAt = false;
+                              _mentionedController = null;
+                              setState(() {});
+                            },
+                          ),
+                        );
+                      }),
+                ),
+              ),
             ),
-          ),
+          ],
         )
         : SizedBox.shrink();
   }
