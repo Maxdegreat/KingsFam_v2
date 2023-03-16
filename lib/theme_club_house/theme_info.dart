@@ -14,7 +14,7 @@ class ThemeInfo {
       appBarTheme: AppBarTheme(
         centerTitle: false,
         toolbarHeight: 45,
-        color: Colors.white,
+        color: Colors.grey[50],
         elevation: 0, toolbarTextStyle: TextTheme(
           bodyText1: GoogleFonts.openSans(color: Colors.black, fontSize: 18),
         ).bodyText2, titleTextStyle: TextTheme(
@@ -24,17 +24,17 @@ class ThemeInfo {
       //colorScheme: ColorScheme.light(),
       iconTheme: IconThemeData(color: Colors.black),
       drawerTheme: DrawerThemeData(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.grey[50],
       ),
       scaffoldBackgroundColor: Colors.white,
       colorScheme: ColorScheme.fromSwatch().copyWith(
           secondary: Colors.grey[200],
-          onSecondary: Colors.black12,
+          onSecondary: Colors.white,
           primary: Colors.amber,
           onPrimary: Colors.grey[100],
           inversePrimary: Colors.black,
           outline: Colors.grey[800]),
-      canvasColor: Colors.white,
+      canvasColor: Colors.grey[50],
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: Colors.white70,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),

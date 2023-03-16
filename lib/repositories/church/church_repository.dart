@@ -616,6 +616,7 @@ class ChurchRepository extends BaseChurchRepository {
       List<Church> bucket = [];
       for (var doc in churchSnap.docs) {
         var ch = await Church.fromDoc(doc);
+        log("in chRepo -> ${ch.id}");
         bucket.add(ch);
       }
       return bucket;

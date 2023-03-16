@@ -65,7 +65,6 @@ class _SearchScreenState extends State<SearchScreen> {
       if (scrollController.position.pixels != 0.0 &&
           scrollController.position.maxScrollExtent ==
               scrollController.position.pixels) {
-                log('PAGINATING!!!');
         context.read<SearchBloc>()
           ..add(PaginateChList(currId: context.read<AuthBloc>().state.user!.uid));
       }

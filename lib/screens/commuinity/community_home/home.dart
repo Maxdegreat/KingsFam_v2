@@ -53,6 +53,7 @@ class _CommunityHomemState extends State<CommunityHome> {
   Future<void> initCmB() async {
     cmB = await _getCmB();
     cmB.getRooms(cmB.state.cmId);
+    cmB.updateCmId(widget.cm.id!, widget.cm);
     _initalized = true;
     setState(() {});
   }
@@ -134,7 +135,7 @@ class _CommunityHomemState extends State<CommunityHome> {
                                   const SizedBox(height: 10),
                                   Text("Rooms", style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.bold)),
 
-                                ]..addAll(_listOfRooms(state)),
+                                ]..addAll(_listOfRooms(cmB)),
                               ),
                             ),
                           ),
@@ -191,9 +192,11 @@ class _CommunityHomemState extends State<CommunityHome> {
     );
   }
 
-  List<Widget> _listOfRooms(CommuinityState state) {
+  List<Widget> _listOfRooms(CommuinityBloc cmB) {
+    log("cm id: ${cmB.state.cmId}"); 
+    cmB.getRooms(cmB.state.cmId);
     List<Widget> bucket = [];
-    state.otherRooms.forEach((element) {
+    cmB.state.otherRooms.forEach((element) {
       bucket.add(Padding(
         padding: const EdgeInsets.all(4.0),
         child: Text(element!.cordName,

@@ -47,8 +47,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     yield state.copyWith(status: SearchStatus.pag);
     List<Church>? newCms = [];
     List<Church>? updatedCms = [];
-    final String? lastCmId =
-        state.chruchesNotEqualLocation.isNotEmpty ? state.chruchesNotEqualLocation.last.id : null;
+    final String? lastCmId = state.chruchesNotEqualLocation.isNotEmpty ? state.chruchesNotEqualLocation.last.id : null;
     // log("the last cmId: $lastCmId");
     if (lastCmId != null) {
       newCms = await _churchRepository.grabChurches(limit: 7, lastPostId: lastCmId);
