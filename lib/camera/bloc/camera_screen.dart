@@ -183,13 +183,13 @@ class _CameraScreenState extends State<CameraScreen>
               decoration: BoxDecoration(
                 color: Colors.black,
                 borderRadius: BorderRadius.circular(7),
-                border: Border.all(
-                  color:
-                      controller != null && controller!.value.isRecordingVideo
-                          ? Colors.redAccent
-                          : Colors.transparent,
-                  width: 3.0,
-                ),
+                // border: Border.all(
+                //   color:
+                //       controller != null && controller!.value.isRecordingVideo
+                //           ? Colors.redAccent
+                //           : Colors.transparent,
+                //   width: 3.0,
+                // ),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(0.0),

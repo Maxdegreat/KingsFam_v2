@@ -10,7 +10,12 @@ Widget joinBtn(
     width: 200,
     child: ElevatedButton(
         onPressed: () {
-          _onJoinCommuinity(b: b, cm: cm, c: context);
+          _onJoinCommuinity(b: b, cm: cm, c: context).then((value) {
+            Navigator.of(context).pop();
+            scaffoldKey.currentState!.closeDrawer();
+            Future.delayed((Duration(milliseconds: 0))).then((value) => scaffoldKey.currentState!.openDrawer());
+
+          });
         },
         child: Text(
           "Join",
@@ -23,9 +28,10 @@ Widget joinBtn(
   );
 }
 
-_onJoinCommuinity(
-    {required CommuinityBloc b, required Church cm, required BuildContext c}) {
-  b.onJoinCommuinity(commuinity: cm, context: c);
+Future <bool> _onJoinCommuinity(
+    {required CommuinityBloc b, required Church cm, required BuildContext c}) async {
+  await b.onJoinCommuinity(commuinity: cm, context: c);
+  return true;
 }
 
 Widget nativeAdWidget(NativeAd ad, bool hasAdLoaded, BuildContext context) {

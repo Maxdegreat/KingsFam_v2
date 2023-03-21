@@ -9,25 +9,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/cm_privacy.dart';
-import 'package:kingsfam/config/cm_type.dart';
-import 'package:kingsfam/enums/bottom_nav_items.dart';
-import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
-import 'package:bloc/bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
 
-import 'package:kingsfam/widgets/videos/videoPostView16_9.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
 import '../../models/church_model.dart';
 import '../../models/post_model.dart';
 import '../../models/user_model.dart';
 import '../../widgets/snackbar.dart';
-import '../nav/cubit/bottomnavbar_cubit.dart';
 
 class PostContentArgs {
   final File content;
@@ -457,9 +450,9 @@ class _PostContentScreenState extends State<PostContentScreen> {
       snackBar(
           snackMessage: "working on your post fam",
           context: context,
-          bgColor: Colors.green);
+          bgColor: Colors.greenAccent);
       Navigator.popUntil(
-          context, ModalRoute.withName(Navigator.defaultRouteName));
+          context, ModalRoute.withName(NavScreen.routeName));
       //Navigator.of(context).popUntil((_) => popScreens++ >= 1);
 
       log("----------->posted<---------------- from post_content_screen.dart");

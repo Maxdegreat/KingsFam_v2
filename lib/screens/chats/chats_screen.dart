@@ -276,7 +276,11 @@ class _ChatsScreenState extends State<ChatsScreen>
                 : currentScreen;
           else {
             return Center(
-              child: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
                 width: 200,
                 height: 200,
                 decoration: BoxDecoration(
@@ -286,6 +290,12 @@ class _ChatsScreenState extends State<ChatsScreen>
                   ),
                 ),
               ),
+
+              const SizedBox(height: 20),
+
+              TextButton(onPressed: () => scaffoldKey.currentState!.openDrawer(), child: Text("Show my communities", style: Theme.of(context).textTheme.subtitle1!.copyWith(fontSize: 13, color: Colors.blueAccent),))
+                ],
+              )
             );
           }
         }));

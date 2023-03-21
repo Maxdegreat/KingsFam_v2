@@ -57,7 +57,7 @@ snackBar(
         padding: const EdgeInsets.all(8.0),
         child: Text(
           snackMessage,
-          style: Theme.of(context).textTheme.caption,
+          style: Theme.of(context).textTheme.subtitle1,
         ),
       ),
     ),

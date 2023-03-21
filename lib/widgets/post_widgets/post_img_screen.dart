@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
@@ -11,7 +12,9 @@ import 'package:kingsfam/repositories/post/post_repository.dart';
 import 'package:kingsfam/screens/comment_ui/comment_screen.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
 import 'package:kingsfam/screens/report_content_screen.dart';
+import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
 import 'package:kingsfam/widgets/snackbar.dart';
+import 'package:like_button/like_button.dart';
 
 import '../../screens/commuinity/community_home/home.dart';
 
@@ -114,8 +117,14 @@ class _ImgPost1_1State extends State<ImgPost1_1> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-                onPressed: () {
+
+            LikeButton(
+              isLiked: (recentlyLiked || isLikedPost),
+              likeCount: int.parse(likeCount),
+              countDecoration: ((count, likeCount) => Text(likeCount.toString(), style: captionS,)),
+              size: 25,
+              
+              onTap:  (bool) async {
                   if (isLikedPost || recentlyLiked) {
                     context
                         .read<LikedPostCubit>()
@@ -123,16 +132,22 @@ class _ImgPost1_1State extends State<ImgPost1_1> {
                   } else {
                     context.read<LikedPostCubit>().likePost(post: widget.post);
                   }
+
+                  return !isLikedPost;
                 },
-                icon: Icon(
-                  Icons.favorite_outline_rounded,
-                  color: recentlyLiked ? Colors.amber : Colors.white,
-                )),
-            SizedBox(height: 10),
-            Text(
-              likeCount,
-              style: captionS,
             ),
+
+            // IconButton(
+            //     onPressed:
+            //     icon: Icon(
+            //       Icons.favorite_outline_rounded,
+            //       color: (isLikedPost || recentlyLiked) ? Colors.amber : Colors.white,
+            //     )),
+            // SizedBox(height: 10),
+            // Text(
+            //   likeCount,
+            //   style: captionS,
+            // ),
             SizedBox(height: 15),
             IconButton(
                 onPressed: () {
@@ -193,6 +208,7 @@ class _ImgPost1_1State extends State<ImgPost1_1> {
     TextStyle captionS =
         Theme.of(context).textTheme.caption!.copyWith(color: Colors.white);
     String? imageUrl = widget.post.author.profileImageUrl;
+    String colorP = widget.post.author.colorPref;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: GestureDetector(
@@ -205,11 +221,12 @@ class _ImgPost1_1State extends State<ImgPost1_1> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundColor: Colors.grey,
-              backgroundImage: CachedNetworkImageProvider(imageUrl),
-            ),
+            ContainerWithURLImg(
+                imgUrl: imageUrl,
+                height: 34,
+                width: 34,
+                pc: Color(hc.hexcolorCode(colorP))),
+            
             SizedBox(width: 8),
             Text(
               widget.post.author.username,
@@ -243,7 +260,7 @@ class _ImgPost1_1State extends State<ImgPost1_1> {
                 width: 35,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(7),
-                    border: Border.all(width: 2, color: Colors.white),
+                    border: Border.all(width: .5, color: Colors.white),
                     image: DecorationImage(
                       image: CachedNetworkImageProvider(imageUrl),
                       fit: BoxFit.cover,

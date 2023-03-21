@@ -123,6 +123,7 @@ class _CommuinityFeedScreenState extends State<CommuinityFeedScreen> {
             body: state.posts.length > 0
                 ? SafeArea(
                     child: PageView.builder(
+                      scrollDirection: Axis.vertical,
                         onPageChanged: (pageNum) {
                           _paginate(pageNum, state);
 
