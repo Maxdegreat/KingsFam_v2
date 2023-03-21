@@ -8,6 +8,7 @@ import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
+import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/widgets/mainDrawer/main_drawer.dart';
 import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
 import 'package:kingsfam/widgets/snackbar.dart';
@@ -52,7 +53,7 @@ class _CommunityHomemState extends State<CommunityHome> {
   Future<void> initCmB() async {
     cmB = await _getCmB();
     cmB.getRooms(cmB.state.cmId);
-    cmB.updateCmId(widget.cm.id!, widget.cm);
+    cmB.updateCmId(widget.cm.id!, widget.cm, context.read<ProfileBloc>().state.userr);
     _initalized = true;
     setState(() {});
   }
@@ -111,11 +112,14 @@ class _CommunityHomemState extends State<CommunityHome> {
                                 children: [
                                   Align(
                                     alignment: Alignment.center,
-                                    child: ContainerWithURLImg(
-                                        height: size.width / 3,
-                                        width: size.width / 3,
-                                        imgUrl: widget.cm.imageUrl,
-                                        pc: null),
+                                    child: Hero(
+                                      tag: widget.cm.imageUrl,
+                                      child: ContainerWithURLImg(
+                                          height: size.width / 3,
+                                          width: size.width / 3,
+                                          imgUrl: widget.cm.imageUrl,
+                                          pc: null),
+                                    ),
                                   ),
                                   const SizedBox(height: 20),
                                   Align(
@@ -232,6 +236,7 @@ class _CommunityHomemState extends State<CommunityHome> {
       )
         ..add(CommunityInitalEvent(
           commuinity: widget.cm,
+          currUserr: context.read<ProfileBloc>().state.userr
         ));
     } else {
       return await widget.cmB!;
@@ -317,7 +322,7 @@ class _CommunityHomemState extends State<CommunityHome> {
                           cm.members.remove(
                               context.read<CommuinityBloc>().state.currUserr);
 
-                          cmB..add(CommunityInitalEvent(commuinity: cm));
+                          cmB..add(CommunityInitalEvent(commuinity: cm, currUserr: context.read<ProfileBloc>().state.userr));
                           setState(() {});
                           Navigator.of(context).pop();
                         } else {

@@ -87,7 +87,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
       });
       }
 
-      String? lastVisitedCmId = await UserPreferences.getLastVisitedCm();
+      String? lastVisitedCmId = UserPreferences.getLastVisitedCm();
       if (lastVisitedCmId != null && !kIsWeb) {
         bool isInCm_ = await _churchRepository.isInCmById(
             cmId: lastVisitedCmId, userId: _authBloc.state.user!.uid);
@@ -149,7 +149,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
         });
       });
 
-      yield state.copyWith(status: ChatStatus.sccuess, currUserr: currUserr);
+      yield state.copyWith(status: ChatStatus.sccuess,);
     } catch (e) {
       log("!!!!!!!!!!!!!!!!ERROR: " + e.toString());
       yield state.copyWith(
@@ -171,7 +171,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   Future<void> removeCmFromJoinedCms({required String leftCmId}) async {
 
     emit(ChatscreenState.initial());
-    add(LoadCms());
+    add(LoadCms(currUserr: null));
     scaffoldKey.currentState!.closeDrawer();
 
     // if (state.chs != null) {

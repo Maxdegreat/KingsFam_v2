@@ -90,14 +90,25 @@ class MyApp extends StatelessWidget {
                 postsRepository: context.read<PostsRepository>(),
                 authBloc: context.read<AuthBloc>()),
           ),
+
+          BlocProvider<ProfileBloc>(
+              create: (context) => ProfileBloc(
+                  prayerRepo: context.read<PrayerRepo>(),
+                  userrRepository: context.read<UserrRepository>(),
+                  authBloc: context.read<AuthBloc>(),
+                  postRepository: context.read<PostsRepository>(),
+                  likedPostCubit: context.read<LikedPostCubit>(),
+                  churchRepository: context.read<ChurchRepository>())
+                ..add(ProfileLoadUserOnly(
+                    userId: context.read<AuthBloc>().state.user!.uid))),
+           
           BlocProvider<ChatscreenBloc>(
             create: (context) => ChatscreenBloc(
                 authBloc: context.read<AuthBloc>(),
                 likedPostCubit: context.read<LikedPostCubit>(),
                 postsRepository: context.read<PostsRepository>(),
                 churchRepository: context.read<ChurchRepository>(),
-                userrRepository: context.read<UserrRepository>())
-              ..add(LoadCms()),
+                userrRepository: context.read<UserrRepository>()),
           ),
           BlocProvider<SearchBloc>(
               create: (context) => SearchBloc(
@@ -148,14 +159,7 @@ class MyApp extends StatelessWidget {
                   storageRepository: context.read<StorageRepository>(),
                   authBloc: context.read<AuthBloc>(),
                   userrRepository: context.read<UserrRepository>())),
-          BlocProvider<ProfileBloc>(
-              create: (context) => ProfileBloc(
-                  prayerRepo: context.read<PrayerRepo>(),
-                  userrRepository: context.read<UserrRepository>(),
-                  authBloc: context.read<AuthBloc>(),
-                  postRepository: context.read<PostsRepository>(),
-                  likedPostCubit: context.read<LikedPostCubit>(),
-                  churchRepository: context.read<ChurchRepository>())),
+          
         ],
         child: MaterialApp(
           //THEME DATA

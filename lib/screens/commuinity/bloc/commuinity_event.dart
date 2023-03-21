@@ -9,7 +9,8 @@ abstract class CommuinityEvent extends Equatable {
 
 class CommunityInitalEvent extends CommuinityEvent {
   final Church commuinity;
-  CommunityInitalEvent({required this.commuinity});
+  final Userr currUserr;
+  CommunityInitalEvent({required this.commuinity, required this.currUserr});
   @override
 
   List<Object?> get props => [commuinity];

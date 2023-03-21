@@ -25,6 +25,7 @@ import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kings_cord_room_settings.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
+import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/profile_image.dart';
 import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
@@ -122,10 +123,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       {required Church commuinity,
       required KingsCord kingsCord,
       required List<Message?> msgs}) {
-    // set the current username
-    // add all users in cm into a list named memIds - to replace I just need to know if the user is allowed in the cm.
-    // make a membersMapUsernameAsKey where you have username as a ker and {id, token} as values - to replace I use the cubit and it holds a list of mentioned users
-
     return Expanded(
         child: ListView(
       controller: scrollCtrl,
@@ -198,70 +195,87 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         ? Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // username.length == 0 ? Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            //   child: TextButton(onPressed: () {
-            //     var oldMessageControllerBody = _messageController.text
-            //                       .substring(0, idxWhereStartWithat);
-            //                   _messageController.text = oldMessageControllerBody +=
-            //                       '@everyone ';
-            //                   _messageController.selection =
-            //                       TextSelection.fromPosition(TextPosition(
-            //                           offset: _messageController.text.length));
-                              
-            //                   username = null;
-            //                   state.mentions.length = 0;
-            //                   containsAt = false;
-            //                   _mentionedController = null;
-            //                   setState(() {});
-            //   }, child: Text("@everyone", style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.blueAccent),)),
-            // ) : SizedBox.shrink(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Container(
-                 width: double.infinity,
+            children: [
+              username.length == 0
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: TextButton(
+                          onPressed: () {
+                            var oldMessageControllerBody = _messageController
+                                .text
+                                .substring(0, idxWhereStartWithat);
+                            _messageController.text =
+                                oldMessageControllerBody += '@everyone ';
+                            _messageController.selection =
+                                TextSelection.fromPosition(TextPosition(
+                                    offset: _messageController.text.length));
+
+                            username = null;
+                            state.mentions.length = 0;
+                            containsAt = false;
+                            _mentionedController = null;
+                            setState(() {});
+                          },
+                          child: Text(
+                            "@everyone",
+                            style: Theme.of(context)
+                                .textTheme
+                                .subtitle1!
+                                .copyWith(color: Colors.blueAccent),
+                          )),
+                    )
+                  : SizedBox.shrink(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Container(
-                  height: (state.potentialMentions.length <= 10) ? state.potentialMentions.length * 55.0 : 200.0,
-                  child: ListView.builder(
-                      itemCount: state.potentialMentions.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        Userr _mentioned = state.potentialMentions[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: ListTile(
-                            leading: ProfileImage(
-                                radius: 24, pfpUrl: _mentioned.profileImageUrl),
-                            title: Text(
-                              _mentioned.username,
-                              style: Theme.of(context).textTheme.subtitle1,
-                              overflow: TextOverflow.fade,
+                  width: double.infinity,
+                  child: Container(
+                    height: (state.potentialMentions.length <= 10)
+                        ? state.potentialMentions.length * 61.0
+                        : 200.0,
+                    child: ListView.builder(
+                        itemCount: state.potentialMentions.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          Userr _mentioned = state.potentialMentions[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: ListTile(
+                              leading: ProfileImage(
+                                  radius: 24,
+                                  pfpUrl: _mentioned.profileImageUrl),
+                              title: Text(
+                                _mentioned.username,
+                                style: Theme.of(context).textTheme.subtitle1,
+                                overflow: TextOverflow.fade,
+                              ),
+                              onTap: () {
+                                var oldMessageControllerBody =
+                                    _messageController.text
+                                        .substring(0, idxWhereStartWithat);
+                                _messageController.text =
+                                    oldMessageControllerBody +=
+                                        '@${_mentioned.username} ';
+                                _messageController.selection =
+                                    TextSelection.fromPosition(TextPosition(
+                                        offset:
+                                            _messageController.text.length));
+                                context
+                                    .read<KingscordCubit>()
+                                    .selectMention(userr: _mentioned);
+                                username = null;
+                                state.mentions.length = 0;
+                                containsAt = false;
+                                _mentionedController = null;
+                                setState(() {});
+                              },
                             ),
-                            onTap: () {
-                              var oldMessageControllerBody = _messageController.text
-                                  .substring(0, idxWhereStartWithat);
-                              _messageController.text = oldMessageControllerBody +=
-                                  '@${_mentioned.username} ';
-                              _messageController.selection =
-                                  TextSelection.fromPosition(TextPosition(
-                                      offset: _messageController.text.length));
-                              context
-                                  .read<KingscordCubit>()
-                                  .selectMention(userr: _mentioned);
-                              username = null;
-                              state.mentions.length = 0;
-                              containsAt = false;
-                              _mentionedController = null;
-                              setState(() {});
-                            },
-                          ),
-                        );
-                      }),
+                          );
+                        }),
+                  ),
                 ),
               ),
-            ),
-          ],
-        )
+            ],
+          )
         : SizedBox.shrink();
   }
 
@@ -308,6 +322,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   }
 
   String? recentkcid;
+
+  bool isInit = false;
 //============================================================================
   @override
   void initState() {
@@ -320,7 +336,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 cmId: widget.commuinity.id!,
                 kcId: widget.kingsCord.id!,
                 limit: 12)
-            .then((_) => setState(() {}));
+            .then((_) { isInit = true; setState(() {});});
       }
     });
     recentkcid = widget.kingsCord.id!;
@@ -341,7 +357,12 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         CurrentKingsCordRoomId.updateRoomId(roomId: widget.kingsCord.id);
       }
     }
-    return Scaffold(
+    return 
+
+
+
+    
+    Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
         centerTitle: false,
@@ -356,12 +377,11 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             mainAxisSize: MainAxisSize.max,
             children: [
               ContainerWithURLImg(
-                imgUrl:
-                    context.read<ChatscreenBloc>().state.selectedCh!.imageUrl,
-                height: 35,
-                width: 35,
-                pc: null
-              ),
+                  imgUrl:
+                      context.read<ChatscreenBloc>().state.selectedCh!.imageUrl,
+                  height: 35,
+                  width: 35,
+                  pc: null),
               SizedBox(width: 8),
               Text(
                 widget.kingsCord.cordName.length > 15
@@ -393,7 +413,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       body: BlocConsumer<KingscordCubit, KingscordState>(
         listener: (context, state) {},
         builder: (context, state) {
-          currUsersName = widget.usr.username;
+          currUsersName = context.read<ProfileBloc>().state.userr.username;
           if (widget.kingsCord.id! != recentkcid || initCubit) {
             // indicates a switch...
             recentkcid = widget.kingsCord.id!;
@@ -413,7 +433,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                state.status == KingsCordStatus.pagMsgs || state.status == KingsCordStatus.getInitmsgs
+                state.status == KingsCordStatus.pagMsgs ||
+                        state.status == KingsCordStatus.getInitmsgs
                     ? LinearProgressIndicator(
                         color: Colors.amber,
                         backgroundColor:
@@ -507,9 +528,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                     tabColor: Colors.amber,
                   ).then((gif) {
                     if (gif != null) {
-
                       // send the Giphy as a message.
-                     
+
                       context
                           .read<KingscordCubit>()
                           .onSendGiphyMessage(
@@ -578,10 +598,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-                        decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
-                  borderRadius: BorderRadius.circular(7),
-                ),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondary,
+          borderRadius: BorderRadius.circular(7),
+        ),
         width: double.infinity,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -597,7 +617,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
               child: Padding(
                 padding: const EdgeInsets.only(right: 4.0),
                 child: Text(
-                  "Replying to " + state.replyMessage!.senderUsername! + "\n" + state.replyMessage!.text!,
+                  "Replying to " +
+                      state.replyMessage!.senderUsername! +
+                      "\n" +
+                      state.replyMessage!.text!,
                   style: TextStyle(color: Colors.grey, fontSize: 15),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -611,8 +634,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   }
 
   buildBottomTF(KingscordState state, BuildContext context, String mode) {
-    bool canSeeTf = (widget.role["roleName"] == "Lead");
-    bool flagTf = true;
+    bool isLead = (widget.role["roleName"] == "Lead");
+    bool hasPerm = true;
     List<String> allowed = [];
     if (widget.kingsCord.metaData != null &&
         widget.kingsCord.metaData!["roles"] != null) {
@@ -620,12 +643,13 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       List<String> roles_ = rolesData.map((role) => role.toString()).toList();
 
       allowed = roles_.first.split(",");
-      if (allowed
-          .contains(context.read<CommuinityBloc>().state.role["kfRole"])) {
-        flagTf = false;
+
+      if (!context.read<KingscordCubit>().canSeeTf(
+          allowed, context.read<CommuinityBloc>().state.role["kfRole"])) {
+        hasPerm = false;
       }
     }
-    if (mode == Mode.welcome) canSeeTf = false;
+
     return VisibilityDetector(
       key: Key(widget.kingsCord.id!),
       onVisibilityChanged: (vis) {
@@ -645,7 +669,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  if (!canSeeTf && Mode.welcome == mode)
+                  if (!hasPerm && Mode.welcome == mode)
                     Container(
                         child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -653,10 +677,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                           child: Text("Welcomes",
                               style: Theme.of(context).textTheme.caption)),
                     )),
-                  if (canSeeTf ||
-                      Mode.chat == mode &&
-                          widget.userInfo["isMember"] &&
-                          flagTf)
+                  if (hasPerm)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -741,7 +762,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                     size: 18,
                                   )
                                 : Icon(Iconsax.send_21, size: 18),
-                            color: Colors.white,
+                            color: Colors.blue,
                             onPressed: state.isTyping
                                 ? () {
                                     _codeForOnP(state);
@@ -773,15 +794,12 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
       if (_messageController.text.length > 0 &&
           _messageController.text.trim() != "") {
-      context.read<KingscordCubit>().removeReply();
-
+        context.read<KingscordCubit>().removeReply();
 
         context.read<KingscordCubit>().onSendTxtMsg(
               churchId: widget.commuinity.id!,
               kingsCordId: widget.kingsCord.id!,
-              txtMsgBodyWithSymbolsForParcing:
-                  _messageController.text, //messageWithsSmbolesForParsing,
-              txtMsgWithOutSymbolesForParcing: _messageController.text,
+              msgText: _messageController.text,
               mentionedInfo: mentionedInfo,
               cmTitle: widget.commuinity.name,
               kingsCordData: widget.kingsCord,

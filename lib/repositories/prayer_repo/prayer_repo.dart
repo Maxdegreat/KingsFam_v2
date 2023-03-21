@@ -27,16 +27,13 @@ class PrayerRepo {
     if (lastStringId == null) {
       try {
         List<PrayerModal> plist = [];
-        log("in get prayers repo. usrId: $usrId");
         // get first limit prayers
         var snap =
             await fireb.where("userId", isEqualTo: usrId).limit(limit).get();
-        log("UPDATE NEEDED IN THE PRAYER REPO...");
         for (var x in snap.docs) {
           plist.add(PrayerModal.fromDoc(x));
         }
 
-        log(plist.length.toString() + "!!!!!!!!!!!!!!");
         return plist;
       } catch (e) {
         log("!!!!!!!!!!!!!!!!!!ERROR IN PRAYER REPO!!!!!!!!!!!!!!!!!!!");

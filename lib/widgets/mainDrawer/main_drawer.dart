@@ -208,7 +208,7 @@ class _MainDrawerState extends State<MainDrawer> {
                   onRefresh: () async => context.read<CommuinityBloc>()
                     ..add(CommunityInitalEvent(
                         commuinity:
-                            context.read<ChatscreenBloc>().state.selectedCh!)),
+                            context.read<ChatscreenBloc>().state.selectedCh!, currUserr: context.read<ProfileBloc>().state.userr)),
                   child: Container(
                     width: kIsWeb
                         ? MediaQuery.of(context).size.width / 5.8
@@ -343,6 +343,7 @@ class _MainDrawerState extends State<MainDrawer> {
   List<Widget> _getCms() {
     if (context.read<ChatscreenBloc>().state.chs == null ||
         context.read<ChatscreenBloc>().state.chs!.isEmpty) {
+          log("cms is empty in the main drawer: _getCms()");
       return [];
     } else {
       return context.read<ChatscreenBloc>().state.chs!.map((c) {

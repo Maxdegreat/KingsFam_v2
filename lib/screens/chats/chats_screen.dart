@@ -11,6 +11,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
+import 'package:kingsfam/enums/enums.dart';
 import 'package:kingsfam/helpers/dynamic_links.dart';
 import 'package:kingsfam/helpers/firebase_notifs.dart';
 import 'package:kingsfam/helpers/kingscord_path.dart';
@@ -23,6 +24,7 @@ import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kingscord.dart';
 import 'package:kingsfam/screens/commuinity/screens/says_room/says_room.dart';
+import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/widgets/mainDrawer/main_drawer.dart';
 
@@ -87,7 +89,9 @@ class _ChatsScreenState extends State<ChatsScreen>
 
       // do not show a notif if alredy in that room.
       if (CurrentKingsCordRoomId.currentKingsCordRoomId !=
-          remoteMessage.data['kcId']) {
+              remoteMessage.data['kcId'] ||
+          context.read<BottomnavbarCubit>().state.selectedItem !=
+              BottomNavItem.chats) {
         // NotificationHelper.showNotification(remoteMessage).then((value) {
         //   handleMessage(remoteMessage, context);
         // });
@@ -123,7 +127,8 @@ class _ChatsScreenState extends State<ChatsScreen>
   @override
   Widget build(BuildContext context) {
     if (!hasInitCm) {
-      context.read<ChatscreenBloc>()..add(LoadCms());
+      context.read<ChatscreenBloc>()
+        ..add(LoadCms(currUserr: context.read<ProfileBloc>().state.userr));
       hasInitCm = true;
     }
 
@@ -136,7 +141,9 @@ class _ChatsScreenState extends State<ChatsScreen>
             setState(() {});
             if (state.selectedCh != null) {
               context.read<CommuinityBloc>()
-                ..add(CommunityInitalEvent(commuinity: state.selectedCh!));
+                ..add(CommunityInitalEvent(
+                    commuinity: state.selectedCh!,
+                    currUserr: context.read<ProfileBloc>().state.userr));
             }
           }
 

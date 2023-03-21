@@ -339,8 +339,8 @@ class _MessageLinesState extends State<MessageLines> {
 
       for (final word in words) {
         if (word.startsWith('https://') && !hasLinkPreview) {
-          final url = word;
-          linkPreview = LinkPreviewContainer(link: url, color: Color(hc.hexcolorCode(widget.message.sender!.colorPref)));
+          // log("LinkP: ${widget.message.metadata!["linkP"]}");
+          linkPreview =  LinkPreviewContainer(linkP: widget.message.metadata!["linkP"], color: Color(hc.hexcolorCode(widget.message.sender!.colorPref)));
           hasLinkPreview = true;
         }
 
@@ -741,7 +741,7 @@ class _MessageLinesState extends State<MessageLines> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(7),
           border: Border.all(
-              width: 1,
+              width: 2,
               color: widget.message.sender!.colorPref == ""
                   ? Colors.red
                   : Color(

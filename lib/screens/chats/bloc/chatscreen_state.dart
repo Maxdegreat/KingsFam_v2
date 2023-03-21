@@ -7,7 +7,6 @@ enum FeedStatus_chats { inital, loading, success, paginating, error }
 class ChatscreenState extends Equatable {
   //1 make class data
   final List<Chat?> chat;
-  final Userr currUserr;
   final List<Church?>? chs;
   final Church? selectedCh;
   final KingsCord? selectedKc;
@@ -29,7 +28,6 @@ class ChatscreenState extends Equatable {
   //2 make the constructor
   const ChatscreenState({
     required this.chat,
-    required this.currUserr,
     required this.chs,
     required this.selectedCh,
     required this.selectedKc,
@@ -59,7 +57,6 @@ class ChatscreenState extends Equatable {
       selectedCh: null,
       selectedKc: null,
       pSelectedCh: Church.empty,
-      currUserr: Userr.empty,
       status: ChatStatus.initial,
       failure: Failure(),
       posts: [],
@@ -73,7 +70,6 @@ class ChatscreenState extends Equatable {
   @override
   List<Object?> get props => [
         posts,
-        currUserr,
         likedPostIds,
         mentionedMap,
         fstatus,
@@ -95,7 +91,6 @@ class ChatscreenState extends Equatable {
     List<Chat?>? chat,
     bool? inAChat,
     bool? isToggle,
-    Userr? currUserr,
     List<Church?>? chs,
     Church? selectedCh,
     KingsCord? selectedKc,
@@ -111,7 +106,6 @@ class ChatscreenState extends Equatable {
   }) {
     return ChatscreenState(
       posts: posts ?? this.posts,
-      currUserr: currUserr ?? this.currUserr,
       chs: chs ?? this.chs,
       selectedCh: selectedCh ?? this.selectedCh,
       selectedKc: selectedKc ?? this.selectedKc,

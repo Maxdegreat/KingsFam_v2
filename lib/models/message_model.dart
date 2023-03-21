@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/user_model.dart';
+import 'package:simple_link_preview/simple_link_preview.dart';
 
 const firstMsgEncoded = "ThisIsAFirstMessageAndItIsEncodedJesusIsKing&&&KingsFamIlyForHisGloryYaDiggg";
 const welcomeMsgEncoded = "ThIsIsAnEnCodEdMessageToWelcomeuydh777JesusKing";
@@ -125,10 +126,20 @@ class Message {
     user = Userr.fromDoc(docSnap);
     
     Message? replyMessage;
+    LinkPreview? linkP;
+    var _metaData = Map<String, dynamic>.from(data['metadata'] ?? {});
+
     if (data["metadata"] != null && cmId != null && kcId != null) {
-      var _metaData = Map<String, dynamic>.from(data['metadata'] ?? {});
       if (_metaData.containsKey("replyId")) {
         replyMessage = await _getReplyMsg(_metaData["replyId"], cmId, kcId); 
+      }
+
+      if (_metaData.containsKey("url")) {
+        linkP = await SimpleLinkPreview.getPreview(_metaData["url"]);
+        _metaData["linkP"] = linkP;
+
+        log("title: ${linkP!.title}");
+        log("body: ${linkP.description}");
       }
     }
 
@@ -141,7 +152,7 @@ class Message {
       thumbnailUrl: data['thumbnailUrl'] ?? null,
       videoUrl: data['videoUrl'] ?? null,
       date: (data['date']),
-      metadata: Map<String, dynamic>.from(data['metadata'] ?? {}),
+      metadata: _metaData,
       reactions: Map<String, int>.from(data['reactions'] ?? {}),
       mentionedIds: List<String>.from(data['mentionedIds'] ?? []),
       replyMsg: replyMessage,

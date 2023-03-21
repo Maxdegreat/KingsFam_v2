@@ -179,24 +179,26 @@ dynamic showCmOptions(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: cmBloc.state.cmHasRequest ? CircleAvatar(backgroundColor: Theme.of(context).colorScheme.primary, radius: 7) : const SizedBox.shrink(),
               title: Text("View members, pending and baned", style: Theme.of(context).textTheme.bodyText1,
                   overflow: TextOverflow.fade,),
+              trailing: cmBloc.state.cmHasRequest ? CircleAvatar(backgroundColor: Theme.of(context).colorScheme.primary, radius: 7) : const SizedBox.shrink(),
               onTap: () => Navigator.of(context).pushNamed(ParticipantsView.routeName,
                   arguments: ParticipantsViewArgs(cmBloc: cmBloc, cm: cm)),
             ),
              ListTile(
               title: Text("View home and invite link", style: Theme.of(context).textTheme.bodyText1,
                   overflow: TextOverflow.fade,),
+              trailing: Icon(Icons.home),
               onTap: () => Navigator.of(context).pushNamed(CommunityHome.routeName,
-                  arguments: CommunityHomeArgs(cm: cm, cmB: cmBloc)),
+                  arguments: CommunityHomeArgs(cm: cm, cmB: null)),
             ),
             if (cmBloc.state.role["kfRole"] == "Lead" ||
                 cmBloc.state.role["kfRole"] == "Admin") ... [
 
               ListTile(
-                  title: Text("Update the Community name",
+                  title: Text("Update community name",
                       style: Theme.of(context).textTheme.bodyText1),
+                  trailing: Icon(Icons.notes),
                   onTap: () async => _updateCommuinityName(
                       commuinity: cm,
                       context: context,
@@ -207,16 +209,17 @@ dynamic showCmOptions(
                   style: Theme.of(context).textTheme.bodyText1,
                   overflow: TextOverflow.fade,
                 ),
+                trailing: Icon(Icons.note_alt_sharp),
                 onTap: () async => _updateTheAbout(
                     commuinity: cm,
                     buildchurchCubit: context.read<BuildchurchCubit>(),
                     context: context),
               ),
               ListTile(
-                title: Text("Update the community image",
+                title: Text("Update community image",
                     overflow: TextOverflow.fade,
                     style: Theme.of(context).textTheme.bodyText1),
-                trailing: ProfileImage(radius: 25, pfpUrl: cm.imageUrl),
+                trailing: ProfileImage(radius: 15, pfpUrl: cm.imageUrl),
                 onTap: () => _updateCommuinityImage(
                     context: context,
                     commuinity: cm,
@@ -224,6 +227,7 @@ dynamic showCmOptions(
               ),
               ListTile(
                 title: Text("Update community privacy"),
+                trailing: Icon(Icons.lock),
                 onTap: () => Navigator.of(context).pushNamed(
                     UpdatePrivacyCm.routeName,
                     arguments: UpdatePrivacyCmArgs(cm: cm)),

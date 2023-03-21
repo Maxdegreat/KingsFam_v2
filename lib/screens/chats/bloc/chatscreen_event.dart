@@ -20,7 +20,10 @@ class LoadChats extends ChatscreenEvent {
   });
 }
 
-class LoadCms extends ChatscreenEvent {}
+class LoadCms extends ChatscreenEvent {
+  final Userr? currUserr;
+  LoadCms({required this.currUserr});
+}
 
 
 class ChatScreenFetchPosts extends ChatscreenEvent {}

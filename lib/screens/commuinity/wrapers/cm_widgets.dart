@@ -404,27 +404,12 @@ void onLongPressCord(BuildContext context, KingsCord cord, Church cm) {
   return;
 }
 
-void NavtoKcFromRooms(
-    BuildContext context, CommuinityState state, Church cm, KingsCord cord) {
+void NavtoKcFromRooms(BuildContext context, CommuinityState state, Church cm, KingsCord cord) {
   context.read<ChatscreenBloc>()..add(ChatScreenUpdateSelectedKc(kc: cord));
   context.read<CommuinityBloc>().setReadStatusFalse(kcId: cord.id!);
   context.read<BottomnavbarCubit>().updateSelectedItem(BottomNavItem.chats);
   // context.read<CommuinityBloc>().setMentionedToFalse(kcId: cord.id!);
   scaffoldKey.currentState!.closeDrawer();
-  // Navigator.of(context)
-  //     .pushNamed(KingsCordScreen.routeName,
-  //         arguments: KingsCordArgs(
-  //             role: context.read<CommuinityBloc>().state.role,
-  //             usr: state.currUserr,
-  //             userInfo: {
-  //               "isMember": isMember,
-  //             },
-  //             commuinity: cm,
-  //             kingsCord: cord))
-  //     .then((_) {
-  //   context.read<CommuinityBloc>().setReadStatusFalse(kcId: cord.id!);
-  //   context.read<CommuinityBloc>().setMentionedToFalse(kcId: cord.id!);
-  // });
 }
 
 Widget header({

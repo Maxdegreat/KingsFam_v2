@@ -64,8 +64,8 @@ class KingscordCubit extends Cubit<KingscordState> {
       Userr user = await UserrRepository().getUserrWithId(userrId: j.id);
       users.add(user);
     }
-    if (username.isEmpty || username.length == 1) {
-      emit(state.copyWith(potentialMentions: []));
+    if (username.isEmpty ) {
+      emit(state.copyWith(potentialMentions: state.initPM));
     } else {
       emit(state.copyWith(potentialMentions: users));
     }
@@ -195,8 +195,7 @@ class KingscordCubit extends Cubit<KingscordState> {
   void onSendTxtMsg({
     required String churchId,
     required String kingsCordId,
-    required String txtMsgBodyWithSymbolsForParcing,
-    required String txtMsgWithOutSymbolesForParcing,
+    required String msgText,
     required Map<String, dynamic> mentionedInfo,
     required String cmTitle,
     required KingsCord kingsCordData,
@@ -211,9 +210,15 @@ class KingscordCubit extends Cubit<KingscordState> {
       metadata["replyId"] = reply.id;
     }
 
+    String? url = findHttps(msgText);
+
+    if (url != null) {
+      metadata["url"] = url;
+    }
+
 
     final message = Message(
-      text: txtMsgBodyWithSymbolsForParcing,
+      text: msgText,
       date: Timestamp.fromDate(DateTime.now()),
       imageUrl: null,
       senderUsername: currUserName,
@@ -227,6 +232,21 @@ class KingscordCubit extends Cubit<KingscordState> {
         message: message,
         senderId: _authBloc.state.user!.uid);
   }
+
+
+
+String? findHttps(String str) {
+  int startIndex = str.indexOf("https://");
+  if (startIndex != -1 && (startIndex == 0 || str[startIndex - 1] == ' ')) {
+    int endIndex = str.indexOf(' ', startIndex + 1);
+    if (endIndex == -1) {
+      return str.substring(startIndex);
+    } else {
+      return str.substring(startIndex, endIndex);
+    }
+  }
+  return null;
+}
 
   Future<void> onSendGiphyMessage({
     required String giphyId,
@@ -375,6 +395,18 @@ class KingscordCubit extends Cubit<KingscordState> {
 
   removeReply() {
     emit(state.copyWith(replyMessage: null));
+  }
+
+  canSeeTf(List<String> lst, String r) {
+    if (r == "Lead" || r == "Admin") {
+      return true;
+    } else if (r == "Mod") {
+      if (lst.contains("Member") || lst.contains("Mod")) {
+        return true;
+      } 
+    } else {
+      return lst.contains("Member");
+    }
   }
 
   // for upword pagination just go to the top and add the next 10 or so to the begining of the list.

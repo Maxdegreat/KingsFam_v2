@@ -670,13 +670,11 @@ class ChurchRepository extends BaseChurchRepository {
     log("baned the user");
   }
 
-  Future<void> leaveCommuinity(
-      {required Church commuinity, required String leavingUserId}) async {
-    UserPreferences.getLastVisitedCm().then((lastVisitedCm) {
-      if (lastVisitedCm != null && lastVisitedCm == commuinity.id) {
+  Future<void> leaveCommuinity({required Church commuinity, required String leavingUserId}) async {
+    var lastVisitedCm = UserPreferences.getLastVisitedCm();
+    if (lastVisitedCm != null && lastVisitedCm == commuinity.id) {
         UserPreferences.clearLastVisitedCm();
-      }
-    });
+    }
 
     // to leave we must remove from the users church path
 
@@ -829,32 +827,32 @@ class ChurchRepository extends BaseChurchRepository {
     return docs.length == 1;
   }
 
-  void updateUserTimestampOnOpenCm(Church cm, String usrId) {
-    // Map<String, dynamic> memsMap = {};
-    // var memListFromCm = cm.members.keys.toList();
+  // void updateUserTimestampOnOpenCm(Church cm, String usrId) {
+  //   // Map<String, dynamic> memsMap = {};
+  //   // var memListFromCm = cm.members.keys.toList();
 
-    // for (int i = 0; i < cm.members.keys.length; i++) {
-    //   if (memListFromCm[i].id == usrId) {
-    //     memsMap[memListFromCm[i].id] = {
-    //       'timestamp': Timestamp.now(),
-    //       'role': cm.members[memListFromCm[i]]['role'],
-    //       'userReference': FirebaseFirestore.instance
-    //           .collection(Paths.users)
-    //           .doc(memListFromCm[i].id),
-    //     };
-    //   }
-    //   if (memListFromCm[i].id != usrId) {
-    //     memsMap[memListFromCm[i].id] = {
-    //       'timestamp': cm.members[memListFromCm[i]]['timestamp'],
-    //       'role': cm.members[memListFromCm[i]]['role'],
-    //       'userReference': FirebaseFirestore.instance
-    //           .collection(Paths.users)
-    //           .doc(memListFromCm[i].id),
-    //     };
-    //   }
-    // }
-    // fb.doc(cm.id).update({'members': memsMap});
-  }
+  //   // for (int i = 0; i < cm.members.keys.length; i++) {
+  //   //   if (memListFromCm[i].id == usrId) {
+  //   //     memsMap[memListFromCm[i].id] = {
+  //   //       'timestamp': Timestamp.now(),
+  //   //       'role': cm.members[memListFromCm[i]]['role'],
+  //   //       'userReference': FirebaseFirestore.instance
+  //   //           .collection(Paths.users)
+  //   //           .doc(memListFromCm[i].id),
+  //   //     };
+  //   //   }
+  //   //   if (memListFromCm[i].id != usrId) {
+  //   //     memsMap[memListFromCm[i].id] = {
+  //   //       'timestamp': cm.members[memListFromCm[i]]['timestamp'],
+  //   //       'role': cm.members[memListFromCm[i]]['role'],
+  //   //       'userReference': FirebaseFirestore.instance
+  //   //           .collection(Paths.users)
+  //   //           .doc(memListFromCm[i].id),
+  //   //     };
+  //   //   }
+  //   // }
+  //   // fb.doc(cm.id).update({'members': memsMap});
+  // }
 
   void onBoostCm({required String cmId}) {
     fb.doc(cmId).set({"boosted": 1}, SetOptions(merge: true));

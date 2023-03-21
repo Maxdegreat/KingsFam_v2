@@ -18,9 +18,9 @@ class UserPreferences {
   static const String _hasAgreedToTermsOfService = "hasAgreedToTermsOfService";
   static const String _lastVisitiedKc = "lastVisitiedKc";
 
-  static Future updateCmTimestamp({required String cmId}) async {
+  static  updateCmTimestamp({required String cmId})  {
     updateLastVisitedCm(cmId: cmId);
-    List<String>? cts = await _preferences!.getStringList(_cmTs);
+    List<String>? cts = _preferences!.getStringList(_cmTs);
     if (cts != null) {
       bool done = false;
       for (int i = 0; i < cts.length; i++) {
@@ -58,7 +58,6 @@ class UserPreferences {
 
   static Future updateKcTimeStamp(
       {required String cmId, required String kcId}) async {
-        log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     List<String>? kts = await _preferences!.getStringList(_kcTimeStamp + cmId);
     if (kts != null) {
       bool done = false;
@@ -100,8 +99,8 @@ class UserPreferences {
     _preferences!.setString("lastVisitedCm", cmId);
   }
 
-  static Future<String?> getLastVisitedCm() async {
-    return await _preferences!.getString("lastVisitedCm");
+  static String? getLastVisitedCm()  {
+    return  _preferences!.getString("lastVisitedCm");
   }
 
   static clearLastVisitedCm() async {

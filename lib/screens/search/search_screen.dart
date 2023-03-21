@@ -255,8 +255,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  void navToChurch(
-      {required BuildContext context, required Church commuinity}) {
+  void navToChurch({required BuildContext context, required Church commuinity}) {
     Navigator.of(context).pushNamed(CommunityHome.routeName,
         arguments: CommunityHomeArgs(cm: commuinity, cmB: null));
   }

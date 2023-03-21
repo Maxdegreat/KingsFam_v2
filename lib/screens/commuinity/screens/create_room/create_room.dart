@@ -86,7 +86,7 @@ class _CreateRoomState extends State<CreateRoom> {
                 color: Theme.of(context).iconTheme.color,
               )),
           title: Text(
-            "Creating Room",
+            "Creating a Room",
             style: Theme.of(context).textTheme.bodyText1,
           ),
           actions: [

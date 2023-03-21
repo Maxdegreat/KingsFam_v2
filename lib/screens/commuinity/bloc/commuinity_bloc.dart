@@ -69,27 +69,25 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       CommunityInitalEvent event) async* {
     emit(state.copyWith(
       // ADD ROOMS WITH INIT AS EMPTY IF THROWING ERRORS
-        status: CommuintyStatus.loading,));
+      status: CommuintyStatus.loading,
+    ));
     try {
-      
+      bool isBan = await _churchRepository.isBaned(
+          usrId: _authBloc.state.user!.uid, cmId: event.commuinity.id!);
+
+      emit(state.copyWith(isBaned: isBan));
 
       String uid = _authBloc.state.user!.uid;
-      Userr currUserr = await _userrRepository.getUserrWithId(userrId: uid);
-      emit(state.copyWith(currUserr: currUserr));
+      emit(state.copyWith(currUserr: event.currUserr));
 
       Church cm = Church.empty.copyWith(
         id: event.commuinity.id,
         members: event.commuinity.members,
       );
 
-      // getting rid of this
-      _churchRepository.updateUserTimestampOnOpenCm(
-          cm, _authBloc.state.user!.uid);
-
-      bool isBan = await _churchRepository.isBaned(
-          usrId: _authBloc.state.user!.uid, cmId: event.commuinity.id!);
-
-      emit(state.copyWith(isBaned: isBan));
+      // getting rid of this ??? why? i commented it for now. will look into later and approve.
+      // _churchRepository.updateUserTimestampOnOpenCm(
+      //     cm, _authBloc.state.user!.uid);
 
       // load if is member then handel as the cm requirments
       late bool isMem;
@@ -124,6 +122,9 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
                 // pending bc request exits alredy
                 emitWhenCmIsArmored(
                     isMem, CommuintyStatus.armormed, RequestStatus.pending);
+              } else {
+                // cm was made open:
+
               }
             } else {
               // allow users to request if it is required
@@ -146,22 +147,25 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
           UserPreferences.updateCmTimestamp(cmId: event.commuinity.id!);
           // UserPreferences.updateLastVisitedCm(cmId: event.commuinity.id!);
           // get the role of the user
-          var cmUserInfoDoc = await FirebaseFirestore.instance
+          FirebaseFirestore.instance
               .collection(Paths.communityMembers)
               .doc(event.commuinity.id)
               .collection(Paths.members)
               .doc(uid)
-              .get();
-          if (cmUserInfoDoc.exists && cmUserInfoDoc.data() != null) {
-            String? kfRole = cmUserInfoDoc.data()!["kfRole"] ?? "member";
-          
+              .get()
+              .then((cmUserInfoDoc) {
+                // TESTV2 THIS WAS AN AWAIT AND I MADE IT A .THEN IF NO WORK MOVE BACK
+            if (cmUserInfoDoc.exists && cmUserInfoDoc.data() != null) {
+              String? kfRole = cmUserInfoDoc.data()!["kfRole"] ?? "member";
+
               Map<String, dynamic> role = {
-                "kfRole" : kfRole, 
+                "kfRole": kfRole,
               };
 
-              emit(state.copyWith(role: role ));
+              emit(state.copyWith(role: role));
+            }
+          });
 
-          }
           // when the member is apart of the community
           emitWhenCmIsOpen(isMem, [], [], CommuintyStatus.loaded);
           add(CommunityLoadingCords(commuinity: cm));
@@ -181,8 +185,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     }
   }
 
-  Stream<CommuinityState> _mapCommuinityLoadingCordsToState(
-      CommunityLoadingCords event) async* {
+  Stream<CommuinityState> _mapCommuinityLoadingCordsToState(CommunityLoadingCords event) async* {
     // make calls stream
     // add calls to loaded then yield
     // also add this.event to loaded yield ... now has both list (this event has the cord and cm)
@@ -206,12 +209,9 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
             .futureWaitCord(
                 kcords, event.commuinity.id!, _authBloc.state.user!.uid)
             .then((kingsCords) {
-
-             
           // The updated status in the emit is used in cm screen listener. if status is updated we setstate. thats it.
           emit(state.copyWith(
-              yourRooms: kingsCords["kc"],
-              status: CommuintyStatus.updated));
+              yourRooms: kingsCords["kc"], status: CommuintyStatus.updated));
           emit(state.copyWith(status: CommuintyStatus.inital));
         });
 
@@ -224,11 +224,9 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     }
   }
 
- 
   // this is the loaded for the community content. _____________
 
-  Stream<CommuinityState> _mapCommunityLoadingPostToState(
-      CommunityLoadingPosts event) async* {
+  Stream<CommuinityState> _mapCommunityLoadingPostToState(CommunityLoadingPosts event) async* {
     try {
       List<Post?> posts = [];
       if (!MockFlag.ISMOCKTESTING)
@@ -238,11 +236,17 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       emit(state.copyWith(postDisplay: posts, status: CommuintyStatus.loaded));
 
       // check if any pending request in cm
-      if (state.role["kfRole"] == "Lead" || state.role["kfRole"] == "Admin" || state.role["kfRole"] == "Mod") {
-        var requestSnap = await FirebaseFirestore.instance.collection(Paths.requestToJoinCm).doc(state.cmId).collection(Paths.request).limit(1).get();
+      if (state.role["kfRole"] == "Lead" ||
+          state.role["kfRole"] == "Admin" ||
+          state.role["kfRole"] == "Mod") {
+        var requestSnap = await FirebaseFirestore.instance
+            .collection(Paths.requestToJoinCm)
+            .doc(state.cmId)
+            .collection(Paths.request)
+            .limit(1)
+            .get();
         emit(state.copyWith(cmHasRequest: requestSnap.docs.first.exists));
       }
-
     } catch (e) {
       emit(state.copyWith(
           failure: Failure(
@@ -251,8 +255,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   }
 
   // ================== emit methods =======================
-  emitWhenCmIsArmored(
-      bool isMem, CommuintyStatus status, RequestStatus requestStatus) {
+  emitWhenCmIsArmored(bool isMem, CommuintyStatus status, RequestStatus requestStatus) {
     emit(state.copyWith(
         isMember: isMem,
         postDisplay: [],
@@ -260,8 +263,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
         requestStatus: requestStatus));
   }
 
-  emitWhenCmIsShielded(bool isMem, List<KingsCord?>? kcs, List<Post?> posts,
-      CommuintyStatus status, RequestStatus requestStatus) {
+  emitWhenCmIsShielded(bool isMem, List<KingsCord?>? kcs, List<Post?> posts,CommuintyStatus status, RequestStatus requestStatus) {
     emit(state.copyWith(
       isMember: isMem,
       postDisplay: posts,
@@ -270,8 +272,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     ));
   }
 
-  emitWhenCmIsOpen(bool isMem, List<KingsCord?>? kcs, List<Post?> posts,
-      CommuintyStatus status) {
+  emitWhenCmIsOpen(bool isMem, List<KingsCord?>? kcs, List<Post?> posts, CommuintyStatus status) {
     emit(state.copyWith(
       isMember: isMem,
       postDisplay: posts,
@@ -282,8 +283,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
 
   // ============== funcs =======================
 
-  Future<void> onLeaveCommuinity(
-      {required Church commuinity, String? leavingUid}) async {
+  Future<void> onLeaveCommuinity({required Church commuinity, String? leavingUid}) async {
     if (leavingUid == null) leavingUid = _authBloc.state.user!.uid;
     // else we are using the id of the user that was passed in.
     _churchRepository.leaveCommuinity(
@@ -291,8 +291,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     emit(state.copyWith(isMember: false));
   }
 
-  Future<void> onJoinCommuinity(
-      {required Church commuinity, required BuildContext context}) async {
+  Future<void> onJoinCommuinity( {required Church commuinity, required BuildContext context, }) async {
     bool isBan = await _churchRepository.isBaned(
         usrId: _authBloc.state.user!.uid, cmId: commuinity.id!);
 
@@ -306,7 +305,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
       emit(state.copyWith(isMember: true));
       _churchRepository.onJoinCommuinity(commuinity: commuinity, user: user);
       await Future.delayed(Duration(seconds: 1));
-      add(CommunityInitalEvent(commuinity: commuinity));
+      add(CommunityInitalEvent(commuinity: commuinity, currUserr: user));
     } else {
       log("we are in the true, is ban is true");
       showDialog(
@@ -383,10 +382,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     emit(state.copyWith(boosted: 1));
   }
 
-
-
-  Future<void> delKc(
-      {required KingsCord cord, required Church commuinity}) async {
+  Future<void> delKc({required KingsCord cord, required Church commuinity}) async {
     // gives unexpected behavior
     // should not del kc if only on kc.
     await _churchRepository.delCord(cmmuinity: commuinity, cord: cord);
@@ -400,9 +396,7 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     required String mode,
     String? rolesAllowed,
     required BuildContext context,
-  }) async {
-    Userr currUser = await _userrRepository.getUserrWithId(
-        userrId: _authBloc.state.user!.uid);
+  }) async {Userr currUser = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
     log("awaiting ch msg");
     await _churchRepository.newKingsCord2(
       ch: commuinity,
@@ -427,11 +421,9 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     return newName;
   }
 
-
-
-  void updateCmId(String id, Church cm) {
+  void updateCmId(String id, Church cm, Userr u) {
     emit(state.copyWith(cmId: id));
-    add(CommunityInitalEvent(commuinity: cm));
+    add(CommunityInitalEvent(commuinity: cm, currUserr: u));
   }
 
   setReadStatusFalse({required String kcId}) {
@@ -445,18 +437,10 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
     // }
   }
 
-
-
-
-
-
   void getRooms(String id) async {
     log("len of Id" + id.length.toString());
-    List <KingsCord> r = await _churchRepository.getRooms(id);
+    List<KingsCord> r = await _churchRepository.getRooms(id);
     log("r len: " + r.length.toString());
     emit(state.copyWith(otherRooms: r));
   }
-
-
-
 }
