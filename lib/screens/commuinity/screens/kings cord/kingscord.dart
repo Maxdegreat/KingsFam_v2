@@ -125,7 +125,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       required Church commuinity,
       required KingsCord kingsCord,
       required List<Message?> msgs}) {
-    return msgs.isEmpty
+    return msgs.isEmpty && widget.kingsCord.mode != Mode.welcome
         ? Expanded(
           child: ListView.builder(
             padding: EdgeInsets.symmetric(horizontal: 7.0),

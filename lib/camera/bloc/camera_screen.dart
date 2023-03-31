@@ -5,6 +5,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/helpers/image_helper.dart';
 import 'package:kingsfam/helpers/navigator_helper.dart';
 import 'package:kingsfam/screens/create_post/post_content_screen.dart';
+import 'package:kingsfam/widgets/snackbar.dart';
 
 class CameraScreenArgs {
   final String? cmId;
@@ -194,7 +195,14 @@ class _CameraScreenState extends State<CameraScreen> {
             backgroundColor: Color.fromARGB(84, 255, 255, 255),
             side: BorderSide(color: Colors.white, width: 2),
           ),
-          onPressed: () {},
+          onPressed: () {
+            if (imageFile != null)
+              Navigator.of(context).pushNamed(PostContentScreen.routeName,
+                  arguments:
+                      PostContentArgs(content: imageFile!, type: 'image'));
+            else
+              snackBar(snackMessage: "Pick an image of video first", context: context);
+          },
           child: Text("Pick Community")),
     );
   }
