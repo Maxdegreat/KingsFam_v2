@@ -51,11 +51,9 @@ Widget singlePostDisplay({
                 width: 50,
                 child: IconButton(
                     onPressed: () {
-                      availableCameras().then((cameras) {
-                        Navigator.of(context).pushNamed(CameraScreen.routeName,
-                            arguments:
-                                CameraScreenArgs(cameras: cameras, cmId: cm.id!));
-                      });
+                     
+                        Navigator.of(context).pushNamed(CameraScreen.routeName, arguments: CameraScreenArgs(cmId: null));
+
                     },
                     icon: Icon(Icons.photo_camera_outlined)),
               ),

@@ -123,6 +123,7 @@ class NavScreen extends StatelessWidget {
                 : null,
                 extendBody: false,
                 drawer: MainDrawer(),
+                drawerEdgeDragWidth: MediaQuery.of(context).size.width / 5,
           );
         },
       ),

@@ -24,6 +24,7 @@ import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/cubit/kingscord_cubit.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/kings_cord_room_settings.dart';
+import 'package:kingsfam/screens/commuinity/screens/kings%20cord/widgets/msgs_loading.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
@@ -120,17 +121,30 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   }
 
   _buildMessageStream(
-      {required Church commuinity,
+      {
+      required Church commuinity,
       required KingsCord kingsCord,
       required List<Message?> msgs}) {
-    return Expanded(
-        child: ListView(
-      controller: scrollCtrl,
-      padding: EdgeInsets.symmetric(horizontal: 7.0),
-      physics: AlwaysScrollableScrollPhysics(),
-      reverse: true,
-      children: _buildMessageLines(msgs),
-    ));
+    return msgs.isEmpty
+        ? Expanded(
+          child: ListView.builder(
+            padding: EdgeInsets.symmetric(horizontal: 7.0),
+            physics: AlwaysScrollableScrollPhysics(),
+            reverse: true,
+            itemCount: 30,
+            itemBuilder: (c, i) {
+              return msgsLoading(context);
+            },
+          )
+        )
+        : Expanded(
+            child: ListView(
+            controller: scrollCtrl,
+            padding: EdgeInsets.symmetric(horizontal: 7.0),
+            physics: AlwaysScrollableScrollPhysics(),
+            reverse: true,
+            children: _buildMessageLines(msgs),
+          ));
   }
 
 //==========================================================================S
@@ -336,7 +350,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 cmId: widget.commuinity.id!,
                 kcId: widget.kingsCord.id!,
                 limit: 12)
-            .then((_) { isInit = true; setState(() {});});
+            .then((_) {
+          isInit = true;
+          setState(() {});
+        });
       }
     });
     recentkcid = widget.kingsCord.id!;
@@ -357,12 +374,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         CurrentKingsCordRoomId.updateRoomId(roomId: widget.kingsCord.id);
       }
     }
-    return 
-
-
-
-    
-    Scaffold(
+    return Scaffold(
+      bottomNavigationBar: null,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
         centerTitle: false,

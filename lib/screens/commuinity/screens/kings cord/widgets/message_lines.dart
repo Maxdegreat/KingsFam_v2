@@ -338,7 +338,7 @@ class _MessageLinesState extends State<MessageLines> {
       final words = line.split(' ');
 
       for (final word in words) {
-        if (word.startsWith('https://') && !hasLinkPreview) {
+        if (word.startsWith('https://') && !hasLinkPreview && widget.message.metadata!["linkP"] != null) {
           // log("LinkP: ${widget.message.metadata!["linkP"]}");
           linkPreview =  LinkPreviewContainer(linkP: widget.message.metadata!["linkP"], color: Color(hc.hexcolorCode(widget.message.sender!.colorPref)));
           hasLinkPreview = true;
@@ -613,7 +613,7 @@ class _MessageLinesState extends State<MessageLines> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     kingsCordAvtar(context),
-                    SizedBox(
+                    const SizedBox(
                       width: 15.0,
                     ),
                     Column(

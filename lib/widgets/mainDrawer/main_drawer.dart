@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -93,6 +92,7 @@ class _MainDrawerState extends State<MainDrawer> {
     return SafeArea(
         child: !kIsWeb
             ? Drawer(
+              
                 width: MediaQuery.of(context).size.width,
                 backgroundColor: Theme.of(context).drawerTheme.backgroundColor,
                 key: _drawerKey,
@@ -166,18 +166,6 @@ class _MainDrawerState extends State<MainDrawer> {
                             context),
                       )),
 
-                  // GestureDetector(
-                  //     onTap: () =>
-                  //         _updateSelectedItem(BottomNavItem.notifications),
-                  //     child: Padding(
-                  //       padding: const EdgeInsets.all(0.0),
-                  //       child: drawerIcon(
-                  //           Icon(
-                  //             Icons.favorite_border,
-                  //             color: Theme.of(context).colorScheme.primary,
-                  //           ),
-                  //           context),
-                  //     )),
 
                   GestureDetector(
                       onTap: () => _updateSelectedItem(BottomNavItem.profile),

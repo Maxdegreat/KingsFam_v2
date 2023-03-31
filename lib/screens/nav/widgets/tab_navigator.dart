@@ -5,16 +5,10 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/blocs/search/search_bloc.dart';
 import 'package:kingsfam/config/custum_router.dart';
-import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
 
 import 'package:kingsfam/enums/bottom_nav_items.dart';
-import 'package:kingsfam/repositories/prayer_repo/prayer_repo.dart';
-import 'package:kingsfam/repositories/repositories.dart';
-import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
-import 'package:kingsfam/screens/notification/bloc/noty_bloc.dart';
-import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
+
 
 import '../../screens.dart';
 
@@ -77,7 +71,7 @@ class TabNavigator extends StatelessWidget {
       //   );
 
       case BottomNavItem.profile:
-        this.context!.read<ProfileBloc>()..add(ProfileLoadUserr(userId: ctx.read<AuthBloc>().state.user!.uid));
+        // this.context!.read<ProfileBloc>()..add(ProfileLoadUserr(userId: ctx.read<AuthBloc>().state.user!.uid));
         return ProfileScreen(ownerId: ctx.read<AuthBloc>().state.user!.uid, initScreen: false);
       default:
         return Scaffold();

@@ -18,6 +18,7 @@ import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/profile/widgets/commuinity_container.dart';
 import 'package:kingsfam/screens/profile/widgets/container_w_children.dart';
+import 'package:kingsfam/screens/profile/widgets/loadingUserScreen.dart';
 import 'package:kingsfam/screens/profile/widgets/prayer_chunck.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/prayer/prayer_snipit.dart';
@@ -90,12 +91,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
       },
       builder: (context, state) {
-        if (context.read<BottomnavbarCubit>().state.selectedItem ==
-            BottomNavItem.profile) {
+        if (context.read<BottomnavbarCubit>().state.selectedItem == BottomNavItem.profile && widget.ownerId == context.read<AuthBloc>().state.user!.uid) {
           if (!hasSeen) {
             hasSeen = true;
-            //     context.read<ProfileBloc>()
-            // ..add(ProfileLoadUserr(userId: context.read<AuthBloc>().state.user!.uid, vidCtrl: null));
+                context.read<ProfileBloc>()
+            ..add(ProfileLoadUserr(userId: context.read<AuthBloc>().state.user!.uid, vidCtrl: null));
           }
         } else if (widget.ownerId != context.read<AuthBloc>().state.user!.uid &&
             widget.initScreen) {
@@ -210,7 +210,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onRefresh: () async => context
                 .read<ProfileBloc>()
                 .add(ProfileLoadUserr(userId: state.userr.id)),
-            child: Padding(
+            child: 
+            state.userr == Userr.empty ?
+
+            loadingUserScreen(context)
+
+            :
+
+            Padding(
               padding: const EdgeInsets.all(8.0),
               child: SingleChildScrollView(
                 controller: scrollController,
@@ -290,11 +297,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               color:
                                   Theme.of(context).colorScheme.inversePrimary),
                         ],
-                        ProfileStats(
+                        if (state.userr != Userr.empty) ...[
+                          ProfileStats(
                             followers: state.userr.followers,
                             following: state.userr.following,
                             profileBloc: context.read<ProfileBloc>(),
                             ctxFromPf: context),
+                        ]
                       ],
                           Color(hc.hexcolorCode(state.userr.colorPref)),
                           Theme.of(context).colorScheme.secondary,
@@ -346,7 +355,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(height: 40),
                     ]),
               ),
-            ));
+            )
+        );
     }
   }
 

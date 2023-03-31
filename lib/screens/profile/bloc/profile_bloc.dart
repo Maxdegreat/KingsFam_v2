@@ -145,14 +145,14 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
     try {
       final userr = await _userrRepository.getUserrWithId(userrId: event.userId);
-      yield state.copyWith(userr: userr);
+      state.copyWith(userr: userr);
 
       // grab any potential prayers
 
       List<PrayerModal> pm = await _prayerRepo.getUsrsPrayers(usrId: event.userId, limit: 1);
 
       if (pm.isNotEmpty) {
-        yield (state.copyWith(prayer: pm[0].prayer));
+        (state.copyWith(prayer: pm[0].prayer));
       }
 
       final isCurrentUser = _authBloc.state.user!.uid == event.userId;
@@ -160,12 +160,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final isFollowing = await _userrRepository.isFollowing(
           userrId: _authBloc.state.user!.uid, otherUserId: event.userId);
 
-      final cms = await _churchRepository.getCommuinitysUserIn(
-          userrId: event.userId, limit: 2);
+      final cms = await _churchRepository.getCommuinitysUserIn(userrId: event.userId, limit: 2);
+
       Set<String> seen = state.seen;
-      var beenSeen = state.post.length > 0 ? state.post.last : null;
-      // log("seen id's: $seen");
-      // whenever a new post is posted it will update the home page post view
+
       yield state.copyWith(post: []);
       List<Post?> lst = await _postsRepository.getUserPosts(
         userId: event.userId,
@@ -198,16 +196,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   Stream<ProfileState> _mapProfileUpdatePostsToState(
       ProfileUpdatePost event) async* {
     yield state.copyWith(status: ProfileStatus.loadingSingleView);
-    print("IN the update posts repo");
-    final likedPostIds = await _postsRepository.getLikedPostIds(
-        userId: _authBloc.state.user!.uid, posts: event.post);
+    
+    final likedPostIds = await _postsRepository.getLikedPostIds(userId: _authBloc.state.user!.uid, posts: event.post);
     List<Post?> posts;
     posts = List<Post?>.from(state.post)..addAll(event.post);
     //_likedPostCubit.updateLikedPosts(postIds: likedPostIds);
-    yield state.copyWith(
-        post: posts, status: ProfileStatus.loaded, likedPostIds: likedPostIds);
-    print(
-        "____________________________________________________________________________________________________");
+    yield state.copyWith( post: posts, status: ProfileStatus.loaded, likedPostIds: likedPostIds);
+
   }
 
   Stream<ProfileState> _mapProfileFollowUserToState() async* {

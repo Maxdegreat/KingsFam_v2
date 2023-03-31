@@ -6,7 +6,6 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/blocs/search/search_bloc.dart';
 import 'package:kingsfam/enums/bottom_nav_items.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
-import 'package:kingsfam/helpers/navigator_helper.dart';
 
 import 'package:kingsfam/models/models.dart';
 

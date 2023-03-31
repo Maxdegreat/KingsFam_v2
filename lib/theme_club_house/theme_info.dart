@@ -12,6 +12,7 @@ class ThemeInfo {
       brightness: Brightness.light,
       primaryColor: Colors.purple,
       appBarTheme: AppBarTheme(
+         iconTheme: IconThemeData(color: Colors.black),
         centerTitle: false,
         toolbarHeight: 45,
         color: Colors.grey[50],
@@ -73,6 +74,7 @@ class ThemeInfo {
           toolbarHeight: 45,
           color: Color(hexcolor.hexcolorCode('#121212')), // whats the hex val?
           elevation: 0,
+          iconTheme: IconThemeData(color: Colors.white),
         ),
         iconTheme: IconThemeData(color: Colors.white),
         drawerTheme: DrawerThemeData(
