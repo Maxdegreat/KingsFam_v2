@@ -8,7 +8,6 @@ import 'package:giphy_get/giphy_get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_cropper/image_cropper.dart';
 
-import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/config/mock_flag.dart';
 import 'package:kingsfam/config/mode.dart';
@@ -18,7 +17,6 @@ import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/helpers/vid_helper.dart';
 
 import 'package:kingsfam/models/models.dart';
-import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';

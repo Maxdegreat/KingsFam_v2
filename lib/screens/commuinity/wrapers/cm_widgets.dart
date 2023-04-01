@@ -51,9 +51,8 @@ Widget singlePostDisplay({
                 width: 50,
                 child: IconButton(
                     onPressed: () {
-                     
-                        Navigator.of(context).pushNamed(CameraScreen.routeName, arguments: CameraScreenArgs(cmId: null));
-
+                      Navigator.of(context).pushNamed(CameraScreen.routeName,
+                          arguments: CameraScreenArgs(cmId: null));
                     },
                     icon: Icon(Icons.photo_camera_outlined)),
               ),
@@ -76,19 +75,21 @@ Widget singlePostDisplay({
           ],
         ),
       ));
-  for (var w in cmBloc.state.postDisplay) {
-    items.add(contentPreview(post: w!, context: context, cm: cm));
+  for (int i = 0; i < cmBloc.state.postDisplay.length; i++) {
+    items.add(AnimatedSwitcher(
+      duration: Duration(milliseconds: 50 * i + 1),
+      child: contentPreview(post: cmBloc.state.postDisplay[i]!, context: context, cm: cm)));
   }
   return Container(
-    height: 80,
-    width: kIsWeb
-        ? MediaQuery.of(context).size.width / 3.2
-        : MediaQuery.of(context).size.width / 1.2,
-    child: ListView(
-      scrollDirection: Axis.horizontal,
-      addAutomaticKeepAlives: true,
-      children: items,
-  ));
+      height: 80,
+      width: kIsWeb
+          ? MediaQuery.of(context).size.width / 3.2
+          : MediaQuery.of(context).size.width / 1.2,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        addAutomaticKeepAlives: true,
+        children: items,
+      ));
 }
 
 Widget cmPostDisplay(Post? p, BuildContext context, Church cm) {
@@ -141,43 +142,38 @@ Widget PostCircle(Post p, context) {
 }
 
 Widget showRooms(BuildContext context, Church cm) {
-
   CommuinityState state = context.read<CommuinityBloc>().state;
   return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        
         // _showVc(state, context, cm),
         // your rooms
-        if (state.yourRooms.isNotEmpty) ...[
-          Padding(
-            padding: const EdgeInsets.only(top: 0.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "Your Rooms",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.outline,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                  ),
-                  overflow: TextOverflow.fade,
+        Padding(
+          padding: const EdgeInsets.only(top: 0.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Your Rooms",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.outline,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
                 ),
-
-                CmPermHandler.canMakeRoom(context.read<CommuinityBloc>())
-                ? new_kingscord(
-                    cmBloc: context.read<CommuinityBloc>(),
-                    cm: cm,
-                    context: context)
-                : SizedBox.shrink(),
-
-              ],
-            ),
+                overflow: TextOverflow.fade,
+              ),
+              CmPermHandler.canMakeRoom(context.read<CommuinityBloc>())
+                  ? new_kingscord(
+                      cmBloc: context.read<CommuinityBloc>(),
+                      cm: cm,
+                      context: context)
+                  : SizedBox.shrink(),
+            ],
           ),
-      
+        ),
+        if (state.yourRooms.isNotEmpty) ...[
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,7 +189,6 @@ Widget showRooms(BuildContext context, Church cm) {
                         return null;
                       }
                       NavtoKcFromRooms(context, state, cm, cord);
-                      
                     },
                     onLongPress: () {
                       onLongPressCord(context, cord, cm);
@@ -244,8 +239,6 @@ Widget showRooms(BuildContext context, Church cm) {
         ]
       ]);
 }
-
-
 
 Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
   return Padding(
@@ -312,8 +305,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
                   ),
                 ] else if (cord.mode == "welcome") ...[
                   Icon(Icons.waving_hand_outlined,
-                  size: 15,
-                      color: Theme.of(context).colorScheme.primary),
+                      size: 15, color: Theme.of(context).colorScheme.primary),
                   SizedBox(width: 3),
                   Container(
                     child: Padding(
@@ -342,7 +334,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
                   // else if (cord.readStatus != null && cord.readStatus! ||
                   //     cord.readStatus == null)
                   //   CircleAvatar(backgroundColor: Colors.amber, radius: 3)
-                ] 
+                ]
               ],
             ),
             if (cord.mode == "chat" &&
@@ -358,7 +350,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
             ] else if (cord.mode == "says" &&
                 cord.recentActivity!["says"] != null) ...[
               Padding(
-                padding: const EdgeInsets.only( top: 2),
+                padding: const EdgeInsets.only(top: 2),
                 child: DisplayMsg(
                   m: null,
                   s: cord.recentActivity!["says"],
@@ -376,7 +368,7 @@ Padding showCordAsCmRoom(BuildContext context, KingsCord cord, Church cm) {
               //   padding: const EdgeInsets.only(left: 20, top: 2),
               //   child: DisplayMsg(m: null, s: null, amountInVc: cord.metaData!["inCall"]),
               // )
-            ] 
+            ]
           ],
         ),
       ),
@@ -402,7 +394,8 @@ void onLongPressCord(BuildContext context, KingsCord cord, Church cm) {
   return;
 }
 
-void NavtoKcFromRooms(BuildContext context, CommuinityState state, Church cm, KingsCord cord) {
+void NavtoKcFromRooms(
+    BuildContext context, CommuinityState state, Church cm, KingsCord cord) {
   context.read<ChatscreenBloc>()..add(ChatScreenUpdateSelectedKc(kc: cord));
   context.read<CommuinityBloc>().setReadStatusFalse(kcId: cord.id!);
   context.read<BottomnavbarCubit>().updateSelectedItem(BottomNavItem.chats);

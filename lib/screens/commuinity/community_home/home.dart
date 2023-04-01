@@ -28,12 +28,13 @@ class CommunityHome extends StatefulWidget {
       : super(key: key);
   static const String routeName = "communityHome_";
   static Route route({required CommunityHomeArgs args}) {
-    return MaterialPageRoute(
-      settings: const RouteSettings(name: routeName),
-      builder: (context) {
-        return CommunityHome(cm: args.cm, cmB: args.cmB);
-      },
-    );
+    return PageRouteBuilder(
+      transitionDuration: Duration(milliseconds: 800),
+  settings: const RouteSettings(name: routeName),
+  pageBuilder: (context, _, __) {
+    return CommunityHome(cm: args.cm, cmB: args.cmB);
+  },
+);
   }
 
   @override
