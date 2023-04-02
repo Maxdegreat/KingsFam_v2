@@ -17,7 +17,7 @@ Widget cmContainerImage(Church cm) {
   );
 }
 
-Widget iconName(Icon i, Widget t) {
+Widget iconName (Icon i, Widget t) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.center,
@@ -26,12 +26,7 @@ Widget iconName(Icon i, Widget t) {
   );
 }
 
-Widget singlePostDisplay({
-  required BuildContext context,
-  required CommuinityBloc cmBloc,
-  required Church cm,
-  required Widget? ad,
-}) {
+Widget singlePostDisplay ({ required BuildContext context, required CommuinityBloc cmBloc, required Church cm, required Widget? ad }) {
   List<Widget> items = [];
   items.insert(
       0,

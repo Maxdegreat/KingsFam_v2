@@ -14,6 +14,7 @@ import 'package:kingsfam/screens/add_users/add_users.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/profile_screen.dart';
+import 'package:kingsfam/screens/search/widgets/shutter_loading_screen.dart';
 
 import 'package:kingsfam/widgets/widgets.dart';
 
@@ -208,11 +209,8 @@ class _SearchScreenState extends State<SearchScreen> {
       // this is in the case that we are using the search box on a user..
 
       case SearchStatus.loading:
-        return Center(
-          child: CircularProgressIndicator(
-            color: Colors.red[400],
-          ),
-        );
+        return 
+        shutterLoadingSearchScreen(context);
       case SearchStatus.success:
         return state.users.isNotEmpty
             ? ListView.builder(

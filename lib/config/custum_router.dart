@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:kingsfam/camera/bloc/camera_screen.dart';
+import 'package:kingsfam/camera/camera_screen.dart';
 import 'package:kingsfam/helpers/vid_helper.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 

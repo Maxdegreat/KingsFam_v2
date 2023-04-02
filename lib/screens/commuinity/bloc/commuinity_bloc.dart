@@ -14,7 +14,6 @@ import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
-import 'package:kingsfam/screens/commuinity/actions.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/mock_post_data.dart';
 
 part 'commuinity_event.dart';

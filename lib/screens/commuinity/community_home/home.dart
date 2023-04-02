@@ -28,13 +28,12 @@ class CommunityHome extends StatefulWidget {
       : super(key: key);
   static const String routeName = "communityHome_";
   static Route route({required CommunityHomeArgs args}) {
-    return PageRouteBuilder(
-      transitionDuration: Duration(milliseconds: 800),
-  settings: const RouteSettings(name: routeName),
-  pageBuilder: (context, _, __) {
-    return CommunityHome(cm: args.cm, cmB: args.cmB);
-  },
-);
+    return MaterialPageRoute(
+      settings: const RouteSettings(name: routeName),
+      builder: (context) {
+        return CommunityHome(cm: args.cm, cmB: args.cmB);
+      },
+    );
   }
 
   @override
@@ -54,7 +53,8 @@ class _CommunityHomemState extends State<CommunityHome> {
   Future<void> initCmB() async {
     cmB = await _getCmB();
     cmB.getRooms(cmB.state.cmId);
-    cmB.updateCmId(widget.cm.id!, widget.cm, context.read<ProfileBloc>().state.userr);
+    cmB.updateCmId(
+        widget.cm.id!, widget.cm, context.read<ProfileBloc>().state.userr);
     _initalized = true;
     setState(() {});
   }
@@ -131,14 +131,19 @@ class _CommunityHomemState extends State<CommunityHome> {
                                               .bodyText1!
                                               .copyWith(
                                                   fontSize: 25,
-                                                  fontWeight: FontWeight.bold))),
+                                                  fontWeight:
+                                                      FontWeight.bold))),
                                   const SizedBox(height: 10),
                                   _aboutInfo(),
                                   const SizedBox(height: 10),
                                   _memberInfo(),
                                   const SizedBox(height: 10),
-                                  Text("Rooms", style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.bold)),
-
+                                  Text("Rooms",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1!
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold)),
                                 ]..addAll(_listOfRooms(cmB)),
                               ),
                             ),
@@ -197,7 +202,7 @@ class _CommunityHomemState extends State<CommunityHome> {
   }
 
   List<Widget> _listOfRooms(CommuinityBloc cmB) {
-    log("cm id: ${cmB.state.cmId}"); 
+    log("cm id: ${cmB.state.cmId}");
     cmB.getRooms(cmB.state.cmId);
     List<Widget> bucket = [];
     cmB.state.otherRooms.forEach((element) {
@@ -236,9 +241,8 @@ class _CommunityHomemState extends State<CommunityHome> {
         userrRepository: context.read<UserrRepository>(),
       )
         ..add(CommunityInitalEvent(
-          commuinity: widget.cm,
-          currUserr: context.read<ProfileBloc>().state.userr
-        ));
+            commuinity: widget.cm,
+            currUserr: context.read<ProfileBloc>().state.userr));
     } else {
       return await widget.cmB!;
     }
@@ -323,7 +327,11 @@ class _CommunityHomemState extends State<CommunityHome> {
                           cm.members.remove(
                               context.read<CommuinityBloc>().state.currUserr);
 
-                          cmB..add(CommunityInitalEvent(commuinity: cm, currUserr: context.read<ProfileBloc>().state.userr));
+                          cmB
+                            ..add(CommunityInitalEvent(
+                                commuinity: cm,
+                                currUserr:
+                                    context.read<ProfileBloc>().state.userr));
                           setState(() {});
                           Navigator.of(context).pop();
                         } else {

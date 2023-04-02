@@ -8,7 +8,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/camera/bloc/camera_screen.dart';
+import 'package:kingsfam/camera/camera_screen.dart';
 
 import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/enums/bottom_nav_items.dart';
@@ -238,10 +238,10 @@ class _MainDrawerState extends State<MainDrawer> {
                         showRooms(context,
                             context.read<ChatscreenBloc>().state.selectedCh!),
 
-                        if (state.yourRooms.length > 1) ... [
-                          _showAd(),
-                        const SizedBox(height: 8),
-                        ],
+                        // if (state.yourRooms.length > 1) ... [
+                        //   _showAd(),
+                        // const SizedBox(height: 8),
+                        // ],
 
 
                         // showVoice(context,
