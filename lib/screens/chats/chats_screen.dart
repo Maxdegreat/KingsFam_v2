@@ -107,8 +107,7 @@ class _ChatsScreenState extends State<ChatsScreen>
     CurrentKingsCordRoomId();
     NotificationHelper.initalize(flutterLocalNotificationsPlugin);
     context.read<BuidCubit>().init();
-    context.read<ProfileBloc>().add(
-        ProfileLoadUserOnly(userId: context.read<AuthBloc>().state.user!.uid));
+    context.read<ProfileBloc>().add(ProfileLoadUserOnly(userId: context.read<AuthBloc>().state.user!.uid));
     //super.build(context);
   }
 
@@ -139,8 +138,7 @@ class _ChatsScreenState extends State<ChatsScreen>
           if (state.status == ChatStatus.setState) {
             setState(() {});
             if (state.selectedCh != null) {
-              context.read<CommuinityBloc>()
-                ..add(CommunityInitalEvent( commuinity: state.selectedCh!, currUserr: context.read<ProfileBloc>().state.userr));
+              context.read<CommuinityBloc>()..add(CommunityInitalEvent( commuinity: state.selectedCh!, currUserr: context.read<ProfileBloc>().state.userr));
             }
           }
 

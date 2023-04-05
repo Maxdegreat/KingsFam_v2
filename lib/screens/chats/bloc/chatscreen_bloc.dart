@@ -88,18 +88,36 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
       bool isInCm_ = false;
       String? lastVisitedCmId = UserPreferences.getLastVisitedCm();
       if (lastVisitedCmId != null && !kIsWeb) {
-        isInCm_ = await _churchRepository.isInCmById(cmId: lastVisitedCmId, userId: _authBloc.state.user!.uid);
-        
+        isInCm_ = await _churchRepository.isInCmById(
+            cmId: lastVisitedCmId, userId: _authBloc.state.user!.uid);
+
         if (isInCm_) {
           Church c = await Church.fromId(lastVisitedCmId);
           yield state.copyWith(selectedCh: c, status: ChatStatus.setState);
           // get a kingscord and display it
+          UserPreferences.getLastVisitedKc().then((lastVisitedKc) {
+            if (lastVisitedKc == null) {
+              KingsCordRepository()
+                  .getKcFirstCm(state.selectedCh!.id!)
+                  .then((kc) {
+                if (kc != null) add(ChatScreenUpdateSelectedKc(kc: kc));
+              });
+            } else {
+              if (state.selectedCh != null) {
+                KingsCordRepository()
+                    .getKcWithId(lastVisitedKc, state.selectedCh!.id!)
+                    .then((kc) {
+                  if (kc != null) add(ChatScreenUpdateSelectedKc(kc: kc));
+                });
+              }
+            }
+          });
         }
       }
 
-      
-      final Userr currUserr = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
-      
+      final Userr currUserr = await _userrRepository.getUserrWithId(
+          userrId: _authBloc.state.user!.uid);
+
       List<Church> chsToJoin = [];
 
       if (!isInCm_) {
@@ -110,7 +128,6 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
         await getChsToJoinIfNeeded(isInCm_, chsToJoin);
       }
 
-
       _churchStreamSubscription?.cancel();
       _churchStreamSubscription = _churchRepository
           .getCmsStream(currId: currUserr.id)
@@ -118,7 +135,9 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
         // var allChs = await Future.wait(churchs);
         // emit ( state.copyWith(chs: null, status: ChatStatus.loading ) );
 
-        _churchRepository.FutureChurchsAndMentioned(c: churchs, uid: _authBloc.state.user!.uid).then((chs) {
+        _churchRepository.FutureChurchsAndMentioned(
+                c: churchs, uid: _authBloc.state.user!.uid)
+            .then((chs) {
           if (chs["c"].isEmpty) {
             emit(state.copyWith(selectedCh: null));
             getChsToJoinIfNeeded(false, chsToJoin);
@@ -132,6 +151,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
               status: ChatStatus.setState));
           emit(state.copyWith(status: ChatStatus.sccuess));
 
+          if (state.selectedKc == null) {}
           UserPreferences.getLastVisitedKc().then((lastVisitedKc) {
             if (lastVisitedKc == null) {
               KingsCordRepository()
