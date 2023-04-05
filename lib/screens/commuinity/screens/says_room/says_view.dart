@@ -4,17 +4,19 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
-import 'package:kingsfam/cubits/liked_says/liked_says_cubit.dart';
 import 'package:kingsfam/extensions/date_time_extension.dart';
 import 'package:kingsfam/models/church_kingscord_model.dart';
 import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/models/message_model.dart';
 import 'package:kingsfam/models/says_model.dart';
+import 'package:kingsfam/repositories/church/church_repository.dart';
+import 'package:kingsfam/repositories/church_kings_cord_repository/kingscord_repository.dart';
 import 'package:kingsfam/screens/commuinity/screens/kings%20cord/widgets/message_lines.dart';
+import 'package:kingsfam/screens/commuinity/screens/says_room/cubit/says_cubit.dart';
 import 'package:kingsfam/widgets/giphy/giphy_widget.dart';
-import 'package:kingsfam/widgets/snackbar.dart';
 
 class SaysViewArgs {
   final Says s;
@@ -35,10 +37,17 @@ class SaysView extends StatefulWidget {
     return MaterialPageRoute(
         settings: const RouteSettings(name: routeName),
         builder: (context) {
-          return SaysView(
-            s: args.s,
-            cmId: args.cmId,
-            kcId: args.kcId,
+          return BlocProvider<SaysCubit>(
+            create: (context) => SaysCubit(
+              churchRepository: context.read<ChurchRepository>(),
+              authBloc: context.read<AuthBloc>(),
+              kingsCordRepository: context.read<KingsCordRepository>(),
+            ),
+            child: SaysView(
+              s: args.s,
+              cmId: args.cmId,
+              kcId: args.kcId,
+            ),
           );
         });
   }
@@ -50,8 +59,13 @@ class SaysView extends StatefulWidget {
 class _SaysViewState extends State<SaysView> {
   List<Widget> forms = [];
   List<Message> messages = [];
-  ScrollController? scrollCtrl;
-
+  late ScrollController scrollCtrl;
+  late TextEditingController _messageController;
+  bool isTyping = false;
+  Map<String, dynamic> metadata = {};
+  Message? reply = null;
+  Map<String, dynamic> mentionedInfo = {};
+  bool flag_has_added_first_child = false;
   @override
   void initState() {
     super.initState();
@@ -59,7 +73,13 @@ class _SaysViewState extends State<SaysView> {
 
   @override
   Widget build(BuildContext context) {
-    addChild1();
+    if (!flag_has_added_first_child) {
+      addChild1();
+      flag_has_added_first_child = true;
+    }
+    scrollCtrl = ScrollController();
+
+    _messageController = TextEditingController();
     // bool hasLiked;
     // hasLiked = context
     //     .read<LikedSaysCubit>()
@@ -67,82 +87,210 @@ class _SaysViewState extends State<SaysView> {
     //     .localLikedSaysIds
     //     .contains(widget.s.id!);
 
-    return SafeArea(
-      child: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-                onPressed: () => Navigator.of(context).pop(),
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  color: Theme.of(context).iconTheme.color,
-                )),
-            title: _header(context, widget.s),
-          ),
-          body: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection(Paths.church)
-                  .doc(widget.cmId)
-                  .collection(Paths.kingsCord)
-                  .doc(widget.kcId)
-                  .collection(Paths.says)
-                  .doc(widget.s.id)
-                  .collection(Paths.messages)
-                  .snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                // filter all documents into msgs -> filter all messages to messagelines -> pass and display in forms
-                final documents = snapshot.data!.docs;
-
-                documents.forEach((doc) async {
-                  final data = doc.data() as Map<String, dynamic>;
-                  Message m =
-                      await Message.fromDoc(doc, widget.cmId, widget.kcId);
-                  messages.add(m);
-                });
-
-                messages.forEach(((message) {
-                  MessageLines messageLine = MessageLines(
-                      message: message,
-                      cm: Church.empty.copyWith(id: widget.cmId),
-                      kc: KingsCord.empty.copyWith(id: widget.kcId),
-                      inhearatedCtx: context,
-                      kcubit: null);
-                  forms.add(messageLine);
-                }));
-
-                // do below per child not for everything
-                return ListView(
-                  controller: scrollCtrl,
-                  padding: EdgeInsets.symmetric(horizontal: 7.0),
-                  physics: AlwaysScrollableScrollPhysics(),
-                  reverse: true,
-                  children:
-                      forms, // set up a stream for the from after the form is added via function addChild1().
-                );
-              }),
-          persistentFooterButtons: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 5.0),
-                  child: Text(widget.s.date.timeAgo(),
-                      style: Theme.of(context).textTheme.caption),
+    return BlocConsumer<SaysCubit, SaysState>(
+      listener: (context, state) {
+        // TODO: implement listener
+      },
+      builder: (context, state) {
+        return SafeArea(
+          child: Scaffold(
+              appBar: AppBar(
+                leading: IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: Icon(
+                      Icons.arrow_back_ios,
+                      color: Theme.of(context).iconTheme.color,
+                    )),
+                title: _header(context, widget.s),
+              ),
+              body: Column(
+                children: [_content(state),  _bottomTf(context)],
+              ),
+              persistentFooterButtons: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 5.0),
+                      child: Text(widget.s.date.timeAgo(),
+                          style: Theme.of(context).textTheme.caption),
+                    )
+                  ],
                 )
-              ],
-            )
-          ]),
+              ]),
+        );
+      },
     );
   }
 
-// ListView(
-//             controller: scrollCtrl,
-//             children: forms, // set up a stream for the from after the form is added via function addChild1().
-//           ),
+  _content(SaysState state) {
+    state.msgs.forEach(((message) {
+      MessageLines messageLine = MessageLines(
+          message: message!,
+          cm: Church.empty.copyWith(id: widget.cmId),
+          kc: KingsCord.empty.copyWith(id: widget.kcId),
+          inhearatedCtx: context,
+          kcubit: null);
+      forms.add(messageLine);
+    }));
+return 
+    Expanded(
+      child: ListView(
+        controller: scrollCtrl,
+        padding: EdgeInsets.symmetric(horizontal: 7.0),
+        physics: AlwaysScrollableScrollPhysics(),
+        reverse: false,
+        children: forms,
+      ),
+    );
+  }
+
+  _bottomTf(BuildContext context) {
+    return Container(
+        width: MediaQuery.of(context).size.width > 700
+            ? MediaQuery.of(context).size.width / 5
+            : null,
+        // margin: EdgeInsets.symmetric(horizontal: 5.0),
+        child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      child: Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            borderRadius: BorderRadius.circular(7),
+                          ),
+                          child: Row(
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    bool value = context
+                                        .read()<SaysCubit>()
+                                        .state
+                                        .showHidden;
+                                    context
+                                        .read()<SaysCubit>()
+                                        ._onShowBottomTab(!value);
+                                  },
+                                  icon: Icon(Icons.add)),
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: TextFormField(
+                            
+                                          cursorColor: Theme.of(context)
+                                              .colorScheme
+                                              .inversePrimary,
+                                          textAlignVertical: TextAlignVertical.center,
+                                          style: TextStyle(fontSize: 18),
+                                          autocorrect: true,
+                                          controller: _messageController,
+                                          keyboardType: TextInputType.multiline,
+                                          maxLines: 4,
+                                          minLines: 1,
+                                          expands: false,
+                                          textCapitalization: TextCapitalization.sentences,
+                                          onChanged: (messageText) {
+                                            if (messageText.isNotEmpty) {
+                                              context
+                                                  .read<SaysCubit>()
+                                                  .onIsTyping(true);
+                                            } else {
+                                              context
+                                                  .read<SaysCubit>()
+                                                  .onIsTyping(false);
+                                            }
+                                          },
+                                          decoration: InputDecoration(
+                                            contentPadding: EdgeInsets.all(2),
+                                            border: InputBorder.none,
+                                            hintText:
+                                                'Respond to the form thread',
+                                            isCollapsed: true,
+                                          )),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        borderRadius: BorderRadius.circular(7),
+                      ),
+                      margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: IconButton(
+                        icon:! context.read<SaysCubit>().state.isTyping
+                            ? Icon(
+                                Iconsax.send_1,
+                                size: 18,
+                              )
+                            : Icon(Iconsax.send_21, size: 19, color: Colors.blue),
+                        
+                        onPressed: context.read<SaysCubit>().state.isTyping
+                            ? () {
+                              // TODO: 
+                                metadata["kcName"] = widget.s.title;
+                                if (reply != null) {
+                                  metadata["replyId"] = reply!.id;
+                                }
+
+                                String? url =
+                                    findHttps(_messageController.text);
+
+                                if (url != null) {
+                                  metadata["url"] = url;
+                                }
+
+                                final message = Message(
+                                  text: _messageController.text,
+                                  date: Timestamp.fromDate(DateTime.now()),
+                                  imageUrl: null,
+                                  senderUsername: widget.s.author!.username,
+                                  metadata: metadata,
+                                  mentionedIds:
+                                      mentionedInfo.keys.toSet().toList(),
+                                );
+
+                                KingsCordRepository().sendMsgTxt(
+                                    churchId: widget.cmId,
+                                    kingsCordId: widget.kcId,
+                                    message: message,
+                                    senderId: context
+                                        .read<AuthBloc>()
+                                        .state
+                                        .user!
+                                        .uid,
+                                    saysId: widget.s.id);
+                              }
+                            : null,
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            )));
+  }
+
   _header(BuildContext context, Says s) {
     return Text(
       s.author!.username + "'s say",
@@ -180,7 +328,6 @@ class _SaysViewState extends State<SaysView> {
         ],
       ),
     );
-    ;
   }
 
   _body(BuildContext context, Says s) {
@@ -265,5 +412,18 @@ class _SaysViewState extends State<SaysView> {
           style: const TextStyle(fontSize: 15, color: Colors.blueAccent),
         );
     }
+  }
+
+  String? findHttps(String str) {
+    int startIndex = str.indexOf("https://");
+    if (startIndex != -1 && (startIndex == 0 || str[startIndex - 1] == ' ')) {
+      int endIndex = str.indexOf(' ', startIndex + 1);
+      if (endIndex == -1) {
+        return str.substring(startIndex);
+      } else {
+        return str.substring(startIndex, endIndex);
+      }
+    }
+    return null;
   }
 }

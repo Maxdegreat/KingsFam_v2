@@ -141,6 +141,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             padding: EdgeInsets.symmetric(horizontal: 7.0),
             physics: AlwaysScrollableScrollPhysics(),
             reverse: true,
+            addAutomaticKeepAlives: true,
             children: _buildMessageLines(msgs),
           ));
   }

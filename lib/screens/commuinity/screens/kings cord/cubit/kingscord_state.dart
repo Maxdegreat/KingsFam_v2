@@ -85,7 +85,6 @@ class KingscordState extends Equatable {
     List<String>? recentNotifLst,
     List<String>? allNotifLst,
     Map<String, dynamic>? recentMsgIdToTokenMap,
-
   }) {
     return KingscordState(
       isTyping: isTyping ?? this.isTyping,

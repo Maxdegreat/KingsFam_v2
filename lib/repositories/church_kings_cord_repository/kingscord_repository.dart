@@ -65,14 +65,27 @@ class KingsCordRepository extends BaseKingsCordRepository {
       {required String churchId,
       required String kingsCordId,
       required Message message,
-      required String senderId}) async {
-    _firebaseFirestore
-        .collection(Paths.church)
-        .doc(churchId)
-        .collection(Paths.kingsCord)
-        .doc(kingsCordId)
-        .collection(Paths.messages)
-        .add(message.ToDoc(senderId: senderId));
+      required String senderId,
+      String? saysId}) async {
+    if (saysId != null) {
+      _firebaseFirestore
+          .collection(Paths.church)
+          .doc(churchId)
+          .collection(Paths.kingsCord)
+          .doc(kingsCordId)
+          .collection(Paths.says)
+          .doc(saysId)
+          .collection(Paths.messages)
+          .add(message.ToDoc(senderId: senderId));
+    } else {
+      _firebaseFirestore
+          .collection(Paths.church)
+          .doc(churchId)
+          .collection(Paths.kingsCord)
+          .doc(kingsCordId)
+          .collection(Paths.messages)
+          .add(message.ToDoc(senderId: senderId));
+    }
   }
 
   Future<void> onSendGiphyMessage(
@@ -99,9 +112,9 @@ class KingsCordRepository extends BaseKingsCordRepository {
   }
 
   Future<Map<String, List<KingsCord?>>> futureWaitCord(
-      List<Future<KingsCord?>> futures,
-      String cmId,
-      String uid,
+    List<Future<KingsCord?>> futures,
+    String cmId,
+    String uid,
   ) async {
     List<KingsCord> kc_ = [];
 
@@ -181,13 +194,11 @@ class KingsCordRepository extends BaseKingsCordRepository {
             //     .doc(kc.id);
 
             if (kc.metaData != null) {
-              
-                
-                  kc_.add(kc.copyWith(
-                      readStatus: readStatus,
-                      recentActivity: {"chat": recentM, "says": recentS}));   
-              
-            }}
+              kc_.add(kc.copyWith(
+                  readStatus: readStatus,
+                  recentActivity: {"chat": recentM, "says": recentS}));
+            }
+          }
         });
         ;
       }
