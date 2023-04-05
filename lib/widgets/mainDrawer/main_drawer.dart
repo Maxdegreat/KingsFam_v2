@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
@@ -12,7 +11,6 @@ import 'package:kingsfam/camera/camera_screen.dart';
 
 import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/enums/bottom_nav_items.dart';
-import 'package:kingsfam/helpers/ad_helper.dart';
 import 'package:kingsfam/helpers/clipboard.dart';
 import 'package:kingsfam/helpers/cm_perm_handler.dart';
 import 'package:kingsfam/helpers/image_helper.dart';
@@ -51,35 +49,35 @@ class MainDrawer extends StatefulWidget {
 }
 
 class _MainDrawerState extends State<MainDrawer> {
-  late NativeAd? _nativeAd;
+  // late NativeAd? _nativeAd;
   bool _isNativeAdLoaded = false;
-  void _createNativeAd() {
-    if (!kIsWeb) {
-      _nativeAd = NativeAd(
-          adUnitId: AdHelper.nativeAdUnitId,
-          factoryId: "listTile",
-          listener: NativeAdListener(onAdLoaded: (_) {
-            setState(() {
-              _isNativeAdLoaded = true;
-            });
-          }, onAdFailedToLoad: (ad, error) {
-            ad.dispose();
-            log("chatsScreen ad error: ${error.toString()}");
-          }),
-          request: const AdRequest());
-      _nativeAd!.load();
-    }
-  }
+  // void _createNativeAd() {
+  //   if (!kIsWeb) {
+  //     _nativeAd = NativeAd(
+  //         adUnitId: AdHelper.nativeAdUnitId,
+  //         factoryId: "listTile",
+  //         listener: NativeAdListener(onAdLoaded: (_) {
+  //           setState(() {
+  //             _isNativeAdLoaded = true;
+  //           });
+  //         }, onAdFailedToLoad: (ad, error) {
+  //           ad.dispose();
+  //           log("chatsScreen ad error: ${error.toString()}");
+  //         }),
+  //         request: const AdRequest());
+  //     _nativeAd!.load();
+  //   }
+  // }
 
   @override
   void initState() {
-    _createNativeAd();
+    // _createNativeAd();
     super.initState();
   }
 
   @override
   void dispose() {
-    _nativeAd?.dispose();
+    // _nativeAd?.dispose();
     super.dispose();
   }
 
@@ -310,7 +308,7 @@ class _MainDrawerState extends State<MainDrawer> {
                   width: double.infinity,
                   child: Padding(
                     padding: const EdgeInsets.all(2.0),
-                    child: AdWidget(ad: _nativeAd!),
+                    // child: AdWidget(ad: _nativeAd!),
                   ),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.secondary,

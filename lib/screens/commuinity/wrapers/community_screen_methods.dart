@@ -13,8 +13,8 @@ Widget joinBtn(
           _onJoinCommuinity(b: b, cm: cm, c: context).then((value) {
             Navigator.of(context).pop();
             scaffoldKey.currentState!.closeDrawer();
-            Future.delayed((Duration(milliseconds: 0))).then((value) => scaffoldKey.currentState!.openDrawer());
-
+            Future.delayed((Duration(milliseconds: 0)))
+                .then((value) => scaffoldKey.currentState!.openDrawer());
           });
         },
         child: Text(
@@ -28,37 +28,38 @@ Widget joinBtn(
   );
 }
 
-Future <bool> _onJoinCommuinity(
-    {required CommuinityBloc b, required Church cm, required BuildContext c}) async {
+Future<bool> _onJoinCommuinity(
+    {required CommuinityBloc b,
+    required Church cm,
+    required BuildContext c}) async {
   await b.onJoinCommuinity(commuinity: cm, context: c);
   return true;
 }
 
-Widget nativeAdWidget(NativeAd ad, bool hasAdLoaded, BuildContext context) {
-  return hasAdLoaded
-      ? Container(
-          height: 50,
-          width: MediaQuery.of(context).size.width / 2.1,
-          child: Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: AdWidget(ad: ad),
-          ),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary,
-            borderRadius: BorderRadius.circular(10),
-          ),
-        )
-      : SizedBox.shrink();
-}
+// Widget nativeAdWidget(NativeAd ad, bool hasAdLoaded, BuildContext context) {
+//   return hasAdLoaded
+//       ? Container(
+//           height: 50,
+//           width: MediaQuery.of(context).size.width / 2.1,
+//           child: Padding(
+//             padding: const EdgeInsets.all(5.0),
+//             child: AdWidget(ad: ad),
+//           ),
+//           decoration: BoxDecoration(
+//             color: Theme.of(context).colorScheme.secondary,
+//             borderRadius: BorderRadius.circular(10),
+//           ),
+//         )
+//       : SizedBox.shrink();
+// }
 
 // content preview: This holds the post
 Widget contentPreview(
     {required Post post, required BuildContext context, required Church cm}) {
-      String url = post.imageUrl != null ? post.imageUrl! : post.thumbnailUrl!;
+  String url = post.imageUrl != null ? post.imageUrl! : post.thumbnailUrl!;
   return GestureDetector(
-    onTap: () => Navigator.of(context)
-        .pushNamed(CommuinityFeedScreen.routeName,
-            arguments: CommuinityFeedScreenArgs(commuinity: cm, passedPost: null)),
+    onTap: () => Navigator.of(context).pushNamed(CommuinityFeedScreen.routeName,
+        arguments: CommuinityFeedScreenArgs(commuinity: cm, passedPost: null)),
     child: SizedBox(
       // width: MediaQuery.of(context).size.width / 4,
       child: Padding(
@@ -67,14 +68,15 @@ Widget contentPreview(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-                decoration: BoxDecoration(
+              decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(7),
                   color: Theme.of(context).colorScheme.secondary,
-                  image: DecorationImage(image: CachedNetworkImageProvider(url), fit: BoxFit.cover)
-                ),
-                height: 50,
-                width: 50,
-                 ),
+                  image: DecorationImage(
+                      image: CachedNetworkImageProvider(url),
+                      fit: BoxFit.cover)),
+              height: 50,
+              width: 50,
+            ),
             SizedBox(height: 2),
             Flexible(
               child: Container(
@@ -97,8 +99,6 @@ Widget contentPreview(
   );
 }
 
-
-
 // used to make a new kingscord or event
 Widget new_kingscord(
     {required CommuinityBloc cmBloc,
@@ -112,10 +112,12 @@ Widget new_kingscord(
   if (cmBloc.state.role["kfRole"] == "Lead" ||
       cmBloc.state.role["kfRole"] == "Admin" ||
       cmBloc.state.role["kfRole"] == "Mod") {
-    return IconButton(onPressed: () {
-      Navigator.of(context).pushNamed(CreateRoom.routeName,
+    return IconButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed(CreateRoom.routeName,
               arguments: CreateRoomArgs(cmBloc: cmBloc, cm: cm));
-    }, icon: Icon(Icons.add, color: Theme.of(context).colorScheme.primary));
+        },
+        icon: Icon(Icons.add, color: Theme.of(context).colorScheme.primary));
   } else
     return SizedBox.shrink();
 }
@@ -170,8 +172,6 @@ _delKcDialog({
               ),
             )));
 
-
-
 dynamic showCmOptions(
     {required CommuinityBloc cmBloc,
     required Church cm,
@@ -185,22 +185,33 @@ dynamic showCmOptions(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              title: Text("View members, pending and baned", style: Theme.of(context).textTheme.bodyText1,
-                  overflow: TextOverflow.fade,),
-              trailing: cmBloc.state.cmHasRequest ? CircleAvatar(backgroundColor: Theme.of(context).colorScheme.primary, radius: 7) : const SizedBox.shrink(),
-              onTap: () => Navigator.of(context).pushNamed(ParticipantsView.routeName,
+              title: Text(
+                "View members, pending and baned",
+                style: Theme.of(context).textTheme.bodyText1,
+                overflow: TextOverflow.fade,
+              ),
+              trailing: cmBloc.state.cmHasRequest
+                  ? CircleAvatar(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      radius: 7)
+                  : const SizedBox.shrink(),
+              onTap: () => Navigator.of(context).pushNamed(
+                  ParticipantsView.routeName,
                   arguments: ParticipantsViewArgs(cmBloc: cmBloc, cm: cm)),
             ),
-             ListTile(
-              title: Text("View home and invite link", style: Theme.of(context).textTheme.bodyText1,
-                  overflow: TextOverflow.fade,),
+            ListTile(
+              title: Text(
+                "View home and invite link",
+                style: Theme.of(context).textTheme.bodyText1,
+                overflow: TextOverflow.fade,
+              ),
               trailing: Icon(Icons.home),
-              onTap: () => Navigator.of(context).pushNamed(CommunityHome.routeName,
+              onTap: () => Navigator.of(context).pushNamed(
+                  CommunityHome.routeName,
                   arguments: CommunityHomeArgs(cm: cm, cmB: null)),
             ),
             if (cmBloc.state.role["kfRole"] == "Lead" ||
-                cmBloc.state.role["kfRole"] == "Admin") ... [
-
+                cmBloc.state.role["kfRole"] == "Admin") ...[
               ListTile(
                   title: Text("Update community name",
                       style: Theme.of(context).textTheme.bodyText1),

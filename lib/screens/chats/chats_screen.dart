@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -124,11 +123,11 @@ class _ChatsScreenState extends State<ChatsScreen>
   bool hasInitCm = false;
 
   var currentScreen;
+
   @override
   Widget build(BuildContext context) {
     if (!hasInitCm) {
-      context.read<ChatscreenBloc>()
-        ..add(LoadCms(currUserr: context.read<ProfileBloc>().state.userr));
+      context.read<ChatscreenBloc>()..add(LoadCms(currUserr: context.read<ProfileBloc>().state.userr));
       hasInitCm = true;
     }
 
@@ -141,9 +140,7 @@ class _ChatsScreenState extends State<ChatsScreen>
             setState(() {});
             if (state.selectedCh != null) {
               context.read<CommuinityBloc>()
-                ..add(CommunityInitalEvent(
-                    commuinity: state.selectedCh!,
-                    currUserr: context.read<ProfileBloc>().state.userr));
+                ..add(CommunityInitalEvent( commuinity: state.selectedCh!, currUserr: context.read<ProfileBloc>().state.userr));
             }
           }
 

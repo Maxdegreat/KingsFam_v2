@@ -185,36 +185,24 @@ class CommuinityBloc extends Bloc<CommuinityEvent, CommuinityState> {
   }
 
   Stream<CommuinityState> _mapCommuinityLoadingCordsToState(CommunityLoadingCords event) async* {
-    // make calls stream
-    // add calls to loaded then yield
-    // also add this.event to loaded yield ... now has both list (this event has the cord and cm)
-    // STILL LOADING SO NO YIELD YET
-    try {
-      // ignore: unused_local_variable
-      // final Userr userr = await _userrRepository.getUserrWithId(
-      //     userrId: _authBloc.state.user!.uid);
 
-      // stream subscription for community cords
+    try {
+      
       _streamSubscriptionKingsCord?.cancel();
       _streamSubscriptionKingsCord = _churchRepository
           .getCommuinityCordsStream(
               commuinity: event.commuinity,
               limit: MockFlag.ISMOCKTESTING ? 10 : 50)
           .listen((kcords) async {
-        // if (MockFlag.ISMOCKTESTING) return;
-        // final allCords = await Future.wait(kcords);
+
 
         await KingsCordRepository()
-            .futureWaitCord(
-                kcords, event.commuinity.id!, _authBloc.state.user!.uid)
+            .futureWaitCord(kcords, event.commuinity.id!, _authBloc.state.user!.uid)
             .then((kingsCords) {
-          // The updated status in the emit is used in cm screen listener. if status is updated we setstate. thats it.
-          emit(state.copyWith(
-              yourRooms: kingsCords["kc"], status: CommuintyStatus.updated));
+          emit(state.copyWith(yourRooms: kingsCords["kc"], status: CommuintyStatus.updated));
           emit(state.copyWith(status: CommuintyStatus.inital));
         });
 
-        // add(CommunityLoadingEvents(cm: event.commuinity));
       });
       add(CommunityLoadingPosts(cm: event.commuinity));
     } catch (e) {

@@ -36,8 +36,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
     required PostsRepository postsRepository,
     required ChurchRepository churchRepository,
     required UserrRepository userrRepository,
-  })  : 
-        _userrRepository = userrRepository,
+  })  : _userrRepository = userrRepository,
         _authBloc = authBloc,
         _likedPostCubit = likedPostCubit,
         _postsRepository = postsRepository,
@@ -74,38 +73,44 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
 
   Stream<ChatscreenState> _mapLoadCmsToState() async* {
     try {
-      
       if (!kIsWeb) {
-             // update the user token. Ios has an issue of loosing tokens over time.
-      FirebaseMessaging.instance.getToken().then((token) {
-        // log("token is: " + token.toString());
-        _saveTokenToDatabase(token!).then((_) {
-          FirebaseMessaging.instance.onTokenRefresh
-              .listen(_saveTokenToDatabase);
-          // log("saved the token: Done");
+        // update the user token. Ios has an issue of loosing tokens over time.
+        FirebaseMessaging.instance.getToken().then((token) {
+          // log("token is: " + token.toString());
+          _saveTokenToDatabase(token!).then((_) {
+            FirebaseMessaging.instance.onTokenRefresh
+                .listen(_saveTokenToDatabase);
+            // log("saved the token: Done");
+          });
         });
-      });
       }
 
+      bool isInCm_ = false;
       String? lastVisitedCmId = UserPreferences.getLastVisitedCm();
       if (lastVisitedCmId != null && !kIsWeb) {
-        bool isInCm_ = await _churchRepository.isInCmById(
-            cmId: lastVisitedCmId, userId: _authBloc.state.user!.uid);
+        isInCm_ = await _churchRepository.isInCmById(cmId: lastVisitedCmId, userId: _authBloc.state.user!.uid);
+        
         if (isInCm_) {
           Church c = await Church.fromId(lastVisitedCmId);
-          yield state.copyWith(selectedCh: c);
+          yield state.copyWith(selectedCh: c, status: ChatStatus.setState);
+          // get a kingscord and display it
         }
       }
 
-      // geting the currUserr for later use
-      final Userr currUserr = await _userrRepository.getUserrWithId(
-          userrId: _authBloc.state.user!.uid);
-      // ignore: unused_local_variable
+      
+      final Userr currUserr = await _userrRepository.getUserrWithId(userrId: _authBloc.state.user!.uid);
+      
       List<Church> chsToJoin = [];
 
-      bool isInCm = await _churchRepository.isInCm(_authBloc.state.user!.uid);
+      if (!isInCm_) {
+        isInCm_ = await _churchRepository.isInCm(_authBloc.state.user!.uid);
+      }
 
-      await getChsToJoinIfNeeded(isInCm, chsToJoin);
+      if (!isInCm_) {
+        await getChsToJoinIfNeeded(isInCm_, chsToJoin);
+      }
+
+
       _churchStreamSubscription?.cancel();
       _churchStreamSubscription = _churchRepository
           .getCmsStream(currId: currUserr.id)
@@ -113,10 +118,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
         // var allChs = await Future.wait(churchs);
         // emit ( state.copyWith(chs: null, status: ChatStatus.loading ) );
 
-        _churchRepository.FutureChurchsAndMentioned(
-                c: churchs, uid: _authBloc.state.user!.uid)
-            .then((chs) {
-    
+        _churchRepository.FutureChurchsAndMentioned(c: churchs, uid: _authBloc.state.user!.uid).then((chs) {
           if (chs["c"].isEmpty) {
             emit(state.copyWith(selectedCh: null));
             getChsToJoinIfNeeded(false, chsToJoin);
@@ -129,19 +131,20 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
               mentionedMap: chs["m"],
               status: ChatStatus.setState));
           emit(state.copyWith(status: ChatStatus.sccuess));
-          
+
           UserPreferences.getLastVisitedKc().then((lastVisitedKc) {
-            log("lastVisitedKc: " + lastVisitedKc.toString());
             if (lastVisitedKc == null) {
-              KingsCordRepository().getKcFirstCm(state.selectedCh!.id!).then((kc) {
-              if (kc != null)
-                add(ChatScreenUpdateSelectedKc(kc: kc));
+              KingsCordRepository()
+                  .getKcFirstCm(state.selectedCh!.id!)
+                  .then((kc) {
+                if (kc != null) add(ChatScreenUpdateSelectedKc(kc: kc));
               });
             } else {
               if (state.selectedCh != null) {
-                KingsCordRepository().getKcWithId(lastVisitedKc, state.selectedCh!.id!).then((kc) {
-                  if (kc != null)
-                    add(ChatScreenUpdateSelectedKc(kc: kc));
+                KingsCordRepository()
+                    .getKcWithId(lastVisitedKc, state.selectedCh!.id!)
+                    .then((kc) {
+                  if (kc != null) add(ChatScreenUpdateSelectedKc(kc: kc));
                 });
               }
             }
@@ -149,7 +152,9 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
         });
       });
 
-      yield state.copyWith(status: ChatStatus.sccuess,);
+      yield state.copyWith(
+        status: ChatStatus.sccuess,
+      );
     } catch (e) {
       log("!!!!!!!!!!!!!!!!ERROR: " + e.toString());
       yield state.copyWith(
@@ -169,7 +174,6 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
   }
 
   Future<void> removeCmFromJoinedCms({required String leftCmId}) async {
-
     emit(ChatscreenState.initial());
     add(LoadCms(currUserr: null));
     scaffoldKey.currentState!.closeDrawer();
@@ -198,20 +202,19 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
       emit(state.copyWith(selectedCh: event.cm));
       emit(state.copyWith(status: ChatStatus.setState));
       emit(state.copyWith(status: ChatStatus.initial));
-
     } catch (e) {
       log("Failure in chatScreenBloc when attempting to update selected cm. error log is e: ${e.toString()}");
     }
   }
 
-  Stream<ChatscreenState> _updateSelectedItemKc(ChatScreenUpdateSelectedKc event) async* {
+  Stream<ChatscreenState> _updateSelectedItemKc(
+      ChatScreenUpdateSelectedKc event) async* {
     try {
       emit(state.copyWith(selectedKc: event.kc));
       emit(state.copyWith(status: ChatStatus.setStateKc));
       emit(state.copyWith(status: ChatStatus.initial));
     } catch (e) {
       log("Failure in chatScreenBloc when attempting to update selected kc. error log is e: ${e.toString()}");
-
     }
   }
 
