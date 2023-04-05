@@ -79,10 +79,8 @@ class _SaysContainerState extends State<SaysContainer> {
     return Text(widget.says.title!,
         overflow: TextOverflow.fade,
         maxLines: 2,
-        style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 17, color: Theme.of(context).colorScheme.onSecondary));
+        style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 17, color: Theme.of(context).colorScheme.inversePrimary));
   }
-
-
 
   _userName() {
     return Text(

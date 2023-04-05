@@ -41,6 +41,7 @@ class _SaysRoomState extends State<SaysRoom> {
   void initState() {
     recentkcid = widget.kcId;
     CurrentKingsCordRoomId.updateRoomId(roomId: widget.kcId);
+     context.read<SaysBloc>().add(SaysFetchSays(cmId: widget.cm.id!, kcId: widget.kcId));
     super.initState();
   }
 

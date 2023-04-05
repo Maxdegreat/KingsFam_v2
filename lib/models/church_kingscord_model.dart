@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:kingsfam/config/mode.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/roles/role_types.dart';
 
@@ -68,6 +69,8 @@ class KingsCord extends Equatable {
       // memberInfo: memberInfo ?? this.memberInfo,
     );
   }
+
+  static KingsCord empty = KingsCord(tag: 'tag', cordName: '', mode: Mode.chat);
 
   //make the to doc
   Map<String, dynamic> toDoc() {

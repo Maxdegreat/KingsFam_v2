@@ -230,9 +230,9 @@ class _CreateSaysState extends State<CreateSays> {
               : _controllerT.value.text;
 
           if (title != null) {
-            if (_controllerT.value.text.length > 35) {
+            if (_controllerT.value.text.length > 75) {
               snackBar( 
-                  snackMessage: "Make sure your title is 25 or less chars",
+                  snackMessage: "Make sure your title is 75 or less chars",
                   context: context,
                   bgColor: Colors.red[400]);
               return;
