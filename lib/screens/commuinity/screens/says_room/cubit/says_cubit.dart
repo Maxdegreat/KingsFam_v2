@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:developer';
 
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:get/get_connect/sockets/src/socket_notifier.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/church_kingscord_model.dart';
@@ -30,15 +32,25 @@ class SaysCubit extends Cubit<SaysState> {
         _churchRepository = churchRepository,
         super(SaysState.inital());
 
+  @override
+  Future<void> close() {
+    _msgStreamSubscription!.cancel();
+    return super.close();
+  }
+  
+
+
   pagMsgs({
       required String cmId,
       required String kcId,
+      required String sId,
       required int limit,
       String? lastPostId}) {
     if (state.msgs.isEmpty) {
+      emit(state.copyWith(saysStatus: SaysStatus.loading));
       _msgStreamSubscription?.cancel();
       _msgStreamSubscription = _churchRepository
-          .getMsgStream(cmId: cmId, kcId: kcId, limit: limit, lastPostDoc: null)
+          .getMsgStreamSays(cmId: cmId, kcId: kcId, sId: sId, limit: limit, lastPostDoc: null)
           .listen((msgs) async {
         List<Message> allMsgs = [];
         for (int i = 0; i < msgs.length; i++) {
@@ -50,40 +62,49 @@ class SaysCubit extends Cubit<SaysState> {
             allMsgs.add(m);
           }
         }
+          log("this is msgs : " + allMsgs.toString());
+
+          emit(state.copyWith(msgs: allMsgs));
+          emit(state.copyWith(saysStatus: SaysStatus.inital));
+          
+
+          log("state msgs: " + state.msgs.toString());
+          
       });
-    } else {
-      FirebaseFirestore.instance
-          .collection(Paths.church)
-          .doc(cmId)
-          .collection(Paths.kingsCord)
-          .doc(kcId)
-          .collection(Paths.messages)
-          .doc(lastPostId)
-          .get()
-        ..then((lastDoc) {
-          if (state.msgs.isEmpty) {
-            _msgStreamSubscription?.cancel();
-            _msgStreamSubscription = _churchRepository
-                .getMsgStream(
-                    cmId: cmId, kcId: kcId, limit: limit, lastPostDoc: lastDoc)
-                .listen((msgs) async {
-              List<Message> allMsgs = [];
-              for (int i = 0; i < msgs.length; i++) {
-                Message? m = await msgs[i];
-                if (m != null) {
-                  if (m.replyMsg != null) {
-                    m.copyWith(replyMsg: m);
-                  }
-                  allMsgs.add(m);
-                }
-              }
-            });
-          }
-        });
-    }
+    } 
+    // else {
+    //   FirebaseFirestore.instance
+    //       .collection(Paths.church)
+    //       .doc(cmId)
+    //       .collection(Paths.kingsCord)
+    //       .doc(kcId)
+    //       .collection(Paths.messages)
+    //       .doc(lastPostId)
+    //       .get()
+    //     ..then((lastDoc) {
+    //       if (state.msgs.isNotEmpty) {
+    //         _msgStreamSubscription?.cancel();
+    //         _msgStreamSubscription = _churchRepository
+    //             .getMsgStream(
+    //                 cmId: cmId, kcId: kcId, limit: limit, lastPostDoc: lastDoc)
+    //             .listen((msgs) async {
+    //           List<Message> allMsgs = [];
+    //           for (int i = 0; i < msgs.length; i++) {
+    //             Message? m = await msgs[i];
+    //             if (m != null) {
+    //               if (m.replyMsg != null) {
+    //                 m.copyWith(replyMsg: m);
+    //               }
+    //               allMsgs.add(m);
+    //             }
+    //           }
+    //         });
+    //       }
+    //     });
+    // }
   }
 
-  onIsTyping(bool value) => state.copyWith(isTyping: value);
+  onIsTyping(bool value) => emit(state.copyWith(isTyping: value));
 
   onSendMsgs({
     required String cmId,
@@ -106,5 +127,5 @@ class SaysCubit extends Cubit<SaysState> {
     ));
   }
 
-  onShowBottomTab(value) => state.copyWith(showHidden: value);
+  onShowBottomTab(value) => emit(state.copyWith(showHidden: value));
 }

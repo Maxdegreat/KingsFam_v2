@@ -646,7 +646,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   }
 
   buildBottomTF(KingscordState state, BuildContext context, String mode) {
-    bool isLead = (widget.role["roleName"] == "Lead");
+
     bool hasPerm = true;
     List<String> allowed = [];
     if (widget.kingsCord.metaData != null &&

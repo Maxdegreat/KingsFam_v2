@@ -50,8 +50,7 @@ class KingscordCubit extends Cubit<KingscordState> {
 
   var fire = FirebaseFirestore.instance;
 
-  /*Future<List<Userr>>*/ void searchMentionedUsers(
-      {required String username, required String cmId}) async {
+  /*Future<List<Userr>>*/ void searchMentionedUsers({required String username, required String cmId}) async {
     var snap = await fire
         .collection(Paths.communityMembers)
         .doc(cmId)
@@ -110,8 +109,7 @@ class KingscordCubit extends Cubit<KingscordState> {
     emit(state.copyWith(mentions: []));
   }
 
-  void onLoadInit(
-      {required String cmId, required String kcId, required int limit}) async {
+  void onLoadInit({required String cmId, required String kcId, required int limit}) async {
         
     emit(KingscordState.initial());
     emit(state.copyWith(status: KingsCordStatus.getInitmsgs));

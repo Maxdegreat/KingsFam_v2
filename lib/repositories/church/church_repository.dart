@@ -41,6 +41,38 @@ class ChurchRepository extends BaseChurchRepository {
     }
   }
 
+    Stream<List<Future<Message?>>> getMsgStreamSays(
+      {required String cmId,
+      required String kcId,
+      required String sId,
+      required int limit,
+      required DocumentSnapshot? lastPostDoc}) {
+    if (lastPostDoc == null) {
+      return fb
+          .doc(cmId)
+          .collection(Paths.kingsCord)
+          .doc(kcId)
+          .collection(Paths.says).doc(sId)
+          .collection(Paths.messages)
+          .limit(limit)
+          .orderBy('date', descending: true)
+          .snapshots()
+          .map((snap) {
+        List<Future<Message?>> bucket = [];
+        snap.docs.forEach((doc) {
+          Future<Message?> msg = Message.fromDoc(doc, cmId, kcId);
+          bucket.add(msg);
+        });
+        return bucket;
+      });
+    } else {
+      log("returning an empty stream");
+      return Stream.empty();
+    }
+  }
+
+
+
   Future<List<Message?>> paginateMsg(
       {required String cmId,
       required String kcId,

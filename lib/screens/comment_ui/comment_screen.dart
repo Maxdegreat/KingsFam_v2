@@ -51,9 +51,7 @@ class _CommentScreenState extends State<CommentScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<CommentBloc, CommentState>(
-      listener: (context, state) {
-
-      },
+      listener: (context, state) {},
 
       builder: (context, state) {
         return SafeArea(
