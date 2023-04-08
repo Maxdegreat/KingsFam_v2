@@ -7,6 +7,7 @@ enum FileShareStatus { inital, imgSharing, vidSharing, failure }
 class KingscordState extends Equatable {
   // 1 class data
   final bool isTyping;
+  final bool isKngAi;
   final File? txtMsg;
   final File? txtImgUrl;
   final String? txtVidUrl;
@@ -29,6 +30,7 @@ class KingscordState extends Equatable {
   //gen constructor
   KingscordState({
     required this.isTyping,
+    required this.isKngAi,
     this.txtMsg,
     required this.msgs,
     this.txtImgUrl,
@@ -49,6 +51,7 @@ class KingscordState extends Equatable {
   // props
   List<Object?> get props => [
         isTyping,
+        isKngAi,
         txtImgUrl,
         txtMsg,
         msgs,
@@ -69,6 +72,7 @@ class KingscordState extends Equatable {
   //copy with
   KingscordState copyWith({
     bool? isTyping,
+    bool? isKngAi,
     File? txtMsg,
     List<Message?>? msgs,
     File? txtImgUrl,
@@ -88,6 +92,7 @@ class KingscordState extends Equatable {
   }) {
     return KingscordState(
       isTyping: isTyping ?? this.isTyping,
+      isKngAi: isKngAi ?? this.isKngAi,
       txtMsg: txtMsg ?? this.txtMsg,
       msgs: msgs ?? this.msgs,
       txtImgUrl: txtImgUrl ?? this.txtImgUrl,
@@ -111,6 +116,7 @@ class KingscordState extends Equatable {
   factory KingscordState.initial() {
     return KingscordState(
       isTyping: false,
+      isKngAi: false,
       txtMsg: null,
       msgs: [],
       txtImgUrl: null,

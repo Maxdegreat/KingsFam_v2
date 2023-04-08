@@ -3,14 +3,17 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:giphy_get/giphy_get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/https_help.dart';
+import 'package:kingsfam/extensions/date_time_extension.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/models/says_model.dart';
 import 'package:kingsfam/repositories/church/church_repository.dart';
 import 'package:kingsfam/repositories/church_kings_cord_repository/kingscord_repository.dart';
 import 'package:kingsfam/widgets/giphy/giphy_widget.dart';
+import 'package:uuid/uuid.dart';
 
 import '../kings cord/widgets/message_lines.dart';
 import '../kings cord/widgets/msgs_loading.dart';
@@ -109,25 +112,38 @@ class _SaysViewState extends State<SaysView> {
                 ],
                 _buildFormLines(state.msgs),
                 _bottomTf(context, state),
-                _showMediaPopUp(),
               ],
             ),
           );
         },
+        
       ),
+      persistentFooterButtons: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 5.0),
+                  child: Text(widget.s.date.timeAgo(),
+                      style: Theme.of(context).textTheme.caption),
+                )
+              ],
+            )
+          ]
     );
   }
 
   _buildFormLines(List<Message?> msgs) {
     return Expanded(
-            child: ListView(
-            controller: _scrollCtrl,
-            padding: EdgeInsets.symmetric(horizontal: 7.0),
-            physics: AlwaysScrollableScrollPhysics(),
-            reverse: true,
-            addAutomaticKeepAlives: true,
-            children: _buildchildren(msgs),
-          ));
+        child: ListView(
+      controller: _scrollCtrl,
+      padding: EdgeInsets.symmetric(horizontal: 7.0),
+      physics: AlwaysScrollableScrollPhysics(),
+      reverse: true,
+      addAutomaticKeepAlives: true,
+      children: _buildchildren(msgs),
+    ));
   }
 
   _buildchildren(List<Message?> msgs) {
@@ -145,8 +161,8 @@ class _SaysViewState extends State<SaysView> {
         lst.add(messageLine);
       }
     });
-    lst.add(forms[0]);
     lst.add(Divider(color: Theme.of(context).colorScheme.inversePrimary));
+    lst.add(forms[0]);
     return lst;
   }
 
@@ -167,13 +183,7 @@ class _SaysViewState extends State<SaysView> {
     ));
   }
 
-  _showMediaPopUp() {
-    return Container(
-      child: Row(
-        children: [],
-      )
-    );
-  }
+
 
   _body(BuildContext context, Says s) {
     return Padding(
@@ -265,17 +275,7 @@ class _SaysViewState extends State<SaysView> {
                           ),
                           child: Row(
                             children: [
-                              IconButton(
-                                  onPressed: () {
-                                    bool value = context
-                                        .read()<SaysCubit>()
-                                        .state
-                                        .showHidden;
-                                    context
-                                        .read()<SaysCubit>()
-                                        ._onShowBottomTab(!value);
-                                  },
-                                  icon: Icon(Icons.add)),
+                              _gif(),
                               Expanded(
                                 child: Container(
                                   decoration: BoxDecoration(
@@ -394,45 +394,36 @@ class _SaysViewState extends State<SaysView> {
 
   _onSend() {
     metadata["kcName"] = widget.s.title;
-                                if (reply != null) {
-                                  metadata["replyId"] = reply!.id;
-                                }
+    if (reply != null) {
+      metadata["replyId"] = reply!.id;
+    }
 
-                                String? url =
-                                    findHttps(_messageController.text);
+    String? url = findHttps(_messageController.text);
 
-                                if (url != null) {
-                                  metadata["url"] = url;
-                                }
+    if (url != null) {
+      metadata["url"] = url;
+    }
 
-                                final message = Message(
-                                  text: _messageController.text,
-                                  date: Timestamp.fromDate(DateTime.now()),
-                                  imageUrl: null,
-                                  senderUsername: widget.s.author!.username,
-                                  metadata: metadata,
-                                  mentionedIds:
-                                      mentionedInfo.keys.toSet().toList(),
-                                );
+    final message = Message(
+      text: _messageController.text,
+      date: Timestamp.fromDate(DateTime.now()),
+      imageUrl: null,
+      senderUsername: widget.s.author!.username,
+      metadata: metadata,
+      mentionedIds: mentionedInfo.keys.toSet().toList(),
+    );
 
-                                KingsCordRepository().sendMsgTxt(
-                                    churchId: widget.cmId,
-                                    kingsCordId: widget.kcId,
-                                    message: message,
-                                    senderId: context
-                                        .read<AuthBloc>()
-                                        .state
-                                        .user!
-                                        .uid,
-                                    saysId: widget.s.id);
-                                setState(() {});
+    KingsCordRepository().sendMsgTxt(
+        churchId: widget.cmId,
+        kingsCordId: widget.kcId,
+        message: message,
+        senderId: context.read<AuthBloc>().state.user!.uid,
+        saysId: widget.s.id);
+    setState(() {});
   }
 
   _onChanged(String messageText) {
-
-
-
-if (messageText == '' || messageText == ' ' || messageText.isEmpty) {
+    if (messageText == '' || messageText == ' ' || messageText.isEmpty) {
       // _mentionedController = null;
       // containsAt = false;
       context.read<SaysCubit>().onIsTyping(false);
@@ -460,5 +451,44 @@ if (messageText == '' || messageText == ' ' || messageText.isEmpty) {
       context.read<SaysCubit>().onIsTyping(false);
     }
     setState(() {});
+  }
+
+  _gif() {
+    return IconButton(
+        onPressed: () {
+          GiphyGet.getGif(
+            context: context,
+            apiKey: "ge17PWpKQ9OmxKuPE8ejeYmI3SHLZOeY",
+            modal: true,
+            randomID: Uuid().v4().toString(),
+            tabColor: Colors.amber,
+          ).then((gif) async {
+            if (gif != null) {
+              Message m = Message(
+                date: Timestamp.now(),
+                giphyId: gif.id,
+                senderUsername: widget.s.author!.username,
+              );
+              try {
+                // send msg via krepo
+                await KingsCordRepository().onSendGiphyMessage(
+                  cmId: widget.cmId,
+                  giphyId: gif.id!,
+                  kcId: widget.kcId,
+                  msg: m,
+                  senderId: context.read<AuthBloc>().state.user!.uid,
+                  saysId: widget.s.id,
+                );
+                // return bool value
+                // return true;
+
+              } catch (e) {
+                log("error in kingsCordCubit");
+                log("error in onSendGiphyMessage: " + e.toString());
+              }
+            }
+          });
+        },
+        icon: Icon(Icons.gif));
   }
 }

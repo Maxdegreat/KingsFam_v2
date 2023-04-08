@@ -118,19 +118,7 @@ class _SaysViewState extends State<SaysView> {
               );
             },
           ),
-          persistentFooterButtons: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 5.0),
-                  child: Text(widget.s.date.timeAgo(),
-                      style: Theme.of(context).textTheme.caption),
-                )
-              ],
-            )
-          ]),
+          ),
     );
   }
 
@@ -267,39 +255,7 @@ class _SaysViewState extends State<SaysView> {
                                 size: 19, color: Colors.blue),
                         onPressed: context.read<SaysCubit>().state.isTyping
                             ? () {
-                                // TODO:
-                                metadata["kcName"] = widget.s.title;
-                                if (reply != null) {
-                                  metadata["replyId"] = reply!.id;
-                                }
-
-                                String? url =
-                                    findHttps(_messageController.text);
-
-                                if (url != null) {
-                                  metadata["url"] = url;
-                                }
-
-                                final message = Message(
-                                  text: _messageController.text,
-                                  date: Timestamp.fromDate(DateTime.now()),
-                                  imageUrl: null,
-                                  senderUsername: widget.s.author!.username,
-                                  metadata: metadata,
-                                  mentionedIds:
-                                      mentionedInfo.keys.toSet().toList(),
-                                );
-
-                                KingsCordRepository().sendMsgTxt(
-                                    churchId: widget.cmId,
-                                    kingsCordId: widget.kcId,
-                                    message: message,
-                                    senderId: context
-                                        .read<AuthBloc>()
-                                        .state
-                                        .user!
-                                        .uid,
-                                    saysId: widget.s.id);
+                               
                               }
                             : null,
                       ),

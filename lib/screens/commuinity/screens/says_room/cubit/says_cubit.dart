@@ -127,5 +127,21 @@ class SaysCubit extends Cubit<SaysState> {
     ));
   }
 
+  sendMsg({
+     required String churchId,
+    required String kingsCordId,
+    required String msgText,
+    required Map<String, dynamic> mentionedInfo,
+    required String cmTitle,
+    required KingsCord kingsCordData,
+    required String currUserName, // aka sender username
+    required Message? reply,
+    Map<String, dynamic>? metadata = const {},
+  }) {
+    
+  }
+
+
+
   onShowBottomTab(value) => emit(state.copyWith(showHidden: value));
 }

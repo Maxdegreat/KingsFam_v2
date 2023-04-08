@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
@@ -109,6 +110,12 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
   List<String> UrlBucket = [];
 
+  List<String> _hintWords = ["\"Bible verse on love\"", "\"Summerize: Worship at 12\"", "\"Respond to last message\""];
+
+  int _hintIdx = 0;
+  
+  Timer? timer;
+
   @override
   void dispose() {
     CurrentKingsCordRoomId.updateRoomId(roomId: null);
@@ -183,7 +190,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
   // for the mention user =================================================
   Widget _mentionUserContainer({required String? username}) {
-    if (username != null) {
+    if (username != null && !context.read<KingscordCubit>().state.isKngAi) {
       // for (Userr member in widget.commuinity.members.keys) {
       //   if (member.username.startsWith(username)) {
       //     potentialMentions.add(member);
@@ -290,6 +297,12 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             ],
           )
         : SizedBox.shrink();
+  }
+
+  Widget _kngAiContainer() {
+    return Container(padding: const EdgeInsets.all(8),
+      child: Text("this is demo need jwt for this ngl", style: Theme.of(context).textTheme.subtitle1!.copyWith(fontStyle: FontStyle.italic),),
+    );
   }
 
   Widget _permissionDenied({required String messasge}) {
@@ -472,7 +485,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
                 // this shows all possible mentions
                 _mentionUserContainer(username: _mentionedController),
-
+                
+                if (state.isKngAi)
+                  _kngAiContainer(),
+                
                 // this is can only ocour if the user is apart of the commuinity. in this case they can share
                 // content
                 state.fileShareStatus != FileShareStatus.inital
@@ -530,6 +546,20 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+
+            TextButton(
+              onPressed: () {
+                context.read<KingscordCubit>().onKngAi(!context.read<KingscordCubit>().state.isKngAi);
+                _messageController.clear();
+              },
+              child: Text("Kng-Ai", style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                color: context.read<KingscordCubit>().state.isKngAi ? Theme.of(context).colorScheme.primary :null,
+                fontWeight: FontWeight.bold,
+                fontSize: 14
+              ),)
+            ),
+
+
             IconButton(
                 onPressed: () {
                   GiphyGet.getGif(
@@ -548,7 +578,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                               giphyId: gif.id!,
                               cmId: widget.commuinity.id!,
                               kcId: widget.kingsCord.id!,
-                              currUsername: widget.usr.username)
+                              currUsername: widget.usr.username
+                              
+                              )
                           .then((value) => log("sent giphy"));
                     } else {
                       // snackBar(
@@ -747,7 +779,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                                 border: InputBorder.none,
                                                 // filled: true,
                                                 hintText: mode == "chat"
-                                                    ? 'Send message'
+                                                    ? _hintMsg()
                                                     : "Send an anouncement",
                                                 isCollapsed: true,
                                                 // fillColor: Color(hc.hexcolorCode("#141829")!)
@@ -769,11 +801,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                           margin: const EdgeInsets.symmetric(horizontal: 4.0),
                           child: IconButton(
                             icon: !state.isTyping
-                                ? Icon(
-                                    Iconsax.send_1,
-                                    size: 18,
-                                  )
-                                : Icon(Iconsax.send_21, size: 18),
+                                ? _dontSendIcon()
+                                : _sendIcon(),
                             color: Colors.blue,
                             onPressed: state.isTyping
                                 ? () {
@@ -787,6 +816,36 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 ],
               ))),
     );
+  }
+
+  _hintMsg() {
+    if (context.read<KingscordCubit>().state.isKngAi) {
+      timer = Timer.periodic(Duration(seconds: 3), (timer) {
+      // Update the state with a new index
+      setState(() {
+        _hintIdx = (_hintIdx + 1) % _hintWords.length;
+      });
+    });
+    return _hintWords[_hintIdx];
+    } else {
+      return 'Send message';
+    }
+  }
+
+  _dontSendIcon() {
+    if (context.read<KingscordCubit>().state.isKngAi) {
+      return Icon(Iconsax.star_slash5);
+    } else {
+      return Icon(Iconsax.send_1, size: 18);
+    }
+  }
+
+  _sendIcon() {
+    if (context.read<KingscordCubit>().state.isKngAi) {
+      return Icon(Iconsax.star_slash5, color: Colors.amber,);
+    } else {
+      return Icon(Iconsax.send_21, size: 18, color: Colors.blue,);
+    }
   }
 
   _codeForOnP(KingscordState state) {

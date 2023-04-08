@@ -90,6 +90,8 @@ class KingscordCubit extends Cubit<KingscordState> {
     emit(state.copyWith(potentialMentions: state.initPM));
   }
 
+  void onKngAi(bool value) => emit(state.copyWith(isKngAi: value));
+
   void selectMention({required Userr userr}) {
     // add to the mentioned list or whatever
     if (!state.mentions.contains(userr)) {
@@ -117,8 +119,7 @@ class KingscordCubit extends Cubit<KingscordState> {
     paginateMsg(cmId: cmId, kcId: kcId, limit: limit);
   }
 
-  Future<void> paginateMsg(
-      {required String cmId, required String kcId, required int limit}) async {
+  Future<void> paginateMsg( {required String cmId, required String kcId, required int limit}) async {
     try {
       if (state.msgs.isEmpty) {
         // this is a temp set to be used for copywith. copy x num most recent users
@@ -246,12 +247,7 @@ String? findHttps(String str) {
   return null;
 }
 
-  Future<void> onSendGiphyMessage({
-    required String giphyId,
-    required String cmId,
-    required String kcId,
-    required String currUsername,
-  }) async {
+  Future<void> onSendGiphyMessage({ required String giphyId,required String cmId,required String kcId,required String currUsername, }) async {
     // make message that sends Giphy
     Message m = Message(
       date: Timestamp.now(),
@@ -276,11 +272,7 @@ String? findHttps(String str) {
     }
   }
 
-  void onUploadVideo(
-      {required File videoFile,
-      required String kcId,
-      required String cmId,
-      required String senderUsername}) async {
+  void onUploadVideo({required File videoFile,required String kcId,required String cmId,required String senderUsername}) async {
     emit(state.copyWith(
       status: KingsCordStatus.loading,
     ));
@@ -348,10 +340,7 @@ String? findHttps(String str) {
     emit(state.copyWith(txtImgUrl: imageFile, status: KingsCordStatus.initial));
   }
 
-  onSendTxtImg(
-      {required String churchId,
-      required String kingsCordId,
-      required String senderUsername}) async {
+  onSendTxtImg({required String churchId, required String kingsCordId,required String senderUsername}) async {
     //set to load bc we wait for image to be sent.
     emit(state.copyWith(
         status: KingsCordStatus.loading,

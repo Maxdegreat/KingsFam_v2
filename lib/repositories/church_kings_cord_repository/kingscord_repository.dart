@@ -93,10 +93,12 @@ class KingsCordRepository extends BaseKingsCordRepository {
       required String cmId,
       required String kcId,
       required Message msg,
-      required String senderId}) async {
+      required String senderId,
+      String? saysId}) async {
     try {
       log("starting");
-      _firebaseFirestore
+      if (saysId == null) {
+        _firebaseFirestore
           .collection(Paths.church)
           .doc(cmId)
           .collection(Paths.kingsCord)
@@ -104,6 +106,18 @@ class KingsCordRepository extends BaseKingsCordRepository {
           .collection(Paths.messages)
           .add(msg.ToDoc(senderId: senderId))
           .then((value) => log(value.toString()));
+      } else {
+        _firebaseFirestore
+          .collection(Paths.church)
+          .doc(cmId)
+          .collection(Paths.kingsCord)
+          .doc(kcId)
+          .collection(Paths.says)
+          .doc(saysId)
+          .collection(Paths.messages)
+          .add(msg.ToDoc(senderId: senderId))
+          .then((value) => log(value.toString()));
+      }
       log("done");
     } catch (e) {
       log("error in kingsCordRepo");
