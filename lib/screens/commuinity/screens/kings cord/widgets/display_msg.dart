@@ -74,7 +74,7 @@ class DisplayMsg extends StatelessWidget {
           style: s.subtitle1!.copyWith(color: Colors.grey)!.copyWith(fontWeight: FontWeight.w400),
           children: [
             TextSpan(
-              text: "just joined 🥳",
+              text: " just joined 🥳",
               style: s.caption!.copyWith(fontStyle: FontStyle.italic)
             )
           ]

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -110,10 +112,14 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
   List<String> UrlBucket = [];
 
-  List<String> _hintWords = ["\"Bible verse on love\"", "\"Summerize: Worship at 12\"", "\"Respond to last message\""];
+  List<String> _hintWords = [
+    "\"Bible verse on love\"",
+    "\"Bible verse on anger\"",
+    "\"Bible verse on food\""
+  ];
 
   int _hintIdx = 0;
-  
+
   Timer? timer;
 
   @override
@@ -126,13 +132,12 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   }
 
   _buildMessageStream(
-      {
-      required Church commuinity,
+      {required Church commuinity,
       required KingsCord kingsCord,
       required List<Message?> msgs}) {
     return msgs.isEmpty && widget.kingsCord.mode != Mode.welcome
         ? Expanded(
-          child: ListView.builder(
+            child: ListView.builder(
             padding: EdgeInsets.symmetric(horizontal: 7.0),
             physics: AlwaysScrollableScrollPhysics(),
             reverse: true,
@@ -140,8 +145,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             itemBuilder: (c, i) {
               return msgsLoading(context);
             },
-          )
-        )
+          ))
         : Expanded(
             child: ListView(
             controller: scrollCtrl,
@@ -300,8 +304,15 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   }
 
   Widget _kngAiContainer() {
-    return Container(padding: const EdgeInsets.all(8),
-      child: Text("this is demo need jwt for this ngl", style: Theme.of(context).textTheme.subtitle1!.copyWith(fontStyle: FontStyle.italic),),
+    return Container(
+      padding: const EdgeInsets.all(8),
+      child:1 == 1 ? SizedBox.shrink() : Text(
+        "this is demo need jwt for this ngl",
+        style: Theme.of(context)
+            .textTheme
+            .subtitle1!
+            .copyWith(fontStyle: FontStyle.italic),
+      ),
     );
   }
 
@@ -443,14 +454,14 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             // indicates a switch...
             recentkcid = widget.kingsCord.id!;
             initCubit = false;
-            UserPreferences.updateKcTimeStamp(
-                cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!);
+            UserPreferences.updateKcTimeStamp(cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!);
 
             context.read<KingscordCubit>().onLoadInit(
                   cmId: widget.commuinity.id!,
                   kcId: widget.kingsCord.id!,
                   limit: MockFlag.ISMOCKTESTING ? 17 : 27,
-                );
+            );
+
           }
 
           return GestureDetector(
@@ -485,10 +496,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
                 // this shows all possible mentions
                 _mentionUserContainer(username: _mentionedController),
-                
-                if (state.isKngAi)
-                  _kngAiContainer(),
-                
+
+                if (state.isKngAi) _kngAiContainer(),
+
                 // this is can only ocour if the user is apart of the commuinity. in this case they can share
                 // content
                 state.fileShareStatus != FileShareStatus.inital
@@ -546,20 +556,22 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
             TextButton(
-              onPressed: () {
-                context.read<KingscordCubit>().onKngAi(!context.read<KingscordCubit>().state.isKngAi);
-                _messageController.clear();
-              },
-              child: Text("Kng-Ai", style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                color: context.read<KingscordCubit>().state.isKngAi ? Theme.of(context).colorScheme.primary :null,
-                fontWeight: FontWeight.bold,
-                fontSize: 14
-              ),)
-            ),
-
-
+                onPressed: () {
+                  context
+                      .read<KingscordCubit>()
+                      .onKngAi(!context.read<KingscordCubit>().state.isKngAi);
+                  _messageController.clear();
+                },
+                child: Text(
+                  "Kng-Ai",
+                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                      color: context.read<KingscordCubit>().state.isKngAi
+                          ? Theme.of(context).colorScheme.primary
+                          : null,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14),
+                )),
             IconButton(
                 onPressed: () {
                   GiphyGet.getGif(
@@ -578,9 +590,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                               giphyId: gif.id!,
                               cmId: widget.commuinity.id!,
                               kcId: widget.kingsCord.id!,
-                              currUsername: widget.usr.username
-                              
-                              )
+                              currUsername: widget.usr.username)
                           .then((value) => log("sent giphy"));
                     } else {
                       // snackBar(
@@ -678,7 +688,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   }
 
   buildBottomTF(KingscordState state, BuildContext context, String mode) {
-
     bool hasPerm = true;
     List<String> allowed = [];
     if (widget.kingsCord.metaData != null &&
@@ -705,6 +714,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         }
       },
       child: Container(
+       
           width: MediaQuery.of(context).size.width > 700
               ? MediaQuery.of(context).size.width / 5
               : null,
@@ -732,6 +742,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.onPrimary,
                                 borderRadius: BorderRadius.circular(7),
+                                border:  state.isKngAi ?Border.all(color: Colors.amber) : null
                               ),
                               child: Row(
                                 children: [
@@ -754,6 +765,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                         child: Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: TextFormField(
+                                            
                                               // validator: (value) {},
                                               cursorColor: Theme.of(context)
                                                   .colorScheme
@@ -776,7 +788,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                               decoration: InputDecoration(
                                                 contentPadding:
                                                     EdgeInsets.all(2),
-                                                border: InputBorder.none,
+                                                border: 
+                                               
+                                                InputBorder.none,
                                                 // filled: true,
                                                 hintText: mode == "chat"
                                                     ? _hintMsg()
@@ -800,9 +814,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                           ),
                           margin: const EdgeInsets.symmetric(horizontal: 4.0),
                           child: IconButton(
-                            icon: !state.isTyping
-                                ? _dontSendIcon()
-                                : _sendIcon(),
+                            icon:
+                                !state.isTyping ? _dontSendIcon() : _sendIcon(),
                             color: Colors.blue,
                             onPressed: state.isTyping
                                 ? () {
@@ -820,13 +833,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
   _hintMsg() {
     if (context.read<KingscordCubit>().state.isKngAi) {
-      timer = Timer.periodic(Duration(seconds: 3), (timer) {
-      // Update the state with a new index
-      setState(() {
-        _hintIdx = (_hintIdx + 1) % _hintWords.length;
-      });
-    });
-    return _hintWords[_hintIdx];
+      math.Random rand = math.Random();
+      return _hintWords[rand.nextInt(_hintWords.length)];
     } else {
       return 'Send message';
     }
@@ -842,16 +850,22 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
   _sendIcon() {
     if (context.read<KingscordCubit>().state.isKngAi) {
-      return Icon(Iconsax.star_slash5, color: Colors.amber,);
+      return Icon(
+        Iconsax.star_slash5,
+        color: Colors.amber,
+      );
     } else {
-      return Icon(Iconsax.send_21, size: 18, color: Colors.blue,);
+      return Icon(
+        Iconsax.send_21,
+        size: 18,
+        color: Colors.blue,
+      );
     }
   }
 
   _codeForOnP(KingscordState state) {
     if (state.isTyping) {
-      // this will be passed to the cubit then to the db. upon a get msg lines will psrse for a good look
-      String messageWithsSmbolesForParsing = "";
+
       // map of mentioned info that will be added to the kc cubit
       Map<String, dynamic> mentionedInfo = {};
       for (var u in state.mentions) {
@@ -867,7 +881,13 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           _messageController.text.trim() != "") {
         context.read<KingscordCubit>().removeReply();
 
-        context.read<KingscordCubit>().onSendTxtMsg(
+        if (state.isKngAi) {
+          // handle the kngAi message send.
+          context.read<KingscordCubit>().sendKngAi(_messageController.text, widget.kingsCord, widget.commuinity, currUsersName);
+
+          // ps. we undo the isKngAi state cubit ... as i should duh lol.
+        } else {
+          context.read<KingscordCubit>().onSendTxtMsg(
               churchId: widget.commuinity.id!,
               kingsCordId: widget.kingsCord.id!,
               msgText: _messageController.text,
@@ -878,6 +898,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
               reply: state.replyMessage,
               metadata: widget.kingsCord.metaData,
             );
+        }
+        
       }
       context.read<KingscordCubit>().onIsTyping(false);
       _messageController.clear();
@@ -899,8 +921,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     }
 
     if (containsAt) {
-      setState(() => _mentionedController =
-          messageText.substring(idxWhereStartWithat + 1, messageText.length));
+      setState(() => _mentionedController = messageText.substring(idxWhereStartWithat + 1, messageText.length));
     }
 
     if (messageText.endsWith(' ') || !messageText.contains("@")) {

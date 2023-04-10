@@ -338,9 +338,13 @@ class _MessageLinesState extends State<MessageLines> {
       final words = line.split(' ');
 
       for (final word in words) {
-        if (word.startsWith('https://') && !hasLinkPreview && widget.message.metadata!["linkP"] != null) {
+        if (word.startsWith('https://') &&
+            !hasLinkPreview &&
+            widget.message.metadata!["linkP"] != null) {
           // log("LinkP: ${widget.message.metadata!["linkP"]}");
-          linkPreview =  LinkPreviewContainer(linkP: widget.message.metadata!["linkP"], color: Color(hc.hexcolorCode(widget.message.sender!.colorPref)));
+          linkPreview = LinkPreviewContainer(
+              linkP: widget.message.metadata!["linkP"],
+              color: Color(hc.hexcolorCode(widget.message.sender!.colorPref)));
           hasLinkPreview = true;
         }
 
@@ -355,12 +359,12 @@ class _MessageLinesState extends State<MessageLines> {
           );
           spans.add(WidgetSpan(child: launchUrl));
         } else {
-        spans.add(TextSpan(
-            text: word,
-            style: Theme.of(context)
-                .textTheme
-                .bodyText1!
-                .copyWith(fontWeight: FontWeight.w500, fontSize: 15)));
+          spans.add(TextSpan(
+              text: word,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText1!
+                  .copyWith(fontWeight: FontWeight.w500, fontSize: 15)));
         }
 
         spans.add(TextSpan(text: " "));
@@ -639,69 +643,99 @@ class _MessageLinesState extends State<MessageLines> {
                           ],
                         ),
                         SizedBox(height: 2),
-                        widget.message.replyMsg != null &&
-                                widget.message.replyMsg != null
-                            ? Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 3.0),
-                                child: Container(
-                                  padding: EdgeInsets.only(left: 5.0),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(7.0),
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                        if (widget.message.replyMsg != null) ...[
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 3.0),
+                            child: Container(
+                              padding: EdgeInsets.only(left: 5.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(7.0),
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(7.0),
+                                    bottomRight: Radius.circular(7.0),
                                   ),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.only(
-                                        topRight: Radius.circular(7.0),
-                                        bottomRight: Radius.circular(7.0),
-                                      ),
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                      // boxShadow: [
-                                      //   BoxShadow(
-                                      //       color: Theme.of(context)
-                                      //           .colorScheme
-                                      //           .primary,
-                                      //       spreadRadius: 3),
-                                      // ],
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 4.0,
-                                          bottom: 5,
-                                          left: 2,
-                                          right: 2),
-                                      child: RichText(
-                                        text: TextSpan(
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .caption,
-                                          children: <TextSpan>[
-                                            TextSpan(
-                                                text: 'Replied ' + 
-                                                    widget.message.replyMsg!
-                                                        .senderUsername!),
-                                            TextSpan(
-                                                text: widget.message.replyMsg!
-                                                            .text !=
-                                                        null
-                                                    ? widget
-                                                        .message.replyMsg!.text!
-                                                    : 'Shared something',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .caption),
-                                          ],
-                                        ),
-                                      ),
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 4.0, bottom: 5, left: 2, right: 2),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      style:
+                                          Theme.of(context).textTheme.caption,
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                            text: 'Replied ' +
+                                                widget.message.replyMsg!
+                                                    .senderUsername!),
+                                        TextSpan(
+                                            text: widget.message.replyMsg!
+                                                        .text !=
+                                                    null
+                                                ? widget.message.replyMsg!.text!
+                                                : 'Shared something',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .caption),
+                                      ],
                                     ),
                                   ),
                                 ),
-                              )
-                            : SizedBox.shrink(),
+                              ),
+                            ),
+                          )
+                        ],
+                        if (widget.message.metadata != null && widget.message.metadata!.containsKey('isKngAi')) ...[
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 3.0),
+                            child: Container(
+                              padding: EdgeInsets.only(left: 5.0),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(7.0),
+                                  gradient: LinearGradient(
+                                      colors: [
+                                        Colors.red,
+                                        Colors.orange,
+                                        Colors.yellow,
+                                        Colors.green,
+                                        Colors.blue,
+                                        Colors.indigo,
+                                        Colors.purple
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight)),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(7.0),
+                                    bottomRight: Radius.circular(7.0),
+                                  ),
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 4.0, bottom: 5, left: 2, right: 2),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      style:
+                                          Theme.of(context).textTheme.caption,
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                            text: '#kngAi'),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
                         Container(
                             constraints: BoxConstraints(
                               maxWidth: MediaQuery.of(context).size.width / 1.4,
@@ -755,7 +789,10 @@ class _MessageLinesState extends State<MessageLines> {
   }
 
   Widget? kingsCordProfileImg() => ContainerWithURLImg(
-      imgUrl: widget.message.sender!.profileImageUrl, height: 35, width: 35, pc: null);
+      imgUrl: widget.message.sender!.profileImageUrl,
+      height: 35,
+      width: 35,
+      pc: null);
 
   Widget? kingsCordProfileIcon() =>
       Container(child: Icon(Icons.account_circle));

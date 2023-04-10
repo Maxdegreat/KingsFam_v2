@@ -10,6 +10,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:kingsfam/api/openai.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/kc_meta_data.dart';
 import 'package:kingsfam/config/paths.dart';
@@ -50,7 +51,8 @@ class KingscordCubit extends Cubit<KingscordState> {
 
   var fire = FirebaseFirestore.instance;
 
-  /*Future<List<Userr>>*/ void searchMentionedUsers({required String username, required String cmId}) async {
+  void searchMentionedUsers(
+      {required String username, required String cmId}) async {
     var snap = await fire
         .collection(Paths.communityMembers)
         .doc(cmId)
@@ -63,7 +65,7 @@ class KingscordCubit extends Cubit<KingscordState> {
       Userr user = await UserrRepository().getUserrWithId(userrId: j.id);
       users.add(user);
     }
-    if (username.isEmpty ) {
+    if (username.isEmpty) {
       emit(state.copyWith(potentialMentions: state.initPM));
     } else {
       emit(state.copyWith(potentialMentions: users));
@@ -83,7 +85,7 @@ class KingscordCubit extends Cubit<KingscordState> {
         users.add(u);
       }
       List<Userr> initPMs = List<Userr>.from(state.initPM)..addAll(users);
-      
+
       emit(state.copyWith(initPM: initPMs));
     }
 
@@ -91,6 +93,47 @@ class KingscordCubit extends Cubit<KingscordState> {
   }
 
   void onKngAi(bool value) => emit(state.copyWith(isKngAi: value));
+
+  void sendKngAi(String prompt, KingsCord kc, Church cm, String currUsername) {
+    emit(state.copyWith(kngAiStatus: KngAiStatus.loading));
+    OpenAi openAi = OpenAi();
+    Map<String, dynamic> metadata = {};
+    metadata["kcName"] = kc.cordName;
+    metadata["isKngAi"] = true;
+    openAi.chatCompletion(prompt).then((response) {
+      if (response['status'] == '200') {
+        String? url = findHttps(response['text']!);
+
+        if (url != null) {
+          metadata["url"] = url;
+        }
+
+        // make a message
+        Message message = Message(
+          metadata: metadata,
+          giphyId: null,
+          date: Timestamp.fromDate(DateTime.now()),
+          imageUrl: null,
+          senderUsername: currUsername,
+          text: response['text'],
+        );
+
+        // send message to db
+        _kingsCordRepository.sendMsgTxt(
+          churchId: cm.id!,
+          kingsCordId: kc.id!,
+          message: message,
+          senderId: _authBloc.state.user!.uid
+        );
+
+        emit(state.copyWith(isKngAi: false));
+      } else {
+        emit(state.copyWith(kngAiStatus: KngAiStatus.error));
+      }
+
+      emit(state.copyWith(kngAiStatus: KngAiStatus.inital));
+    });
+  }
 
   void selectMention({required Userr userr}) {
     // add to the mentioned list or whatever
@@ -111,15 +154,16 @@ class KingscordCubit extends Cubit<KingscordState> {
     emit(state.copyWith(mentions: []));
   }
 
-  void onLoadInit({required String cmId, required String kcId, required int limit}) async {
-        
+  void onLoadInit(
+      {required String cmId, required String kcId, required int limit}) async {
     emit(KingscordState.initial());
     emit(state.copyWith(status: KingsCordStatus.getInitmsgs));
 
     paginateMsg(cmId: cmId, kcId: kcId, limit: limit);
   }
 
-  Future<void> paginateMsg( {required String cmId, required String kcId, required int limit}) async {
+  Future<void> paginateMsg(
+      {required String cmId, required String kcId, required int limit}) async {
     try {
       if (state.msgs.isEmpty) {
         // this is a temp set to be used for copywith. copy x num most recent users
@@ -202,8 +246,6 @@ class KingscordCubit extends Cubit<KingscordState> {
     required Message? reply,
     Map<String, dynamic>? metadata = const {},
   }) async {
-    
-
     metadata!["kcName"] = kingsCordData.cordName;
     if (reply != null) {
       metadata["replyId"] = reply.id;
@@ -214,7 +256,6 @@ class KingscordCubit extends Cubit<KingscordState> {
     if (url != null) {
       metadata["url"] = url;
     }
-
 
     final message = Message(
       text: msgText,
@@ -232,22 +273,25 @@ class KingscordCubit extends Cubit<KingscordState> {
         senderId: _authBloc.state.user!.uid);
   }
 
-
-
-String? findHttps(String str) {
-  int startIndex = str.indexOf("https://");
-  if (startIndex != -1 && (startIndex == 0 || str[startIndex - 1] == ' ')) {
-    int endIndex = str.indexOf(' ', startIndex + 1);
-    if (endIndex == -1) {
-      return str.substring(startIndex);
-    } else {
-      return str.substring(startIndex, endIndex);
+  String? findHttps(String str) {
+    int startIndex = str.indexOf("https://");
+    if (startIndex != -1 && (startIndex == 0 || str[startIndex - 1] == ' ')) {
+      int endIndex = str.indexOf(' ', startIndex + 1);
+      if (endIndex == -1) {
+        return str.substring(startIndex);
+      } else {
+        return str.substring(startIndex, endIndex);
+      }
     }
+    return null;
   }
-  return null;
-}
 
-  Future<void> onSendGiphyMessage({ required String giphyId,required String cmId,required String kcId,required String currUsername, }) async {
+  Future<void> onSendGiphyMessage({
+    required String giphyId,
+    required String cmId,
+    required String kcId,
+    required String currUsername,
+  }) async {
     // make message that sends Giphy
     Message m = Message(
       date: Timestamp.now(),
@@ -272,7 +316,11 @@ String? findHttps(String str) {
     }
   }
 
-  void onUploadVideo({required File videoFile,required String kcId,required String cmId,required String senderUsername}) async {
+  void onUploadVideo(
+      {required File videoFile,
+      required String kcId,
+      required String cmId,
+      required String senderUsername}) async {
     emit(state.copyWith(
       status: KingsCordStatus.loading,
     ));
@@ -340,7 +388,10 @@ String? findHttps(String str) {
     emit(state.copyWith(txtImgUrl: imageFile, status: KingsCordStatus.initial));
   }
 
-  onSendTxtImg({required String churchId, required String kingsCordId,required String senderUsername}) async {
+  onSendTxtImg(
+      {required String churchId,
+      required String kingsCordId,
+      required String senderUsername}) async {
     //set to load bc we wait for image to be sent.
     emit(state.copyWith(
         status: KingsCordStatus.loading,
@@ -390,7 +441,7 @@ String? findHttps(String str) {
     } else if (r == "Mod") {
       if (lst.contains("Member") || lst.contains("Mod")) {
         return true;
-      } 
+      }
     } else {
       return lst.contains("Member");
     }
