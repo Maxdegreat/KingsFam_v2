@@ -97,30 +97,30 @@ class NavScreen extends StatelessWidget {
                       ),
             ) : null,
 
-            bottomNavigationBar: !kIsWeb
-                ? context.read<BottomnavbarCubit>().state.showBottomNav
-                    ? BottomNavBar(
-                        onTap: (index) {
-                          final selectedItem = BottomNavItem.values[index];
-                          if (index == 0 ||
-                              BottomNavItem.values[index] ==
-                                  BottomNavItem.chats) {
-                            if (!kIsWeb) {
-                              scaffoldKey.currentState!.openDrawer();
-                              context.read<BottomnavbarCubit>().showBottomNav(true);
-                            }
-                            _selectBottomNavItem(context, selectedItem,
-                                selectedItem == state.selectedItem);
-                          } else
-                            _selectBottomNavItem(context, selectedItem,
-                                selectedItem == state.selectedItem);
-                          //context.read<BottomnavbarCubit>().showBottomNav(true);
-                        },
-                        items: items,
-                        selectedItem: state.selectedItem,
-                      )
-                    : SizedBox.shrink()
-                : null,
+            // bottomNavigationBar: !kIsWeb
+            //     ? context.read<BottomnavbarCubit>().state.showBottomNav
+            //         ? BottomNavBar(
+            //             onTap: (index) {
+            //               final selectedItem = BottomNavItem.values[index];
+            //               if (index == 0 ||
+            //                   BottomNavItem.values[index] ==
+            //                       BottomNavItem.chats) {
+            //                 if (!kIsWeb) {
+            //                   scaffoldKey.currentState!.openDrawer();
+            //                   context.read<BottomnavbarCubit>().showBottomNav(true);
+            //                 }
+            //                 _selectBottomNavItem(context, selectedItem,
+            //                     selectedItem == state.selectedItem);
+            //               } else
+            //                 _selectBottomNavItem(context, selectedItem,
+            //                     selectedItem == state.selectedItem);
+            //               //context.read<BottomnavbarCubit>().showBottomNav(true);
+            //             },
+            //             items: items,
+            //             selectedItem: state.selectedItem,
+            //           )
+            //         : SizedBox.shrink()
+                // : null,
                 extendBody: false,
                 drawer: MainDrawer(),
                 drawerEdgeDragWidth: MediaQuery.of(context).size.width / 5,

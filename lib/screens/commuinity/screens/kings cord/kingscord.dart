@@ -572,7 +572,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                       fontWeight: FontWeight.bold,
                       fontSize: 14),
                 )),
-            IconButton(
+            TextButton(
+                child: Text("GIF", style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14)),
                 onPressed: () {
                   GiphyGet.getGif(
                     context: context,
@@ -601,7 +604,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                     }
                   });
                 },
-                icon: Icon(Icons.gif)),
+                ),
             IconButton(
               onPressed: () async {
                 showMediaPopUp = !showMediaPopUp;
@@ -674,7 +677,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   "Replying to " +
                       state.replyMessage!.senderUsername! +
                       "\n" +
-                      state.replyMessage!.text!,
+                     ( state.replyMessage!.text != null ? state.replyMessage!.text! : ""),
                   style: TextStyle(color: Colors.grey, fontSize: 15),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,

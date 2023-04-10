@@ -6,10 +6,17 @@ import 'package:http/http.dart' as http;
 class OpenAi {
   Future<Map<String, String>> chatCompletion(prompt) async {
     // construct the prompt:
-    prompt = "Bible verse from Holy Bible relating to: $prompt";
+    prompt = '''
+Return to me a Bible verse that includes the topic hard work: 
+1
+Colossians 3:23-24
+Whatever you do, do it from the heart for the Lord and not for people.
+You know that you will receive an inheritance as a reward. You serve the Lord Christ
+Return to me a Bible verse that includes the topic $prompt. 
+''';
 
     const url = 'https://api.openai.com/v1/completions';
-    String apiKey = '####';
+    String apiKey = '';
     var response = await http.post(Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
@@ -18,13 +25,8 @@ class OpenAi {
         body: jsonEncode({
           "model": "text-davinci-003",
           "prompt": prompt,
-          "max_tokens": 80,
+          "max_tokens": 256,
           "temperature": 0.7,
-          "top_p": 1,
-          "n": 1,
-          "stream": false,
-          "logprobs": null,
-          "stop": "\n"
         }));
 
     if (response.statusCode == 200) {

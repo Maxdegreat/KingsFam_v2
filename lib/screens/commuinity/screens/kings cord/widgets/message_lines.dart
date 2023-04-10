@@ -381,99 +381,6 @@ class _MessageLinesState extends State<MessageLines> {
         ..add(_showReactionBarUi(
             messageReactions: widget.message.metadata!["reactions"])),
     );
-
-    // checking for strings starting with https:// I do this w/ regex
-    // widget.message.text!.split(RegExp("\\s")).forEach((element) {
-    //   if (!element.startsWith('https://')) {
-    //     if (textWithLinksForColumn.isEmpty && tempString.isEmpty) {
-    //       tempString += element;
-    //     } else {
-    //       tempString += " $element ";
-    //     }
-    //   } else if (element.startsWith('https://')) {
-    //     textWithLinksForColumn.add(Text(tempString,
-    //         style: ));
-    //     tempString = "";
-    //     // add the element to the links so that the code knows visually there is a link in a show link preview
-    //     links.add(element);
-    //     // make a blue link text so that indivdual links can be taped on
-    //     Widget l = GestureDetector(
-    //       onTap: () {
-
-    //       },
-    //       child: Text(element,
-    //           style: Theme.of(context).textTheme.bodyText1!.copyWith(
-    //               fontWeight: FontWeight.w500,
-    //               fontSize: 15,
-    //               color: Colors.blue)),
-    //     );
-    //     // add the links to the list below so that the code can later use these txtbuttons w/ links as child
-    //     textWithLinksForColumn.add(l);
-    //   }
-    // });
-
-    // // The return of the build text when there is an unsent message
-    // if (widget.message.text == "(code:unsent 10987345)") {
-    //   return Text("deleted",
-    //       style: Theme.of(context)
-    //           .textTheme
-    //           .bodyText1!
-    //           .copyWith(fontWeight: FontWeight.w300));
-    // }
-
-    // if (links.isNotEmpty) {
-    //   // the return of the build text when the links are not empty
-    //   return GestureDetector(
-    //       onTap: () {
-    //         if (links.length == 1) {
-    //           launch(links[0]);
-    //         }
-    //       },
-    //       child: Column(
-    //         mainAxisAlignment: MainAxisAlignment.start,
-    //         crossAxisAlignment: CrossAxisAlignment.start,
-    //         mainAxisSize: MainAxisSize.min,
-    //         children: [
-    //           LinkPreviewContainer(link: links.first),
-    //           // if a link was sent only without any text
-    //           // widget.message.text!.trim().length != links[0].trim().length ? Text(widget.message.text!) : Text("#weblink")
-    //           Column(
-    //               mainAxisAlignment: MainAxisAlignment.start,
-    //               crossAxisAlignment: CrossAxisAlignment.start,
-    //               mainAxisSize: MainAxisSize.min,
-    //               children: textWithLinksForColumn.map((e) => e).toList()),
-    //           _showReactionBarUi(
-    //               messageReactions: widget.message.metadata!["reactions"])
-    //         ],
-    //       ));
-    // }
-    // // the return of the text when there is no links involved
-    // RegExp regExp = RegExp(r'^@.+');
-    // return GestureDetector(
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: [
-    //       // _showReplyBarUi(widget.message.replyed),
-    //       Container(
-    //           decoration: regExp.hasMatch(widget.message.text!)
-    //               ? BoxDecoration(
-    //                   borderRadius: BorderRadius.circular(7),
-    //                   color: Color.fromARGB(110, 255, 193, 7))
-    //               : null,
-    //           child: Padding(
-    //             padding: const EdgeInsets.all(2.0),
-    //             child: Text(widget.message.text!,
-    //                 style: Theme.of(context)
-    //                     .textTheme
-    //                     .bodyText1!
-    //                     .copyWith(fontSize: 15, fontWeight: FontWeight.w500)),
-    //           )),
-    //       _showReactionBarUi(
-    //         messageReactions: widget.message.metadata!["reactions"],
-    //       )
-    //     ],
-    //   ),
-    // );
   }
 
   //for an image
@@ -484,25 +391,28 @@ class _MessageLinesState extends State<MessageLines> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onTap: () => Navigator.of(context).pushNamed(UrlViewScreen.routeName,
-              arguments: UrlViewArgs(
-                  urlImg: widget.message.imageUrl!,
-                  heroTag: 'Message/${widget.message.imageUrl}/')),
-          child: Container(
-            height: size.height * 0.2,
-            width: size.width * 0.6,
-            decoration: BoxDecoration(
-                border: Border.all(
-                    width: 1.0,
-                    color: Colors
-                        .amber), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
-                borderRadius: BorderRadius.circular(7),
-                image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image:
-                        CachedNetworkImageProvider(widget.message.imageUrl!))),
-          ),
-        ),
+            onTap: () => Navigator.of(context).pushNamed(
+                UrlViewScreen.routeName,
+                arguments: UrlViewArgs(
+                    userr: widget.message.sender!,
+                    urlImg: widget.message.imageUrl!,
+                    heroTag: 'Message/${widget.message.imageUrl}/')),
+            child: Container(
+              padding: const EdgeInsets.only(top: 2, right: 2),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(7),
+                  color: Theme.of(context).colorScheme.secondary),
+              child: Container(
+                height: size.height * 0.2,
+                width: size.width * 0.6,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(7),
+                    image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: CachedNetworkImageProvider(
+                            widget.message.imageUrl!))),
+              ),
+            )),
         _showReactionBarUi(
             messageReactions: widget.message.metadata!["reactions"])
       ],
@@ -516,42 +426,38 @@ class _MessageLinesState extends State<MessageLines> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              GestureDetector(
+          height: size.height * 0.2,
+          width: size.width * 0.6,
+          child:GestureDetector(
                 onTap: () => Navigator.of(context).pushNamed(
                     UrlViewScreen.routeName,
                     arguments: UrlViewArgs(
+                        userr: widget.message.sender!,
                         urlVid: widget.message.videoUrl!,
                         urlImg: widget.message.thumbnailUrl!,
                         heroTag:
                             'Message/${widget.message.videoUrl}/${widget.message.thumbnailUrl}')),
                 child: Container(
                   child: Icon(
-                    Icons.play_arrow,
-                    size: 35,
-                  ),
+                      Icons.play_arrow,
+                      size: 35,
+                      color: Colors.black26,
+                    ),
+                  padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    color: Colors.black45,
+                     image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: CachedNetworkImageProvider(
+                                widget.message.thumbnailUrl!)),
+                    color: Theme.of(context).colorScheme.secondary,
                     borderRadius: BorderRadius.circular(7),
                   ),
                 ),
               ),
-            ],
-          ),
-          height: size.height * 0.2,
-          width: size.width * 0.6,
+          
           decoration: BoxDecoration(
-              border: Border.all(
-                  width: 1.0,
-                  color: Colors
-                      .amber), // Color(hexcolor.hexcolorCode(message.sender!.colorPref))
               borderRadius: BorderRadius.circular(7.0),
-              image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: CachedNetworkImageProvider(
-                      widget.message.thumbnailUrl!))),
+             ),
         ),
         _showReactionBarUi(
             messageReactions: widget.message.metadata!["reactions"])
@@ -690,11 +596,13 @@ class _MessageLinesState extends State<MessageLines> {
                             ),
                           )
                         ],
-                        if (widget.message.metadata != null && widget.message.metadata!.containsKey('isKngAi')) ...[
+                        if (widget.message.metadata != null &&
+                            widget.message.metadata!
+                                .containsKey('isKngAi')) ...[
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 3.0),
                             child: Container(
-                              padding: EdgeInsets.only(left: 5.0),
+                              padding: EdgeInsets.all(2),
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(7.0),
                                   gradient: LinearGradient(
@@ -711,10 +619,12 @@ class _MessageLinesState extends State<MessageLines> {
                                       end: Alignment.bottomRight)),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(7.0),
-                                    bottomRight: Radius.circular(7.0),
-                                  ),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(2)),
+                                  // only(
+                                  //   topRight: Radius.circular(7.0),
+                                  //   bottomRight: Radius.circular(7.0),
+                                  // ),
                                   color:
                                       Theme.of(context).colorScheme.secondary,
                                 ),
@@ -726,8 +636,7 @@ class _MessageLinesState extends State<MessageLines> {
                                       style:
                                           Theme.of(context).textTheme.caption,
                                       children: <TextSpan>[
-                                        TextSpan(
-                                            text: '#kngAi'),
+                                        TextSpan(text: '#kngAi'),
                                       ],
                                     ),
                                   ),

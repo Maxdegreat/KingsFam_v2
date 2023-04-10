@@ -2,10 +2,13 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:kingsfam/config/constants.dart';
 import 'package:kingsfam/models/post_model.dart';
 import 'package:kingsfam/models/user_model.dart';
+import 'package:kingsfam/screens/snack_time/cm_theme_list.dart';
 
 import 'package:kingsfam/widgets/basic_overlay_widget.dart';
+import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
 import 'package:kingsfam/widgets/videos/videoPostView16_9.dart';
 
 import 'package:video_player/video_player.dart';
@@ -17,22 +20,28 @@ class UrlViewArgs {
   final String? heroTag;
   final File? fileVid;
   final File? fileImg;
+  final Userr userr;
 
   UrlViewArgs(
       {this.urlVid,
       required this.urlImg,
       required this.heroTag,
+      required this.userr,
       this.fileImg,
       this.fileVid});
 }
 
 class UrlViewScreen extends StatefulWidget {
   const UrlViewScreen(
-      {this.urlVid,
+      {
+      required this.userr,
       required this.urlImg,
       required this.heroTag,
       required this.fileVid,
-      required this.fileImg});
+      required this.fileImg,
+      this.urlVid,
+    });
+  final Userr userr;
   final String? urlVid;
   final String? urlImg;
   final String? heroTag;
@@ -50,6 +59,7 @@ class UrlViewScreen extends StatefulWidget {
               urlImg: args.urlImg,
               fileVid: args.fileVid,
               fileImg: args.fileImg,
+              userr: args.userr,
             ));
   }
 
@@ -87,12 +97,21 @@ class _FileViewScreenState extends State<UrlViewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ContainerWithURLImg(imgUrl: widget.userr.profileImageUrl, height: 30, width: 30, pc: Color(hc.hexcolorCode(widget.userr.colorPref))),
+            const SizedBox(width: 10),
+            Text(widget.userr.username, style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.white),),
+          ],
+        ),
         backgroundColor: Colors.black,
         leading: IconButton(
               onPressed: () => Navigator.of(context).pop(),
               icon: Icon(
                 Icons.arrow_back_ios,
-                color: Theme.of(context).iconTheme.color,
+                color: Colors.white,
               )),
       ),
       body: Hero(tag: widget.heroTag!, child: _viewPort()),
@@ -103,8 +122,9 @@ class _FileViewScreenState extends State<UrlViewScreen> {
         key: ObjectKey(vidController),
         onVisibilityChanged: (vis) {
           if (vis.visibleFraction == 0 && this.mounted) {
-            Navigator.of(context).pop();
-            if (vidController != null) vidController!.dispose();
+            // Navigator.of(context).pop();
+            // if (vidController != null) vidController!.dispose();
+            if (vidController != null) vidController!.pause();
           }
         },
         child: flagWhichVidPlayer

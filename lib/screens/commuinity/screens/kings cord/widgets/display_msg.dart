@@ -71,7 +71,7 @@ class DisplayMsg extends StatelessWidget {
       child: RichText(
         text: TextSpan( 
           text: "Welcome " + m!.sender!.username, 
-          style: s.subtitle1!.copyWith(color: Colors.grey)!.copyWith(fontWeight: FontWeight.w400),
+          style: s.subtitle1!.copyWith(color: Colors.grey).copyWith(fontWeight: FontWeight.w400),
           children: [
             TextSpan(
               text: " just joined 🥳",

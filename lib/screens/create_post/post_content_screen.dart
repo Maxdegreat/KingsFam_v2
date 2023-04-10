@@ -250,6 +250,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
         onTap: () {
           Navigator.of(context).pushNamed(UrlViewScreen.routeName,
               arguments: UrlViewArgs(
+                userr: context.read<ProfileBloc>().state.userr,
                   heroTag: 'heroTag',
                   fileImg: File(thumbnailPath!),
                   fileVid: vidF!,

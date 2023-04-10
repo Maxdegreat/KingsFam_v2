@@ -32,7 +32,9 @@ class MessageBubble extends StatelessWidget {
   _buildImage(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return GestureDetector(
-      onTap: (() => Navigator.of(context).pushNamed(UrlViewScreen.routeName, arguments: UrlViewArgs(urlImg: message.imageUrl, heroTag: 'heroTag'))),
+      onTap: (() => Navigator.of(context).pushNamed(UrlViewScreen.routeName, arguments: UrlViewArgs(
+        userr: Userr.empty,
+        urlImg: message.imageUrl, heroTag: 'heroTag'))),
       child: Container(
         height: size.height * 0.2,
         width: size.width * 0.6,
