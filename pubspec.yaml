@@ -144,7 +144,6 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/icon_transparent.png
-    - assets/mock_photos/
     - assets/share_post_temp.png
     - assets/placeholder_kf.png
     # SVG's are below

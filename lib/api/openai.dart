@@ -1,11 +1,45 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart'
+    as http; // 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
 
 class OpenAi {
   Future<Map<String, String>> chatCompletion(prompt) async {
-    // construct the prompt:
+    try {
+      final url =
+          'https://us-central1-kingsfam-9b1f8.cloudfunctions.net/openAiEndpoint'; // Replace with the actual Cloud Function URL
+      final headers = {'Content-Type': 'application/json'};
+      final body = {'topic': prompt};
+      final response = await http.post(Uri.parse(url),
+          headers: headers, body: jsonEncode(body));
+      if (response.statusCode == 200) {
+        log(jsonDecode(response.body).toString());
+        return {
+          'status': response.statusCode.toString(),
+          'text': jsonDecode(response.body)['text']
+        };
+      } else if (response.statusCode == 400) {
+        return {
+          'status': response.statusCode.toString(),
+          'text': "Ops something went wrong status: ${response.statusCode}",
+        };
+      } else {
+        throw Exception('Failed to get verse: ${response.statusCode}');
+      }
+    } catch (e) {
+       log(e.toString());
+      throw Exception('Failed to get verse :(');
+    }
+  }
+}
+
+
+
+
+/*
+
+      // construct the prompt:
     prompt = '''
 Return to me a Bible verse that includes the topic hard work: 
 1
@@ -16,7 +50,7 @@ Return to me a Bible verse that includes the topic $prompt.
 ''';
 
     const url = 'https://api.openai.com/v1/completions';
-    String apiKey = '';
+    String apiKey = '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';
     var response = await http.post(Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
@@ -44,5 +78,6 @@ Return to me a Bible verse that includes the topic $prompt.
         'text': "Ops something went wrong status: ${response.statusCode}",
       };
     }
-  }
-}
+
+ 
+*/

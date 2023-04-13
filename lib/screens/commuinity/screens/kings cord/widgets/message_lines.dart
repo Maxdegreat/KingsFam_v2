@@ -621,12 +621,8 @@ class _MessageLinesState extends State<MessageLines> {
                                 decoration: BoxDecoration(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(2)),
-                                  // only(
-                                  //   topRight: Radius.circular(7.0),
-                                  //   bottomRight: Radius.circular(7.0),
-                                  // ),
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
+                                  
+                                  color:Theme.of(context).colorScheme.secondary,
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.only(
