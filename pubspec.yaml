@@ -3,7 +3,7 @@ description: Christian communities.
 
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
-version: 2.0.0+43
+version: 2.0.0+44
 
 environment:
   sdk: ">=2.17.5 <3.0.0"
@@ -113,8 +113,8 @@ flutter_native_splash:
   image_dark: assets/kf_crown_white_960_960.png
   color: "#FFFFFF"
   color_dark: "#101010"
-  icon_background_color: "#101010"
-  icon_background_color_dark: "#FFFFFF"
+  icon_background_color: "#FFFFFF"
+  icon_background_color_dark: "#101010"
 
 
   android_12:
