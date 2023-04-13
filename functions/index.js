@@ -1,19 +1,20 @@
 // i always forget the command. this is how you deploy functions in firebase: firebase deploy --only functions
 // or $ firebase deploy --only functions:func1,functions:func2
-const functions = require("firebase-functions");
+const functions = require('firebase-functions');
 const admin = require("firebase-admin");
 const express = require("express");
+// import fetch from 'node-fetch';
 const { RtcTokenBuilder, RtcToken, RtcRole } = require("agora-access-token");
-require("dotenv").config();
 const { user } = require("firebase-functions/v1/auth");
 const { log } = require("firebase-functions/logger");
+require("dotenv").config();
 //var serviceAccount = require("./kingsfam-9b1f8-firebase-adminsdk-dgh0u-38f8d6850d.json");
 // const onCreateKc = require('./kc.js');
 
 admin.initializeApp();
 
-const APP_ID = "706f3b99f31a4ca89b001b4671652c18"; //process.env.APP_ID;
-const APP_CERTIFICATE = "5c33c35890b1441e8a1a2a9da878e74a"; //process.env.APP_CERTIFICATE;
+const APP_ID = "706f3b99f31a4ca89b001b4671652c18"; 
+const APP_CERTIFICATE = "5c33c35890b1441e8a1a2a9da878e74a";
 
 const app = express();
 
@@ -69,6 +70,79 @@ const generateAccessToken = (req, res) => {
 exports.agoraTokenGenerator = functions.https.onRequest((req, res) => {
   res.send(generateAccessToken(req, res));
 });
+
+const https = require('https');
+
+exports.openAiEndpoint = functions.https.onRequest(async (req, res) => {
+  try {
+    // Check if the request body includes the required 'topic' parameter
+    if (!req.body || !req.body.topic) {
+      throw new Error('Missing required parameter: topic');
+    }
+    
+    // Construct the prompt
+    const prompt = `
+    Return to me a Bible verse that includes the topic hard work: 
+    1
+    Colossians 3:23-24
+    Whatever you do, do it from the heart for the Lord and not for people.
+    You know that you will receive an inheritance as a reward. You serve the Lord Christ
+    Return to me a Bible verse that includes the topic ${req.body.topic}.
+    `;
+
+    // Make the OpenAI API call with the API key
+    const apiKey = ''; 
+    const apiUrl = 'https://api.openai.com/v1/completions';
+    const requestData = JSON.stringify({
+      model: 'text-davinci-003',
+      prompt: prompt,
+      max_tokens: 256,
+      temperature: 0.7
+    });
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      }
+    };
+
+    const request = https.request(apiUrl, options, (response) => {
+      let responseData = '';
+
+      response.on('data', (chunk) => {
+        responseData += chunk;
+      });
+
+      response.on('end', () => {
+        // Check if the OpenAI API call was successful
+        if (response.statusCode !== 200) {
+          throw new Error(`OpenAI API returned ${response.statusCode} ${response.statusMessage}`);
+        }
+
+        // Parse the response JSON and extract the text
+        const jsonResponse = JSON.parse(responseData);
+        const text = jsonResponse.choices[0].text;
+
+        // Return the results to the HTTP response
+        res.status(200).send({ status: 200, text: text });
+      });
+    });
+
+    request.on('error', (error) => {
+      console.error(error);
+      res.status(500).send({ status: 500, text: error.message });
+    });
+
+    request.write(requestData);
+    request.end();
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ status: 500, text: error.message });
+  }
+});
+
 
 exports.onNewJoinRequest = functions.firestore // --------------------------------------------------------- MUST LOOK AT
   .document("/requestToJoinCm/{cmId}/request/{requestingId}")
