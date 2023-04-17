@@ -430,6 +430,15 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           ),
         ),
         actions: [
+          IconButton(onPressed: () {
+            context.read<KingscordCubit>().sendCalledMessage(
+              churchId: widget.commuinity.id!, 
+              kingsCordId: widget.kingsCord.id!, 
+              username: context.read<ProfileBloc>().state.userr.username
+            ).then((value) {
+              // Navigator.of(context).pushNamed();
+            });
+          }, icon: Icon(Icons.voice_chat_rounded)),
           if (widget.role["kfRole"] == "Admin" ||
               widget.role["kfRole"] == "Lead") ...[
             IconButton(
@@ -819,7 +828,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                           child: IconButton(
                             icon:
                                 !state.isTyping ? _dontSendIcon() : _sendIcon(),
-                            color: Colors.blue,
+                            color: Colors.blueAccent,
                             onPressed: state.isTyping
                                 ? () {
                                     _codeForOnP(state);
@@ -845,7 +854,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
   _dontSendIcon() {
     if (context.read<KingscordCubit>().state.isKngAi) {
-      return Icon(Iconsax.star_slash5);
+      return Icon(Iconsax.send_1);
     } else {
       return Icon(Iconsax.send_1, size: 18);
     }
@@ -854,14 +863,14 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   _sendIcon() {
     if (context.read<KingscordCubit>().state.isKngAi) {
       return Icon(
-        Iconsax.star_slash5,
+        Iconsax.send_21,
         color: Colors.amber,
       );
     } else {
       return Icon(
         Iconsax.send_21,
         size: 18,
-        color: Colors.blue,
+        color: Colors.blueAccent,
       );
     }
   }
@@ -943,8 +952,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
   _showMentioned(KingscordState state) {
     return Container(
-      height: 17,
-      color: Color.fromARGB(110, 255, 193, 7),
+      height: 20,
+      color: Color.fromARGB(122, 68, 137, 255),
       width: MediaQuery.of(context).size.width,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -963,7 +972,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           ),
           SizedBox(width: 5),
           Container(
-            height: 15,
+            height: 20,
             width: MediaQuery.of(context).size.width / 1.8,
             child: ListView.builder(
               cacheExtent: 150,
@@ -973,10 +982,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 Userr m = state.mentions[index];
                 return Text(
                   m.username,
-                  style: TextStyle(
-                      fontStyle: FontStyle.italic,
-                      fontSize: 14,
-                      color: Colors.grey),
+                  style: Theme.of(context).textTheme.subtitle1!.copyWith(fontStyle: FontStyle.italic, fontSize: 14),
                 );
               },
             ),

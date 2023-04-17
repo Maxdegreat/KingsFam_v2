@@ -9,10 +9,8 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kingsfam/api/openai.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:kingsfam/config/kc_meta_data.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
@@ -160,6 +158,23 @@ class KingscordCubit extends Cubit<KingscordState> {
     emit(state.copyWith(status: KingsCordStatus.getInitmsgs));
 
     paginateMsg(cmId: cmId, kcId: kcId, limit: limit);
+  }
+
+  Future<void> sendCalledMessage({required String username, required String kingsCordId, required String churchId}) async {
+    final message = Message(
+      text: "Thisisakingscordembedcallstarted",
+      date: Timestamp.fromDate(DateTime.now()),
+      imageUrl: null,
+      senderUsername: username ,
+      metadata: {},
+      mentionedIds: null,
+    );
+
+    return await _kingsCordRepository.sendMsgTxt(
+        churchId: churchId,
+        kingsCordId: kingsCordId,
+        message: message,
+        senderId: _authBloc.state.user!.uid);
   }
 
   Future<void> paginateMsg(

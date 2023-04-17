@@ -102,12 +102,12 @@ class _ChatsScreenState extends State<ChatsScreen>
   @override
   void initState() {
     super.initState();
-    setupInteractedMessage();
     FirebaseDynamicLinkService.initDynamicLink(context);
     CurrentKingsCordRoomId();
+    context.read<ProfileBloc>().add(ProfileLoadUserOnly(userId: context.read<AuthBloc>().state.user!.uid));
+    setupInteractedMessage();
     NotificationHelper.initalize(flutterLocalNotificationsPlugin);
     context.read<BuidCubit>().init();
-    context.read<ProfileBloc>().add(ProfileLoadUserOnly(userId: context.read<AuthBloc>().state.user!.uid));
     //super.build(context);
   }
 
