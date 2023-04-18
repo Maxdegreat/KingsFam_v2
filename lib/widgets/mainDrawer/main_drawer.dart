@@ -157,7 +157,7 @@ class _MainDrawerState extends State<MainDrawer> {
                         padding: const EdgeInsets.only(bottom: 0.0),
                         child: drawerIcon(
                             Icon(
-                              Icons.favorite,
+                              Icons.favorite_outline,
                               color: Theme.of(context).colorScheme.primary,
                             ),
                             context),
@@ -233,12 +233,12 @@ class _MainDrawerState extends State<MainDrawer> {
                         SizedBox(height: 8),
 
                         // UNCOMENT
-                        // singlePostDisplay(
-                        //   cm: context.read<ChatscreenBloc>().state.selectedCh!,
-                        //   context: context,
-                        //   cmBloc: context.read<CommuinityBloc>(),
-                        //   ad: null,
-                        // ),
+                        singlePostDisplay(
+                          cm: context.read<ChatscreenBloc>().state.selectedCh!,
+                          context: context,
+                          cmBloc: context.read<CommuinityBloc>(),
+                          ad: null,
+                        ),
 
                         // if (state.mentionedCords.length > 0) ... [
                         //   showMentions(context, cm),

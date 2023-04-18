@@ -124,7 +124,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
   _showText() {
     return Text(
-      "Pick an image to share then chose which commuinity if any to share to",
+      "Your Post will be visible in the explore page in order to help others find your community.",
       style: Theme.of(context)
           .textTheme
           .bodyText1!
