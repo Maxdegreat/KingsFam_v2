@@ -96,7 +96,7 @@ dependencies:
   video_trimmer: ^2.0.1
   like_button: ^2.0.5
 
-  #agora_rtc_engine: ^6.1.0
+  agora_rtc_engine: ^6.1.0
 
 dev_dependencies:
   flutter_test:

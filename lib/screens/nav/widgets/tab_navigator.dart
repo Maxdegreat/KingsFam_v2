@@ -1,5 +1,3 @@
-
-
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -8,7 +6,6 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/custum_router.dart';
 
 import 'package:kingsfam/enums/bottom_nav_items.dart';
-
 
 import '../../screens.dart';
 
@@ -21,12 +18,9 @@ class TabNavigator extends StatelessWidget {
   final BottomNavItem item;
   final BuildContext? context;
 
-  const TabNavigator({
-    Key? key,
-    required this.navigatorKey,
-    required this.item,
-    this.context
-  }) : super(key: key);
+  const TabNavigator(
+      {Key? key, required this.navigatorKey, required this.item, this.context})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -53,18 +47,19 @@ class TabNavigator extends StatelessWidget {
   Widget _getScreen(BuildContext ctx, BottomNavItem item) {
     switch (item) {
       case BottomNavItem.chats:
-        return   ChatsScreen();
-     
+        return ChatsScreen();
 
       // removed the chain operator that ads the init user
       case BottomNavItem.search:
         return SearchScreen();
-        
+
+      case BottomNavItem.feed:
+        return FeedNewScreen();
 
       // case BottomNavItem.notifications:
       //   return BlocProvider<NotyBloc>(
       //     create: (context) => NotyBloc(
-      //       notificationRepository: context.read<NotificationRepository>(), 
+      //       notificationRepository: context.read<NotificationRepository>(),
       //       authBloc: context.read<AuthBloc>(),
       //     ),
       //     child: NotificationsScreen(),
@@ -72,7 +67,8 @@ class TabNavigator extends StatelessWidget {
 
       case BottomNavItem.profile:
         // this.context!.read<ProfileBloc>()..add(ProfileLoadUserr(userId: ctx.read<AuthBloc>().state.user!.uid));
-        return ProfileScreen(ownerId: ctx.read<AuthBloc>().state.user!.uid, initScreen: false);
+        return ProfileScreen(
+            ownerId: ctx.read<AuthBloc>().state.user!.uid, initScreen: false);
       default:
         return Scaffold();
     }

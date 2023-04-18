@@ -253,16 +253,14 @@ class PostsRepository extends BasePostsRepository {
 
   // GET THE USER FEED
   @override
-  Future<List<Post?>> getUserFeed(
-      {required String userId, String? lastPostId, required int limit}) async {
+  Future<List<Post?>> getUserFeed({String? lastPostId, required int limit}) async {
+    
     QuerySnapshot postSnap;
     //if last post id is null asign postSnap to Fire base firestore
     //this means that we are getting our post for the first time
     if (lastPostId == null) {
       postSnap = await _firebaseFirestore
-          .collection(Paths.feeds)
-          .doc(userId)
-          .collection(Paths.userFeed)
+          .collection(Paths.posts)
           .orderBy('date', descending: true)
           .limit(limit)
           .get();
@@ -270,9 +268,7 @@ class PostsRepository extends BasePostsRepository {
       // now we are in the else. here we want to grt the docid of the last post which we pass into the
       // function get user feed
       final lastPostDoc = await _firebaseFirestore
-          .collection(Paths.feeds)
-          .doc(userId)
-          .collection(Paths.userFeed)
+          .collection(Paths.posts)
           .doc(lastPostId)
           .get();
 
@@ -281,9 +277,7 @@ class PostsRepository extends BasePostsRepository {
 
       // recall the querry but use start after
       postSnap = await _firebaseFirestore
-          .collection(Paths.feeds)
-          .doc(userId)
-          .collection(Paths.userFeed)
+          .collection(Paths.posts)
           .orderBy('date', descending: true)
           .startAfterDocument(lastPostDoc)
           .limit(limit)
@@ -325,8 +319,7 @@ class PostsRepository extends BasePostsRepository {
           .get();
       // where we able to get the actuall doc?
       if (!lastPostDoc.exists) {
-        print(
-            "************** lastpost doc not exist in get church post pag. exiziting********************");
+        print("************** lastpost doc not exist in get church post pag. exiziting********************");
         return [];
       }
 

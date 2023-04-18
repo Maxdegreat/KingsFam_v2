@@ -38,13 +38,12 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
 
   @override
   Stream<FeedState> mapEventToState(FeedEvent event) async* {
-    // if (event is FeedFetchPosts) {
-    //   yield* _mapFeedFetchPostToState();
-    // } else if (event is FeedCommuinityFetchPosts) {
-    if (event is FeedCommuinityFetchPosts) {
+    if (event is FeedFetchPosts) {
+      yield* _mapFeedFetchPostToState(event);
+    } else if (event is FeedCommuinityFetchPosts) {
       yield* _mapFeedCommuinityFetchPostToState(event);
-      // } else if (event is FeedPaginatePosts) {
-      //   yield* _mapFeedPaginatePosts();
+    } else if (event is FeedPaginatePosts) {
+      yield* _mapFeedPaginatePosts(event);
     } else if (event is CommunityFeedPaginatePost) {
       yield* _mapCommunityFeedPaginatePosts(event);
     }
@@ -52,8 +51,92 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
 
   static const int PAGIATIONLIMIT = 2;
 
-  Stream<FeedState> _mapFeedCommuinityFetchPostToState(
-      FeedCommuinityFetchPosts event) async* {
+  Stream<FeedState> _mapFeedFetchPostToState(FeedFetchPosts event) async* {
+    yield state.copyWith(posts: [], status: FeedStatus.loading);
+    log("loading post");
+    try {
+      if (!MockFlag.ISMOCKTESTING) {
+        List<Post?> posts = [];
+        List<Widget?> postContainers = [];
+
+        log("about to call get user feed");
+        posts = await _postsRepository.getUserFeed(lastPostId: null, limit: 3);
+        log("called get user feed");
+
+        if (posts.length >= 2) {
+          posts.add(Post.empty.copyWith(id: posts.last!.id));
+          // posts.insert( 2, Post.empty );
+        }
+
+        log("context in feed state is:  " + event.context.toString());
+        postContainers = _makePostContainers(posts, event.context!);
+        log("made post containers");
+        _likedPostCubit.clearAllLikedPosts();
+
+        final likedPostIds = await _postsRepository.getLikedPostIds(
+            userId: _authBloc.state.user!.uid, posts: posts);
+        _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
+        yield state.copyWith(
+            posts: posts,
+            postContainer: postContainers,
+            status: FeedStatus.success,
+            likedPostIds: likedPostIds,
+            currContext: event.context);
+      } else {
+        List<Post?> posts = MockPostData.getMockPosts2;
+        // posts.add(Post.empty);
+        List<Widget?> postContainers =
+            _makePostContainers(posts, event.context!);
+        yield state.copyWith(
+            currContext: event.context,
+            posts: posts,
+            postContainer: postContainers,
+            status: FeedStatus.success);
+      }
+    } catch (e) {}
+  }
+
+  Stream<FeedState> _mapFeedPaginatePosts(FeedPaginatePosts event) async* {
+    yield state.copyWith(status: FeedStatus.paginating);
+
+    if (!MockFlag.ISMOCKTESTING) {
+      try {
+        final lastPostId = state.posts.isNotEmpty ? state.posts.last!.id : null;
+        final posts = await _postsRepository.getUserFeed(
+            limit: 7, lastPostId: lastPostId);
+        final updatedPosts = List<Post?>.from(state.posts)..addAll(posts);
+        updatedPosts.add(Post.empty.copyWith(id: posts.last!.id));
+        final postContainers =
+            _makePostContainers(updatedPosts, state.currContext!);
+
+        final likedPostIds = await _postsRepository.getLikedPostIds(
+            userId: _authBloc.state.user!.uid, posts: posts);
+        _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
+        yield state.copyWith(
+            posts: updatedPosts,
+            postContainer: postContainers,
+            status: FeedStatus.success);
+      } catch (e) {
+        yield state.copyWith(
+            failure: Failure(
+                message: "Aw man, something went wrong", code: e.toString()),
+            status: FeedStatus.error);
+      }
+    } else {
+      List<Post?> posts = MockPostData.getMockPosts4;
+      // posts.add(Post.empty);
+
+      List<Widget?> postContainers =
+          _makePostContainers(posts, state.currContext!);
+
+      yield state.copyWith(
+          posts: posts,
+          postContainer: postContainers,
+          status: FeedStatus.success);
+    }
+  }
+
+  Stream<FeedState> _mapFeedCommuinityFetchPostToState(FeedCommuinityFetchPosts event) async* {
     yield state.copyWith(posts: [], status: FeedStatus.loading);
 
     try {
@@ -79,18 +162,18 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
             userId: _authBloc.state.user!.uid, posts: posts);
         _likedPostCubit.updateLikedPosts(postIds: likedPostIds);
         yield state.copyWith(
-          posts: posts,
-          postContainer: postContainers,
-          status: FeedStatus.success,
-          likedPostIds: likedPostIds,
-          currContext: event.context
-        );
+            posts: posts,
+            postContainer: postContainers,
+            status: FeedStatus.success,
+            likedPostIds: likedPostIds,
+            currContext: event.context);
       } else {
         List<Post?> posts = MockPostData.getMockPosts2;
         // posts.add(Post.empty);
-        List<Widget?> postContainers = _makePostContainers(posts, event.context!);
+        List<Widget?> postContainers =
+            _makePostContainers(posts, event.context!);
         yield state.copyWith(
-          currContext: event.context,
+            currContext: event.context,
             posts: posts,
             postContainer: postContainers,
             status: FeedStatus.success);
@@ -98,8 +181,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     } catch (e) {}
   }
 
-  Stream<FeedState> _mapCommunityFeedPaginatePosts(
-      CommunityFeedPaginatePost event) async* {
+  Stream<FeedState> _mapCommunityFeedPaginatePosts(CommunityFeedPaginatePost event) async* {
     yield state.copyWith(status: FeedStatus.paginating);
 
     if (!MockFlag.ISMOCKTESTING) {
@@ -110,7 +192,8 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
             commuinityId: event.commuinityId, lastPostId: lastPostId);
         final updatedPosts = List<Post?>.from(state.posts)..addAll(posts);
         updatedPosts.add(Post.empty.copyWith(id: posts.last!.id));
-        final postContainers = _makePostContainers(updatedPosts, state.currContext!);
+        final postContainers =
+            _makePostContainers(updatedPosts, state.currContext!);
 
         final likedPostIds = await _postsRepository.getLikedPostIds(
             userId: _authBloc.state.user!.uid, posts: posts);
@@ -128,9 +211,9 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     } else {
       List<Post?> posts = MockPostData.getMockPosts4;
       // posts.add(Post.empty);
-    
 
-      List<Widget?> postContainers = _makePostContainers(posts, state.currContext!);
+      List<Widget?> postContainers =
+          _makePostContainers(posts, state.currContext!);
 
       yield state.copyWith(
           posts: posts,
@@ -146,12 +229,11 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
 
     log("abt to start for loop");
     for (Post? p in ps) {
-      if (p!.author == Userr.empty ) container = SizedBox.shrink();
-      
+      if (p!.author == Userr.empty)
+        container = SizedBox.shrink();
       else {
-
-      log("not an ad widget");
-      log("Buids " +_buidCubit.state.buids.toString());
+        log("not an ad widget");
+        log("Buids " + _buidCubit.state.buids.toString());
 
         if (!_buidCubit.state.buids.contains(p.author.id)) {
           if (p.imageUrl != null)
@@ -164,8 +246,6 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
             Navigator.of(ctx).pop();
           });
         }
-      
-
       }
       // else -> container is already init as null
       log("adding containrt");

@@ -2,118 +2,178 @@
 // I need a list of post. the post will contain data on user and commuinity because it has references
 //
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:kingsfam/config/global_keys.dart';
+import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
+import 'package:kingsfam/enums/bottom_nav_items.dart';
+import 'package:kingsfam/helpers/ad_helper.dart';
+import 'package:kingsfam/screens/commuinity/screens/feed/bloc/feed_bloc.dart';
+
 import 'package:kingsfam/cubits/cubits.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
-import 'package:kingsfam/screens/feed_new/bloc/feedpersonal_bloc.dart';
+import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/widgets/widgets.dart';
-
-class FeedNewScreenArgs {
-  final int startIndex;
-  final List<Post?> posts;
-  FeedNewScreenArgs({required this.startIndex, required this.posts});
-}
 
 class FeedNewScreen extends StatefulWidget {
   static const String routeName = '/feedNewScreen';
-  static Route route({required FeedNewScreenArgs args}) {
+  static Route route() {
     return MaterialPageRoute(
       settings: const RouteSettings(name: routeName),
-      builder: (context) => BlocProvider<FeedpersonalBloc>(
-        create: (_) => FeedpersonalBloc(
-          likedPostCubit: context.read<LikedPostCubit>(),
-          authBloc: context.read<AuthBloc>(),
-          postsRepository: context.read<PostsRepository>(),
-        )..add(FeedLoadPostsInit(posts: args.posts, currIdx: args.startIndex)),
-        child:FeedNewScreen(startIndex: args.startIndex,)
-      ),
+      builder: (context) => BlocProvider<FeedBloc>(
+          create: (_) => FeedBloc(
+              postsRepository: context.read<PostsRepository>(),
+              authBloc: context.read<AuthBloc>(),
+              likedPostCubit: context.read<LikedPostCubit>(),
+              buidCubit: context.read<BuidCubit>()),
+          child: FeedNewScreen()),
     );
   }
 
-  const FeedNewScreen({Key? key, required this.startIndex});
-
-  final int startIndex;
+  const FeedNewScreen();
 
   @override
   State<FeedNewScreen> createState() => FeedNewState();
 }
 
-
 class FeedNewState extends State<FeedNewScreen> {
 
-  ItemScrollController itemController = ItemScrollController();
+    // make a ad declared
+  late BannerAd _bannerAd;
+  // make a bool declared
+  bool _isBannerAdLoaded = false;
+  late Size size;
 
-  @override
+
+    @override
   void initState() {
     super.initState();
-    scrollToHelper();
+    Future.delayed(Duration.zero, () {
+      size = MediaQuery.of(context).size;
+      _ceateBanneAd();
+    });
   }
-  
-  Future scrollToItem() async {
-    itemController.jumpTo(index: widget.startIndex);
-  }
-  Future scrollToHelper() async {
-    Future.delayed(const Duration(milliseconds: 85)).then((_) => scrollToItem());
-  }
-  //bool loaded = false;
 
+  @override
+  void dispose() {
+    _bannerAd.dispose();
+    super.dispose();
+  }
+
+    void _ceateBanneAd() {
+  
+    _bannerAd = BannerAd(
+        size: AdSize.getLandscapeInlineAdaptiveBannerAdSize(size.width.toInt()),
+        adUnitId: AdHelper.bannerAdUnitId,
+        listener: BannerAdListener(onAdLoaded: (_) {
+          setState(() {
+            _isBannerAdLoaded = true;
+          });
+        }, onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          log("!!!!!!!!!!!!!!!!!! - bottom Ad Error In Cm Feed - !!!!!!!!!!!!!!!!!!!!!!!!!");
+          log("chatsScreen ad error: ${error.toString()}");
+          log("!!!!!!!!!!!!!!!!!! - bottom Ad Error In Cm Feed - !!!!!!!!!!!!!!!!!!!!!!!!!");
+        }),
+        request: AdRequest());
+    _bannerAd.load();
+  }
+
+  bool hasSeen = false;
+
+  void _initFeedBloc() {
+    context.read<FeedBloc>()..add(FeedFetchPosts(context: context));
+    log("called init from feed p screen");
+  }
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     Size size = MediaQuery.of(context).size;
-    return BlocConsumer<FeedpersonalBloc, FeedpersonalState>(
+    return BlocConsumer<FeedBloc, FeedState>(
       listener: (context, state) {
-
+        // TODO: implement listener
       },
       builder: (context, state) {
+        if (!hasSeen && context.read<BottomnavbarCubit>().state.selectedItem == BottomNavItem.feed) {
+          _initFeedBloc();
+          hasSeen = true;
+        }
 
         return Scaffold(
+            backgroundColor: Colors.black,
             appBar: AppBar(
-              title: Text("Fam's Posts"),
-              //actions: [TextButton(onPressed: () => print(state.jumpTo), child: Text("Scroll"))],
+              leading: IconButton(
+                  onPressed: () => scaffoldKey.currentState!.openDrawer(),
+                  icon: Icon(
+                    Icons.menu,
+                    color: Colors.white,
+                  )),
+              backgroundColor: Colors.black,
+              // title: Text(
+              //   "${widget.commuinity.name}\'s Content",
+              //   overflow: TextOverflow.fade,
+              //   style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.white),
+              // ),
             ),
-            body: ScrollablePositionedList.builder(
-              itemScrollController: itemController,
-              itemCount: state.posts.length,
-              itemBuilder: (BuildContext context, int index) {
-               
-                // if (loaded != true) {
-                //   loaded = true;
-                //   scrollToHelper();
-                // }
-                if (index == state.posts.length) {
-                  // TODO call paginate post 
-                }
-                final Post? post = state.posts[index];
-                if (post != null) {
-                   final LikedPostState = context.watch<LikedPostCubit>().state;
-                   final isLiked = LikedPostState.likedPostsIds.contains(post.id!);
-                   final recentlyLiked = LikedPostState.recentlyLikedPostIds.contains(post.id!);
+            body: state.posts.length > 0
+                ? SafeArea(
+                    child: PageView.builder(
+                        scrollDirection: Axis.vertical,
+                        onPageChanged: (pageNum) {
+                          _paginate(pageNum, state);
 
-                  return PostSingleView(
-                    isLiked: isLiked,
-                    post: post,
-                    recentlyLiked: recentlyLiked,
-                    onLike: () {
-                      if (isLiked) {
-                       context.read<LikedPostCubit>().unLikePost(post: post);
-                     } else {
-                       context.read<LikedPostCubit>().likePost(post: post);
-                     }
-                    },
-                  );
-                }
-                print(post);
-                return Text("post is null");
-              },
-            ));
+                          // load next ad
+                          // _loadNextAd(pageNum, state);
+                          // load next vid
+                        },
+                        itemCount: state.posts.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          // if next post is empty then display an ad (empty post)
+                          // are added in bloc programatically as placeholders for ads
+                          if (state.posts[index]!.author == Userr.empty) {
+                            return PostSingleView(
+                              isLiked: false,
+                              post: null,
+                              adWidget: AdWidget(ad: _bannerAd),
+                              recentlyLiked: false,
+                              onLike: () {},
+                            );
+                          } else {
+                            final Post? post = state.posts[index];
+
+                            if (post != null) {
+                              return state.postContainer[index]!;
+                            }
+                            return SizedBox.shrink();
+                          }
+                        }),
+                  )
+                : Center(
+                    child: Text("Loading ..."),
+                  ));
       },
     );
   }
+
+  void _paginate(pageNum, state) {
+    if (pageNum == state.posts.length - 1) {
+      if (state.posts.length != 0) {
+        context.read<FeedBloc>()..add(FeedPaginatePosts());
+      }
+    }
+  }
+
+  void _loadNextAd(pageNum, state) {
+    if (state.posts.length > pageNum + 1 || state.posts.length == pageNum + 1) {
+      if (state.posts[pageNum + 1]!.author == Post.empty.author) {
+        _ceateBanneAd();
+      }
+    }
+  }
 }
-
-

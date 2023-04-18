@@ -7,7 +7,13 @@ abstract class FeedEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class FeedFetchPosts extends FeedEvent {}
+class FeedFetchPosts extends FeedEvent {
+  final BuildContext? context;
+  final String? lastPostId;
+  const FeedFetchPosts({required this.context, this.lastPostId});
+}
+
+class FeedPaginatePosts extends FeedEvent {}
 
 class FeedCommuinityFetchPosts extends FeedEvent {
   final String commuinityId;
@@ -15,12 +21,13 @@ class FeedCommuinityFetchPosts extends FeedEvent {
   final List<Post>? passedPost;
   final BuildContext? context;
   FeedCommuinityFetchPosts(
-      {required this.commuinityId, required this.lastPostId, required this.passedPost, this.context});
+      {required this.commuinityId,
+      required this.lastPostId,
+      required this.passedPost,
+      this.context});
 }
 
 class CommunityFeedPaginatePost extends FeedEvent {
   final String commuinityId;
   CommunityFeedPaginatePost({required this.commuinityId});
 }
-
-class FeedPaginatePosts extends FeedEvent {}

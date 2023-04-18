@@ -42,7 +42,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
           height: 250,
           child: Center(
               child: CircularProgressIndicator(
-            color: Colors.red[400],
+            color: Colors.amber,
           )));
 }
 }

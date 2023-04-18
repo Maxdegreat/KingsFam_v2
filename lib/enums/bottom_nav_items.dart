@@ -3,4 +3,5 @@ enum BottomNavItem {
   search,
   // notifications,
   profile,
+  feed,
 }

@@ -6,7 +6,7 @@ abstract class BasePostsRepository {
   Future<void> createComment({required Comment comment, required Post? post});
   // Stream<List<Future<Post?>>> getUserPosts({required String userId, required int limit, required DocumentSnapshot<Map<String, dynamic>>? lastPostDoc});
   Stream<List<Future<Comment?>>> getPostComments({required String postId});
-  Future<List<Post?>> getUserFeed({required String userId, String? lastPostId, required int limit});
+  Future<List<Post?>> getUserFeed({String? lastPostId, required int limit});
 
   void createLike({required Post post, required String userId});
   Future<Set<String>> getLikedPostIds({required String userId, required List<Post?> posts});

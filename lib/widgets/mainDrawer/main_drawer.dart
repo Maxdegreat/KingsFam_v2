@@ -90,7 +90,6 @@ class _MainDrawerState extends State<MainDrawer> {
     return SafeArea(
         child: !kIsWeb
             ? Drawer(
-              
                 width: MediaQuery.of(context).size.width,
                 backgroundColor: Theme.of(context).drawerTheme.backgroundColor,
                 key: _drawerKey,
@@ -152,6 +151,18 @@ class _MainDrawerState extends State<MainDrawer> {
                             context),
                       )),
 
+                      GestureDetector(
+                      onTap: () => _updateSelectedItem(BottomNavItem.feed),
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 0.0),
+                        child: drawerIcon(
+                            Icon(
+                              Icons.favorite,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            context),
+                      )),
+
                   GestureDetector(
                       onTap: () => _updateSelectedItem(BottomNavItem.search),
                       child: Padding(
@@ -164,22 +175,21 @@ class _MainDrawerState extends State<MainDrawer> {
                             context),
                       )),
 
-
                   GestureDetector(
                       onTap: () => _updateSelectedItem(BottomNavItem.profile),
                       child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: drawerIcon(ContainerWithURLImg(
-                          imgUrl: context
-                              .read<ProfileBloc>()
-                              .state
-                              .userr
-                              .profileImageUrl,
-                          height: 45,
-                          width: 45,
-                          pc: null
-                        ), context)
-                      )),
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: drawerIcon(
+                              ContainerWithURLImg(
+                                  imgUrl: context
+                                      .read<ProfileBloc>()
+                                      .state
+                                      .userr
+                                      .profileImageUrl,
+                                  height: 45,
+                                  width: 45,
+                                  pc: null),
+                              context))),
 
                   // const SizedBox(height: 20,)
                 ],
@@ -194,7 +204,8 @@ class _MainDrawerState extends State<MainDrawer> {
                   onRefresh: () async => context.read<CommuinityBloc>()
                     ..add(CommunityInitalEvent(
                         commuinity:
-                            context.read<ChatscreenBloc>().state.selectedCh!, currUserr: context.read<ProfileBloc>().state.userr)),
+                            context.read<ChatscreenBloc>().state.selectedCh!,
+                        currUserr: context.read<ProfileBloc>().state.userr)),
                   child: Container(
                     width: kIsWeb
                         ? MediaQuery.of(context).size.width / 5.8
@@ -221,12 +232,13 @@ class _MainDrawerState extends State<MainDrawer> {
 
                         SizedBox(height: 8),
 
-                        singlePostDisplay(
-                          cm: context.read<ChatscreenBloc>().state.selectedCh!,
-                          context: context,
-                          cmBloc: context.read<CommuinityBloc>(),
-                          ad: null,
-                        ),
+                        // UNCOMENT
+                        // singlePostDisplay(
+                        //   cm: context.read<ChatscreenBloc>().state.selectedCh!,
+                        //   context: context,
+                        //   cmBloc: context.read<CommuinityBloc>(),
+                        //   ad: null,
+                        // ),
 
                         // if (state.mentionedCords.length > 0) ... [
                         //   showMentions(context, cm),
@@ -240,7 +252,6 @@ class _MainDrawerState extends State<MainDrawer> {
                         //   _showAd(),
                         // const SizedBox(height: 8),
                         // ],
-
 
                         // showVoice(context,
                         //     context.read<ChatscreenBloc>().state.selectedCh!),
@@ -262,8 +273,8 @@ class _MainDrawerState extends State<MainDrawer> {
                     left: 0,
                     right: 0,
                     child: GestureDetector(
-                      onTap: () =>
-                          Navigator.of(context).pushNamed(BuildChurch.routeName),
+                      onTap: () => Navigator.of(context)
+                          .pushNamed(BuildChurch.routeName),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -293,31 +304,31 @@ class _MainDrawerState extends State<MainDrawer> {
     );
   }
 
-  Widget _showAd() {
-    return AnimatedSwitcher(
-        duration: Duration(milliseconds: 100),
-        child: _isNativeAdLoaded && !kIsWeb
-            ? Padding(
-                padding: const EdgeInsets.only(
-                  top: 5,
-                  bottom: 5,
-                  right: 3,
-                ),
-                child: Container(
-                  height: 50,
-                  width: double.infinity,
-                  child: Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    // child: AdWidget(ad: _nativeAd!),
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondary,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              )
-            : const SizedBox.shrink());
-  }
+  // Widget _showAd() {
+  //   return AnimatedSwitcher(
+  //       duration: Duration(milliseconds: 100),
+  //       child: _isNativeAdLoaded && !kIsWeb
+  //           ? Padding(
+  //               padding: const EdgeInsets.only(
+  //                 top: 5,
+  //                 bottom: 5,
+  //                 right: 3,
+  //               ),
+  //               child: Container(
+  //                 height: 50,
+  //                 width: double.infinity,
+  //                 child: Padding(
+  //                   padding: const EdgeInsets.all(2.0),
+  //                   // child: AdWidget(ad: _nativeAd!),
+  //                 ),
+  //                 decoration: BoxDecoration(
+  //                   color: Theme.of(context).colorScheme.secondary,
+  //                   borderRadius: BorderRadius.circular(10),
+  //                 ),
+  //               ),
+  //             )
+  //           : const SizedBox.shrink());
+  // }
 
   Container _cmsList(BuildContext context, List<Widget> drawerLst) {
     Size size = MediaQuery.of(context).size;
@@ -329,7 +340,7 @@ class _MainDrawerState extends State<MainDrawer> {
   List<Widget> _getCms() {
     if (context.read<ChatscreenBloc>().state.chs == null ||
         context.read<ChatscreenBloc>().state.chs!.isEmpty) {
-          log("cms is empty in the main drawer: _getCms()");
+      log("cms is empty in the main drawer: _getCms()");
       return [];
     } else {
       return context.read<ChatscreenBloc>().state.chs!.map((c) {
@@ -362,7 +373,7 @@ class _MainDrawerState extends State<MainDrawer> {
                     width: MediaQuery.of(context).size.shortestSide > 500
                         ? 70
                         : MediaQuery.of(context).size.shortestSide / 8,
-                  pc: null),
+                    pc: null),
               ),
             ));
       }).toList();

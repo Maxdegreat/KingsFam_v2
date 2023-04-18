@@ -88,9 +88,9 @@ class KingsCord extends Equatable {
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return KingsCord(
       id: doc.id,
-      tag: data['tag'],
+      tag: data['tag'] ?? 'empty_tag',
       cordName: data['cordName'] ?? 'MainRoom',
-      mode: data['mode'],
+      mode: data['mode'] ?? Mode.chat,
       metaData: data['metaData'] ?? {},
     );
   }

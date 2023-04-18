@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
-import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -306,13 +305,15 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
   Widget _kngAiContainer() {
     return Container(
       padding: const EdgeInsets.all(8),
-      child:1 == 1 ? SizedBox.shrink() : Text(
-        "this is demo need jwt for this ngl",
-        style: Theme.of(context)
-            .textTheme
-            .subtitle1!
-            .copyWith(fontStyle: FontStyle.italic),
-      ),
+      child: 1 == 1
+          ? SizedBox.shrink()
+          : Text(
+              "this is demo need jwt for this ngl",
+              style: Theme.of(context)
+                  .textTheme
+                  .subtitle1!
+                  .copyWith(fontStyle: FontStyle.italic),
+            ),
     );
   }
 
@@ -430,15 +431,20 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
           ),
         ),
         actions: [
-          IconButton(onPressed: () {
-            context.read<KingscordCubit>().sendCalledMessage(
-              churchId: widget.commuinity.id!, 
-              kingsCordId: widget.kingsCord.id!, 
-              username: context.read<ProfileBloc>().state.userr.username
-            ).then((value) {
-              // Navigator.of(context).pushNamed();
-            });
-          }, icon: Icon(Icons.voice_chat_rounded)),
+          // IconButton(
+          //     onPressed: () {
+          //       context
+          //           .read<KingscordCubit>()
+          //           .sendCalledMessage(
+          //               churchId: widget.commuinity.id!,
+          //               kingsCordId: widget.kingsCord.id!,
+          //               username:
+          //                   context.read<ProfileBloc>().state.userr.username)
+          //           .then((value) {
+          //         Navigator.of(context).pushNamed(VcScreen.routeName, arguments: VcScreenArgs(kc: widget.kingsCord, currUserr: context.read<ProfileBloc>().state.userr, cm: widget.commuinity));
+          //       });
+          //     },
+          //     icon: Icon(Icons.call)),
           if (widget.role["kfRole"] == "Admin" ||
               widget.role["kfRole"] == "Lead") ...[
             IconButton(
@@ -463,14 +469,14 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             // indicates a switch...
             recentkcid = widget.kingsCord.id!;
             initCubit = false;
-            UserPreferences.updateKcTimeStamp(cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!);
+            UserPreferences.updateKcTimeStamp(
+                cmId: widget.commuinity.id!, kcId: widget.kingsCord.id!);
 
             context.read<KingscordCubit>().onLoadInit(
                   cmId: widget.commuinity.id!,
                   kcId: widget.kingsCord.id!,
                   limit: MockFlag.ISMOCKTESTING ? 17 : 27,
-            );
-
+                );
           }
 
           return GestureDetector(
@@ -582,38 +588,40 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                       fontSize: 14),
                 )),
             TextButton(
-                child: Text("GIF", style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14)),
-                onPressed: () {
-                  GiphyGet.getGif(
-                    context: context,
-                    apiKey: "ge17PWpKQ9OmxKuPE8ejeYmI3SHLZOeY",
-                    modal: true,
-                    randomID: Uuid().v4().toString(),
-                    tabColor: Colors.amber,
-                  ).then((gif) {
-                    if (gif != null) {
-                      // send the Giphy as a message.
+              child: Text("GIF",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1!
+                      .copyWith(fontWeight: FontWeight.bold, fontSize: 14)),
+              onPressed: () {
+                GiphyGet.getGif(
+                  context: context,
+                  apiKey: "ge17PWpKQ9OmxKuPE8ejeYmI3SHLZOeY",
+                  modal: true,
+                  randomID: Uuid().v4().toString(),
+                  tabColor: Colors.amber,
+                ).then((gif) {
+                  if (gif != null) {
+                    // send the Giphy as a message.
 
-                      context
-                          .read<KingscordCubit>()
-                          .onSendGiphyMessage(
-                              giphyId: gif.id!,
-                              cmId: widget.commuinity.id!,
-                              kcId: widget.kingsCord.id!,
-                              currUsername: widget.usr.username)
-                          .then((value) => log("sent giphy"));
-                    } else {
-                      // snackBar(
-                      //   snackMessage: "Ops... Something went wrong",
-                      //   context: context,
-                      //   bgColor: Colors.red[400]
-                      // );
-                    }
-                  });
-                },
-                ),
+                    context
+                        .read<KingscordCubit>()
+                        .onSendGiphyMessage(
+                            giphyId: gif.id!,
+                            cmId: widget.commuinity.id!,
+                            kcId: widget.kingsCord.id!,
+                            currUsername: widget.usr.username)
+                        .then((value) => log("sent giphy"));
+                  } else {
+                    // snackBar(
+                    //   snackMessage: "Ops... Something went wrong",
+                    //   context: context,
+                    //   bgColor: Colors.red[400]
+                    // );
+                  }
+                });
+              },
+            ),
             IconButton(
               onPressed: () async {
                 showMediaPopUp = !showMediaPopUp;
@@ -686,7 +694,9 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                   "Replying to " +
                       state.replyMessage!.senderUsername! +
                       "\n" +
-                     ( state.replyMessage!.text != null ? state.replyMessage!.text! : ""),
+                      (state.replyMessage!.text != null
+                          ? state.replyMessage!.text!
+                          : ""),
                   style: TextStyle(color: Colors.grey, fontSize: 15),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -726,7 +736,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
         }
       },
       child: Container(
-       
           width: MediaQuery.of(context).size.width > 700
               ? MediaQuery.of(context).size.width / 5
               : null,
@@ -752,10 +761,12 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                           child: Expanded(
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.onPrimary,
-                                borderRadius: BorderRadius.circular(7),
-                                border:  state.isKngAi ?Border.all(color: Colors.amber) : null
-                              ),
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                  borderRadius: BorderRadius.circular(7),
+                                  border: state.isKngAi
+                                      ? Border.all(color: Colors.amber)
+                                      : null),
                               child: Row(
                                 children: [
                                   IconButton(
@@ -777,7 +788,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                         child: Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: TextFormField(
-                                            
+
                                               // validator: (value) {},
                                               cursorColor: Theme.of(context)
                                                   .colorScheme
@@ -800,9 +811,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                                               decoration: InputDecoration(
                                                 contentPadding:
                                                     EdgeInsets.all(2),
-                                                border: 
-                                               
-                                                InputBorder.none,
+                                                border: InputBorder.none,
                                                 // filled: true,
                                                 hintText: mode == "chat"
                                                     ? _hintMsg()
@@ -877,7 +886,6 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
   _codeForOnP(KingscordState state) {
     if (state.isTyping) {
-
       // map of mentioned info that will be added to the kc cubit
       Map<String, dynamic> mentionedInfo = {};
       for (var u in state.mentions) {
@@ -895,23 +903,23 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
         if (state.isKngAi) {
           // handle the kngAi message send.
-          context.read<KingscordCubit>().sendKngAi(_messageController.text, widget.kingsCord, widget.commuinity, currUsersName);
+          context.read<KingscordCubit>().sendKngAi(_messageController.text,
+              widget.kingsCord, widget.commuinity, currUsersName);
 
           // ps. we undo the isKngAi state cubit ... as i should duh lol.
         } else {
           context.read<KingscordCubit>().onSendTxtMsg(
-              churchId: widget.commuinity.id!,
-              kingsCordId: widget.kingsCord.id!,
-              msgText: _messageController.text,
-              mentionedInfo: mentionedInfo,
-              cmTitle: widget.commuinity.name,
-              kingsCordData: widget.kingsCord,
-              currUserName: currUsersName,
-              reply: state.replyMessage,
-              metadata: widget.kingsCord.metaData,
-            );
+                churchId: widget.commuinity.id!,
+                kingsCordId: widget.kingsCord.id!,
+                msgText: _messageController.text,
+                mentionedInfo: mentionedInfo,
+                cmTitle: widget.commuinity.name,
+                kingsCordData: widget.kingsCord,
+                currUserName: currUsersName,
+                reply: state.replyMessage,
+                metadata: widget.kingsCord.metaData,
+              );
         }
-        
       }
       context.read<KingscordCubit>().onIsTyping(false);
       _messageController.clear();
@@ -933,7 +941,8 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
     }
 
     if (containsAt) {
-      setState(() => _mentionedController = messageText.substring(idxWhereStartWithat + 1, messageText.length));
+      setState(() => _mentionedController =
+          messageText.substring(idxWhereStartWithat + 1, messageText.length));
     }
 
     if (messageText.endsWith(' ') || !messageText.contains("@")) {
@@ -982,7 +991,10 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
                 Userr m = state.mentions[index];
                 return Text(
                   m.username,
-                  style: Theme.of(context).textTheme.subtitle1!.copyWith(fontStyle: FontStyle.italic, fontSize: 14),
+                  style: Theme.of(context)
+                      .textTheme
+                      .subtitle1!
+                      .copyWith(fontStyle: FontStyle.italic, fontSize: 14),
                 );
               },
             ),
