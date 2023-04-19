@@ -171,29 +171,29 @@ exports.onNewJoinRequest = functions.firestore.document("/requestToJoinCm/{cmId}
 
     var recievingTokens = [];
 
-    cmLeadsSnaps.forEach(async function (snap) {
+    for (const snap of cmLeadsSnaps.docs) {
       var uid = snap.id;
       const userrRef = admin.firestore().collection("users").doc(uid);
-      const userrDoc = await (await userrRef.get()).data;
-      var token = userrDoc.get("token");
+      const userrDoc = (await userrRef.get()).data();
+      var token = userrDoc.token;
       functions.logger.log("val of token in snap is:", token);
       if (token.length > 0) {
         recievingTokens.push(token[0]);
       }
-    });
+    }
 
     functions.logger.log("recieving Tokens 1:", recievingTokens);
 
-    cmAdminsSnaps.forEach(async function (snap) {
-      var uid = snap.id; // or try snap.id not snap.data.id
-      const userrRef = admin.firestore().collection("users").doc(uid);
-      const userrDoc = await (await userrRef.get()).data;
-      var token = userrDoc.get("token");
-      functions.logger.log("val of token in snap is:", token);
-      if (token.length > 0) {
-        recievingTokens.push(token[0]);
+      for (const snap of cmAdminsSnaps.docs) {
+        var uid = snap.id;
+        const userrRef = admin.firestore().collection("users").doc(uid);
+        const userrDoc = (await userrRef.get()).data();
+        var token = userrDoc.token;
+        functions.logger.log("val of token in snap is:", token);
+        if (token.length > 0) {
+          recievingTokens.push(token[0]);
+        }
       }
-    });
 
     functions.logger.log("recieving tokens 2: ", recievingTokens);
 
