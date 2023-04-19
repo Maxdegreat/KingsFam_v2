@@ -39,7 +39,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         )
       //Container(height: 250, child: BuildVideo(controller: controller))
       : Container(
-          height: 250,
+          height: MediaQuery.of(context).size.height,
           child: Center(
               child: CircularProgressIndicator(
             color: Colors.amber,

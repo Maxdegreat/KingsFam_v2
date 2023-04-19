@@ -157,7 +157,7 @@ class _MainDrawerState extends State<MainDrawer> {
                         padding: const EdgeInsets.only(bottom: 0.0),
                         child: drawerIcon(
                             Icon(
-                              Icons.favorite_outline,
+                              Icons.map_rounded,
                               color: Theme.of(context).colorScheme.primary,
                             ),
                             context),

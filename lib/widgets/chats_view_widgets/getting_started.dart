@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/config/global_keys.dart';
+import 'package:kingsfam/enums/bottom_nav_items.dart';
 import 'package:kingsfam/models/church_model.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:kingsfam/screens/commuinity/community_home/home.dart';
 import 'package:kingsfam/screens/commuinity/screens/roles/update_role.dart';
+import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/screens.dart';
 import 'package:kingsfam/widgets/church_display_column.dart';
 import 'package:kingsfam/widgets/show_asset_image.dart';
@@ -51,6 +54,7 @@ class _GettingStartedState extends State<GettingStarted> {
             Container(
                 height: MediaQuery.of(context).size.height / 1.7,
                 child: carousel()),
+            _Descover(),
             gettingStartedBtn(),
             _kfLogo()
           ],
@@ -104,19 +108,85 @@ class gettingStartedBtn extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Container(
-            width: double.infinity,
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    shape: StadiumBorder(), primary: Colors.amber),
-                onPressed: () async {
-                   Navigator.of(context).pushNamed(BuildChurch.routeName);
-                },
-                child: Text("Create your community",
+        child: GestureDetector(
+          onTap: () => Navigator.of(context).pushNamed(BuildChurch.routeName),
+          child: Container(
+            height: 43,
+            decoration: BoxDecoration(
+              color: Colors.amber,
+               borderRadius: BorderRadius.circular(12.0),
+            ),
+              width: double.infinity,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text("Create your community",
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                      fontWeight: FontWeight.w600,
                         color: Theme.of(context).colorScheme.secondary,
-                        fontSize: 20)))),
+                        fontSize: 18))
+                ],
+              )),
+        ),
+      ),
+    );
+  }
+}
+
+class _Descover extends StatelessWidget {
+  const _Descover({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          padding: const EdgeInsets.all(2.0),
+          height: 45,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12.0),
+            gradient: LinearGradient(
+                                      colors: [
+                                        Colors.red,
+                                        Colors.orange,
+                                        Colors.yellow,
+                                        Colors.green,
+                                        Colors.blue,
+                                        Colors.indigo,
+                                        Colors.purple
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight)
+          ),
+          child: GestureDetector(
+            onTap: () => context.read<BottomnavbarCubit>().updateSelectedItem(BottomNavItem.feed),
+            child: Container(
+              height: 43,
+              decoration: BoxDecoration(
+                color: Colors.amber,
+                 borderRadius: BorderRadius.circular(12.0),
+              ),
+                width: double.infinity,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text("Descover The KingsFam", textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 20) ,),
+                          const SizedBox(width: 5),
+                          Icon(Icons.map, color: Theme.of(context).colorScheme.secondary,)
+                  ],
+                )),
+          ),
+        ),
       ),
     );
   }
