@@ -4,11 +4,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/enums/bottom_nav_items.dart';
 import 'package:kingsfam/models/models.dart';
+import 'package:kingsfam/repositories/church/church_repository.dart';
+import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/screens/chats/bloc/chatscreen_bloc.dart';
+import 'package:kingsfam/screens/commuinity/bloc/commuinity_bloc.dart';
+import 'package:kingsfam/screens/commuinity/community_settings/view_request.dart';
 import 'package:kingsfam/screens/commuinity/screens/feed/commuinity_feed.dart';
+import 'package:kingsfam/screens/commuinity/wrapers/participants_view.dart';
 import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 
 Future<void> handleMessage(RemoteMessage message, BuildContext context) async {
@@ -69,5 +76,25 @@ Future<void> handleMessage(RemoteMessage message, BuildContext context) async {
 
 
 
+    } else if (message.data['type'] == 'CmJoinRequest') {
+      String cmId = message.data['cmId'];
+      var snap = await FirebaseFirestore.instance
+          .collection(Paths.church)
+          .doc(cmId)
+          .get();
+      
+      if (snap.exists) {
+        Church.fromDoc(snap).then((cm) {
+        // nav to cm
+        context.read<ChatscreenBloc>()..add(ChatScreenUpdateSelectedCm(cm: cm));
+        context.read<BottomnavbarCubit>().updateSelectedItem(BottomNavItem.chats);
+        // View members, pending and baned
+        Navigator.of(context).pushNamed(
+                        ReviewPendingRequest.routeName,
+                        arguments: ReviewPendingRequestArgs(cm: cm));
+        
+        });
+        scaffoldKey.currentState!.closeDrawer();
+      }
     }
   }

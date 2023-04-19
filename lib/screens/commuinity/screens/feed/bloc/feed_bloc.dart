@@ -212,13 +212,13 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       List<Post?> posts = MockPostData.getMockPosts4;
       // posts.add(Post.empty);
 
-      List<Widget?> postContainers =
-          _makePostContainers(posts, state.currContext!);
+      List<Widget?> postContainers = _makePostContainers(posts, state.currContext!);
 
       yield state.copyWith(
           posts: posts,
           postContainer: postContainers,
-          status: FeedStatus.success);
+          status: FeedStatus.success
+        );
     }
   }
 

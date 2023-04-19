@@ -14,7 +14,6 @@ import 'package:kingsfam/screens/profile/profile_screen.dart';
 import 'package:kingsfam/screens/report_content_screen.dart';
 import 'package:kingsfam/widgets/roundContainerWithImgUrl.dart';
 import 'package:kingsfam/widgets/snackbar.dart';
-import 'package:like_button/like_button.dart';
 
 import '../../screens/commuinity/community_home/home.dart';
 
@@ -26,8 +25,39 @@ class ImgPost1_1 extends StatefulWidget {
   State<ImgPost1_1> createState() => _ImgPost1_1State();
 }
 
-class _ImgPost1_1State extends State<ImgPost1_1> {
+class _ImgPost1_1State extends State<ImgPost1_1>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _sizeAnimation;
+  late Animation<double> _opacityAnimation;
+  bool _isFavorited = false;
   bool showCaptionFull = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 350),
+      vsync: this,
+    );
+    _sizeAnimation = Tween<double>(begin: 0, end: 1).animate(_controller);
+    _opacityAnimation = Tween<double>(begin: 0.5, end: 1).animate(_controller);
+  }
+
+  _localLikeAnimation() {
+    if (!_isFavorited) {
+      setState(() {
+        _isFavorited = true;
+      });
+      _controller.forward(from: 0).whenComplete(() {
+        _controller.reverse(from: 1).whenComplete(() {
+          setState(() {
+            _isFavorited = false;
+          });
+        });
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +96,7 @@ class _ImgPost1_1State extends State<ImgPost1_1> {
   Widget _imgContainer(Size size) {
     return GestureDetector(
       onDoubleTap: () {
+        _localLikeAnimation();
         bool isLiked = context
             .read<LikedPostCubit>()
             .state
@@ -80,14 +111,41 @@ class _ImgPost1_1State extends State<ImgPost1_1> {
           context.read<LikedPostCubit>().likePost(post: widget.post);
         }
       },
-      child: Container(
-        height: size.height / 2.2,
-        width: size.width,
-        decoration: BoxDecoration(
-            image: DecorationImage(
-          image: CachedNetworkImageProvider(widget.post.imageUrl!),
-          fit: BoxFit.cover,
-        )),
+      child: Stack(
+        children: [
+          Container(
+            height: size.height / 2.2,
+            width: size.width,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+              image: CachedNetworkImageProvider(widget.post.imageUrl!),
+              fit: BoxFit.cover,
+            )),
+          ),
+          if (_isFavorited) ...[
+            Positioned(
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: _opacityAnimation.value,
+                      child: Transform.scale(
+                        scale: _sizeAnimation.value,
+                        child: const Icon(
+                          Icons.favorite,
+                          color: Colors.amber,
+                          size: 200,
+                        ),
+                      ),
+                    );
+                  },
+                ))
+          ],
+        ],
       ),
     );
   }
@@ -117,37 +175,28 @@ class _ImgPost1_1State extends State<ImgPost1_1> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-
-            LikeButton(
-              isLiked: (recentlyLiked || isLikedPost),
-              likeCount: int.parse(likeCount),
-              countDecoration: ((count, likeCount) => Text(likeCount.toString(), style: captionS,)),
-              size: 25,
-              
-              onTap:  (bool) async {
+            IconButton(
+                onPressed: () {
                   if (isLikedPost || recentlyLiked) {
                     context
                         .read<LikedPostCubit>()
                         .unLikePost(post: widget.post);
                   } else {
                     context.read<LikedPostCubit>().likePost(post: widget.post);
+                  _localLikeAnimation();
                   }
-
-                  return !isLikedPost;
                 },
+                icon: Icon(
+                  Icons.favorite_outline_rounded,
+                  color: (isLikedPost || recentlyLiked)
+                      ? Colors.amber
+                      : Colors.white,
+                )),
+            SizedBox(height: 10),
+            Text(
+              likeCount,
+              style: captionS,
             ),
-
-            // IconButton(
-            //     onPressed:
-            //     icon: Icon(
-            //       Icons.favorite_outline_rounded,
-            //       color: (isLikedPost || recentlyLiked) ? Colors.amber : Colors.white,
-            //     )),
-            // SizedBox(height: 10),
-            // Text(
-            //   likeCount,
-            //   style: captionS,
-            // ),
             SizedBox(height: 15),
             IconButton(
                 onPressed: () {
@@ -226,7 +275,6 @@ class _ImgPost1_1State extends State<ImgPost1_1> {
                 height: 34,
                 width: 34,
                 pc: Color(hc.hexcolorCode(colorP))),
-            
             SizedBox(width: 8),
             Text(
               widget.post.author.username,

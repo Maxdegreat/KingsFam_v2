@@ -107,52 +107,55 @@ class FeedNewState extends State<FeedNewScreen> {
 
         return Scaffold(
             backgroundColor: Colors.black,
-            appBar: AppBar(
-              leading: IconButton(
-                  onPressed: () => scaffoldKey.currentState!.openDrawer(),
-                  icon: Icon(
-                    Icons.menu,
-                    color: Colors.white,
-                  )),
-              backgroundColor: Colors.black,
-              // title: Text(
-              //   "${widget.commuinity.name}\'s Content",
-              //   overflow: TextOverflow.fade,
-              //   style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.white),
-              // ),
-            ),
             body: state.posts.length > 0
                 ? SafeArea(
-                    child: PageView.builder(
-                        scrollDirection: Axis.vertical,
-                        onPageChanged: (pageNum) {
-                          _paginate(pageNum, state);
+                    child: Stack(
+                      children: [
 
-                          // load next ad
-                          // _loadNextAd(pageNum, state);
-                          // load next vid
-                        },
-                        itemCount: state.posts.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          // if next post is empty then display an ad (empty post)
-                          // are added in bloc programatically as placeholders for ads
-                          if (state.posts[index]!.author == Userr.empty) {
-                            return PostSingleView(
-                              isLiked: false,
-                              post: null,
-                              adWidget: AdWidget(ad: _bannerAd),
-                              recentlyLiked: false,
-                              onLike: () {},
-                            );
-                          } else {
-                            final Post? post = state.posts[index];
-
-                            if (post != null) {
-                              return state.postContainer[index]!;
-                            }
-                            return SizedBox.shrink();
-                          }
-                        }),
+                          
+                          PageView.builder(
+                            scrollDirection: Axis.vertical,
+                            onPageChanged: (pageNum) {
+                              _paginate(pageNum, state);
+                    
+                              // load next ad
+                              // _loadNextAd(pageNum, state);
+                              // load next vid
+                            },
+                            itemCount: state.posts.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              // if next post is empty then display an ad (empty post)
+                              // are added in bloc programatically as placeholders for ads
+                              if (state.posts[index]!.author == Userr.empty) {
+                                return PostSingleView(
+                                  isLiked: false,
+                                  post: null,
+                                  adWidget: AdWidget(ad: _bannerAd),
+                                  recentlyLiked: false,
+                                  onLike: () {},
+                                );
+                              } else {
+                                final Post? post = state.posts[index];
+                    
+                                if (post != null) {
+                                  return state.postContainer[index]!;
+                                }
+                                return SizedBox.shrink();
+                              }
+                            }),
+                          Positioned(child: IconButton(onPressed: ()=> scaffoldKey.currentState!.openDrawer(), icon: Icon(Icons.menu))),
+                          Positioned(top: 0, right: 0, child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Text("Discover", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.white),),
+                                Icon(Icons.map_sharp)
+                              ],
+                            ),
+                          )),
+                          
+                          ],
+                    ),
                   )
                 : Center(
                     child: Text("Loading ..."),

@@ -384,6 +384,27 @@ class _SaysViewState extends State<SaysView> {
           url,
           style: const TextStyle(fontSize: 15, color: Colors.blueAccent),
         );
+    } else if (url.contains("https://giphy.com/stickers/")) {
+      String gifId = extractGiphyId(url);
+       if (gifId.isNotEmpty)
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DisplayGif(giphyId: gifId),
+            // const SizedBox(height: 4),
+            // Text(url, style: TextStyle(fontSize: 15, color: Colors.blueAccent),)
+          ],
+        );
+      else
+        return Text(
+          url,
+          style: const TextStyle(fontSize: 15, color: Colors.blueAccent),
+        );
+    }
+    
+    else {
+      return Text(url, style: const TextStyle(fontSize: 15, color: Colors.blueAccent));
     }
   }
 
