@@ -9,7 +9,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/cm_privacy.dart';
+import 'package:kingsfam/config/global_keys.dart';
+import 'package:kingsfam/enums/bottom_nav_items.dart';
 import 'package:kingsfam/repositories/repositories.dart';
+import 'package:kingsfam/screens/nav/cubit/bottomnavbar_cubit.dart';
 import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 import 'package:kingsfam/screens/screens.dart';
 
@@ -194,14 +197,15 @@ class _PostContentScreenState extends State<PostContentScreen> {
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text(
-                        "Add Your Post To A Community",
-                        style: Theme.of(context).textTheme.bodyText1,
-                        textAlign: TextAlign.left,
-                      ),
+                      child: chs.isNotEmpty
+                          ? Text(
+                              "Add Your Post To A Community",
+                              style: Theme.of(context).textTheme.bodyText1,
+                              textAlign: TextAlign.left,
+                            )
+                          : const SizedBox.shrink(),
                     )),
-                cmLisView(),
-                
+                chs.isNotEmpty ? _cmLisView() : _mustJoinACm(),
               ],
             ),
           ),
@@ -250,7 +254,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
         onTap: () {
           Navigator.of(context).pushNamed(UrlViewScreen.routeName,
               arguments: UrlViewArgs(
-                userr: context.read<ProfileBloc>().state.userr,
+                  userr: context.read<ProfileBloc>().state.userr,
                   heroTag: 'heroTag',
                   fileImg: File(thumbnailPath!),
                   fileVid: vidF!,
@@ -295,26 +299,54 @@ class _PostContentScreenState extends State<PostContentScreen> {
     );
   }
 
-  Widget cmLisView() {
+  Widget _cmLisView() {
     // Get curr id
     // grab 15 cms curr id is a part of
     // if scroll ctrl hits bottom then grab next 15
     return Container(
       height: MediaQuery.of(context).size.shortestSide,
       child: Padding(
-        padding: EdgeInsets.only(top: 15, left: 10, right: 10, bottom: 5),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 20,
-            crossAxisSpacing: 40,
-          ),
-          itemCount: chs.length,
-          itemBuilder: (BuildContext context, int index) {
-            Church ch = chs[index];
-            return chBox(ch);
-          },
-        )),
+          padding: EdgeInsets.only(top: 15, left: 10, right: 10, bottom: 5),
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 20,
+              crossAxisSpacing: 40,
+            ),
+            itemCount: chs.length,
+            itemBuilder: (BuildContext context, int index) {
+              Church ch = chs[index];
+              return chBox(ch);
+            },
+          )),
+    );
+  }
+
+  Widget _mustJoinACm() {
+    return Container(
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Hmmm, well you have to join a community before you can post 👍",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  snackBar(
+                      snackMessage: "Sure, going to search screen",
+                      context: context);
+                  scaffoldKey.currentState!.closeDrawer();
+                  context
+                      .read<BottomnavbarCubit>()
+                      .updateSelectedItem(BottomNavItem.search);
+                  Navigator.popUntil(
+                      context, ModalRoute.withName(NavScreen.routeName));
+                },
+                child: Text("Join here!"))
+          ]),
     );
   }
 
@@ -341,7 +373,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
             },
             child: Container(
               height: MediaQuery.of(context).size.shortestSide / 2.7,
-              width:  MediaQuery.of(context).size.shortestSide / 2.7,
+              width: MediaQuery.of(context).size.shortestSide / 2.7,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(7.0),
                   border: (cmIdPostingTo != null && ch.id == cmIdPostingTo)
@@ -416,8 +448,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
           snackMessage: "working on your post fam",
           context: context,
           bgColor: Colors.greenAccent);
-      Navigator.popUntil(
-          context, ModalRoute.withName(NavScreen.routeName));
+      Navigator.popUntil(context, ModalRoute.withName(NavScreen.routeName));
       log("----------->posted<---------------- from post_content_screen.dart");
     } else if (vidF != null) {
       final thumbnail = await VideoThumbnail.thumbnailFile(
@@ -452,8 +483,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
           snackMessage: "working on your post fam",
           context: context,
           bgColor: Colors.greenAccent);
-      Navigator.popUntil(
-          context, ModalRoute.withName(NavScreen.routeName));
+      Navigator.popUntil(context, ModalRoute.withName(NavScreen.routeName));
       //Navigator.of(context).popUntil((_) => popScreens++ >= 1);
 
       log("----------->posted<---------------- from post_content_screen.dart");

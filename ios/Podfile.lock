@@ -596,6 +596,37 @@ PODS:
     - abseil/base/base_internal
     - abseil/base/config
     - abseil/meta/type_traits
+  - agora_rtc_engine (6.1.0):
+    - AgoraIrisRTC_iOS (= 4.1.0-rc.2)
+    - AgoraRtcEngine_iOS (= 4.1.0)
+    - Flutter
+  - AgoraIrisEventFlutter_iOS (2.0.0)
+  - AgoraIrisRTC_iOS (4.1.0-rc.2)
+  - AgoraRtcEngine_iOS (4.1.0):
+    - AgoraRtcEngine_iOS/AIAEC (= 4.1.0)
+    - AgoraRtcEngine_iOS/AINS (= 4.1.0)
+    - AgoraRtcEngine_iOS/AudioBeauty (= 4.1.0)
+    - AgoraRtcEngine_iOS/ClearVision (= 4.1.0)
+    - AgoraRtcEngine_iOS/ContentInspect (= 4.1.0)
+    - AgoraRtcEngine_iOS/DRM (= 4.1.0)
+    - AgoraRtcEngine_iOS/ReplayKit (= 4.1.0)
+    - AgoraRtcEngine_iOS/RtcBasic (= 4.1.0)
+    - AgoraRtcEngine_iOS/SpatialAudio (= 4.1.0)
+    - AgoraRtcEngine_iOS/SuperResolution (= 4.1.0)
+    - AgoraRtcEngine_iOS/VirtualBackground (= 4.1.0)
+    - AgoraRtcEngine_iOS/VQA (= 4.1.0)
+  - AgoraRtcEngine_iOS/AIAEC (4.1.0)
+  - AgoraRtcEngine_iOS/AINS (4.1.0)
+  - AgoraRtcEngine_iOS/AudioBeauty (4.1.0)
+  - AgoraRtcEngine_iOS/ClearVision (4.1.0)
+  - AgoraRtcEngine_iOS/ContentInspect (4.1.0)
+  - AgoraRtcEngine_iOS/DRM (4.1.0)
+  - AgoraRtcEngine_iOS/ReplayKit (4.1.0)
+  - AgoraRtcEngine_iOS/RtcBasic (4.1.0)
+  - AgoraRtcEngine_iOS/SpatialAudio (4.1.0)
+  - AgoraRtcEngine_iOS/SuperResolution (4.1.0)
+  - AgoraRtcEngine_iOS/VirtualBackground (4.1.0)
+  - AgoraRtcEngine_iOS/VQA (4.1.0)
   - AppAuth (1.6.1):
     - AppAuth/Core (= 1.6.1)
     - AppAuth/ExternalUserAgent (= 1.6.1)
@@ -608,7 +639,7 @@ PODS:
   - BoringSSL-GRPC/Implementation (0.0.24):
     - BoringSSL-GRPC/Interface (= 0.0.24)
   - BoringSSL-GRPC/Interface (0.0.24)
-  - cloud_firestore (4.5.0):
+  - cloud_firestore (4.5.1):
     - Firebase/Firestore (= 10.7.0)
     - firebase_core
     - Flutter
@@ -637,7 +668,7 @@ PODS:
   - Firebase/Storage (10.7.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 10.7.0)
-  - firebase_auth (4.4.0):
+  - firebase_auth (4.4.1):
     - Firebase/Auth (= 10.7.0)
     - firebase_core
     - Flutter
@@ -836,6 +867,9 @@ PODS:
     - TOCropViewController (~> 2.6.1)
   - image_picker_ios (0.0.1):
     - Flutter
+  - iris_event (0.0.1):
+    - AgoraIrisEventFlutter_iOS (= 2.0.0)
+    - Flutter
   - leveldb-library (1.22.2)
   - Libuv-gRPC (0.0.10):
     - Libuv-gRPC/Implementation (= 0.0.10)
@@ -892,6 +926,7 @@ PODS:
     - libwebp
 
 DEPENDENCIES:
+  - agora_rtc_engine (from `.symlinks/plugins/agora_rtc_engine/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - ffmpeg_kit_flutter (from `.symlinks/plugins/ffmpeg_kit_flutter/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
@@ -907,6 +942,7 @@ DEPENDENCIES:
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/ios`)
   - image_cropper (from `.symlinks/plugins/image_cropper/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
+  - iris_event (from `.symlinks/plugins/iris_event/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
@@ -920,6 +956,9 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - abseil
+    - AgoraIrisEventFlutter_iOS
+    - AgoraIrisRTC_iOS
+    - AgoraRtcEngine_iOS
     - AppAuth
     - BoringSSL-GRPC
     - ffmpeg-kit-ios-https
@@ -957,6 +996,8 @@ SPEC REPOS:
     - TOCropViewController
 
 EXTERNAL SOURCES:
+  agora_rtc_engine:
+    :path: ".symlinks/plugins/agora_rtc_engine/ios"
   cloud_firestore:
     :path: ".symlinks/plugins/cloud_firestore/ios"
   ffmpeg_kit_flutter:
@@ -987,6 +1028,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_cropper/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
+  iris_event:
+    :path: ".symlinks/plugins/iris_event/ios"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider_foundation:
@@ -1008,13 +1051,17 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   abseil: ebe5b5529fb05d93a8bdb7951607be08b7fa71bc
+  agora_rtc_engine: a84afbebf11801043623d3b5f994bb69d4159948
+  AgoraIrisEventFlutter_iOS: d7ee4acb57d9042dbe9d64229bfe9bf8e32b6f2f
+  AgoraIrisRTC_iOS: 820fbab2d78d870a1bad4b1a02f950a390c73b48
+  AgoraRtcEngine_iOS: 33f0136ad4196b2a31c8470e6b536fe77fb25f8b
   AppAuth: e48b432bb4ba88b10cb2bcc50d7f3af21e78b9c2
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
-  cloud_firestore: 84f58b426bd8d21a22c4b19d9d18028fc4ff3eb1
+  cloud_firestore: 996fbe17886e254538f5bc51c1606ee9fb524997
   ffmpeg-kit-ios-https: 8dffbe1623a2f227be98fc314294847a97f818e4
   ffmpeg_kit_flutter: 17e9f35a4ec996ac55051c20be05240f2a0b53e8
   Firebase: 0219acf760880eeec8ce479895bd7767466d9f81
-  firebase_auth: 5984ebaf5463319e304ab1c0966b06994bd1c69a
+  firebase_auth: 5a84572b7f5315a3aff5b07c62bb0cd5a28cade5
   firebase_core: d85432877e814811e040e7659f9c82faeab66e04
   firebase_dynamic_links: eb6716a5419a7b1ad5ef4860c84290c48a30be91
   firebase_messaging: 45c0514ca78426630338a42fb7b55af962c7ccd2
@@ -1049,6 +1096,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 3a63d75eecd6aa32c2fc79f578064e1214dfdec2
   image_cropper: 60c2789d1f1a78c873235d4319ca0c34a69f2d98
   image_picker_ios: 4a8aadfbb6dc30ad5141a2ce3832af9214a705b5
+  iris_event: fdcf9bbb53095fd9609ea19941df551d0398a789
   leveldb-library: f03246171cce0484482ec291f88b6d563699ee06
   Libuv-gRPC: 55e51798e14ef436ad9bc45d12d43b77b49df378
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef

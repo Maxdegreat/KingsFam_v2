@@ -143,13 +143,13 @@ class FeedNewState extends State<FeedNewScreen> {
                                 return SizedBox.shrink();
                               }
                             }),
-                          Positioned(child: IconButton(onPressed: ()=> scaffoldKey.currentState!.openDrawer(), icon: Icon(Icons.menu))),
+                          Positioned(child: IconButton(onPressed: ()=> scaffoldKey.currentState!.openDrawer(), icon: Icon(Icons.menu, color: Colors.white,))),
                           Positioned(top: 0, right: 0, child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
                               children: [
                                 Text("Discover", style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.white),),
-                                Icon(Icons.map_sharp)
+                                Icon(Icons.map_sharp, color: Colors.white,)
                               ],
                             ),
                           )),

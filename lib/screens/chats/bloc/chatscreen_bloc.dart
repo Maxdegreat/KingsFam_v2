@@ -92,6 +92,7 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
             cmId: lastVisitedCmId, userId: _authBloc.state.user!.uid);
 
         if (isInCm_) {
+          log("we got cm");
           Church c = await Church.fromId(lastVisitedCmId);
           yield state.copyWith(selectedCh: c, status: ChatStatus.setState);
           // get a kingscord and display it
@@ -113,6 +114,18 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
             }
           });
         }
+      } else {
+ log("grabing default church");
+          Church c = await Church.fromId('8SGFU0idmaWYuQZXCvXI');
+          yield state.copyWith(selectedCh: c, status: ChatStatus.setState);
+          KingsCordRepository().getKcFirstCm(state.selectedCh!.id!).then((kc) {
+            if (kc != null) add(ChatScreenUpdateSelectedKc(kc: kc));
+          });
+          _userrRepository
+              .getUserrWithId(userrId: _authBloc.state.user!.uid)
+              .then((user) {
+            _churchRepository.onJoinCommuinity(commuinity: c, user: user);
+          });
       }
 
       final Userr currUserr = await _userrRepository.getUserrWithId(

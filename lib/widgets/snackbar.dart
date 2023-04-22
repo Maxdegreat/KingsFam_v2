@@ -43,7 +43,7 @@ snackBar(
     Color? bgColor,
     VoidCallback? callBack = null}) {
   return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    backgroundColor: bgColor,
+    backgroundColor: bgColor ?? Theme.of(context).colorScheme.secondary,
     duration: Duration(seconds: 5),
     behavior: SnackBarBehavior.floating,
     margin: EdgeInsets.only(
@@ -57,7 +57,7 @@ snackBar(
         padding: const EdgeInsets.all(8.0),
         child: Text(
           snackMessage,
-          style: Theme.of(context).textTheme.subtitle1,
+          style: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.w700),
         ),
       ),
     ),

@@ -47,9 +47,9 @@ Widget singlePostDisplay ({ required BuildContext context, required CommuinityBl
                 child: IconButton(
                     onPressed: () {
                       Navigator.of(context).pushNamed(CameraScreen.routeName,
-                          arguments: CameraScreenArgs(cmId: null));
+                          arguments: CameraScreenArgs(cmId: cm.id));
                     },
-                    icon: Icon(Icons.photo_camera_outlined)),
+                    icon: Icon(Icons.add_rounded)),
               ),
             ),
             SizedBox(height: 2),

@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
+import 'package:kingsfam/camera/camera_screen.dart';
 import 'package:kingsfam/config/cm_type.dart';
 import 'package:kingsfam/extensions/extensions.dart';
 import 'package:kingsfam/helpers/helpers.dart';
@@ -75,133 +76,163 @@ class _BuildChurchState extends State<BuildChurch> {
       },
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(),
-            body: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SingleChildScrollView(
-                child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                SizedBox(height: MediaQuery.of(context).size.shortestSide / 5),
-                
-                GestureDetector(
-                  onTap: () => _onChurchImageChanged(context),
-                  child: Container(
-                    height: MediaQuery.of(context).size.shortestSide / 2,
-                    width: MediaQuery.of(context).size.shortestSide / 2,
-                    decoration: state.imageFile != null
-                        ? BoxDecoration(
-                          borderRadius: BorderRadius.circular(7),
-                            image: DecorationImage(
-                                image: FileImage(state.imageFile!),
-                                fit: BoxFit.fitWidth))
-                        : BoxDecoration(
-                          borderRadius: BorderRadius.circular(7),
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
-                    child: state.imageFile != null
-                        ? null
-                        : Center(
-                            child: FaIcon(
-                            FontAwesomeIcons.image,
-                            size: 55,
-                          )),
-                  ),
-                ),
-                SizedBox(height: MediaQuery.of(context).size.shortestSide / 10),
-                Form(
-                    key: _formKey,
+            appBar: AppBar(),
+            body: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                children: [
+                      _orNewPostWidget(),
+
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (state.isSubmiting ==
-                            true) //state.status == BuildChurchStatus.loading || emitProgressIndicator)
-                          LinearProgressIndicator(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        TextFormField(
-                          textAlign: TextAlign.center,
-                          decoration: InputDecoration(
-                            hintStyle: TextStyle(fontSize: 21),
-                              border: InputBorder.none,
-                              
-                              hintText: 'Name your Community'),
-                          onChanged: (value) =>
-                              context.read<BuildchurchCubit>().onNameChanged(value),
-                          validator: (value) =>
-                              value!.isEmpty ? "Please name your community" : null,
-                        ),
-                        // ------------ drop down btn below
                         SizedBox(
-                          child: DropdownButton<String>(
-                            value: Location.dropdownValue,
-                            icon: null,
-                            iconSize: 0,
-                            elevation: 0,
-                            underline:SizedBox.shrink(), 
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                Location.dropdownValue = newValue!;
-                              });
-                              context
-                                  .read<BuildchurchCubit>()
-                                  .onLocationChanged(newValue!);
-                            },
-                            items: locations()
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Padding(
-                                  padding:  EdgeInsets.only(left: MediaQuery.of(context).size.shortestSide / 2.5),
-                                  child: Text(value),
-                                ),
-                              );
-                            }).toList(),
+                            height: MediaQuery.of(context).size.shortestSide / 5),
+                        GestureDetector(
+                          onTap: () => _onChurchImageChanged(context),
+                          child: Container(
+                            height: MediaQuery.of(context).size.shortestSide / 2,
+                            width: MediaQuery.of(context).size.shortestSide / 2,
+                            decoration: state.imageFile != null
+                                ? BoxDecoration(
+                                    borderRadius: BorderRadius.circular(7),
+                                    image: DecorationImage(
+                                        image: FileImage(state.imageFile!),
+                                        fit: BoxFit.fitWidth))
+                                : BoxDecoration(
+                                    borderRadius: BorderRadius.circular(7),
+                                    color: Theme.of(context).colorScheme.secondary,
+                                  ),
+                            child: state.imageFile != null
+                                ? null
+                                : Center(
+                                    child: FaIcon(
+                                    FontAwesomeIcons.image,
+                                    size: 55,
+                                  )),
                           ),
                         ),
-              
-                        // ---------- cm type btn row above
-                        TextFormField(
-                            textAlign: TextAlign.center,
-                          decoration: InputDecoration(
-                            hintStyle: TextStyle(fontSize: 21),
-                            hintText: "Give a summary",
-                              border: InputBorder.none),
-                          onChanged: (value) => context
-                              .read<BuildchurchCubit>()
-                              .onAboutChanged(value),
-                          validator: (value) => value!.length < 200
-                              ? null
-                              : 'use less than 200 characters',
-                        ),
-                        SizedBox(height: 5.0),
-              
-                        state.isSubmiting == false
-                            ? ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: Theme.of(context).colorScheme.primary),
-                                onPressed: () {
-                                  submitChurch(
-                                      context: context,
-                                      submitStatus: state.isSubmiting,
-                                      isImage: state.imageFile == null);
-                                },
-                                child: Text(
-                                  'CREATE',
-                                  style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).colorScheme.onPrimary),
-                                ))
-                            : ElevatedButton(
-                                onPressed: () {},
-                                child: Text(
-                                  'CREATING...',
-                                  style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).colorScheme.onPrimary),
-                                ))
+                        SizedBox(
+                            height: MediaQuery.of(context).size.shortestSide / 10),
+                        Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                if (state.isSubmiting == true)
+                                  LinearProgressIndicator(
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                  
+                                TextFormField(
+                                  textAlign: TextAlign.center,
+                                  decoration: InputDecoration(
+                                      hintStyle: TextStyle(fontSize: 21),
+                                      border: InputBorder.none,
+                                      hintText: 'Name your Community'),
+                                  onChanged: (value) => context
+                                      .read<BuildchurchCubit>()
+                                      .onNameChanged(value),
+                                  validator: (value) => value!.isEmpty
+                                      ? "Please name your community"
+                                      : null,
+                                ),
+                                // ------------ drop down btn below
+                                SizedBox(
+                                  child: DropdownButton<String>(
+                                    value: Location.dropdownValue,
+                                    icon: null,
+                                    iconSize: 0,
+                                    elevation: 0,
+                                    underline: SizedBox.shrink(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        Location.dropdownValue = newValue!;
+                                      });
+                                      context
+                                          .read<BuildchurchCubit>()
+                                          .onLocationChanged(newValue!);
+                                    },
+                                    items: locations()
+                                        .map<DropdownMenuItem<String>>(
+                                            (String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                              left: MediaQuery.of(context)
+                                                      .size
+                                                      .shortestSide /
+                                                  2.5),
+                                          child: Text(value),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                  
+                                // ---------- cm type btn row above
+                                TextFormField(
+                                  textAlign: TextAlign.center,
+                                  decoration: InputDecoration(
+                                      hintStyle: TextStyle(fontSize: 21),
+                                      hintText: "Give a summary",
+                                      border: InputBorder.none),
+                                  onChanged: (value) => context
+                                      .read<BuildchurchCubit>()
+                                      .onAboutChanged(value),
+                                  validator: (value) => value!.length < 200
+                                      ? null
+                                      : 'use less than 200 characters',
+                                ),
+                                SizedBox(height: 5.0),
+                  
+                                state.isSubmiting == false
+                                    ? ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor: Theme.of(context)
+                                                .colorScheme
+                                                .primary),
+                                        onPressed: () {
+                                          submitChurch(
+                                              context: context,
+                                              submitStatus: state.isSubmiting,
+                                              isImage: state.imageFile == null);
+                                        },
+                                        child: Text(
+                                          'CREATE YOUR COMMUNITY 🤩',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimary),
+                                        ))
+                                    : ElevatedButton(
+                                        onPressed: () {},
+                                        child: Text(
+                                          'CREATING...',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimary),
+                                        ))
+                              ],
+                            ))
                       ],
-                    ))
-                        ],
-                      ),
+                    ),
+                  ),
+                ],
               ),
             ));
       },
@@ -230,6 +261,34 @@ class _BuildChurchState extends State<BuildChurch> {
   //                                                   : Colors.grey[700]!)))),
   //                             );
   // }
+
+  Widget _orNewPostWidget() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed(CameraScreen.routeName,
+                          arguments: CameraScreenArgs(cmId: null));
+      },
+      child: Container(
+        padding: const EdgeInsets.all(0),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Or share a new Post",
+              style: Theme.of(context).textTheme.bodyText1!.copyWith(),
+            ),
+            const SizedBox(width: 5),
+            Icon(Icons.add_rounded)
+          ],
+        ),
+      ),
+    );
+  }
 
   void _onChurchImageChanged(BuildContext context) async {
     final pickedFile = await ImageHelper.pickImageFromGallery(
