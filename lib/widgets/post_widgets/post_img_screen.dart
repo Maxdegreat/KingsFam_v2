@@ -416,7 +416,7 @@ class _ImgPost1_1State extends State<ImgPost1_1>
 
                     snackBar(
                         snackMessage:
-                            "KingsFam will hide content from this user.",
+                            "KingsFam will hide content from this user next time.",
                         context: context);
                     Navigator.of(context).pop();
                     Navigator.of(context).pop();

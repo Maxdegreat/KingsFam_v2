@@ -152,7 +152,7 @@ class _SaysContainerState extends State<SaysContainer> {
 
                     snackBar(
                         snackMessage:
-                            "KingsFam will hide content from this user.",
+                            "KingsFam will hide content from this user next time.",
                         context: context);
                     Navigator.of(context).pop();
                   },

@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -58,7 +57,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
   late TextEditingController txtCtrlC;
   late ScrollController scrollCtrl;
 
-  TextStyle style1 = GoogleFonts.adamina(color: Colors.green);
+  TextStyle style1 = GoogleFonts.adamina(color: Colors.green, fontWeight: FontWeight.bold);
   TextStyle style2 = GoogleFonts.adamina(color: Colors.grey);
 
   File? imgF;
@@ -307,12 +306,7 @@ class _PostContentScreenState extends State<PostContentScreen> {
       height: MediaQuery.of(context).size.shortestSide,
       child: Padding(
           padding: EdgeInsets.only(top: 15, left: 10, right: 10, bottom: 5),
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 20,
-              crossAxisSpacing: 40,
-            ),
+          child: ListView.builder(
             itemCount: chs.length,
             itemBuilder: (BuildContext context, int index) {
               Church ch = chs[index];
@@ -353,7 +347,9 @@ class _PostContentScreenState extends State<PostContentScreen> {
   Widget chBox(Church ch) {
     return Padding(
       padding: EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 0),
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           GestureDetector(
             onTap: () {
@@ -372,8 +368,8 @@ class _PostContentScreenState extends State<PostContentScreen> {
               setState(() {});
             },
             child: Container(
-              height: MediaQuery.of(context).size.shortestSide / 2.7,
-              width: MediaQuery.of(context).size.shortestSide / 2.7,
+              height: MediaQuery.of(context).size.shortestSide / 5,
+              width: MediaQuery.of(context).size.shortestSide / 5,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(7.0),
                   border: (cmIdPostingTo != null && ch.id == cmIdPostingTo)
@@ -384,18 +380,19 @@ class _PostContentScreenState extends State<PostContentScreen> {
                       fit: BoxFit.cover)),
             ),
           ),
+          const SizedBox(width: 7),
           Text(
             ch.name,
             style: (cmIdPostingTo != null && ch.id == cmIdPostingTo)
                 ? style1
                 : style2,
           ),
-          Text(
-            ch.location,
-            style: (cmIdPostingTo != null && ch.id == cmIdPostingTo)
-                ? style1
-                : style2,
-          ),
+          // Text(
+          //   ch.location,
+          //   style: (cmIdPostingTo != null && ch.id == cmIdPostingTo)
+          //       ? style1
+          //       : style2,
+          // ),
         ],
       ),
     );

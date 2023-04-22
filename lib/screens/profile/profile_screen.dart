@@ -189,7 +189,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               context: context)
                           : snackBar(
                               snackMessage:
-                                  "KingsFam will hide content from this user.",
+                                  "KingsFam will hide content from this user next time.",
                               context: context);
                       Navigator.of(context).pop();
                     },

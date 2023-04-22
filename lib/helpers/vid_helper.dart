@@ -123,7 +123,7 @@ class _VideoEditorState extends State<VideoEditor> {
                       viewerHeight: 50.0,
                       viewerWidth: MediaQuery.of(context).size.width,
                       durationStyle: DurationStyle.FORMAT_MM_SS,
-                      maxVideoLength: const Duration(seconds: 20),
+                      maxVideoLength: const Duration(seconds: 30),
                       editorProperties: TrimEditorProperties(
                         borderPaintColor: Colors.amber,
                         borderWidth: 4,
