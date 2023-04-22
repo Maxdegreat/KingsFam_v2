@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/blocs/search/search_bloc.dart';
+import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/enums/bottom_nav_items.dart';
 import 'package:kingsfam/extensions/hexcolor.dart';
 
@@ -116,6 +117,7 @@ class _SearchScreenState extends State<SearchScreen> {
             builder: (context, state) {
               return Scaffold(
                 appBar: AppBar(
+                  leading: IconButton(onPressed: () => scaffoldKey.currentState!.openDrawer(), icon: Icon(Icons.menu)),
                   elevation: 0,
                   toolbarHeight: 56,
                   title: Padding(

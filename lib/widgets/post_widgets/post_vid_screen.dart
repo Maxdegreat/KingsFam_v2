@@ -207,13 +207,14 @@ class _MyWidgetState extends State<PostFullVideoView16_9>
                     color: (isLikedPost || recentlyLiked)
                         ? Colors.amber
                         : Colors.white,
+                        size: 30,
                   )),
 
               SizedBox(height: 7),
 
               Text(
                 likeCount,
-                style: captionS,
+                style: captionS.copyWith(fontSize: 18),
               ),
 
               SizedBox(height: 15),
@@ -224,7 +225,7 @@ class _MyWidgetState extends State<PostFullVideoView16_9>
                         arguments: CommentScreenArgs(post: widget.post));
                   },
                   icon: Icon(Icons.messenger_outline_outlined,
-                      color: Colors.white)),
+                      color: Colors.white, size: 30,)),
 
               SizedBox(height: 7),
 
@@ -239,6 +240,7 @@ class _MyWidgetState extends State<PostFullVideoView16_9>
                   icon: Icon(
                     Icons.more_vert,
                     color: Colors.white,
+                    size: 30,
                   )),
             ],
           ),

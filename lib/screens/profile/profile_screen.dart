@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/constants.dart';
+import 'package:kingsfam/config/global_keys.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/cubits/liked_post/liked_post_cubit.dart';
@@ -112,6 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 state.userr.username,
                 style: Theme.of(context).textTheme.bodyText1,
               ),
+              // leading: IconButton(onPressed: () => scaffoldKey.currentState!.openDrawer(), icon: Icon(Icons.menu)),
               actions: [
                 if (!state.isCurrentUserr)
                   GestureDetector(
