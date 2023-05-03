@@ -170,8 +170,7 @@ class _ChatsScreenState extends State<ChatsScreen>
           // }
 
           if (state.status == ChatStatus.error) {
-            ErrorDialog(
-                content: 'chat_screen e-code: ${state.failure.message}');
+            ErrorDialog(content: 'chat_screen e-code: ${state.failure.message}');
           }
         }, builder: (context, state) {
           // check userpreferences. if no data for has aggred to terms of use show a alert dialog

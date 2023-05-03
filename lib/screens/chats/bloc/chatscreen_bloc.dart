@@ -115,17 +115,18 @@ class ChatscreenBloc extends Bloc<ChatscreenEvent, ChatscreenState> {
           });
         }
       } else {
- log("grabing default church");
-          Church c = await Church.fromId('8SGFU0idmaWYuQZXCvXI');
-          yield state.copyWith(selectedCh: c, status: ChatStatus.setState);
-          KingsCordRepository().getKcFirstCm(state.selectedCh!.id!).then((kc) {
-            if (kc != null) add(ChatScreenUpdateSelectedKc(kc: kc));
-          });
-          _userrRepository
-              .getUserrWithId(userrId: _authBloc.state.user!.uid)
-              .then((user) {
-            _churchRepository.onJoinCommuinity(commuinity: c, user: user);
-          });
+//      This would put the user in cm by id below by default when they open app and are not logged into any cm.
+//          log("grabing default church");
+//           Church c = await Church.fromId('8SGFU0idmaWYuQZXCvXI');
+//           yield state.copyWith(selectedCh: c, status: ChatStatus.setState);
+//           KingsCordRepository().getKcFirstCm(state.selectedCh!.id!).then((kc) {
+//             if (kc != null) add(ChatScreenUpdateSelectedKc(kc: kc));
+//           });
+//           _userrRepository
+//               .getUserrWithId(userrId: _authBloc.state.user!.uid)
+//               .then((user) {
+//             _churchRepository.onJoinCommuinity(commuinity: c, user: user);
+//           });
       }
 
       final Userr currUserr = await _userrRepository.getUserrWithId(

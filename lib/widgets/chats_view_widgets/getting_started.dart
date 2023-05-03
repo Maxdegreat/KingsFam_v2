@@ -23,19 +23,11 @@ class GettingStarted extends StatefulWidget {
   State<GettingStarted> createState() => _GettingStartedState();
 }
 
-void _joinKingsFamCm() {
-  Future.delayed(Duration(seconds: 1)).then((_) {
-    // nav to kingsfam
-    
 
-    // then join kingsfam
-  });
-}
 
 class _GettingStartedState extends State<GettingStarted> {
   @override
   void initState() {
-    _joinKingsFamCm();
     super.initState();
   }
 

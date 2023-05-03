@@ -31,19 +31,22 @@ import 'widgets/widgets.dart';
 class ProfileScreenArgs {
   final String userId;
   final bool initScreen;
-  ProfileScreenArgs({required this.userId, required this.initScreen});
+  final Userr? userr;
+  ProfileScreenArgs({required this.userId, required this.initScreen, this.userr});
 }
 
 class ProfileScreen extends StatefulWidget {
-  //const ProfileScreen({Key? key}) : super(key: key);
+  // const ProfileScreen({Key? key}) : super(key: key);
 
   static const String routeName = '/profileScreen';
 
   final String ownerId;
   final bool initScreen;
+  final Userr? userr;
   const ProfileScreen({
     required this.ownerId,
     required this.initScreen,
+    this.userr,
   });
 
   static Route route({required ProfileScreenArgs args}) {
@@ -59,6 +62,7 @@ class ProfileScreen extends StatefulWidget {
                 userrRepository: context.read<UserrRepository>(),
               ),
               child: ProfileScreen(
+                userr: args.userr,
                 initScreen: args.initScreen,
                 ownerId: args.userId,
               ),
@@ -92,20 +96,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
       },
       builder: (context, state) {
-        if (context.read<BottomnavbarCubit>().state.selectedItem == BottomNavItem.profile && widget.ownerId == context.read<AuthBloc>().state.user!.uid) {
-          if (!hasSeen) {
-            hasSeen = true;
-                context.read<ProfileBloc>()
-            ..add(ProfileLoadUserr(userId: context.read<AuthBloc>().state.user!.uid, vidCtrl: null));
-          }
-        } else if (widget.ownerId != context.read<AuthBloc>().state.user!.uid &&
-            widget.initScreen) {
-          if (!hasSeen) {
-            context.read<ProfileBloc>()
-              ..add(ProfileLoadUserr(userId: widget.ownerId, vidCtrl: null));
-            hasSeen = true;
-          }
+       if (!hasSeen) {
+         if (context.read<BottomnavbarCubit>().state.selectedItem == BottomNavItem.profile && widget.ownerId == context.read<AuthBloc>().state.user!.uid) {
+            context.read<ProfileBloc>()..add(ProfileLoadUserr(userId: context.read<AuthBloc>().state.user!.uid, userr: widget.userr, vidCtrl: null));
+        } else /* if (widget.ownerId != context.read<AuthBloc>().state.user!.uid && widget.initScreen) */ {
+            context.read<ProfileBloc>()..add(ProfileLoadUserr(userId: widget.ownerId, userr: widget.userr, vidCtrl: null));
         }
+            hasSeen = true; 
+       }
         //----------------------------------------scaffold starts here
         return Scaffold(
             appBar: AppBar(

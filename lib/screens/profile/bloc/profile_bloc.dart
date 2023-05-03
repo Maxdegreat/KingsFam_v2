@@ -38,7 +38,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         _likedPostCubit = likedPostCubit,
         _churchRepository = churchRepository,
         _prayerRepo = prayerRepo,
-        super(ProfileState.initial());
+        super(ProfileState.initial(null));
 
   @override
   Future<void> close() {
@@ -138,13 +138,20 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     log("user is: " + state.userr.toString());
   }
 
-  Stream<ProfileState> _mapProfileLoadUserToState(
-      ProfileLoadUserr event) async* {
-    yield ProfileState.initial();
+  Stream<ProfileState> _mapProfileLoadUserToState( ProfileLoadUserr event ) async* {
+    
+    yield ProfileState.initial(event.userr);
     yield state.copyWith(status: ProfileStatus.loading, loadingPost: true);
 
     try {
-      final userr = await _userrRepository.getUserrWithId(userrId: event.userId);
+      Userr userr;
+      if (event.userr != null) 
+        userr = event.userr!;
+      else
+        userr = await _userrRepository.getUserrWithId(userrId: event.userId);
+      log("!!!!!!!!!!!!!");
+      log("event user is: " + event.userr.toString());
+      log("!!!!!!!!!!!!!");
       state.copyWith(userr: userr);
 
       // grab any potential prayers

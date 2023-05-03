@@ -44,8 +44,8 @@ _communityShutter(BuildContext context) {
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
       Container(
-        height: 50,
-        width: 50,
+        height: 80,
+        width: 80,
         decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.secondary,
             borderRadius: BorderRadius.circular(10)),
@@ -65,6 +65,6 @@ _communityShutter(BuildContext context) {
 }
 
 _t1(context) => Container(
-    width: 70, height: 35, color: Theme.of(context).colorScheme.secondary);
+    width: MediaQuery.of(context).size.width / 1.8, height: 35, color: Theme.of(context).colorScheme.secondary);
 _t2(context) => Container(
-    width: 90, height: 45, color: Theme.of(context).colorScheme.secondary);
+    width: MediaQuery.of(context).size.width / 2.0, height: 45, color: Theme.of(context).colorScheme.secondary);

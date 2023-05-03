@@ -668,9 +668,12 @@ class _MessageLinesState extends State<MessageLines> {
     HexColor hexcolor = HexColor();
     Size size = MediaQuery.of(context).size;
     return GestureDetector(
-      onTap: () => Navigator.of(context).pushNamed(ProfileScreen.routeName,
-          arguments: ProfileScreenArgs(
-              initScreen: true, userId: widget.message.sender!.id)),
+      onTap: () {
+        Navigator.of(context).pushNamed(
+          ProfileScreen.routeName,
+          arguments: ProfileScreenArgs(initScreen: true, userId: widget.message.sender!.id, userr: widget.message.sender!));
+
+      },
       child: Container(
         height: size.width > 400 ? 35 : size.height / 18.5,
         width: size.width > 400 ? 35 : size.width / 8,

@@ -218,7 +218,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ? ListView.builder(
                 itemCount: state.users.length,
                 itemBuilder: (BuildContext context, int index) {
-                  final users = state.users[index];
+                  final user = state.users[index];
                   return Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 5.0, vertical: 3.0),
@@ -226,15 +226,15 @@ class _SearchScreenState extends State<SearchScreen> {
                       onTap: () {
                         Navigator.of(context).pushNamed(ProfileScreen.routeName,
                             arguments: ProfileScreenArgs(
-                                userId: users.id, initScreen: true));
+                                userId: user.id, userr: user, initScreen: true));
                         print('ontaped');
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
                         child: FancyListTile(
                           context: context,
-                          username: users.username,
-                          imageUrl: users.profileImageUrl,
+                          username: user.username,
+                          imageUrl: user.profileImageUrl,
                           onTap: () {},
                           isBtn: false,
                           BR: 12.0,

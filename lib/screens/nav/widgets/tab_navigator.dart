@@ -6,6 +6,7 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/custum_router.dart';
 
 import 'package:kingsfam/enums/bottom_nav_items.dart';
+import 'package:kingsfam/screens/profile/bloc/profile_bloc.dart';
 
 import '../../screens.dart';
 
@@ -66,9 +67,9 @@ class TabNavigator extends StatelessWidget {
       //   );
 
       case BottomNavItem.profile:
-        // this.context!.read<ProfileBloc>()..add(ProfileLoadUserr(userId: ctx.read<AuthBloc>().state.user!.uid));
-        return ProfileScreen(
-            ownerId: ctx.read<AuthBloc>().state.user!.uid, initScreen: false);
+        
+        return ProfileScreen(ownerId: ctx.read<AuthBloc>().state.user!.uid, initScreen: false);
+
       default:
         return Scaffold();
     }

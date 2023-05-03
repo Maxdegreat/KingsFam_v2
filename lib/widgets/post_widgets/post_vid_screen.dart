@@ -47,16 +47,16 @@ class _MyWidgetState extends State<PostFullVideoView16_9>
     );
     _sizeAnimation = Tween<double>(begin: 0, end: 1).animate(_controller);
     _opacityAnimation = Tween<double>(begin: 0.5, end: 1).animate(_controller);
+    
     videoPlayerController =
-        new VideoPlayerController.network(widget.post.videoUrl!);
-    videoPlayerController!
-      ..addListener(() {
+        new VideoPlayerController.network(widget.post.videoUrl!)..addListener(() {
         setState(() {});
       })
       ..setLooping(true)
       ..initialize().then((_) {
         videoPlayerController!.play();
       });
+      
     super.initState();
   }
 

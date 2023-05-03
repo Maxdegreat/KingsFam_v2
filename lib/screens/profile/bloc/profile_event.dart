@@ -15,13 +15,15 @@ class ProfileLoadUserOnly extends ProfileEvent {
 class ProfileLoadUserr extends ProfileEvent {
   final String userId;
   final VideoPlayerController? vidCtrl;
+  final Userr? userr;
   ProfileLoadUserr({
     required this.userId,
+    this.userr,
     this.vidCtrl,
   });
 
   @override
-  List<Object?> get props => [userId, vidCtrl];
+  List<Object?> get props => [userId, vidCtrl, userr];
 }
 
 class ProfilePaginatePosts extends ProfileEvent {

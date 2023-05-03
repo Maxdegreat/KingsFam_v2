@@ -49,11 +49,11 @@ class ProfileState extends Equatable {
   });
 
   //step 5 make the initial state
-  factory ProfileState.initial() {
+  factory ProfileState.initial(Userr? userr) {
     return ProfileState(
       post: [],
       showPost: false,
-      userr: Userr.empty,
+      userr: userr ?? Userr.empty.copyWith(username: ""),
       seen: {},
       isCurrentUserr: false,
       isFollowing: false,
