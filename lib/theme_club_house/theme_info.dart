@@ -37,7 +37,7 @@ class ThemeInfo {
           outline: Colors.grey[800]),
       canvasColor: Colors.grey[50],
       bottomSheetTheme: BottomSheetThemeData(
-        backgroundColor: Colors.white70,
+        backgroundColor: Color.fromARGB(255, 233, 233, 233),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
       ),
       cardColor: Color.fromARGB(225, 207, 207, 207),

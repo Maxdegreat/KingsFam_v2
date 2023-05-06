@@ -403,7 +403,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
         centerTitle: false,
-        toolbarHeight: 50,
+        toolbarHeight: 45,
         title: GestureDetector(
           onTap: () {
             if (!kIsWeb) scaffoldKey.currentState!.openDrawer();
@@ -413,19 +413,40 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
-              ContainerWithURLImg(
-                  imgUrl:
-                      context.read<ChatscreenBloc>().state.selectedCh!.imageUrl,
-                  height: 35,
-                  width: 35,
-                  pc: null),
+              Stack(
+           clipBehavior: Clip.none,
+           children: [
+             ContainerWithURLImg(
+            imgUrl: context.read<ChatscreenBloc>().state.selectedCh!.imageUrl,
+            height: 35,
+            width: 35,
+            pc: null,
+             ),
+             Positioned(
+            top: -5,
+            left: -5,
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+           color: Theme.of(context).colorScheme.inversePrimary,
+           borderRadius: BorderRadius.circular(7),
+              ),
+              child: Icon(
+           Icons.menu,
+           size: 15,
+           color: Theme.of(context).colorScheme.secondary,
+              ),
+            ),
+             ),
+           ],
+              ),
               SizedBox(width: 8),
               Text(
-                widget.kingsCord.cordName.length > 15
-                    ? '${widget.kingsCord.cordName.substring(0, 15)}'
-                    : '${widget.kingsCord.cordName}',
-                overflow: TextOverflow.fade,
-                style: Theme.of(context).textTheme.bodyText1,
+           widget.kingsCord.cordName.length > 15
+            ? '${widget.kingsCord.cordName.substring(0, 15)}'
+            : '${widget.kingsCord.cordName}',
+           overflow: TextOverflow.fade,
+           style: Theme.of(context).textTheme.bodyText1,
               ),
             ],
           ),
@@ -903,8 +924,11 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
 
         if (state.isKngAi) {
           // handle the kngAi message send.
-          context.read<KingscordCubit>().sendKngAi(_messageController.text,
-              widget.kingsCord, widget.commuinity, currUsersName);
+          context.read<KingscordCubit>().sendKngAi(
+              _messageController.text.trim(),
+              widget.kingsCord,
+              widget.commuinity,
+              currUsersName);
 
           // ps. we undo the isKngAi state cubit ... as i should duh lol.
         } else {

@@ -246,7 +246,10 @@ class KingscordCubit extends Cubit<KingscordState> {
   }
 
   void onIsTyping(bool isTyping) {
-    emit(state.copyWith(isTyping: isTyping, status: KingsCordStatus.initial));
+    var rm;
+    if (state.replyMessage != null) 
+      rm = state.replyMessage;
+    emit(state.copyWith(isTyping: isTyping, replyMessage: rm, status: KingsCordStatus.initial));
   }
 
   //send a txt Messagse

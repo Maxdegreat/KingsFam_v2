@@ -602,7 +602,7 @@ class _MessageLinesState extends State<MessageLines> {
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 3.0),
                             child: Container(
-                              padding: EdgeInsets.all(2),
+                              padding: EdgeInsets.all(3),
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(7.0),
                                   gradient: LinearGradient(
@@ -627,15 +627,7 @@ class _MessageLinesState extends State<MessageLines> {
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                       top: 4.0, bottom: 5, left: 2, right: 2),
-                                  child: RichText(
-                                    text: TextSpan(
-                                      style:
-                                          Theme.of(context).textTheme.caption,
-                                      children: <TextSpan>[
-                                        TextSpan(text: '#kngAi'),
-                                      ],
-                                    ),
-                                  ),
+                                  child: Text('#kngAi', style: Theme.of(context).textTheme.caption),
                                 ),
                               ),
                             ),

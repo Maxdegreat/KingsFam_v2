@@ -8,7 +8,6 @@ import 'package:kingsfam/blocs/auth/auth_bloc.dart';
 import 'package:kingsfam/config/paths.dart';
 import 'package:kingsfam/cubits/buid_cubit/buid_cubit.dart';
 import 'package:kingsfam/cubits/cubits.dart';
-import 'package:kingsfam/helpers/user_preferences.dart';
 import 'package:kingsfam/models/post_model.dart';
 import 'package:kingsfam/repositories/post/post_repository.dart';
 import 'package:kingsfam/screens/comment_ui/comment_screen.dart';
@@ -24,7 +23,8 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 class PostFullVideoView16_9 extends StatefulWidget {
   final Post post;
-  const PostFullVideoView16_9({Key? key, required this.post}) : super(key: key);
+  const PostFullVideoView16_9({Key? key, required this.post})
+      : super(key: key);
 
   @override
   State<PostFullVideoView16_9> createState() => _MyWidgetState();
@@ -33,7 +33,6 @@ class PostFullVideoView16_9 extends StatefulWidget {
 class _MyWidgetState extends State<PostFullVideoView16_9>
     with SingleTickerProviderStateMixin {
   late VideoPlayerController? videoPlayerController;
-
   late AnimationController _controller;
   late Animation<double> _sizeAnimation;
   late Animation<double> _opacityAnimation;
@@ -41,44 +40,46 @@ class _MyWidgetState extends State<PostFullVideoView16_9>
 
   @override
   void initState() {
+
+    videoPlayerController =
+        new VideoPlayerController.network(widget.post.videoUrl!)
+          ..addListener(() {
+            setState(() {});
+          })
+          ..setLooping(true)
+          ..initialize().then((_) {
+            videoPlayerController!.play();
+          });
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 350),
       vsync: this,
     );
     _sizeAnimation = Tween<double>(begin: 0, end: 1).animate(_controller);
     _opacityAnimation = Tween<double>(begin: 0.5, end: 1).animate(_controller);
-    
-    videoPlayerController =
-        new VideoPlayerController.network(widget.post.videoUrl!)..addListener(() {
-        setState(() {});
-      })
-      ..setLooping(true)
-      ..initialize().then((_) {
-        videoPlayerController!.play();
-      });
-      
     super.initState();
   }
 
   @override
   void dispose() {
-    videoPlayerController!.dispose();
+    if (videoPlayerController != null) 
+      videoPlayerController!.dispose();
     super.dispose();
   }
 
   _localLikeAnimation() {
     if (!_isFavorited) {
-                  setState(() {
-                    _isFavorited = true;
-                  });
-                  _controller.forward(from: 0).whenComplete(() {
-                    _controller.reverse(from: 1).whenComplete(() {
-                      setState(() {
-                        _isFavorited = false;
-                      });
-                    });
-                  });
-                }
+      setState(() {
+        _isFavorited = true;
+      });
+      _controller.forward(from: 0).whenComplete(() {
+        _controller.reverse(from: 1).whenComplete(() {
+          setState(() {
+            _isFavorited = false;
+          });
+        });
+      });
+    }
   }
 
   bool showCaptionFull = false;
@@ -99,7 +100,8 @@ class _MyWidgetState extends State<PostFullVideoView16_9>
             key: ObjectKey(widget.post),
             onVisibilityChanged: (vis) {
               if (vis.visibleFraction == 0) {
-                videoPlayerController!.pause();
+                if (videoPlayerController != null)
+                  videoPlayerController!.pause();
               }
             },
             child: GestureDetector(
@@ -109,30 +111,43 @@ class _MyWidgetState extends State<PostFullVideoView16_9>
                 // context.read<LikedPostCubit>().likePost(post: widget.post);
               },
               child: Stack(children: [
-                VideoPlayerWidget(controller: videoPlayerController!),
-                if (_isFavorited)...[
-                  Positioned(
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: AnimatedBuilder(
-                      animation: _controller,
-                      builder: (context, child) {
-                        return Opacity(
-                          opacity: _opacityAnimation.value,
-                          child: Transform.scale(
-                            scale: _sizeAnimation.value,
-                            child: const Icon(
-                              Icons.favorite,
-                              color: Colors.amber,
-                              size: 200,
-                            ),
-                          ),
-                        );
-                      },
-                    ))
-                ],
+                if (videoPlayerController != null && videoPlayerController!.value.isInitialized) ...[
+                  VideoPlayerWidget(controller: videoPlayerController!),
+                  if (_isFavorited) ...[
+                    Positioned(
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: AnimatedBuilder(
+                          animation: _controller,
+                          builder: (context, child) {
+                            return Opacity(
+                              opacity: _opacityAnimation.value,
+                              child: Transform.scale(
+                                scale: _sizeAnimation.value,
+                                child: const Icon(
+                                  Icons.favorite,
+                                  color: Colors.amber,
+                                  size: 200,
+                                ),
+                              ),
+                            );
+                          },
+                        ))
+                  ],
+                ] else ... [
+                  Center(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: CachedNetworkImageProvider(
+                            widget.post.thumbnailUrl!))
+                      ),
+                    )
+                  )
+                ]
               ]),
             ),
           ),
@@ -207,7 +222,7 @@ class _MyWidgetState extends State<PostFullVideoView16_9>
                     color: (isLikedPost || recentlyLiked)
                         ? Colors.amber
                         : Colors.white,
-                        size: 30,
+                    size: 30,
                   )),
 
               SizedBox(height: 7),
@@ -224,8 +239,11 @@ class _MyWidgetState extends State<PostFullVideoView16_9>
                     Navigator.of(context).pushNamed(CommentScreen.routeName,
                         arguments: CommentScreenArgs(post: widget.post));
                   },
-                  icon: Icon(Icons.messenger_outline_outlined,
-                      color: Colors.white, size: 30,)),
+                  icon: Icon(
+                    Icons.messenger_outline_outlined,
+                    color: Colors.white,
+                    size: 30,
+                  )),
 
               SizedBox(height: 7),
 

@@ -41,7 +41,9 @@ class _SaysRoomState extends State<SaysRoom> {
   void initState() {
     recentkcid = widget.kcId;
     CurrentKingsCordRoomId.updateRoomId(roomId: widget.kcId);
-     context.read<SaysBloc>().add(SaysFetchSays(cmId: widget.cm.id!, kcId: widget.kcId));
+    context
+        .read<SaysBloc>()
+        .add(SaysFetchSays(cmId: widget.cm.id!, kcId: widget.kcId));
     super.initState();
   }
 
@@ -67,25 +69,53 @@ class _SaysRoomState extends State<SaysRoom> {
         child: Scaffold(
             appBar: AppBar(
               // backgroundColor: Color(hc.hexcolorCode("#141829")),
-              title: Text(widget.kcName,
-                  style: Theme.of(context).textTheme.bodyText1),
-              leading: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: GestureDetector(
-                    onTap: () {
-                      scaffoldKey.currentState!.openDrawer();
-                    },
-                    child: ContainerWithURLImg(
-                      imgUrl: context
-                          .read<ChatscreenBloc>()
-                          .state
-                          .selectedCh!
-                          .imageUrl,
-                      height: 15,
-                      width: 15,
-                      pc: null
-                    )),
+              title: GestureDetector(
+                onTap: () {
+                  scaffoldKey.currentState!.openDrawer();
+                },
+                child: Row(
+                  children: [
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        ContainerWithURLImg(
+                          imgUrl: context
+                              .read<ChatscreenBloc>()
+                              .state
+                              .selectedCh!
+                              .imageUrl,
+                          height: 35,
+                          width: 35,
+                          pc: null,
+                        ),
+                        Positioned(
+                          top: -5,
+                          left: -5,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                            child: Icon(
+                              Icons.menu,
+                              size: 15,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(widget.kcName,
+                        style: Theme.of(context).textTheme.bodyText1),
+                  ],
+                ),
               ),
+
               actions: [
                 TextButton(
                     onPressed: () {

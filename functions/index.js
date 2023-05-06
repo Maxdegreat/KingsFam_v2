@@ -81,17 +81,10 @@ exports.openAiEndpoint = functions.https.onRequest(async (req, res) => {
     }
     
     // Construct the prompt
-    const prompt = `
-    Return to me a Bible verse that includes the topic hard work: 
-    1
-    Colossians 3:23-24
-    Whatever you do, do it from the heart for the Lord and not for people.
-    You know that you will receive an inheritance as a reward. You serve the Lord Christ
-    Return to me a Bible verse that includes the topic ${req.body.topic}.
-    `;
+    const prompt = 'Return to me a Bible verse that includes the topic hard work: Colossians 3:23-24 Whatever you do, do it from the heart for the Lord and not for people. You know that you will receive an inheritance as a reward. You serve the Lord Christ Return to me a Bible verse that includes the topic ${req.body.topic}.';
 
     // Make the OpenAI API call with the API key
-    const apiKey = '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'; 
+    const apiKey = '###'; 
     const apiUrl = 'https://api.openai.com/v1/completions';
     const requestData = JSON.stringify({
       model: 'text-davinci-003',

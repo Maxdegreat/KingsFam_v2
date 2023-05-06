@@ -16,6 +16,7 @@ import 'package:kingsfam/widgets/hide_content/hide_content_full_screen_post.dart
 import 'package:kingsfam/widgets/post_single_view.dart';
 import 'package:kingsfam/widgets/post_widgets/post_img_screen.dart';
 import 'package:kingsfam/widgets/post_widgets/post_vid_screen.dart';
+import 'package:video_player/video_player.dart';
 
 part 'feed_event.dart';
 part 'feed_state.dart';
@@ -57,7 +58,6 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       if (!MockFlag.ISMOCKTESTING) {
         List<Post?> posts = [];
         List<Widget?> postContainers = [];
-
 
         posts = await _postsRepository.getUserFeed(lastPostId: null, limit: 2);
 
@@ -134,7 +134,8 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     }
   }
 
-  Stream<FeedState> _mapFeedCommuinityFetchPostToState(FeedCommuinityFetchPosts event) async* {
+  Stream<FeedState> _mapFeedCommuinityFetchPostToState(
+      FeedCommuinityFetchPosts event) async* {
     yield state.copyWith(posts: [], status: FeedStatus.loading);
 
     try {
@@ -179,7 +180,8 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     } catch (e) {}
   }
 
-  Stream<FeedState> _mapCommunityFeedPaginatePosts(CommunityFeedPaginatePost event) async* {
+  Stream<FeedState> _mapCommunityFeedPaginatePosts(
+      CommunityFeedPaginatePost event) async* {
     yield state.copyWith(status: FeedStatus.paginating);
 
     if (!MockFlag.ISMOCKTESTING) {
@@ -210,13 +212,13 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       List<Post?> posts = MockPostData.getMockPosts4;
       // posts.add(Post.empty);
 
-      List<Widget?> postContainers = _makePostContainers(posts, state.currContext!);
+      List<Widget?> postContainers =
+          _makePostContainers(posts, state.currContext!);
 
       yield state.copyWith(
           posts: posts,
           postContainer: postContainers,
-          status: FeedStatus.success
-        );
+          status: FeedStatus.success);
     }
   }
 
@@ -230,14 +232,23 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       if (p!.author == Userr.empty)
         container = SizedBox.shrink();
       else {
-        log("not an ad widget");
-        log("Buids " + _buidCubit.state.buids.toString());
+        // log("Buids " + _buidCubit.state.buids.toString());
 
         if (!_buidCubit.state.buids.contains(p.author.id)) {
           if (p.imageUrl != null)
             container = ImgPost1_1(post: p);
-          else if (p.videoUrl != null)
+          else if (p.videoUrl != null) {
+            VideoPlayerController? videoPlayerController;
+            videoPlayerController =
+                new VideoPlayerController.network(p.videoUrl!)
+                  ..addListener(() {})
+                  ..setLooping(true)
+                  ..initialize().then((_) {
+                    videoPlayerController!.pause();
+                  });
+            log("vid controller from the feed_bloc: " + videoPlayerController.toString());
             container = PostFullVideoView16_9(post: p);
+          }
         } else {
           container = HideContent.postFullScreen(() {
             _buidCubit.onBlockUser(p.author.id);
@@ -245,9 +256,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
           });
         }
       }
-      // else -> container is already init as null
-      log("adding containrt");
-      lst.add(container);
+        lst.add(container);
     }
     return lst;
   }
