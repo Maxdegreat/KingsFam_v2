@@ -238,15 +238,6 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
           if (p.imageUrl != null)
             container = ImgPost1_1(post: p);
           else if (p.videoUrl != null) {
-            VideoPlayerController? videoPlayerController;
-            videoPlayerController =
-                new VideoPlayerController.network(p.videoUrl!)
-                  ..addListener(() {})
-                  ..setLooping(true)
-                  ..initialize().then((_) {
-                    videoPlayerController!.pause();
-                  });
-            log("vid controller from the feed_bloc: " + videoPlayerController.toString());
             container = PostFullVideoView16_9(post: p);
           }
         } else {
