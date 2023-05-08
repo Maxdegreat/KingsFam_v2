@@ -18,6 +18,7 @@ import 'package:kingsfam/models/models.dart';
 import 'package:kingsfam/repositories/repositories.dart';
 import 'package:kingsfam/widgets/widgets.dart';
 
+import '../chats/chats_screen.dart';
 import 'cubit/buildchurch_cubit.dart';
 
 // ADMIN ID CODE ATTHE BOTTOM
@@ -68,9 +69,9 @@ class _BuildChurchState extends State<BuildChurch> {
                 'hmm, something went worong. check your connection --- build_church e-code: ${state.failure.message} ',
           );
         } else if (state.status == BuildChurchStatus.success) {
-          Navigator.popUntil(
-              context, ModalRoute.withName(Navigator.defaultRouteName));
-          //Navigator.of(context).popAndPushNamed(ChatsScreen.routeName);
+          Navigator.of(context).pop();
+          // Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
+          // Navigator.of(context).popAndPushNamed(ChatsScreen.routeName);
           // Navigator.of(context).popUntil((_) => popScreens++ >= 3);
         }
       },
