@@ -403,7 +403,7 @@ class _KingsCordScreenState extends State<KingsCordScreen> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
         centerTitle: false,
-        toolbarHeight: 45,
+        toolbarHeight: 49,
         title: GestureDetector(
           onTap: () {
             if (!kIsWeb) scaffoldKey.currentState!.openDrawer();

@@ -14,7 +14,7 @@ class AdvancedQuerry {
     List<String> bucket = [];
 
     for (int i = 0; i < query.length; i++) {
-      temp += query[i];
+      temp += query[i].toLowerCase();
       bucket.add(temp);
     }
 

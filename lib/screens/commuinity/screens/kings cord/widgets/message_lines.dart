@@ -578,7 +578,7 @@ class _MessageLinesState extends State<MessageLines> {
                                         TextSpan(
                                             text: 'Replied ' +
                                                 widget.message.replyMsg!
-                                                    .senderUsername!),
+                                                    .senderUsername! + ' '),
                                         TextSpan(
                                             text: widget.message.replyMsg!
                                                         .text !=

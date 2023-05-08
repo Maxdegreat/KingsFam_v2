@@ -56,7 +56,7 @@ class KingscordCubit extends Cubit<KingscordState> {
         .doc(cmId)
         .collection(Paths.members)
         .where("userNameCaseList", arrayContains: username)
-        .limit(7)
+        .limit(20                                                   )
         .get();
     List<Userr> users = [];
     for (var j in snap.docs) {
